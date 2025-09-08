@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to Apt Computing Labs{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="jumbotron bg-primary text-white p-5 rounded">
+                <h1 class="display-4">Welcome to Apt Computing Labs</h1>
+                <p class="lead">Practice Python programming with challenging coding problems</p>
+                <hr class="my-4">
+                <p>Sharpen your coding skills with our collection of Python programming challenges. Track your progress and improve your problem-solving abilities.</p>
+                {% if not user.is_authenticated %}
+                    <a class="btn btn-light btn-lg" href="{% url 'accounts:register' %}" role="button">
+                        <i class="fas fa-user-plus"></i> Get Started
+                    </a>
+                    <a class="btn btn-outline-light btn-lg ms-2" href="{% url 'accounts:login' %}" role="button">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                {% else %}
+                    <a class="btn btn-light btn-lg" href="{% url 'questions:list' %}" role="button">
+                        <i class="fas fa-code"></i> Start Coding
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    {% if user.is_authenticated %}
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Problems Solved</h5>
+                    <h2 class="text-primary">{{ user.profile.problems_solved }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Total Submissions</h5>
+                    <h2 class="text-primary">{{ user.profile.total_submissions }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-percentage fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Acceptance Rate</h5>
+                    <h2 class="text-primary">{{ user.profile.acceptance_rate }}%</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

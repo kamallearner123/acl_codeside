@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Submission Detail - Apt Computing Labs{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-code"></i> Submission Detail</h2>
+                <a href="{% url 'submissions:my_submissions' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Submissions
+                </a>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-info-circle"></i> Submission Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Problem:</strong></td>
+                                    <td>
+                                        <a href="{% url 'questions:detail' submission.question.slug %}">
+                                            {{ submission.question.title }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td>
+                                        <span class="badge bg-{% if submission.status == 'accepted' %}success{% elif submission.status == 'wrong_answer' %}danger{% else %}warning{% endif %} fs-6">
+                                            {{ submission.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Language:</strong></td>
+                                    <td>{{ submission.language|title }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Submitted:</strong></td>
+                                    <td>{{ submission.submitted_at|date:"M d, Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Test Cases:</strong></td>
+                                    <td>
+                                        {% if submission.total_test_cases > 0 %}
+                                            <span class="text-{% if submission.test_cases_passed == submission.total_test_cases %}success{% else %}danger{% endif %}">
+                                                {{ submission.test_cases_passed }}/{{ submission.total_test_cases }} passed
+                                            </span>
+                                            ({{ submission.success_percentage }}%)
+                                        {% else %}
+                                            <span class="text-muted">No test cases</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if submission.runtime %}
+                                    <tr>
+                                        <td><strong>Runtime:</strong></td>
+                                        <td>{{ submission.runtime }}s</td>
+                                    </tr>
+                                {% endif %}
+                                {% if submission.memory_usage %}
+                                    <tr>
+                                        <td><strong>Memory:</strong></td>
+                                        <td>{{ submission.memory_usage }} KB</td>
+                                    </tr>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+                    
+                    {% if submission.error_message %}
+                        <div class="card mt-4">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-exclamation-triangle"></i> Error Message
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="text-danger mb-0">{{ submission.error_message }}</pre>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-code"></i> Submitted Code
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <pre class="bg-dark text-light p-3 mb-0" style="max-height: 500px; overflow-y: auto;"><code>{{ submission.code }}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb"></i> Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'questions:detail' submission.question.slug %}" class="btn btn-primary">
+                            <i class="fas fa-redo"></i> Try Again
+                        </a>
+                        {% if submission.status != 'accepted' %}
+                            <a href="{% url 'questions:detail' submission.question.slug %}" class="btn btn-outline-success">
+                                <i class="fas fa-lightbulb"></i> View Hints
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'questions:list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-list"></i> Browse More Problems
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

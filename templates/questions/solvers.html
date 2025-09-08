@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Solvers - {{ question.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Users who solved: {{ question.title }}</h3>
+        <a href="{% url 'questions:stats' %}" class="btn btn-outline-secondary">Back</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% if solvers %}
+                <ul class="list-group">
+                    {% for s in solvers %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ s.user__username }}</strong>
+                            </div>
+                            <small class="text-muted">First accepted: {{ s.first_accepted|date:'M d, Y H:i' }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No accepted submissions yet for this problem.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

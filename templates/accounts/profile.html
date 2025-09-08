@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Apt Computing Labs{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" class="rounded-circle mb-3" width="150" height="150" alt="Avatar">
+                    {% else %}
+                        <i class="fas fa-user-circle fa-8x text-muted mb-3"></i>
+                    {% endif %}
+                    <h4>{{ user.get_full_name|default:user.username }}</h4>
+                    <p class="text-muted">{{ user.email }}</p>
+                    {% if user.profile.bio %}
+                        <p>{{ user.profile.bio }}</p>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    </div>
+                    
+                    {% if user.profile.github_username or user.profile.linkedin_url or user.profile.website %}
+                        <hr>
+                        <div class="social-links">
+                            {% if user.profile.github_username %}
+                                <a href="https://github.com/{{ user.profile.github_username }}" target="_blank" class="btn btn-outline-dark btn-sm me-2">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            {% endif %}
+                            {% if user.profile.linkedin_url %}
+                                <a href="{{ user.profile.linkedin_url }}" target="_blank" class="btn btn-outline-primary btn-sm me-2">
+                                    <i class="fab fa-linkedin"></i> LinkedIn
+                                </a>
+                            {% endif %}
+                            {% if user.profile.website %}
+                                <a href="{{ user.profile.website }}" target="_blank" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-globe"></i> Website
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-trophy fa-2x text-warning mb-2"></i>
+                            <h5 class="card-title">Problems Solved</h5>
+                            <h3 class="text-primary">{{ user.profile.problems_solved }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-chart-line fa-2x text-success mb-2"></i>
+                            <h5 class="card-title">Total Submissions</h5>
+                            <h3 class="text-primary">{{ user.profile.total_submissions }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-percentage fa-2x text-info mb-2"></i>
+                            <h5 class="card-title">Acceptance Rate</h5>
+                            <h3 class="text-primary">{{ user.profile.acceptance_rate }}%</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock"></i> Recent Submissions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if user.submissions.all %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Problem</th>
+                                        <th>Status</th>
+                                        <th>Language</th>
+                                        <th>Submitted</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for submission in user.submissions.all|slice:":10" %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'questions:detail' submission.question.slug %}">
+                                                    {{ submission.question.title }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{% if submission.status == 'accepted' %}success{% elif submission.status == 'wrong_answer' %}danger{% else %}warning{% endif %}">
+                                                    {{ submission.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td>{{ submission.language|title }}</td>
+                                            <td>{{ submission.submitted_at|timesince }} ago</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center">
+                            <a href="{% url 'submissions:my_submissions' %}" class="btn btn-outline-primary">
+                                View All Submissions
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No submissions yet. Start solving problems!</p>
+                        <div class="text-center">
+                            <a href="{% url 'questions:list' %}" class="btn btn-primary">
+                                <i class="fas fa-code"></i> Browse Problems
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
