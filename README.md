@@ -3,38 +3,34 @@
 A Django-based web application that replicates the core functionality of LeetCode, featuring Python coding challenges, user authentication, and code submission with automated testing.
 
 ## Features
-
-### 🔐 User Authentication
-- User registration and login
-- User profiles with statistics
-- Profile customization (avatar, bio, social links)
-
-### 📚 Problem Management
-- Browse coding problems by difficulty (Easy, Medium, Hard)
-- Detailed problem descriptions with examples
 - Problem constraints and hints
 - Tag-based categorization
 
 ### 💻 Code Editor & Submission
-- Syntax-highlighted code editor (CodeMirror)
-- Real-time code submission
-- Automated test case execution
-- Submission history tracking
-
-### 📊 Statistics & Progress
-- Personal submission statistics
 - Problem acceptance rates
 - User performance tracking
 - Submission status tracking
 
-## Tech Stack
-
-- **Backend**: Django 5.2.5
-- **Frontend**: Bootstrap 5, HTML5, CSS3, JavaScript
-- **Database**: SQLite (development)
-- **Code Editor**: CodeMirror
 - **Forms**: Django Crispy Forms
 - **Icons**: Font Awesome
+## Deploying to Azure
+
+This project can be containerized and deployed to Azure Web App for Containers or Azure Container Apps.
+
+Quick steps (Azure Web App for Containers):
+
+1. Create an Azure Web App for Containers in the Azure Portal.
+2. In GitHub repo settings -> Secrets, add:
+	- AZURE_WEBAPP_NAME: your web app name
+	- AZURE_PUBLISH_PROFILE: the publish profile XML content
+	- DJANGO_SECRET_KEY: a secure secret
+	- DATABASE_URL: your database connection string (e.g., Postgres)
+3. Push to `main` branch. The GitHub Actions workflow `.github/workflows/azure-deploy.yml` will build the image and deploy it.
+
+Notes:
+- The container uses Gunicorn and WhiteNoise to serve static files.
+- For production, ensure secure values for `DJANGO_SECRET_KEY`, set `ALLOWED_HOSTS`, and use a managed Postgres. Replace the placeholder settings if you renamed the Django project package.
+
 
 ## Installation & Setup
 
