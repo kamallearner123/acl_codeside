@@ -25,6 +25,7 @@ Quick steps (Azure Web App for Containers):
 	- AZURE_PUBLISH_PROFILE: the publish profile XML content
 	- DJANGO_SECRET_KEY: a secure secret
 	- DATABASE_URL: your database connection string (e.g., Postgres)
+	- GHCR_PAT: Personal Access Token with `write:packages` and `read:packages` to allow pushing to ghcr.io (if your org blocks the default GITHUB_TOKEN)
 3. Push to `main` branch. The GitHub Actions workflow `.github/workflows/azure-deploy.yml` will build the image and deploy it.
 
 Notes:
