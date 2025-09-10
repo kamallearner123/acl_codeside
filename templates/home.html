@@ -1,62 +1,314 @@
 {% extends 'base.html' %}
 
-{% block title %}Welcome to Apt Computing Labs{% endblock %}
+{% block title %}Apt Computing Labs — Portfolio{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="jumbotron bg-primary text-white p-5 rounded">
-                <h1 class="display-4">Welcome to Apt Computing Labs</h1>
-                <p class="lead">Practice Python programming with challenging coding problems</p>
-                <hr class="my-4">
-                <p>Sharpen your coding skills with our collection of Python programming challenges. Track your progress and improve your problem-solving abilities.</p>
-                {% if not user.is_authenticated %}
-                    <a class="btn btn-light btn-lg" href="{% url 'accounts:register' %}" role="button">
-                        <i class="fas fa-user-plus"></i> Get Started
-                    </a>
-                    <a class="btn btn-outline-light btn-lg ms-2" href="{% url 'accounts:login' %}" role="button">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
-                {% else %}
-                    <a class="btn btn-light btn-lg" href="{% url 'questions:list' %}" role="button">
-                        <i class="fas fa-code"></i> Start Coding
-                    </a>
-                {% endif %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3">Apt Computing Labs</h1>
+        <nav>
+            <ul class="nav nav-tabs" id="portfolioTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab">About</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="courses-tab" data-bs-toggle="tab" data-bs-target="#courses" type="button" role="tab">Courses</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="applications-tab" data-bs-toggle="tab" data-bs-target="#applications" type="button" role="tab">Applications</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events" type="button" role="tab">Events</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="solutions-tab" data-bs-toggle="tab" data-bs-target="#solutions" type="button" role="tab">Solutions</button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="tab-content" id="portfolioTabsContent">
+            <div class="tab-pane fade show active" id="about" role="tabpanel" aria-labelledby="about-tab">
+                <div class="mb-4">
+                    <div class="ratio ratio-16x9 rounded overflow-hidden mb-3">
+                        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1400&q=60" alt="Team working on software" class="w-100 h-100 object-fit-cover">
+                    </div>
+
+                                        <div class="card mb-4">
+                                                <div class="card-body d-flex gap-3 align-items-start">
+                                                        <div style="width:140px;flex:0 0 140px;">
+                                                                <!-- Placeholder for founder photo; admin can upload and replace -->
+                                                                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=300&q=60" alt="Kamal Kumar Mukiri" class="img-fluid rounded">
+                                                                <div class="mt-2 text-center"><small class="text-muted">Founder</small></div>
+                                                        </div>
+                                                        <div>
+                                                                <h2 class="h4 mb-1">Kamal Kumar Mukiri — Founder</h2>
+                                                                <p class="mb-1">A software professional with 17 years of experience in system programming, network security, and embedded systems.</p>
+                                                                <ul class="mb-0">
+                                                                    <li>Provides corporate training and consultancy in C, C++, Rust, Python, and Linux system programming.</li>
+                                                                    <li>Expertise in system-level programming, network protocols (TCP/IP, Diameter, J2735 V2X), and AUTOSAR cybersecurity standards.</li>
+                                                                    <li>Hands-on embedded and IoT experience: Arduino, Raspberry Pi, STM32, ESP platforms.</li>
+                                                                    <li>Past roles at HARMAN, Juniper, Savari, Huawei, and Ikanos focusing on automotive cybersecurity, diagnostics, and cloud solutions.</li>
+                                                                </ul>
+                                                                <div class="mt-2">
+                                                                    <a href="#" class="btn btn-sm btn-outline-primary">Contact</a>
+                                                                    <a href="#" class="btn btn-sm btn-outline-secondary ms-2">LinkedIn</a>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+
+                    <div class="row gy-3">
+                        <div class="col-md-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=60" class="card-img-top" alt="Courses and learning">
+                                <div class="card-body">
+                                    <h5 class="card-title">Courses</h5>
+                                    <p class="card-text">Practical instructor-led and self-paced courses covering Python engineering, system design, testing, and deployment best practices.</p>
+                                    <a href="#courses" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=800&q=60" class="card-img-top" alt="Automotive software development">
+                                <div class="card-body">
+                                    <h5 class="card-title">Consulting — Automotive & ERP</h5>
+                                    <p class="card-text">Expert consulting for automotive embedded software, functional safety practices, and ERP integrations to streamline business processes.</p>
+                                    <a href="#applications" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981d?auto=format&fit=crop&w=800&q=60" class="card-img-top" alt="Agentic AI concept">
+                                <div class="card-body">
+                                    <h5 class="card-title">Agentic AI</h5>
+                                    <p class="card-text">Design and build agentic AI solutions that automate workflows, assist decision-making, and integrate safely into existing systems.</p>
+                                    <a href="#solutions" class="stretched-link"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="tab-pane fade" id="courses" role="tabpanel" aria-labelledby="courses-tab">
+            <div class="card mb-4">
+                <div class="card-body">
+                                        <h2 class="h5">Courses — Industrial standards</h2>
+                                        <p class="mb-3">Apt Computing Labs offers in-depth, practical courses designed for engineers and professionals.</p>
+
+                                                            <div class="row g-3">
+                                                                <div class="col-md-6 col-lg-4">
+                                                                    <div class="card h-100 shadow-sm">
+                                                                        <div class="card-body">
+                                                                            <div class="d-flex align-items-start gap-3">
+                                                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
+                                                                                    <i class="fas fa-code fa-lg"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <h5 class="mb-1">C System Programming</h5>
+                                                                                    <small class="text-muted">30 hours</small>
+                                                                                    <p class="mb-1 mt-2">Threads, processes, synchronization, file I/O, GDB, Valgrind, and Google Test.</p>
+                                                                                    <div><small>Event: <a href="#events">C Systems Workshop — 2025-10-12</a></small></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-6 col-lg-4">
+                                                                    <div class="card h-100 shadow-sm">
+                                                                        <div class="card-body">
+                                                                            <div class="d-flex align-items-start gap-3">
+                                                                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
+                                                                                    <i class="fab fa-python fa-lg"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <h5 class="mb-1">Python Programming</h5>
+                                                                                    <small class="text-muted">30 hours</small>
+                                                                                    <p class="mb-1 mt-2">Data engineering, Django, AI/ML fundamentals and engineering tools.</p>
+                                                                                    <div><small>Event: <a href="#events">Python Full-Stack Bootcamp — 2025-11-05</a></small></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-6 col-lg-4">
+                                                                    <div class="card h-100 shadow-sm">
+                                                                        <div class="card-body">
+                                                                            <div class="d-flex align-items-start gap-3">
+                                                                                <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
+                                                                                    <i class="fas fa-bolt fa-lg"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <h5 class="mb-1">Rust + Systems Programming</h5>
+                                                                                    <small class="text-muted">30 hours</small>
+                                                                                    <p class="mb-1 mt-2">Ownership, concurrency, and safe systems-level programming in Rust.</p>
+                                                                                    <div><small>Event: <a href="#events">Rust Systems Workshop — 2025-12-03</a></small></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-6 col-lg-4">
+                                                                    <div class="card h-100 shadow-sm">
+                                                                        <div class="card-body">
+                                                                            <div class="d-flex align-items-start gap-3">
+                                                                                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
+                                                                                    <i class="fas fa-server fa-lg"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <h5 class="mb-1">Linux OS Concepts</h5>
+                                                                                    <small class="text-muted">20 hours</small>
+                                                                                    <p class="mb-1 mt-2">Process management, file systems, IPC and kernel troubleshooting.</p>
+                                                                                    <div><small>Event: <a href="#events">Linux Internals — 2025-10-20</a></small></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-6 col-lg-4">
+                                                                    <div class="card h-100 shadow-sm">
+                                                                        <div class="card-body">
+                                                                            <div class="d-flex align-items-start gap-3">
+                                                                                <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
+                                                                                    <i class="fas fa-microchip fa-lg"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <h5 class="mb-1">IoT Devices</h5>
+                                                                                    <small class="text-muted">20 hours</small>
+                                                                                    <p class="mb-1 mt-2">Arduino, Raspberry Pi, ESP32 and STM32 hands-on development.</p>
+                                                                                    <div><small>Event: <a href="#events">IoT Hands-on — 2025-11-15</a></small></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-6 col-lg-4">
+                                                                    <div class="card h-100 shadow-sm">
+                                                                        <div class="card-body">
+                                                                            <div class="d-flex align-items-start gap-3">
+                                                                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:56px;height:56px;">
+                                                                                    <i class="fas fa-shield-alt fa-lg"></i>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <h5 class="mb-1">Networking & Security</h5>
+                                                                                    <small class="text-muted">20 hours</small>
+                                                                                    <p class="mb-1 mt-2">TCP/IP, SSL/TLS, PKI, firewall, and IDPS design and analysis.</p>
+                                                                                    <div><small>Event: <a href="#events">Network Security Workshop — 2025-12-10</a></small></div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="applications" role="tabpanel" aria-labelledby="applications-tab">
+            <!-- Existing main page content loaded here -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="jumbotron bg-primary text-white p-5 rounded">
+                        <h1 class="display-4">Welcome to Apt Computing Labs</h1>
+                        <p class="lead">Practice Python programming with challenging coding problems</p>
+                        <hr class="my-4">
+                        <p>Sharpen your coding skills with our collection of Python programming challenges. Track your progress and improve your problem-solving abilities.</p>
+                        {% if not user.is_authenticated %}
+                                <a class="btn btn-light btn-lg" href="{% url 'accounts:register' %}" role="button">
+                                        <i class="fas fa-user-plus"></i> Get Started
+                                </a>
+                                <a class="btn btn-outline-light btn-lg ms-2" href="{% url 'accounts:login' %}" role="button">
+                                        <i class="fas fa-sign-in-alt"></i> Login
+                                </a>
+                        {% else %}
+                                <a class="btn btn-light btn-lg" href="{% url 'questions:list' %}" role="button">
+                                        <i class="fas fa-code"></i> Start Coding
+                                </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Problems Solved</h5>
+                            <h2 class="text-primary">{{ user.profile.problems_solved }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Total Submissions</h5>
+                            <h2 class="text-primary">{{ user.profile.total_submissions }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-percentage fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">Acceptance Rate</h5>
+                            <h2 class="text-primary">{{ user.profile.acceptance_rate }}%</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="tab-pane fade" id="events" role="tabpanel" aria-labelledby="events-tab">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h5">Events</h2>
+                    <p>Upcoming workshops and hackathons will be listed here.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="solutions" role="tabpanel" aria-labelledby="solutions-tab">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h5">Solutions</h2>
+                    <p>Community-submitted solutions and editorial content will go here.</p>
+                </div>
             </div>
         </div>
     </div>
-    
-    {% if user.is_authenticated %}
-    <div class="row mt-5">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
-                    <h5 class="card-title">Problems Solved</h5>
-                    <h2 class="text-primary">{{ user.profile.problems_solved }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
-                    <h5 class="card-title">Total Submissions</h5>
-                    <h2 class="text-primary">{{ user.profile.total_submissions }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-percentage fa-3x text-info mb-3"></i>
-                    <h5 class="card-title">Acceptance Rate</h5>
-                    <h2 class="text-primary">{{ user.profile.acceptance_rate }}%</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
+
 </div>
+
+<script>
+// Activate tab from URL hash (e.g., #applications)
+document.addEventListener('DOMContentLoaded', function(){
+    try {
+        const hash = window.location.hash;
+        if(hash){
+            const triggerEl = document.querySelector(`button[data-bs-target="${hash}"]`);
+            if(triggerEl){
+                var tab = new bootstrap.Tab(triggerEl);
+                tab.show();
+            }
+        }
+    } catch (e){
+        // ignore if bootstrap not available or errors in older browsers
+    }
+});
+</script>
+
 {% endblock %}
