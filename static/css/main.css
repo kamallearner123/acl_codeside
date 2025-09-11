@@ -1,7 +1,8 @@
 /* Custom styles for Apt Computing Labs */
 
 :root {
-    --primary-color: #007bff;
+    --primary-color: #0069ff;
+    --accent-color: #8a2be2;
     --success-color: #28a745;
     --warning-color: #ffc107;
     --danger-color: #dc3545;
@@ -10,8 +11,38 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f5f5;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(180deg, #f7f9fc 0%, #eef4fb 100%);
+    color: #0f1724;
+}
+
+/* Global link style */
+a { color: var(--primary-color); }
+a:hover { color: var(--accent-color); text-decoration: none; }
+
+/* New hero styles */
+.hero {
+    background: linear-gradient(135deg, rgba(6,34,85,0.92), rgba(3,102,215,0.85));
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 3.5rem 1rem;
+    border-radius: 14px;
+}
+.hero h1 { font-weight:700; color: #fff; }
+.hero p.lead { color: rgba(255,255,255,0.9); font-size:1.05rem }
+.hero .cta { margin-top: 1.25rem; }
+
+.accent-pill {
+    display:inline-block; padding: 0.25rem 0.6rem; border-radius:999px; background:linear-gradient(90deg,var(--accent-color),var(--primary-color)); color:white; font-weight:600; font-size:0.85rem;
+}
+
+/* Accent heading style */
+.accent-heading { color: var(--accent-color); font-weight:700; }
+
+.accent-heading {
+    color: var(--accent-color);
+    font-weight: 700;
 }
 
 /* Hero overlay */
@@ -48,22 +79,73 @@ body {
 
 
 /* Navigation */
-.navbar-brand {
-    font-weight: bold;
-    font-size: 1.5rem;
+.navbar {
+    background: linear-gradient(90deg, rgba(3,19,34,0.95), rgba(5,120,185,0.95));
+    box-shadow: 0 8px 26px rgba(8, 18, 30, 0.22);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: 0.3px;
+    color: #fff !important;
+    display: inline-flex;
+    align-items: center;
+}
+.navbar-brand img { margin-right: 10px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.28)); }
+.brand-title { font-size: 1.35rem; font-weight:800; }
+
+/* Center brand on larger screens */
+.navbar .navbar-center { position: absolute; left: 50%; transform: translateX(-50%); }
+.navbar .navbar-nav { margin-left: auto; }
+
 .navbar-nav .nav-link {
-    font-weight: 500;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9) !important;
+    padding: 0.6rem 0.9rem;
+    margin: 0 0.15rem;
+    border-radius: 8px;
+    transition: background-color 180ms ease, color 180ms ease, transform 120ms ease;
+}
+.navbar-nav .nav-link:hover {
+    background-color: rgba(255,255,255,0.06) !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+}
+.navbar-nav .nav-link.active, .navbar-nav .nav-link:focus {
+    background-color: transparent !important;
+    color: #fff !important;
+    box-shadow: inset 0 -3px 0 var(--primary-color);
+}
+
+/* Dropdown and compact logout button tuning */
+.navbar .dropdown-menu { border-radius: 8px; box-shadow: 0 8px 30px rgba(10,25,47,0.15); }
+.navbar .dropdown-item { color: #222; }
+.navbar .btn-outline-light { color: #fff; border-color: rgba(255,255,255,0.14); }
+.navbar .btn-outline-light:hover { background-color: rgba(255,255,255,0.06); color: #fff; }
+
+/* Toggler button color */
+.navbar-toggler { border-color: rgba(255,255,255,0.08); }
+.navbar-toggler-icon { filter: invert(1) hue-rotate(180deg) brightness(1.1); }
+
+@media (max-width: 768px) {
+    .navbar-nav .nav-link { padding: .5rem .6rem; margin: 0 .1rem; }
+    .navbar { padding: .4rem 1rem; }
+    .navbar .navbar-center { position: static; transform: none; display: flex; }
 }
 
 /* Cards */
 .card {
     border: none;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(25, 35, 50, 0.08);
     margin-bottom: 1rem;
 }
+
+/* Card variations */
+.card-hero { background: linear-gradient(90deg,#ffffff, #f1f6ff); padding:1.25rem; box-shadow: 0 10px 30px rgba(12,34,70,0.06); }
+.card-soft { background: #fff; border-radius:12px; box-shadow: 0 8px 24px rgba(12,34,70,0.04); }
 
 .card-header {
     background-color: var(--light-color);
@@ -79,9 +161,12 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background: linear-gradient(90deg,var(--primary-color),var(--accent-color));
+    border-color: transparent;
+    box-shadow: 0 6px 14px rgba(86, 102, 255, 0.12);
 }
+
+.lead { color: rgba(15,23,36,0.85); }
 
 /* Tables */
 .table {
@@ -212,6 +297,22 @@ body {
     border-bottom: 2px solid var(--primary-color);
     color: var(--primary-color);
 }
+
+/* Portfolio tab styles (centered, pill-like) */
+.portfolio-nav-wrapper { max-width: 980px; margin: 0 auto; }
+.portfolio-tabs { background: rgba(255,255,255,0.03); display: inline-flex; padding: 6px; border-radius: 12px; }
+.portfolio-tabs .nav-item { margin: 0 6px; }
+.portfolio-tabs .nav-link { color: rgba(255,255,255,0.9); background: transparent; border: none; padding: 8px 14px; }
+.portfolio-tabs .nav-link.active { background: linear-gradient(90deg,var(--primary-color),var(--accent-color)); color: #fff !important; box-shadow: 0 6px 18px rgba(10,25,47,0.15); border-radius: 8px; }
+.portfolio-tabs .nav-link:hover { background: rgba(255,255,255,0.04); color: #fff; }
+
+@media (max-width: 768px) {
+    .portfolio-tabs { width: 100%; justify-content: space-around; }
+    .portfolio-tabs .nav-link { padding: 8px 10px; font-size: 0.9rem; }
+}
+
+/* Small helpers */
+.muted { color: #6c757d; }
 
 /* Pagination */
 .pagination .page-link {

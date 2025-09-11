@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Developer Tools — Apt Computing Labs{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4 mb-0">Developer Tools</h1>
+    <p class="text-muted mb-0">Handy links and utilities for developers</p>
+  </div>
+  <div class="row g-3">
+    {% for t in tools %}
+      <div class="col-md-4">
+        <div class="card card-soft h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ t.name }}</h5>
+            <p class="card-text text-muted">{{ t.description }}</p>
+            <a href="{{ t.link }}" target="_blank" class="stretched-link">Open</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12"><div class="alert alert-info">No developer tools yet — add some in admin.</div></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

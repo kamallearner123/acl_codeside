@@ -1,0 +1,97 @@
+<style>
+    /* Local styles to preserve the course-card look without duplicating site header */
+    .courses-hero { text-align:center; margin-bottom:1.5rem; }
+    .course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .course-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform .2s; }
+    .course-card:hover { transform: translateY(-4px); }
+    .course-card h3 { margin:0 0 .5rem; color: #007bff; }
+    .course-card .duration { color: #28a745; font-weight:600; margin-bottom:.5rem; }
+    .course-card ul { list-style: none; padding:0; margin:0; }
+    .course-card li { padding:6px 0; border-left:3px solid #007bff; padding-left:10px; color:#444; }
+    .course-card .highlight { background:#e7f3ff; padding:10px; border-radius:4px; margin-top:10px; color:#004085; }
+    @media (max-width:600px){ .course-card h3{ font-size:1.25rem } }
+</style>
+
+<div class="container py-4">
+    <div class="courses-hero">
+        <h1 class="h3">Training Programs</h1>
+        <p class="text-muted">Master secure and cutting-edge technologies with our expert-led courses.</p>
+    </div>
+
+    <div class="course-grid">
+        <div class="course-card">
+            <h3>C System Programming</h3>
+            <div class="duration">30 Hours</div>
+            <ul>
+                <li>Threads and Processes</li>
+                <li>Locks and Synchronization</li>
+                <li>File Handling</li>
+                <li>Debugging with GDB</li>
+                <li>Memory Analysis with Valgrind</li>
+                <li>Unit Testing with Gtest</li>
+            </ul>
+            <div class="highlight">Build robust, high-performance systems with advanced C programming techniques.</div>
+        </div>
+
+        <div class="course-card">
+            <h3>Python Programming</h3>
+            <div class="duration">30 Hours</div>
+            <ul>
+                <li>Data Engineering Pipelines</li>
+                <li>Web Development with Django</li>
+                <li>AI/ML Fundamentals</li>
+                <li>Python Tools and Libraries</li>
+            </ul>
+            <div class="highlight">Unlock the power of Python for data, web, and AI-driven solutions.</div>
+        </div>
+
+        <div class="course-card">
+            <h3>Rust Programming + System Programming</h3>
+            <div class="duration">30 Hours</div>
+            <ul>
+                <li>Rust Syntax and Ownership</li>
+                <li>Memory-Safe System Design</li>
+                <li>Concurrent Programming</li>
+                <li>Systems-Level Applications</li>
+            </ul>
+            <div class="highlight">Master Rust for secure, high-performance system programming.</div>
+        </div>
+
+        <div class="course-card">
+            <h3>Linux OS Concepts</h3>
+            <div class="duration">20 Hours</div>
+            <ul>
+                <li>Process Management</li>
+                <li>File Management</li>
+                <li>Inter-Process Communication (IPC)</li>
+                <li>Linux System Administration</li>
+            </ul>
+            <div class="highlight">Gain deep insights into Linux for robust system management.</div>
+        </div>
+
+        <div class="course-card">
+            <h3>IoT Devices</h3>
+            <div class="duration">20 Hours</div>
+            <ul>
+                <li>Programming Arduino</li>
+                <li>Raspberry Pi Projects</li>
+                <li>ESP32 Development</li>
+                <li>STM Microcontroller Programming</li>
+            </ul>
+            <div class="highlight">Create innovative IoT solutions with hands-on device programming.</div>
+        </div>
+
+        <div class="course-card">
+            <h3>Networking and Security</h3>
+            <div class="duration">20 Hours</div>
+            <ul>
+                <li>TCP/IP Protocols</li>
+                <li>SSL/TLS Implementation</li>
+                <li>Public Key Infrastructure (PKI)</li>
+                <li>Firewall Configuration</li>
+                <li>Intrusion Detection and Prevention Systems (IDPS)</li>
+            </ul>
+            <div class="highlight">Secure networks with advanced protocols and defense mechanisms.</div>
+        </div>
+    </div>
+</div>
