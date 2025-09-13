@@ -93,8 +93,8 @@ a:hover { color: var(--accent-color); text-decoration: none; }
     display: inline-flex;
     align-items: center;
 }
-.navbar-brand img { margin-right: 10px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.28)); }
-.brand-title { font-size: 1.35rem; font-weight:800; }
+.navbar-brand img { margin-right: 10px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.28)); width: 60px; height: 60px; }
+.brand-title { font-size: 2rem; font-weight:800; }
 
 /* Center brand on larger screens */
 .navbar .navbar-center { position: absolute; left: 50%; transform: translateX(-50%); }
