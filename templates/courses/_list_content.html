@@ -2,13 +2,26 @@
     /* Local styles to preserve the course-card look without duplicating site header */
     .courses-hero { text-align:center; margin-bottom:1.5rem; }
     .course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-    .course-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: transform .2s; }
-    .course-card:hover { transform: translateY(-4px); }
-    .course-card h3 { margin:0 0 .5rem; color: #007bff; }
+    .course-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: all .3s ease; position: relative; }
+    .course-card:hover { transform: translateY(-4px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+    .course-card h3 { margin:0 0 .5rem; color: #007bff; cursor: pointer; }
+    .course-card h3:hover { text-decoration: underline; }
     .course-card .duration { color: #28a745; font-weight:600; margin-bottom:.5rem; }
     .course-card ul { list-style: none; padding:0; margin:0; }
     .course-card li { padding:6px 0; border-left:3px solid #007bff; padding-left:10px; color:#444; }
     .course-card .highlight { background:#e7f3ff; padding:10px; border-radius:4px; margin-top:10px; color:#004085; }
+    .course-btn { 
+        background: #007bff; 
+        color: white; 
+        border: none; 
+        padding: 10px 20px; 
+        border-radius: 5px; 
+        cursor: pointer; 
+        margin-top: 15px; 
+        transition: background .2s;
+        width: 100%;
+    }
+    .course-btn:hover { background: #0056b3; }
     @media (max-width:600px){ .course-card h3{ font-size:1.25rem } }
 </style>
 
@@ -19,22 +32,24 @@
     </div>
 
     <div class="course-grid">
-        <div class="course-card">
-            <h3>C System Programming</h3>
+                <div class="course-card">
+            <h3 onclick="navigateToCSystemProgramming()">C System Programming</h3>
             <div class="duration">30 Hours</div>
             <ul>
+                <li>Essentials of C Language (using GCC)</li>
                 <li>Threads and Processes</li>
                 <li>Locks and Synchronization</li>
                 <li>File Handling</li>
                 <li>Debugging with GDB</li>
                 <li>Memory Analysis with Valgrind</li>
-                <li>Unit Testing with Gtest</li>
+                <li>Unit Testing with Google Test</li>
             </ul>
             <div class="highlight">Build robust, high-performance systems with advanced C programming techniques.</div>
+            <button class="course-btn" onclick="navigateToCSystemProgramming()">Get more details</button>
         </div>
 
         <div class="course-card">
-            <h3>Python Programming</h3>
+            <h3 onclick="navigateToPythonProgramming()">Python Programming</h3>
             <div class="duration">30 Hours</div>
             <ul>
                 <li>Data Engineering Pipelines</li>
@@ -43,22 +58,28 @@
                 <li>Python Tools and Libraries</li>
             </ul>
             <div class="highlight">Unlock the power of Python for data, web, and AI-driven solutions.</div>
+            <button class="course-btn" onclick="navigateToPythonProgramming()">Get more details</button>
         </div>
 
         <div class="course-card">
-            <h3>Rust Programming + System Programming</h3>
-            <div class="duration">30 Hours</div>
+            <h3 onclick="navigateToRustProgramming()">Rust Programming + System Programming</h3>
+            <div class="duration">40 Hours</div>
             <ul>
+                <li>Importance of Rust (news, standards, etc.)</li>
                 <li>Rust Syntax and Ownership</li>
                 <li>Memory-Safe System Design</li>
-                <li>Concurrent Programming</li>
+                <li>Error handling, traits, structs, enums</li>
+                <li>Crates and Asynchronous Programming</li>
+                <li>Actix and Web Libraries</li>
                 <li>Systems-Level Applications</li>
+                <li>Embedded systems (Arduino, STM32)</li>
             </ul>
-            <div class="highlight">Master Rust for secure, high-performance system programming.</div>
+            <div class="highlight">Master Rust for secure, high-performance system programming and embedded development.</div>
+            <button class="course-btn" onclick="navigateToRustProgramming()">Get more details</button>
         </div>
 
         <div class="course-card">
-            <h3>Linux OS Concepts</h3>
+            <h3 onclick="navigateToLinuxOSConcepts()">Linux OS Concepts</h3>
             <div class="duration">20 Hours</div>
             <ul>
                 <li>Process Management</li>
@@ -67,31 +88,86 @@
                 <li>Linux System Administration</li>
             </ul>
             <div class="highlight">Gain deep insights into Linux for robust system management.</div>
+            <button class="course-btn" onclick="navigateToLinuxOSConcepts()">Get more details</button>
         </div>
 
         <div class="course-card">
-            <h3>IoT Devices</h3>
+            <h3 onclick="navigateToIoTDevices()">IoT Devices</h3>
             <div class="duration">20 Hours</div>
             <ul>
                 <li>Programming Arduino</li>
                 <li>Raspberry Pi Projects</li>
                 <li>ESP32 Development</li>
                 <li>STM Microcontroller Programming</li>
+                <li>20+ Sensors and Actuators</li>
             </ul>
-            <div class="highlight">Create innovative IoT solutions with hands-on device programming.</div>
+            <div class="highlight">Create innovative IoT solutions with hands-on device programming and real hardware.</div>
+            <button class="course-btn" onclick="navigateToIoTDevices()">Get more details</button>
         </div>
 
         <div class="course-card">
-            <h3>Networking and Security</h3>
+            <h3 onclick="navigateToNetworkingSecurity()">Networking and Security</h3>
             <div class="duration">20 Hours</div>
             <ul>
-                <li>TCP/IP Protocols</li>
-                <li>SSL/TLS Implementation</li>
+                <li>TCP/IP Protocols with Rust/C++</li>
+                <li>SSL/TLS and Digital Certificates</li>
                 <li>Public Key Infrastructure (PKI)</li>
-                <li>Firewall Configuration</li>
+                <li>Network Security (Firewalls, nmap)</li>
                 <li>Intrusion Detection and Prevention Systems (IDPS)</li>
             </ul>
-            <div class="highlight">Secure networks with advanced protocols and defense mechanisms.</div>
+            <div class="highlight">Secure networks with advanced protocols and defense mechanisms against modern threats.</div>
+            <button class="course-btn" onclick="navigateToNetworkingSecurity()">Get more details</button>
         </div>
     </div>
 </div>
+
+<script>
+function navigateToCourse(courseId) {
+    window.location.href = `/courses/${courseId}`;
+}
+
+function navigateToCSystemProgramming() {
+    window.location.href = "{% url 'courses:c_system_programming' %}";
+}
+
+function navigateToPythonProgramming() {
+    window.location.href = "{% url 'courses:python_programming' %}";
+}
+
+function navigateToRustProgramming() {
+    window.location.href = "{% url 'courses:rust_programming' %}";
+}
+
+function navigateToLinuxOSConcepts() {
+    window.location.href = "{% url 'courses:linux_os_concepts' %}";
+}
+
+function navigateToIoTDevices() {
+    window.location.href = "{% url 'courses:iot_devices' %}";
+}
+
+function navigateToNetworkingSecurity() {
+    window.location.href = "{% url 'courses:networking_security' %}";
+}
+
+function getCourseDetails(courseId) {
+    // Make REST API request
+    fetch(`/api/courses/${courseId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response - you can customize this based on your needs
+        console.log('Course details:', data);
+        // Example: show modal, redirect, or update page content
+        alert(`Loading details for ${data.title || courseId}...`);
+    })
+    .catch(error => {
+        console.error('Error fetching course details:', error);
+        alert('Error loading course details. Please try again.');
+    });
+}
+</script>

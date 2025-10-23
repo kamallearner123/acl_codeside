@@ -1,0 +1,916 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}IoT Devices - Apt Computing Labs{% endblock %}
+
+{% block content %}
+<style>
+    /* Course Page Specific Styles */
+    .course-hero {
+        background: linear-gradient(135deg, #00c851, #007e33);
+        color: white;
+        padding: 60px 0;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
+        z-index: 0;
+    }
+    
+    .course-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .course-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    
+    .course-stats {
+        display: flex;
+        gap: 30px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px 20px;
+        border-radius: 8px;
+    }
+    
+    .stat-icon {
+        width: 24px;
+        height: 24px;
+        color: #a8e6cf;
+    }
+    
+    .module-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid #00c851;
+        transition: all 0.3s ease;
+    }
+    
+    .module-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .module-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .module-number {
+        background: linear-gradient(135deg, #00c851, #007e33);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .module-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #00c851;
+        margin: 0;
+    }
+    
+    .module-duration {
+        color: #28a745;
+        font-weight: 600;
+        margin-left: auto;
+        background: #e8f5e8;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .topic-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+    
+    .topic-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .topic-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .topic-icon {
+        color: #00c851;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+    
+    .topic-content {
+        flex: 1;
+    }
+    
+    .topic-title {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 4px;
+    }
+    
+    .topic-desc {
+        color: #6b7280;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .hands-on-badge {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .hardware-badge {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .iot-badge {
+        background: linear-gradient(135deg, #17a2b8, #007bff);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .project-badge {
+        background: linear-gradient(135deg, #fd7e14, #ffc107);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .hardware-section {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 12px;
+        padding: 30px;
+        margin: 30px 0;
+        border-left: 5px solid #00c851;
+    }
+    
+    .hardware-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .hardware-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+    
+    .hardware-icon {
+        font-size: 2rem;
+        color: #00c851;
+        margin-bottom: 10px;
+    }
+    
+    .sensors-section {
+        background: #e3f2fd;
+        border-radius: 12px;
+        padding: 30px;
+        margin: 30px 0;
+        border-left: 5px solid #2196f3;
+    }
+    
+    .sensors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .sensor-item {
+        background: white;
+        padding: 15px;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .sensor-icon {
+        color: #2196f3;
+        font-size: 1.2rem;
+    }
+    
+    .tools-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 25px;
+        margin: 30px 0;
+    }
+    
+    .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .tool-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .tool-icon {
+        font-size: 2.5rem;
+        color: #00c851;
+        margin-bottom: 10px;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        margin-top: 50px;
+    }
+    
+    .btn-enroll {
+        background: white;
+        color: #28a745;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+    
+    .btn-enroll:hover {
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .prerequisites {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .prerequisites-title {
+        color: #856404;
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .learning-outcomes {
+        background: #d1ecf1;
+        border: 1px solid #b8daff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .outcomes-title {
+        color: #155724;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .outcome-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+    
+    .outcome-check {
+        color: #28a745;
+        margin-top: 2px;
+    }
+    
+    @media (max-width: 768px) {
+        .course-stats {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .module-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .module-duration {
+            margin-left: 0;
+        }
+        
+        .tool-grid, .hardware-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .sensors-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Course Hero Section -->
+    <div class="course-hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="course-badge">
+                        <i class="fas fa-microchip"></i> IoT & Embedded Systems
+                    </div>
+                    <h1 class="display-4 fw-bold mb-3">IoT Devices</h1>
+                    <p class="lead mb-4">Create innovative IoT solutions with hands-on device programming. Master Arduino, Raspberry Pi, ESP32, and STM32 microcontrollers with real-world projects using 20+ sensors and actuators.</p>
+                    
+                    <div class="course-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-clock stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">20 Hours</div>
+                                <small>Duration</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-layer-group stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">4 Modules</div>
+                                <small>Hands-on Projects</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-microchip stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">20+ Sensors</div>
+                                <small>Hardware Components</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-certificate stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">Certificate</div>
+                                <small>Upon Completion</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Hardware Platforms -->
+        <div class="hardware-section">
+            <h3 class="text-center mb-4">
+                <i class="fas fa-microchip me-2"></i>
+                Hardware Platforms We'll Master
+            </h3>
+            <div class="hardware-grid">
+                <div class="hardware-card">
+                    <div class="hardware-icon">
+                        <i class="fab fa-arduino"></i>
+                    </div>
+                    <h5>Arduino Boards</h5>
+                    <p class="text-muted small">Uno, Nano, Mega - Perfect for beginners</p>
+                </div>
+                <div class="hardware-card">
+                    <div class="hardware-icon">
+                        <i class="fab fa-raspberry-pi"></i>
+                    </div>
+                    <h5>Raspberry Pi</h5>
+                    <p class="text-muted small">Pi 4, Zero W - Linux-based computing</p>
+                </div>
+                <div class="hardware-card">
+                    <div class="hardware-icon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <h5>ESP32 DevKit</h5>
+                    <p class="text-muted small">Wi-Fi & Bluetooth enabled development</p>
+                </div>
+                <div class="hardware-card">
+                    <div class="hardware-icon">
+                        <i class="fas fa-cpu"></i>
+                    </div>
+                    <h5>STM32 Boards</h5>
+                    <p class="text-muted small">ARM Cortex-M professional development</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sensors and Actuators -->
+        <div class="sensors-section">
+            <h3 class="text-center mb-4">
+                <i class="fas fa-thermometer-half me-2"></i>
+                20+ Sensors & Actuators You'll Work With
+            </h3>
+            <div class="sensors-grid">
+                <div class="sensor-item">
+                    <i class="fas fa-thermometer-half sensor-icon"></i>
+                    <span>Temperature Sensors (DS18B20, DHT22)</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-tint sensor-icon"></i>
+                    <span>Humidity Sensors</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-eye sensor-icon"></i>
+                    <span>Motion Detectors (PIR)</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-ruler sensor-icon"></i>
+                    <span>Ultrasonic Distance (HC-SR04)</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-sun sensor-icon"></i>
+                    <span>Light Sensors (LDR, BH1750)</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-compass sensor-icon"></i>
+                    <span>Accelerometer & Gyroscope (MPU6050)</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-map-marker-alt sensor-icon"></i>
+                    <span>GPS Modules</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-camera sensor-icon"></i>
+                    <span>Camera Modules</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-volume-up sensor-icon"></i>
+                    <span>Sound Sensors & Buzzers</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-pressure sensor-icon"></i>
+                    <span>Pressure Sensors (BMP180)</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-gas-pump sensor-icon"></i>
+                    <span>Gas Sensors (MQ series)</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-fire sensor-icon"></i>
+                    <span>Flame Detectors</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-lightbulb sensor-icon"></i>
+                    <span>LED Arrays & RGB LEDs</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-cogs sensor-icon"></i>
+                    <span>Servo Motors & Stepper Motors</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-fan sensor-icon"></i>
+                    <span>DC Motors & Relays</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-tv sensor-icon"></i>
+                    <span>LCD/OLED Displays</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-keyboard sensor-icon"></i>
+                    <span>Keypads & Buttons</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-wifi sensor-icon"></i>
+                    <span>Wi-Fi & Bluetooth Modules</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-sd-card sensor-icon"></i>
+                    <span>SD Card Modules</span>
+                </div>
+                <div class="sensor-item">
+                    <i class="fas fa-battery-half sensor-icon"></i>
+                    <span>Power Management Modules</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prerequisites -->
+        <div class="prerequisites">
+            <div class="prerequisites-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Prerequisites
+            </div>
+            <ul class="mb-0">
+                <li>Basic understanding of electronics (voltage, current, resistance)</li>
+                <li>Familiarity with any programming language (C/C++ preferred)</li>
+                <li>Comfort with hands-on hardware work and troubleshooting</li>
+                <li>No prior IoT experience required - we provide all components!</li>
+            </ul>
+        </div>
+
+        <!-- Learning Outcomes -->
+        <div class="learning-outcomes">
+            <div class="outcomes-title">
+                <i class="fas fa-bullseye"></i>
+                What You'll Achieve
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Build complete IoT systems from sensor data to cloud connectivity</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Program multiple microcontroller platforms with C/C++ and Python</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Design and implement wireless sensor networks</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Create practical IoT applications for home and industrial automation</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Master PCB design, circuit debugging, and hardware interfacing</span>
+            </div>
+        </div>
+
+        <!-- Course Modules -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-5">Course Curriculum</h2>
+                
+                <!-- Module 1 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">1</div>
+                        <h3 class="module-title">Programming Arduino</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fab fa-arduino topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Arduino Platform Fundamentals</div>
+                                <div class="topic-desc">Arduino IDE setup, board selection, and basic C++ programming for microcontrollers</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-plug topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Digital I/O and PWM Control</div>
+                                <div class="topic-desc">GPIO programming, LED control, button inputs, and pulse-width modulation <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-chart-line topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Analog Input and Sensor Integration</div>
+                                <div class="topic-desc">ADC readings, temperature sensors, light sensors, and data processing</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-exchange-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Communication Protocols</div>
+                                <div class="topic-desc">UART, I2C, SPI interfaces for sensor and module communication <span class="hardware-badge">Hardware</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-home topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Project: Smart Home Controller</div>
+                                <div class="topic-desc">Temperature monitoring, motion detection, and automated lighting system <span class="project-badge">Project</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">2</div>
+                        <h3 class="module-title">Raspberry Pi Projects</h3>
+                        <div class="module-duration">6 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fab fa-raspberry-pi topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Raspberry Pi Setup and Linux Basics</div>
+                                <div class="topic-desc">Raspbian OS installation, GPIO programming with Python, and system configuration</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-camera topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Camera and Vision Projects</div>
+                                <div class="topic-desc">Pi Camera module, OpenCV integration, and basic computer vision applications <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-wifi topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">IoT Connectivity and Web Interfaces</div>
+                                <div class="topic-desc">Wi-Fi configuration, web servers, REST APIs, and remote monitoring dashboards</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-database topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Data Logging and Cloud Integration</div>
+                                <div class="topic-desc">SQLite databases, CSV logging, and cloud platform integration (AWS IoT, ThingSpeak) <span class="iot-badge">Cloud</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-shield-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Project: Security Monitoring System</div>
+                                <div class="topic-desc">Motion detection, camera surveillance, email alerts, and web dashboard <span class="project-badge">Project</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">3</div>
+                        <h3 class="module-title">ESP32 Development</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-wifi topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">ESP32 Architecture and Setup</div>
+                                <div class="topic-desc">Dual-core processor, Wi-Fi/Bluetooth capabilities, and Arduino IDE configuration</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-broadcast-tower topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Wireless Communication Protocols</div>
+                                <div class="topic-desc">Wi-Fi networking, Bluetooth Classic, BLE, and ESP-NOW mesh networking <span class="iot-badge">Wireless</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-cloud topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">IoT Cloud Platforms Integration</div>
+                                <div class="topic-desc">MQTT protocol, AWS IoT Core, Google Cloud IoT, and real-time data streaming <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-mobile-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Mobile App Integration</div>
+                                <div class="topic-desc">Bluetooth communication, mobile app development basics, and remote control interfaces</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-thermometer-half topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Project: Environmental Monitoring Station</div>
+                                <div class="topic-desc">Multi-sensor data collection, wireless transmission, and web-based analytics <span class="project-badge">Project</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">4</div>
+                        <h3 class="module-title">STM32 Microcontroller Programming</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-cpu topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">ARM Cortex-M Architecture</div>
+                                <div class="topic-desc">STM32 family overview, development tools (STM32CubeIDE), and HAL programming</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-clock topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Real-time Systems Programming</div>
+                                <div class="topic-desc">FreeRTOS integration, task scheduling, interrupts, and timing-critical applications <span class="hardware-badge">Real-time</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-tachometer-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Advanced Peripheral Control</div>
+                                <div class="topic-desc">Timers, DMA, ADC, DAC configuration and high-performance sensor interfacing</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-industry topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Industrial Communication Protocols</div>
+                                <div class="topic-desc">CAN bus, Modbus, Ethernet communication for industrial IoT applications <span class="hardware-badge">Industrial</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-robot topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Project: Robotic Control System</div>
+                                <div class="topic-desc">Motor control, sensor fusion, PID controllers, and autonomous navigation <span class="project-badge">Project</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Tools -->
+        <div class="tools-section">
+            <h3 class="text-center mb-4">Development Tools & Software</h3>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h5>Arduino IDE</h5>
+                    <p class="text-muted small">Primary development environment</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <h5>Python & Libraries</h5>
+                    <p class="text-muted small">RPi.GPIO, OpenCV, Flask</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h5>STM32CubeIDE</h5>
+                    <p class="text-muted small">Professional STM32 development</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-drafting-compass"></i>
+                    </div>
+                    <h5>Fritzing</h5>
+                    <p class="text-muted small">Circuit design and documentation</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5>Serial Plotter</h5>
+                    <p class="text-muted small">Data visualization and debugging</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h5>IoT Platforms</h5>
+                    <p class="text-muted small">AWS IoT, ThingSpeak, Blynk</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h5>MIT App Inventor</h5>
+                    <p class="text-muted small">Mobile app development</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-oscilloscope"></i>
+                    </div>
+                    <h5>Logic Analyzer</h5>
+                    <p class="text-muted small">Protocol debugging and analysis</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2 class="mb-3">Ready to Build the Future of IoT?</h2>
+            <p class="lead mb-4">Join our hands-on IoT course and create innovative connected devices with real-world applications.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-enroll">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Enroll Now
+                </button>
+                <a href="{% url 'home' %}#livecoding" class="btn btn-outline-light">
+                    <i class="fas fa-play me-2"></i>
+                    Try Live Coding
+                </a>
+            </div>
+            <div class="mt-4">
+                <small>
+                    <i class="fas fa-phone me-2"></i>+91 9739858111
+                    <span class="mx-3">|</span>
+                    <i class="fas fa-envelope me-2"></i>info@aptcomputinglabs.com
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Add animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe module cards for animation
+    document.querySelectorAll('.module-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

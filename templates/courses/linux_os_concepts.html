@@ -1,0 +1,831 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Linux OS Concepts - Apt Computing Labs{% endblock %}
+
+{% block content %}
+<style>
+    /* Course Page Specific Styles */
+    .course-hero {
+        background: linear-gradient(135deg, #f7941e, #27ae60);
+        color: white;
+        padding: 60px 0;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
+        z-index: 0;
+    }
+    
+    .course-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .course-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    
+    .course-stats {
+        display: flex;
+        gap: 30px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px 20px;
+        border-radius: 8px;
+    }
+    
+    .stat-icon {
+        width: 24px;
+        height: 24px;
+        color: #f39c12;
+    }
+    
+    .module-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid #f7941e;
+        transition: all 0.3s ease;
+    }
+    
+    .module-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .module-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .module-number {
+        background: linear-gradient(135deg, #f7941e, #27ae60);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .module-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #f7941e;
+        margin: 0;
+    }
+    
+    .module-duration {
+        color: #28a745;
+        font-weight: 600;
+        margin-left: auto;
+        background: #e8f5e8;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .topic-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+    
+    .topic-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .topic-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .topic-icon {
+        color: #f7941e;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+    
+    .topic-content {
+        flex: 1;
+    }
+    
+    .topic-title {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 4px;
+    }
+    
+    .topic-desc {
+        color: #6b7280;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .hands-on-badge {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .admin-badge {
+        background: linear-gradient(135deg, #dc3545, #fd7e14);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .kernel-badge {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .distro-section {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 12px;
+        padding: 30px;
+        margin: 30px 0;
+        border-left: 5px solid #f7941e;
+    }
+    
+    .distro-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .distro-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+    
+    .distro-icon {
+        font-size: 2rem;
+        color: #f7941e;
+        margin-bottom: 10px;
+    }
+    
+    .tools-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 25px;
+        margin: 30px 0;
+    }
+    
+    .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .tool-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .tool-icon {
+        font-size: 2.5rem;
+        color: #f7941e;
+        margin-bottom: 10px;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        margin-top: 50px;
+    }
+    
+    .btn-enroll {
+        background: white;
+        color: #28a745;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+    
+    .btn-enroll:hover {
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .prerequisites {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .prerequisites-title {
+        color: #856404;
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .learning-outcomes {
+        background: #d1ecf1;
+        border: 1px solid #b8daff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .outcomes-title {
+        color: #155724;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .outcome-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+    
+    .outcome-check {
+        color: #28a745;
+        margin-top: 2px;
+    }
+    
+    @media (max-width: 768px) {
+        .course-stats {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .module-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .module-duration {
+            margin-left: 0;
+        }
+        
+        .tool-grid, .distro-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Course Hero Section -->
+    <div class="course-hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="course-badge">
+                        <i class="fab fa-linux"></i> Operating Systems
+                    </div>
+                    <h1 class="display-4 fw-bold mb-3">Linux OS Concepts</h1>
+                    <p class="lead mb-4">Master the fundamentals of Linux operating system architecture, process management, and system administration. Gain deep insights into one of the most powerful and widely-used operating systems in the world.</p>
+                    
+                    <div class="course-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-clock stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">20 Hours</div>
+                                <small>Duration</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-layer-group stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">4 Modules</div>
+                                <small>Comprehensive</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-users stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">Beginner to Intermediate</div>
+                                <small>Level</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-certificate stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">Certificate</div>
+                                <small>Upon Completion</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Linux Distributions -->
+        <div class="distro-section">
+            <h3 class="text-center mb-4">
+                <i class="fab fa-linux me-2"></i>
+                Linux Distributions We'll Explore
+            </h3>
+            <div class="distro-grid">
+                <div class="distro-card">
+                    <div class="distro-icon">
+                        <i class="fab fa-ubuntu"></i>
+                    </div>
+                    <h5>Ubuntu</h5>
+                    <p class="text-muted small">User-friendly desktop distribution</p>
+                </div>
+                <div class="distro-card">
+                    <div class="distro-icon">
+                        <i class="fab fa-redhat"></i>
+                    </div>
+                    <h5>Red Hat / CentOS</h5>
+                    <p class="text-muted small">Enterprise server environments</p>
+                </div>
+                <div class="distro-card">
+                    <div class="distro-icon">
+                        <i class="fab fa-suse"></i>
+                    </div>
+                    <h5>SUSE</h5>
+                    <p class="text-muted small">Corporate and enterprise use</p>
+                </div>
+                <div class="distro-card">
+                    <div class="distro-icon">
+                        <i class="fas fa-terminal"></i>
+                    </div>
+                    <h5>Debian</h5>
+                    <p class="text-muted small">Stability-focused distribution</p>
+                </div>
+                <div class="distro-card">
+                    <div class="distro-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <h5>Alpine Linux</h5>
+                    <p class="text-muted small">Minimal containerized environments</p>
+                </div>
+                <div class="distro-card">
+                    <div class="distro-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h5>Embedded Linux</h5>
+                    <p class="text-muted small">IoT and embedded systems</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prerequisites -->
+        <div class="prerequisites">
+            <div class="prerequisites-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Prerequisites
+            </div>
+            <ul class="mb-0">
+                <li>Basic computer literacy and file system understanding</li>
+                <li>Familiarity with command-line interfaces (helpful but not required)</li>
+                <li>Basic understanding of networking concepts</li>
+                <li>No prior Linux experience required - we start from basics!</li>
+            </ul>
+        </div>
+
+        <!-- Learning Outcomes -->
+        <div class="learning-outcomes">
+            <div class="outcomes-title">
+                <i class="fas fa-bullseye"></i>
+                What You'll Achieve
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Understand Linux kernel architecture and system internals</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Master process management, scheduling, and system monitoring</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Implement robust file systems and storage management</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Configure and maintain Linux server environments</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Troubleshoot system issues and optimize performance</span>
+            </div>
+        </div>
+
+        <!-- Course Modules -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-5">Course Curriculum</h2>
+                
+                <!-- Module 1 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">1</div>
+                        <h3 class="module-title">Process Management</h3>
+                        <div class="module-duration">6 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-cogs topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Linux Kernel Architecture</div>
+                                <div class="topic-desc">Understanding kernel space vs user space, system calls, and kernel modules</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-tasks topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Process Creation and Lifecycle</div>
+                                <div class="topic-desc">fork(), exec(), wait() system calls, process states, and PID management <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-clock topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">CPU Scheduling Algorithms</div>
+                                <div class="topic-desc">Round-robin, priority-based, CFS scheduler, and real-time scheduling <span class="kernel-badge">Kernel</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-stream topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Threads and Multitasking</div>
+                                <div class="topic-desc">POSIX threads, thread synchronization, and parallel processing concepts</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-memory topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Memory Management</div>
+                                <div class="topic-desc">Virtual memory, paging, swapping, and memory allocation strategies</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-chart-line topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Process Monitoring and Control</div>
+                                <div class="topic-desc">ps, top, htop, systemctl, and performance monitoring tools <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">2</div>
+                        <h3 class="module-title">File Management</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-folder-tree topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Linux File System Hierarchy</div>
+                                <div class="topic-desc">FHS standard, /bin, /etc, /var, /home structure and organization</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-hdd topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">File Systems and Storage</div>
+                                <div class="topic-desc">ext4, XFS, Btrfs, ZFS comparison and implementation strategies <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-key topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Permissions and Access Control</div>
+                                <div class="topic-desc">chmod, chown, umask, ACLs, and advanced security permissions</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-link topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">File Operations and Links</div>
+                                <div class="topic-desc">Hard links, symbolic links, file manipulation, and directory operations</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-search topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">File System Navigation and Search</div>
+                                <div class="topic-desc">find, locate, grep, sed, awk for efficient file management <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-archive topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Backup and Recovery</div>
+                                <div class="topic-desc">tar, rsync, snapshot management, and disaster recovery strategies</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">3</div>
+                        <h3 class="module-title">Inter-Process Communication (IPC)</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-exchange-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">IPC Mechanisms Overview</div>
+                                <div class="topic-desc">Pipes, FIFOs, message queues, shared memory, and sockets comparison</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-pipe topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Pipes and Named Pipes</div>
+                                <div class="topic-desc">Anonymous pipes, named pipes (FIFOs), and shell pipe operations <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Message Queues and Signals</div>
+                                <div class="topic-desc">System V message queues, POSIX message queues, and signal handling</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-memory topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Shared Memory and Semaphores</div>
+                                <div class="topic-desc">Shared memory segments, semaphore synchronization, and race condition prevention <span class="kernel-badge">Advanced</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-network-wired topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Network IPC and Sockets</div>
+                                <div class="topic-desc">Unix domain sockets, TCP/UDP sockets, and network communication patterns</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-code topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">IPC Programming Examples</div>
+                                <div class="topic-desc">Practical C programming examples for all IPC mechanisms <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">4</div>
+                        <h3 class="module-title">Linux System Administration</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-rocket topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">System Boot Process and Init Systems</div>
+                                <div class="topic-desc">GRUB bootloader, systemd, SysV init, and boot sequence analysis</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-users topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">User and Group Management</div>
+                                <div class="topic-desc">useradd, usermod, passwd, sudo configuration, and security policies <span class="admin-badge">Admin</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-cog topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Service Management with Systemd</div>
+                                <div class="topic-desc">Creating services, systemctl commands, service dependencies, and logging <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-network-wired topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Network Configuration and Security</div>
+                                <div class="topic-desc">iptables, firewalld, network interfaces, and security hardening</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-download topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Package Management</div>
+                                <div class="topic-desc">apt, yum, dnf, zypper package managers and software installation strategies</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-chart-bar topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">System Monitoring and Performance</div>
+                                <div class="topic-desc">Log analysis, performance tuning, disk usage, and system health monitoring <span class="admin-badge">Admin</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-shield-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Security and Maintenance</div>
+                                <div class="topic-desc">Security updates, vulnerability management, and system maintenance best practices</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Tools -->
+        <div class="tools-section">
+            <h3 class="text-center mb-4">Tools & Commands You'll Master</h3>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-terminal"></i>
+                    </div>
+                    <h5>Bash Shell</h5>
+                    <p class="text-muted small">Command line mastery</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h5>Vi/Vim Editor</h5>
+                    <p class="text-muted small">Text editing and configuration</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h5>Systemctl</h5>
+                    <p class="text-muted small">Service management</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5>Performance Tools</h5>
+                    <p class="text-muted small">top, htop, iotop, vmstat</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h5>Network Tools</h5>
+                    <p class="text-muted small">netstat, ss, tcpdump</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h5>Security Tools</h5>
+                    <p class="text-muted small">iptables, firewalld, fail2ban</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h5>Search & Filter</h5>
+                    <p class="text-muted small">grep, sed, awk, find</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h5>Package Managers</h5>
+                    <p class="text-muted small">apt, yum, dnf, zypper</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2 class="mb-3">Ready to Master Linux?</h2>
+            <p class="lead mb-4">Gain the foundational knowledge and practical skills to excel in Linux system administration and development.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-enroll">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Enroll Now
+                </button>
+                <a href="{% url 'home' %}#livecoding" class="btn btn-outline-light">
+                    <i class="fas fa-play me-2"></i>
+                    Try Live Coding
+                </a>
+            </div>
+            <div class="mt-4">
+                <small>
+                    <i class="fas fa-phone me-2"></i>+91 9739858111
+                    <span class="mx-3">|</span>
+                    <i class="fas fa-envelope me-2"></i>info@aptcomputinglabs.com
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Add animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe module cards for animation
+    document.querySelectorAll('.module-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

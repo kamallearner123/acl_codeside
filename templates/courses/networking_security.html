@@ -1,0 +1,852 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Networking and Security - Apt Computing Labs{% endblock %}
+
+{% block content %}
+<style>
+    /* Course Page Specific Styles */
+    .course-hero {
+        background: linear-gradient(135deg, #dc3545, #6610f2);
+        color: white;
+        padding: 60px 0;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
+        z-index: 0;
+    }
+    
+    .course-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .course-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    
+    .course-stats {
+        display: flex;
+        gap: 30px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px 20px;
+        border-radius: 8px;
+    }
+    
+    .stat-icon {
+        width: 24px;
+        height: 24px;
+        color: #ffc107;
+    }
+    
+    .module-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid #dc3545;
+        transition: all 0.3s ease;
+    }
+    
+    .module-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .module-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .module-number {
+        background: linear-gradient(135deg, #dc3545, #6610f2);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .module-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #dc3545;
+        margin: 0;
+    }
+    
+    .module-duration {
+        color: #28a745;
+        font-weight: 600;
+        margin-left: auto;
+        background: #e8f5e8;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .topic-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+    
+    .topic-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .topic-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .topic-icon {
+        color: #dc3545;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+    
+    .topic-content {
+        flex: 1;
+    }
+    
+    .topic-title {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 4px;
+    }
+    
+    .topic-desc {
+        color: #6b7280;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .hands-on-badge {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .security-badge {
+        background: linear-gradient(135deg, #dc3545, #fd1414);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .crypto-badge {
+        background: linear-gradient(135deg, #6610f2, #e83e8c);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .network-badge {
+        background: linear-gradient(135deg, #17a2b8, #007bff);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .threat-section {
+        background: linear-gradient(135deg, #fff5f5, #fed7d7);
+        border-radius: 12px;
+        padding: 30px;
+        margin: 30px 0;
+        border-left: 5px solid #dc3545;
+    }
+    
+    .threat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .threat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+    
+    .threat-icon {
+        font-size: 2rem;
+        color: #dc3545;
+        margin-bottom: 10px;
+    }
+    
+    .tools-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 25px;
+        margin: 30px 0;
+    }
+    
+    .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .tool-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .tool-icon {
+        font-size: 2.5rem;
+        color: #dc3545;
+        margin-bottom: 10px;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        margin-top: 50px;
+    }
+    
+    .btn-enroll {
+        background: white;
+        color: #28a745;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+    
+    .btn-enroll:hover {
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .prerequisites {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .prerequisites-title {
+        color: #856404;
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .learning-outcomes {
+        background: #d1ecf1;
+        border: 1px solid #b8daff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .outcomes-title {
+        color: #155724;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .outcome-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+    
+    .outcome-check {
+        color: #28a745;
+        margin-top: 2px;
+    }
+    
+    @media (max-width: 768px) {
+        .course-stats {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .module-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .module-duration {
+            margin-left: 0;
+        }
+        
+        .tool-grid, .threat-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Course Hero Section -->
+    <div class="course-hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="course-badge">
+                        <i class="fas fa-shield-alt"></i> Cybersecurity & Networking
+                    </div>
+                    <h1 class="display-4 fw-bold mb-3">Networking and Security</h1>
+                    <p class="lead mb-4">Secure networks with advanced protocols and defense mechanisms. Master TCP/IP, SSL/TLS, PKI, and modern cybersecurity tools to protect against evolving threats in today's interconnected world.</p>
+                    
+                    <div class="course-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-clock stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">20 Hours</div>
+                                <small>Duration</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-layer-group stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">5 Modules</div>
+                                <small>Comprehensive</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-shield-alt stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">Ethical Hacking</div>
+                                <small>Defensive Security</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-certificate stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">Certificate</div>
+                                <small>Upon Completion</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Threat Landscape -->
+        <div class="threat-section">
+            <h3 class="text-center mb-4">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Modern Cybersecurity Threats We'll Address
+            </h3>
+            <div class="threat-grid">
+                <div class="threat-card">
+                    <div class="threat-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <h5>Malware & Ransomware</h5>
+                    <p class="text-muted small">Advanced persistent threats and encryption attacks</p>
+                </div>
+                <div class="threat-card">
+                    <div class="threat-icon">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <h5>Social Engineering</h5>
+                    <p class="text-muted small">Phishing, pretexting, and human-based attacks</p>
+                </div>
+                <div class="threat-card">
+                    <div class="threat-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h5>Network Intrusions</h5>
+                    <p class="text-muted small">Unauthorized access and lateral movement</p>
+                </div>
+                <div class="threat-card">
+                    <div class="threat-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h5>Data Breaches</h5>
+                    <p class="text-muted small">Sensitive information exposure and theft</p>
+                </div>
+                <div class="threat-card">
+                    <div class="threat-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h5>DDoS Attacks</h5>
+                    <p class="text-muted small">Service disruption and availability attacks</p>
+                </div>
+                <div class="threat-card">
+                    <div class="threat-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h5>Cryptographic Attacks</h5>
+                    <p class="text-muted small">Weak encryption and key management flaws</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prerequisites -->
+        <div class="prerequisites">
+            <div class="prerequisites-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Prerequisites
+            </div>
+            <ul class="mb-0">
+                <li>Basic understanding of computer networks and internet protocols</li>
+                <li>Familiarity with Linux command line and system administration</li>
+                <li>Programming knowledge in C/C++ or Rust (basic level)</li>
+                <li>Understanding of basic cryptographic concepts (helpful but not required)</li>
+            </ul>
+        </div>
+
+        <!-- Learning Outcomes -->
+        <div class="learning-outcomes">
+            <div class="outcomes-title">
+                <i class="fas fa-bullseye"></i>
+                What You'll Achieve
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Implement secure network protocols and communication systems</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Design and deploy robust PKI infrastructure with digital certificates</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Configure advanced firewalls and network security appliances</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Build comprehensive intrusion detection and prevention systems</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Perform ethical hacking and penetration testing techniques</span>
+            </div>
+        </div>
+
+        <!-- Course Modules -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-5">Course Curriculum</h2>
+                
+                <!-- Module 1 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">1</div>
+                        <h3 class="module-title">TCP/IP Protocols with Programming</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-network-wired topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">TCP/IP Stack Fundamentals</div>
+                                <div class="topic-desc">OSI model, packet structure, IPv4/IPv6, subnetting, and routing protocols</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-code topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Socket Programming in C++</div>
+                                <div class="topic-desc">TCP/UDP client-server applications, Berkeley sockets API, and network programming patterns <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fab fa-rust topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Network Programming with Rust</div>
+                                <div class="topic-desc">Tokio async networking, std::net module, and safe concurrent network applications</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-search topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Protocol Analysis and Wireshark</div>
+                                <div class="topic-desc">Packet capture, traffic analysis, and network troubleshooting techniques <span class="network-badge">Analysis</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-project-diagram topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Advanced Protocols Implementation</div>
+                                <div class="topic-desc">HTTP/HTTPS, FTP, SMTP, DNS custom implementations and protocol design <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">2</div>
+                        <h3 class="module-title">SSL/TLS and Digital Certificates</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-lock topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">SSL/TLS Protocol Deep Dive</div>
+                                <div class="topic-desc">Handshake process, cipher suites, TLS 1.2 vs 1.3, and perfect forward secrecy</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-certificate topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Digital Certificates and X.509</div>
+                                <div class="topic-desc">Certificate structure, validation chains, CRL, OCSP, and certificate pinning <span class="crypto-badge">Crypto</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-key topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Cryptographic Algorithms</div>
+                                <div class="topic-desc">RSA, ECC, AES, SHA family, and practical cryptography implementation</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-code topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">TLS Implementation in Applications</div>
+                                <div class="topic-desc">OpenSSL programming, secure socket creation, and certificate validation in C++ and Rust <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-bug topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">SSL/TLS Security Analysis</div>
+                                <div class="topic-desc">Common vulnerabilities, SSL Labs testing, and security assessment tools <span class="security-badge">Security</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">3</div>
+                        <h3 class="module-title">Public Key Infrastructure (PKI)</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-sitemap topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">PKI Architecture and Components</div>
+                                <div class="topic-desc">Certificate Authorities, Registration Authorities, certificate lifecycle management</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-server topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Building a Certificate Authority</div>
+                                <div class="topic-desc">OpenSSL CA setup, intermediate CAs, certificate signing, and revocation lists <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-id-card topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Digital Identity and Authentication</div>
+                                <div class="topic-desc">Client certificates, smart cards, hardware security modules (HSMs), and multi-factor authentication</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-cloud topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Enterprise PKI Deployment</div>
+                                <div class="topic-desc">Active Directory Certificate Services, automated enrollment, and certificate templates <span class="network-badge">Enterprise</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-mobile-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Modern PKI Applications</div>
+                                <div class="topic-desc">Code signing, device certificates, IoT PKI, and blockchain certificate management</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">4</div>
+                        <h3 class="module-title">Network Security and Firewalls</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-shield-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Firewall Technologies and Types</div>
+                                <div class="topic-desc">Packet filtering, stateful inspection, application-layer firewalls, and next-generation firewalls</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-terminal topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">iptables and Advanced Filtering</div>
+                                <div class="topic-desc">Linux firewall configuration, NAT, port forwarding, and custom rule chains <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-search topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Network Reconnaissance with Nmap</div>
+                                <div class="topic-desc">Port scanning, OS fingerprinting, service detection, and vulnerability scanning techniques <span class="security-badge">Ethical Hacking</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-eye topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Network Monitoring and Analysis</div>
+                                <div class="topic-desc">Traffic flow analysis, bandwidth monitoring, and network security monitoring (NSM)</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-globe topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">VPN and Secure Remote Access</div>
+                                <div class="topic-desc">IPSec, OpenVPN, WireGuard implementation and secure tunnel configuration <span class="network-badge">VPN</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 5 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">5</div>
+                        <h3 class="module-title">Intrusion Detection and Prevention Systems</h3>
+                        <div class="module-duration">3 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-radar-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">IDS/IPS Architecture and Types</div>
+                                <div class="topic-desc">Network-based vs host-based, signature vs anomaly detection, and deployment strategies</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-cogs topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Snort and Suricata Configuration</div>
+                                <div class="topic-desc">Rule writing, signature development, and real-time intrusion detection setup <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-chart-line topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Security Information and Event Management</div>
+                                <div class="topic-desc">SIEM integration, log correlation, incident response automation, and threat intelligence</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-robot topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Machine Learning for Threat Detection</div>
+                                <div class="topic-desc">Behavioral analysis, anomaly detection algorithms, and AI-powered security systems <span class="security-badge">AI Security</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-shield-virus topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Incident Response and Forensics</div>
+                                <div class="topic-desc">Digital forensics, malware analysis, and coordinated incident response procedures <span class="security-badge">Forensics</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Tools -->
+        <div class="tools-section">
+            <h3 class="text-center mb-4">Security Tools & Technologies</h3>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h5>Nmap</h5>
+                    <p class="text-muted small">Network discovery and security auditing</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h5>Wireshark</h5>
+                    <p class="text-muted small">Network protocol analyzer</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h5>Snort/Suricata</h5>
+                    <p class="text-muted small">Intrusion detection systems</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h5>OpenSSL</h5>
+                    <p class="text-muted small">Cryptography and SSL/TLS toolkit</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-terminal"></i>
+                    </div>
+                    <h5>iptables</h5>
+                    <p class="text-muted small">Linux firewall administration</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <h5>Metasploit</h5>
+                    <p class="text-muted small">Penetration testing framework</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h5>Hashcat</h5>
+                    <p class="text-muted small">Password recovery and cracking</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h5>Burp Suite</h5>
+                    <p class="text-muted small">Web application security testing</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2 class="mb-3">Ready to Secure the Digital World?</h2>
+            <p class="lead mb-4">Master advanced networking and cybersecurity techniques to protect against modern threats and build secure systems.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-enroll">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Enroll Now
+                </button>
+                <a href="{% url 'home' %}#livecoding" class="btn btn-outline-light">
+                    <i class="fas fa-play me-2"></i>
+                    Try Live Coding
+                </a>
+            </div>
+            <div class="mt-4">
+                <small>
+                    <i class="fas fa-phone me-2"></i>+91 9739858111
+                    <span class="mx-3">|</span>
+                    <i class="fas fa-envelope me-2"></i>info@aptcomputinglabs.com
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Add animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe module cards for animation
+    document.querySelectorAll('.module-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

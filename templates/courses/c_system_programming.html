@@ -1,0 +1,770 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}System Programming using C - Apt Computing Labs{% endblock %}
+
+{% block content %}
+<style>
+    /* Course Page Specific Styles */
+    .course-hero {
+        background: linear-gradient(135deg, #1a3c6d, #2b6cb0);
+        color: white;
+        padding: 60px 0;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
+        z-index: 0;
+    }
+    
+    .course-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .course-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    
+    .course-stats {
+        display: flex;
+        gap: 30px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px 20px;
+        border-radius: 8px;
+    }
+    
+    .stat-icon {
+        width: 24px;
+        height: 24px;
+        color: #00d4ff;
+    }
+    
+    .module-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid #007bff;
+        transition: all 0.3s ease;
+    }
+    
+    .module-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .module-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .module-number {
+        background: linear-gradient(135deg, #007bff, #00d4ff);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .module-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #1a3c6d;
+        margin: 0;
+    }
+    
+    .module-duration {
+        color: #28a745;
+        font-weight: 600;
+        margin-left: auto;
+        background: #e8f5e8;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .topic-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+    
+    .topic-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .topic-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .topic-icon {
+        color: #007bff;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+    
+    .topic-content {
+        flex: 1;
+    }
+    
+    .topic-title {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 4px;
+    }
+    
+    .topic-desc {
+        color: #6b7280;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .hands-on-badge {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .tools-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 25px;
+        margin: 30px 0;
+    }
+    
+    .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .tool-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .tool-icon {
+        font-size: 2.5rem;
+        color: #007bff;
+        margin-bottom: 10px;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        margin-top: 50px;
+    }
+    
+    .btn-enroll {
+        background: white;
+        color: #28a745;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+    
+    .btn-enroll:hover {
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .prerequisites {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .prerequisites-title {
+        color: #856404;
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .learning-outcomes {
+        background: #d1ecf1;
+        border: 1px solid #b8daff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .outcomes-title {
+        color: #155724;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .outcome-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+    
+    .outcome-check {
+        color: #28a745;
+        margin-top: 2px;
+    }
+    
+    @media (max-width: 768px) {
+        .course-stats {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .module-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .module-duration {
+            margin-left: 0;
+        }
+        
+        .tool-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Course Hero Section -->
+    <div class="course-hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="course-badge">
+                        <i class="fas fa-code"></i> System Programming
+                    </div>
+                    <h1 class="display-4 fw-bold mb-3">System Programming using C</h1>
+                    <p class="lead mb-4">Master low-level programming, memory management, and system-level development with comprehensive C programming techniques. Build robust, high-performance systems from the ground up.</p>
+                    
+                    <div class="course-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-clock stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">30 Hours</div>
+                                <small>Duration</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-layer-group stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">7 Modules</div>
+                                <small>Comprehensive</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-users stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">Beginner to Advanced</div>
+                                <small>Level</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-certificate stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">Certificate</div>
+                                <small>Upon Completion</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Prerequisites -->
+        <div class="prerequisites">
+            <div class="prerequisites-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Prerequisites
+            </div>
+            <ul class="mb-0">
+                <li>Basic programming knowledge in any language</li>
+                <li>Familiarity with command-line interface</li>
+                <li>Understanding of basic computer science concepts</li>
+                <li>Linux/Unix environment (we'll help you set up if needed)</li>
+            </ul>
+        </div>
+
+        <!-- Learning Outcomes -->
+        <div class="learning-outcomes">
+            <div class="outcomes-title">
+                <i class="fas fa-bullseye"></i>
+                What You'll Achieve
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Write efficient, memory-safe C programs for system-level applications</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Master multi-threaded programming and process management</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Debug complex systems using professional tools like GDB and Valgrind</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Implement robust file handling and I/O operations</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Apply industry-standard testing practices with Google Test</span>
+            </div>
+        </div>
+
+        <!-- Course Modules -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-5">Course Curriculum</h2>
+                
+                <!-- Module 1 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">1</div>
+                        <h3 class="module-title">Essentials of C Language (using GCC)</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-play-circle topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">C Language Fundamentals & GCC Compiler</div>
+                                <div class="topic-desc">Variables, data types, operators, control structures, and mastering GCC compilation flags</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-memory topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Pointers and Memory Management</div>
+                                <div class="topic-desc">Dynamic memory allocation, pointer arithmetic, and memory layout understanding</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-cogs topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Functions and Advanced Data Structures</div>
+                                <div class="topic-desc">Function pointers, structures, unions, and modular programming techniques</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-project-diagram topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Build Systems and Makefiles</div>
+                                <div class="topic-desc">Creating efficient build processes and managing large C projects <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">2</div>
+                        <h3 class="module-title">Threads and Processes</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-sitemap topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Process Creation and Management</div>
+                                <div class="topic-desc">fork(), exec(), wait() system calls and process lifecycle management</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-stream topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">POSIX Threads (pthreads)</div>
+                                <div class="topic-desc">Thread creation, joining, detaching, and thread-specific data</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-exchange-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Inter-Process Communication (IPC)</div>
+                                <div class="topic-desc">Pipes, FIFOs, shared memory, and message queues <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-tachometer-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Process Performance and Monitoring</div>
+                                <div class="topic-desc">CPU scheduling, priority management, and system monitoring tools</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">3</div>
+                        <h3 class="module-title">Locks and Synchronization</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-lock topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Mutex Locks and Critical Sections</div>
+                                <div class="topic-desc">Thread synchronization, race conditions, and deadlock prevention</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-flag topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Condition Variables and Semaphores</div>
+                                <div class="topic-desc">Advanced synchronization primitives and producer-consumer patterns</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-shield-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Read-Write Locks and Atomic Operations</div>
+                                <div class="topic-desc">Optimizing concurrent access and lock-free programming techniques <span class="hands-on-badge">Advanced</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-bug topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Debugging Concurrent Programs</div>
+                                <div class="topic-desc">Tools and techniques for finding race conditions and deadlocks</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">4</div>
+                        <h3 class="module-title">File Handling</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-file topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">File I/O Operations</div>
+                                <div class="topic-desc">Standard library vs system calls, buffering, and error handling</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-folder-open topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Directory Operations and File Metadata</div>
+                                <div class="topic-desc">File permissions, timestamps, and directory traversal techniques</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-bolt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Asynchronous I/O and Performance</div>
+                                <div class="topic-desc">Non-blocking I/O, select/poll/epoll, and high-performance file operations <span class="hands-on-badge">Advanced</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-database topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Memory-Mapped Files</div>
+                                <div class="topic-desc">mmap() system call and efficient large file processing</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 5 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">5</div>
+                        <h3 class="module-title">Debugging with GDB</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-search topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">GDB Fundamentals</div>
+                                <div class="topic-desc">Setting breakpoints, examining variables, and stepping through code</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-layer-group topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Advanced GDB Features</div>
+                                <div class="topic-desc">Watchpoints, conditional breakpoints, and debugging core dumps <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-stream topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Multi-threaded Debugging</div>
+                                <div class="topic-desc">Thread-specific debugging and analyzing concurrent execution</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-code topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">GDB Scripting and Automation</div>
+                                <div class="topic-desc">Custom GDB commands and automated debugging workflows</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 6 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">6</div>
+                        <h3 class="module-title">Memory Analysis with Valgrind</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-memory topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Memory Error Detection</div>
+                                <div class="topic-desc">Finding memory leaks, buffer overflows, and use-after-free errors</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-chart-line topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Performance Profiling with Callgrind</div>
+                                <div class="topic-desc">CPU profiling, call graphs, and performance bottleneck identification <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-microscope topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Cache Performance Analysis</div>
+                                <div class="topic-desc">Cachegrind for memory hierarchy optimization</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-shield-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Thread Safety Analysis</div>
+                                <div class="topic-desc">Helgrind and DRD for detecting race conditions and synchronization issues</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Module 7 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">7</div>
+                        <h3 class="module-title">Unit Testing with Google Test</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-vial topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Testing Framework Setup</div>
+                                <div class="topic-desc">Installing Google Test, writing first tests, and test organization</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-double topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Test Cases and Assertions</div>
+                                <div class="topic-desc">EXPECT vs ASSERT macros, parameterized tests, and test fixtures <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-robot topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Mocking and Test Doubles</div>
+                                <div class="topic-desc">Google Mock framework for isolating units under test</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-infinity topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Continuous Integration</div>
+                                <div class="topic-desc">Integrating tests into build systems and CI/CD pipelines</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Tools -->
+        <div class="tools-section">
+            <h3 class="text-center mb-4">Development Tools & Technologies</h3>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fab fa-linux"></i>
+                    </div>
+                    <h5>GCC Compiler</h5>
+                    <p class="text-muted small">GNU Compiler Collection for C/C++</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <h5>GDB Debugger</h5>
+                    <p class="text-muted small">GNU Debugger for program analysis</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-memory"></i>
+                    </div>
+                    <h5>Valgrind Suite</h5>
+                    <p class="text-muted small">Memory debugging and profiling tools</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-vial"></i>
+                    </div>
+                    <h5>Google Test</h5>
+                    <p class="text-muted small">C++ testing framework</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-hammer"></i>
+                    </div>
+                    <h5>Make/CMake</h5>
+                    <p class="text-muted small">Build automation tools</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fab fa-git-alt"></i>
+                    </div>
+                    <h5>Git Version Control</h5>
+                    <p class="text-muted small">Source code management</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2 class="mb-3">Ready to Master System Programming?</h2>
+            <p class="lead mb-4">Join our comprehensive C programming course and build the skills needed for system-level development.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-enroll">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Enroll Now
+                </button>
+                <a href="{% url 'home' %}#livecoding" class="btn btn-outline-light">
+                    <i class="fas fa-play me-2"></i>
+                    Try Live Coding
+                </a>
+            </div>
+            <div class="mt-4">
+                <small>
+                    <i class="fas fa-phone me-2"></i>+91 9739858111
+                    <span class="mx-3">|</span>
+                    <i class="fas fa-envelope me-2"></i>info@aptcomputinglabs.com
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Add animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe module cards for animation
+    document.querySelectorAll('.module-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}
