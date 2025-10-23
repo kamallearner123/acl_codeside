@@ -18,67 +18,179 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            background: linear-gradient(180deg, #ffffff 0%, #f0f8ff 100%);
             color: #2d3748;
             margin: 0;
             padding: 0;
         }
         /* Navbar Styling */
         .navbar {
-            background: linear-gradient(90deg, #1a3c6d, #2b6cb0);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            padding: 10px 0;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            padding: 20px 0;
         }
         .navbar-brand {
             display: flex;
             align-items: center;
-            justify-content: center;
-            background-color: #2d3748;
-            border-radius: 8px;
-            padding: 8px 15px;
-            transition: background-color 0.3s;
-        }
-        .navbar-brand:hover {
-            background-color: #4a5568;
+            padding: 0;
+            margin-right: 2rem;
         }
         .navbar-brand img {
-            width: 40px;
-            height: 40px;
-            margin-right: 12px;
+            width: 120px;
+            height: 120px;
+            margin-right: 25px;
+            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.3));
+            transition: all 0.4s ease;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+        }
+        .navbar-brand:hover img {
+            transform: scale(1.08) rotate(2deg);
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
         }
         .brand-title {
-            font-weight: 600;
-            font-size: 1.6rem;
-            color: #ffffff;
+            font-weight: 900;
+            font-size: 3rem;
+            background: linear-gradient(45deg, #ffffff, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+            letter-spacing: 1px;
         }
-        .navbar-center {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+        .navbar-brand:hover .brand-title {
+            background: linear-gradient(45deg, #feca57, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.4));
         }
         .navbar-nav .nav-link {
-            color: #e2e8f0;
-            font-weight: 500;
-            padding: 8px 15px;
-            transition: color 0.3s;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 15px 20px;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0 5px;
+            position: relative;
         }
         .navbar-nav .nav-link:hover {
             color: #ffffff;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+        }
+        /* Hover Dropdown Styles */
+        .nav-item.dropdown:hover .dropdown-menu {
+            display: block !important;
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
         }
         .dropdown-menu {
-            background-color: #2d3748;
-            border: none;
+            opacity: 0;
+            transform: translateY(-5px);
+            visibility: hidden;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+            padding: 12px 0;
+            margin-top: 2px;
+            min-width: 240px;
+            position: absolute;
+            z-index: 1000;
+        }
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 25px;
+            width: 0;
+            height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 12px solid #667eea;
+        }
+        
+        /* Better dropdown hover area */
+        .nav-item.dropdown {
+            position: relative;
+        }
+        .nav-item.dropdown::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: transparent;
+        }
+        .dropdown-menu .dropdown-item {
+            padding: 12px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #2d3748;
+            border-left: 3px solid transparent;
+        }
+        .dropdown-menu .dropdown-item:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+            padding-left: 25px;
+            border-left: 4px solid #feca57;
+            transform: translateX(5px);
+            font-weight: 600;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin: 0 8px;
+        }
+        .dropdown-menu .dropdown-item i {
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+        }
+        .dropdown-divider {
+            border-color: #667eea;
+            opacity: 0.4;
+            margin: 12px 8px;
+        }
+        /* Login Prompt Modal Styles */
+        .practice-features .feature-item {
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+        .practice-features .feature-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: #007bff;
+        }
+        .practice-features .feature-item i {
+            font-size: 1.5rem;
+        }
+        .practice-features .feature-item h6 {
+            margin: 8px 0 4px 0;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .dropdown-menu {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
         }
         .dropdown-item {
-            color: #e2e8f0;
-            padding: 10px 15px;
-            transition: background-color 0.3s;
+            color: #2d3748;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
         .dropdown-item:hover {
-            background-color: #4a5568;
-            color: #ffffff;
+            background: linear-gradient(135deg, #ffc107, #ffb300);
+            color: #1a1a1a;
+            transform: translateX(5px);
+            font-weight: 600;
         }
         .btn-outline-light {
             border-color: #e2e8f0;
@@ -116,17 +228,50 @@
         footer .row {
             align-items: center;
         }
-        @media (max-width: 768px) {
-            .navbar-brand {
-                position: static;
-                transform: none;
+        @media (max-width: 991px) {
+            .navbar-brand img {
+                width: 90px;
+                height: 90px;
+                margin-right: 20px;
             }
-            .navbar-center {
-                position: static;
-                transform: none;
+            .brand-title {
+                font-size: 2rem;
             }
-            .navbar-nav {
-                text-align: center;
+            .navbar-nav .nav-link {
+                padding: 10px 15px;
+                margin: 2px 0;
+            }
+            .dropdown-menu {
+                position: static !important;
+                transform: none !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+                background: linear-gradient(135deg, #ffffff, #f8f9fa);
+                border: 2px solid #007bff;
+                border-radius: 8px;
+                margin: 5px 0;
+            }
+            .dropdown-menu .dropdown-item {
+                color: #2d3748;
+            }
+            .dropdown-menu .dropdown-item:hover {
+                background: linear-gradient(135deg, #007bff, #0056b3);
+                color: #ffffff;
+            }
+            .nav-item.dropdown:hover .dropdown-menu {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .navbar-brand img {
+                width: 70px;
+                height: 70px;
+                margin-right: 15px;
+            }
+            .brand-title {
+                font-size: 1.8rem;
             }
         }
     </style>
@@ -135,17 +280,126 @@
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand navbar-center d-flex align-items-center p-2 rounded" href="{% url 'home' %}">
-                <img src="{% static 'img/apt.png' %}" alt="Apt Computing Labs" style="width:42px;height:42px;margin-right:10px;">
-                <span class="brand-title">Apt Computing Labs</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <!-- Intentionally minimal navbar; specific links available in Applications tab -->
+        <div class="container-fluid">
+            <!-- Brand Section -->
+            <div class="w-100">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="brand-section text-center py-3">
+                            <a class="navbar-brand d-inline-flex align-items-center justify-content-center" href="{% url 'home' %}">
+                                <img src="{% static 'img/apt.png' %}" alt="APT COMPUTING LABS">
+                                <span class="brand-title ms-3">APT COMPUTING LABS</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="navigation-section">
+                            <button class="navbar-toggler mx-auto d-block d-lg-none mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div class="collapse navbar-collapse" id="navbarNav">
+                                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-book-open me-1"></i>Courses
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'courses:list' %}">
+                                <i class="fas fa-list"></i> All Courses
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:c_system_programming' %}">
+                                <i class="fab fa-cuttlefish"></i> C System Programming
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:python_programming' %}">
+                                <i class="fab fa-python"></i> Python Programming
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:rust_programming' %}">
+                                <i class="fab fa-rust"></i> Rust Programming
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:linux_os_concepts' %}">
+                                <i class="fab fa-linux"></i> Linux OS Concepts
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:iot_devices' %}">
+                                <i class="fas fa-microchip"></i> IoT Devices
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:networking_security' %}">
+                                <i class="fas fa-shield-alt"></i> Networking & Security
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-industry me-1"></i>Services
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#industryModal">
+                                <i class="fas fa-briefcase"></i> Industry Training & MaaS
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#rustModal">
+                                <i class="fab fa-rust"></i> Rust Automotive Program
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#academicModal">
+                                <i class="fas fa-graduation-cap"></i> Academic Partnerships
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'home' %}#about">
+                                <i class="fas fa-info-circle"></i> About ACL
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-code me-1"></i>Practice
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'questions:list' %}">
+                                <i class="fas fa-question-circle"></i> Coding Problems
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'submissions:my_submissions' %}">
+                                <i class="fas fa-code-branch"></i> My Submissions
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'home' %}#livecoding">
+                                <i class="fas fa-play-circle"></i> Live Coding
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'devtools:list' %}">
+                                <i class="fas fa-tools"></i> Developer Tools
+                            </a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginPromptModal">
+                            <i class="fas fa-code me-1"></i>Practice
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'events' %}">
+                            <i class="fas fa-calendar-alt me-1"></i>Events
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contact:contact' %}">
+                            <i class="fas fa-envelope me-1"></i>Contact
+                        </a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
@@ -187,6 +441,10 @@
                         </li>
                     {% endif %}
                 </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -224,8 +482,129 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/rust/rust.min.js"></script>
+    <!-- Login Prompt Modal for Practice -->
+    <div class="modal fade" id="loginPromptModal" tabindex="-1" aria-labelledby="loginPromptModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="loginPromptModalLabel">
+                        <i class="fas fa-lock me-2"></i>Login Required
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-code fa-4x text-primary mb-3"></i>
+                        <h4 class="text-primary">Access Practice Features</h4>
+                        <p class="text-muted">To access coding problems, submissions, and live coding features, please log in to your account.</p>
+                    </div>
+                    
+                    <div class="practice-features mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="feature-item p-3 bg-light rounded">
+                                    <i class="fas fa-question-circle text-info mb-2"></i>
+                                    <h6>Coding Problems</h6>
+                                    <small class="text-muted">Solve algorithmic challenges</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-item p-3 bg-light rounded">
+                                    <i class="fas fa-code-branch text-success mb-2"></i>
+                                    <h6>My Submissions</h6>
+                                    <small class="text-muted">Track your progress</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-item p-3 bg-light rounded">
+                                    <i class="fas fa-play-circle text-warning mb-2"></i>
+                                    <h6>Live Coding</h6>
+                                    <small class="text-muted">Interactive code editor</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-item p-3 bg-light rounded">
+                                    <i class="fas fa-tools text-danger mb-2"></i>
+                                    <h6>Developer Tools</h6>
+                                    <small class="text-muted">Useful utilities</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login Now
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </a>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <small class="text-muted text-center w-100">
+                        Don't have an account? <a href="{% url 'accounts:register' %}" class="text-primary">Sign up for free</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% load static %}
     <script src="{% static 'js/main.js' %}"></script>
+    
+    <script>
+        // Enhanced navbar dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Only apply hover functionality on desktop (screens larger than 991px)
+            function applyHoverDropdowns() {
+                if (window.innerWidth > 991) {
+                    // Enable hover dropdowns on desktop
+                    const dropdowns = document.querySelectorAll('.navbar-nav .dropdown');
+                    
+                    dropdowns.forEach(dropdown => {
+                        const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+                        const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+                        
+                        dropdown.addEventListener('mouseenter', function() {
+                            dropdownMenu.classList.add('show');
+                            dropdownToggle.setAttribute('aria-expanded', 'true');
+                        });
+                        
+                        dropdown.addEventListener('mouseleave', function() {
+                            dropdownMenu.classList.remove('show');
+                            dropdownToggle.setAttribute('aria-expanded', 'false');
+                        });
+                    });
+                } else {
+                    // Remove hover functionality on mobile - use click instead
+                    const dropdowns = document.querySelectorAll('.navbar-nav .dropdown');
+                    dropdowns.forEach(dropdown => {
+                        dropdown.removeEventListener('mouseenter', function() {});
+                        dropdown.removeEventListener('mouseleave', function() {});
+                    });
+                }
+            }
+            
+            // Apply on load
+            applyHoverDropdowns();
+            
+            // Reapply on window resize
+            window.addEventListener('resize', applyHoverDropdowns);
+            
+            // Smooth logo hover animation
+            const logo = document.querySelector('.navbar-brand img');
+            if (logo) {
+                logo.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05) rotate(5deg)';
+                });
+                
+                logo.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1) rotate(0deg)';
+                });
+            }
+        });
+    </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

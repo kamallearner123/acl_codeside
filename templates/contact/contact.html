@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - Apt Computing Labs{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 100px 0;
+        margin-bottom: 0;
+    }
+    
+    .contact-form-section {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 80px 0;
+    }
+    
+    .contact-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        padding: 40px;
+        margin-bottom: 30px;
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .contact-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+    }
+    
+    .contact-info-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        padding: 30px;
+        text-align: center;
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+    
+    .contact-info-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .contact-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2rem;
+        color: white;
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-contact {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 15px 40px;
+        font-weight: 600;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        color: white;
+    }
+    
+    .btn-contact:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
+    
+    .section-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 50px;
+    }
+    
+    @media (max-width: 768px) {
+        .contact-hero {
+            padding: 60px 0;
+        }
+        
+        .contact-card {
+            padding: 30px 20px;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Contact Hero Section -->
+<section class="contact-hero">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-envelope me-3"></i>Get In Touch
+                </h1>
+                <p class="lead mb-0">
+                    Ready to start your journey with Apt Computing Labs? We'd love to hear from you! 
+                    Whether you're interested in our courses, services, or partnerships.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Information Cards -->
+<section class="py-5" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="contact-info-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Visit Us</h4>
+                    <p class="text-muted mb-0">
+                        Apt Computing Labs<br>
+                        12066, Prestige Royale Gardens<br>
+                        Yelahanka<br>
+                        Bangalore, Karnataka 560064
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-info-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Call Us</h4>
+                    <p class="text-muted mb-2">
+                        <strong>Main Office:</strong><br>
+                        +91 9739858111
+                    </p>
+                    <p class="text-muted mb-0">
+                        <strong>Training Inquiries:</strong><br>
+                        +91 9739858111
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="contact-info-card">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">Email Us</h4>
+                    <p class="text-muted mb-2">
+                        <strong>General Inquiries:</strong><br>
+                        info@aptcomputinglabs.com
+                    </p>
+                    <p class="text-muted mb-0">
+                        <strong>Founder:</strong><br>
+                        kamal@aptcomputinglabs.com
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="contact-form-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="contact-card">
+                    <div class="text-center mb-5">
+                        <h2 class="section-title">Send Us a Message</h2>
+                        <p class="section-subtitle">
+                            Fill out the form below and we'll get back to you within 24 hours.
+                        </p>
+                    </div>
+                    
+                    <form method="post" action="{% url 'contact:contact' %}">
+                        {% csrf_token %}
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-bold">
+                                    <i class="fas fa-user me-2 text-primary"></i>Full Name *
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="name" 
+                                       name="name" 
+                                       required 
+                                       placeholder="Enter your full name">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-bold">
+                                    <i class="fas fa-envelope me-2 text-primary"></i>Email Address *
+                                </label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email" 
+                                       name="email" 
+                                       required 
+                                       placeholder="Enter your email address">
+                            </div>
+                            <div class="col-12">
+                                <label for="subject" class="form-label fw-bold">
+                                    <i class="fas fa-tag me-2 text-primary"></i>Subject *
+                                </label>
+                                <select class="form-control" id="subject" name="subject" required>
+                                    <option value="">Select a subject...</option>
+                                    <option value="Course Inquiry">Course Inquiry</option>
+                                    <option value="Industry Training">Industry Training & MaaS</option>
+                                    <option value="Rust Automotive Program">Rust Automotive Program</option>
+                                    <option value="Academic Partnership">Academic Partnership</option>
+                                    <option value="Technical Support">Technical Support</option>
+                                    <option value="Career Opportunities">Career Opportunities</option>
+                                    <option value="General Inquiry">General Inquiry</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="message" class="form-label fw-bold">
+                                    <i class="fas fa-comment me-2 text-primary"></i>Message *
+                                </label>
+                                <textarea class="form-control" 
+                                          id="message" 
+                                          name="message" 
+                                          rows="6" 
+                                          required 
+                                          placeholder="Tell us about your requirements, questions, or how we can help you..."></textarea>
+                            </div>
+                            <div class="col-12 text-center mt-4">
+                                <button type="submit" class="btn btn-contact">
+                                    <i class="fas fa-paper-plane me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Contact Options -->
+<section class="py-5" style="background: white;">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-10">
+                <h3 class="fw-bold mb-4">Prefer Direct Contact?</h3>
+                <div class="row g-4">
+                    <div class="col-md-3 col-sm-6">
+                        <a href="tel:+918012345678" class="text-decoration-none">
+                            <div class="p-4 bg-light rounded-3 h-100 hover-effect">
+                                <i class="fas fa-phone fa-2x text-primary mb-3"></i>
+                                <h5 class="fw-bold">Call Now</h5>
+                                <p class="text-muted small mb-0">Speak with our team</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <a href="mailto:info@aptcomputinglabs.com" class="text-decoration-none">
+                            <div class="p-4 bg-light rounded-3 h-100 hover-effect">
+                                <i class="fas fa-envelope fa-2x text-success mb-3"></i>
+                                <h5 class="fw-bold">Email Us</h5>
+                                <p class="text-muted small mb-0">Get detailed response</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <a href="https://wa.me/918012345678" class="text-decoration-none" target="_blank">
+                            <div class="p-4 bg-light rounded-3 h-100 hover-effect">
+                                <i class="fab fa-whatsapp fa-2x text-success mb-3"></i>
+                                <h5 class="fw-bold">WhatsApp</h5>
+                                <p class="text-muted small mb-0">Quick chat support</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <a href="{% url 'accounts:login' %}" class="text-decoration-none">
+                            <div class="p-4 bg-light rounded-3 h-100 hover-effect">
+                                <i class="fas fa-calendar-check fa-2x text-warning mb-3"></i>
+                                <h5 class="fw-bold">Book Demo</h5>
+                                <p class="text-muted small mb-0">Schedule a meeting</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hover-effect {
+    transition: all 0.3s ease;
+}
+
+.hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}
