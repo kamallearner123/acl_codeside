@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+{% block title %}ML Hands-on Materials{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chapter-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-left: 4px solid #667eea;
+    }
+    .chapter-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .chapter-number {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    .topic-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .topic-list li:last-child {
+        border-bottom: none;
+    }
+    .course-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 40px;
+        margin-bottom: 40px;
+    }
+    .section-divider {
+        border-top: 3px solid #667eea;
+        margin: 50px 0 30px 0;
+        position: relative;
+    }
+    .section-divider::after {
+        content: attr(data-section);
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 0 20px;
+        color: #667eea;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div class="flex-grow-1">
+            <div class="course-header">
+                <h1 class="display-5 fw-bold mb-3">Python for AI & Machine Learning</h1>
+                <p class="lead mb-3">Comprehensive hands-on course covering Python fundamentals to advanced AI applications</p>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-book-open fa-2x me-3"></i>
+                            <div>
+                                <small class="d-block opacity-75">Chapters</small>
+                                <strong class="fs-5">14</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-clock fa-2x me-3"></i>
+                            <div>
+                                <small class="d-block opacity-75">Duration</small>
+                                <strong class="fs-5">8-10 Weeks</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-layer-group fa-2x me-3"></i>
+                            <div>
+                                <small class="d-block opacity-75">Level</small>
+                                <strong class="fs-5">Beginner to Advanced</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-project-diagram fa-2x me-3"></i>
+                            <div>
+                                <small class="d-block opacity-75">Final Project</small>
+                                <strong class="fs-5">AI Application</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a class="btn btn-outline-primary ms-3" href="{% url 'materials:dashboard' %}">← Back</a>
+    </div>
+
+    <!-- Section 1: Python Foundations -->
+    <div class="section-divider" data-section="SECTION 1: PYTHON FOUNDATIONS"></div>
+
+    <div class="row g-4">
+        <!-- Chapter 1 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">1</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Introduction to Python and AI</h5>
+                            <small class="text-muted">Foundation & Environment Setup</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Installing Python and Setting Up the Environment (IDEs like VS Code, Jupyter Notebook)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Basic Syntax and Writing Your First Python Script</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Overview of AI: What is AI, Machine Learning, Deep Learning, and their applications</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Python's Role in AI: Why Python for AI</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Introduction to Key AI Libraries (NumPy, Pandas, Scikit-learn, TensorFlow/PyTorch)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter 2 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">2</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Python Basics - Data Types, Operators, and Control Structures</h5>
+                            <small class="text-muted">Core Programming Concepts</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Variables and Basic Data Types (integers, floats, strings, booleans)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Input/Output Functions</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Operators (arithmetic, comparison, logical, assignment)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Control Structures: if, elif, else Statements</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Loops: for and while</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter 3 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">3</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Functions, Scope, and Recursion</h5>
+                            <small class="text-muted">Modular Programming</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Defining and Calling Functions</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Parameters, Arguments, and Return Values</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Variable Scope (Local vs Global)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Recursion Basics and Use Cases in AI (e.g., Tree Traversals)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Lambda Functions for Concise Code</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter 4 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">4</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Data Structures in Python</h5>
+                            <small class="text-muted">Essential Collections</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Lists: Creation, Access, Modification, and Methods</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Tuples: Immutability and Use Cases</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Sets: Operations and Unique Data Handling</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Dictionaries: Key-Value Pairs, Iteration, and Methods</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Comprehensions for Efficient Data Manipulation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter 5 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">5</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">File Handling, Exceptions, and Modules</h5>
+                            <small class="text-muted">I/O and Error Management</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Reading and Writing Text/CSV Files</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Context Managers (with statement)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Exception Handling: try, except, else, finally</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Importing and Creating Modules</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Standard Libraries: os, sys, datetime</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter 6 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">6</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Object-Oriented Programming in Python</h5>
+                            <small class="text-muted">OOP Principles</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Classes, Objects, and the self Parameter</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Attributes, Methods, and Constructors (__init__)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Inheritance and super()</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Polymorphism and Method Overriding</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Encapsulation and Special Methods (__str__, __repr__)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Data Science Tools -->
+    <div class="section-divider" data-section="SECTION 2: DATA SCIENCE TOOLS"></div>
+
+    <div class="row g-4">
+        <!-- Chapter 7 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">7</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Data Manipulation with NumPy and Pandas</h5>
+                            <small class="text-muted">Essential Data Processing</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>NumPy Arrays: Creation, Operations, Broadcasting</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Array Manipulation: Slicing, Reshaping, Aggregation</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Pandas: Series and DataFrames</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Data Cleaning, Filtering, Grouping, and Merging</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Reading/Writing Data (CSV, Excel, JSON)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter 8 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">8</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Data Visualization with Matplotlib and Seaborn</h5>
+                            <small class="text-muted">Visual Data Analysis</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Matplotlib Basics: Line, Bar, Scatter Plots</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Customizing Plots: Labels, Titles, Legends</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Seaborn for Statistical Visualizations: Heatmaps, Pairplots</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Integrating with Pandas for Data Exploration</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Visualizing AI Results (e.g., Confusion Matrices)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Machine Learning -->
+    <div class="section-divider" data-section="SECTION 3: MACHINE LEARNING"></div>
+
+    <div class="row g-4">
+        <!-- Chapter 9 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">9</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Introduction to Machine Learning</h5>
+                            <small class="text-muted">ML Fundamentals</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Types of ML: Supervised, Unsupervised, Reinforcement</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>ML Workflow: Data Collection, Preprocessing, Model Training</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Feature Engineering and Scaling</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Train-Test Split and Cross-Validation</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Evaluation Metrics: Accuracy, Precision, Recall, F1-Score</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter 10 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">10</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Supervised Learning - Regression and Classification</h5>
+                            <small class="text-muted">Predictive Models</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Linear Regression and Polynomial Regression</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Logistic Regression for Classification</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Decision Trees and Random Forests</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Support Vector Machines (SVM)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Hyperparameter Tuning with GridSearchCV</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter 11 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">11</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Unsupervised Learning</h5>
+                            <small class="text-muted">Pattern Discovery</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>K-Means Clustering</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Hierarchical Clustering</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Principal Component Analysis (PCA)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Anomaly Detection Basics</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Evaluating Unsupervised Models (Silhouette Score)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter 12 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">12</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Introduction to Deep Learning</h5>
+                            <small class="text-muted">Neural Networks</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Neural Networks Basics: Neurons, Layers, Activation Functions</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Using Keras/TensorFlow for Feedforward Networks</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Training Models: Loss Functions, Optimizers</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Handling Overfitting: Dropout, Regularization</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Simple CNN for Image Classification</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 4: Advanced Topics & Project -->
+    <div class="section-divider" data-section="SECTION 4: ADVANCED TOPICS & PROJECT"></div>
+
+    <div class="row g-4">
+        <!-- Chapter 13 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3">13</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Natural Language Processing Basics</h5>
+                            <small class="text-muted">Text Analysis</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Text Preprocessing: Tokenization, Stemming, Lemmatization</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Bag of Words and TF-IDF</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Word Embeddings (Word2Vec Introduction)</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Building a Simple NLP Model with Scikit-learn</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Sentiment Analysis Project Snippet</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapter 14 -->
+        <div class="col-lg-6">
+            <div class="card chapter-card h-100 border-warning">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="chapter-number me-3" style="background: linear-gradient(135deg, #ff6b6b, #feca57);">14</div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Final Project and Deployment Basics</h5>
+                            <small class="text-muted">Capstone Application</small>
+                        </div>
+                    </div>
+                    <ul class="topic-list mb-0">
+                        <li><i class="fas fa-star text-warning me-2"></i>Project Planning: Choosing an AI Problem (e.g., Predictive Model or Classifier)</li>
+                        <li><i class="fas fa-star text-warning me-2"></i>Implementing End-to-End: Data Prep, Model Building, Evaluation</li>
+                        <li><i class="fas fa-star text-warning me-2"></i>Using OOP for Project Structure</li>
+                        <li><i class="fas fa-star text-warning me-2"></i>Basic Deployment: Saving Models, Using Streamlit for Web Apps</li>
+                        <li><i class="fas fa-star text-warning me-2"></i>Documentation, Testing, and Presentation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Outcomes -->
+    <div class="row mt-5 g-4">
+        <div class="col-md-6">
+            <div class="card border-primary h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Learning Outcomes</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Master Python programming from basics to advanced</li>
+                        <li>Understand and implement machine learning algorithms</li>
+                        <li>Work with data using NumPy, Pandas, and visualization libraries</li>
+                        <li>Build and train neural networks using TensorFlow/Keras</li>
+                        <li>Apply NLP techniques for text analysis</li>
+                        <li>Deploy AI models as web applications</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-success h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-toolbox me-2"></i>Tools & Technologies</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge bg-primary">Python 3.9+</span>
+                        <span class="badge bg-primary">NumPy</span>
+                        <span class="badge bg-primary">Pandas</span>
+                        <span class="badge bg-primary">Matplotlib</span>
+                        <span class="badge bg-primary">Seaborn</span>
+                        <span class="badge bg-success">Scikit-learn</span>
+                        <span class="badge bg-success">TensorFlow</span>
+                        <span class="badge bg-success">Keras</span>
+                        <span class="badge bg-info">Jupyter Notebook</span>
+                        <span class="badge bg-info">VS Code</span>
+                        <span class="badge bg-warning text-dark">Streamlit</span>
+                        <span class="badge bg-danger">Git</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prerequisites -->
+    <div class="alert alert-info mt-4">
+        <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Prerequisites</h5>
+        <ul class="mb-0">
+            <li>Basic computer skills and familiarity with any programming language (helpful but not required)</li>
+            <li>High school level mathematics (algebra, basic statistics)</li>
+            <li>Eagerness to learn and practice coding</li>
+            <li>Computer with at least 8GB RAM and stable internet connection</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

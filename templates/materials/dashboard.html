@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Learning Materials{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Subject Materials Library</h1>
+        <p class="lead text-muted">Explore curated chapters for each specialization. Pick a track to start learning.</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="h5 fw-bold mb-3">ML Hands-on</h3>
+                    <p class="text-muted flex-grow-1">Project-driven chapters covering data prep, model building, evaluation, and deployment.</p>
+                    <a class="btn btn-primary mt-3" href="{% url 'materials:ml_handson' %}">View Chapters</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="h5 fw-bold mb-3">Python Programming</h3>
+                    <p class="text-muted flex-grow-1">Core to advanced Python concepts, tooling, and best practices in modular chapters.</p>
+                    <a class="btn btn-primary mt-3" href="{% url 'materials:python' %}">View Chapters</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="h5 fw-bold mb-3">Rust Programming</h3>
+                    <p class="text-muted flex-grow-1">Ownership, concurrency, embedded patterns, and production workflows chapterized.</p>
+                    <a class="btn btn-primary mt-3" href="{% url 'materials:rust' %}">View Chapters</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                    <h3 class="h5 fw-bold mb-3">C/C++ Programming</h3>
+                    <p class="text-muted flex-grow-1">Low-level fundamentals, STL mastery, and system-level projects in structured chapters.</p>
+                    <a class="btn btn-primary mt-3" href="{% url 'materials:c_programming' %}">View Chapters</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

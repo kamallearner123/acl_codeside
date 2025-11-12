@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}C/C++ Programming Materials{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6 fw-bold">C/C++ Programming Track</h1>
+            <p class="text-muted mb-0">Chapter-wise progression from bare-metal C to modern C++ for real-time and systems work.</p>
+        </div>
+        <a class="btn btn-outline-primary" href="{% url 'materials:dashboard' %}">← Back to Materials</a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-lg-2 g-4">
+        <div class="col">
+            <div class="card h-100 shadow-sm border-primary">
+                <div class="card-header bg-primary text-white fw-bold">Chapter 1 · Embedded C Foundations</div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Memory map, linker scripts, startup code</li>
+                        <li>Register-level programming patterns</li>
+                        <li>Interrupt handling strategies</li>
+                        <li>Lab: implement drivers for timer & UART</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 shadow-sm border-success">
+                <div class="card-header bg-success text-white fw-bold">Chapter 2 · Modern C++ Design</div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>C++20 features: concepts, ranges, coroutines</li>
+                        <li>Resource management with RAII and smart pointers</li>
+                        <li>Templates, metaprogramming, policy-based design</li>
+                        <li>Lab: build high-performance messaging library</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 shadow-sm border-danger">
+                <div class="card-header bg-danger text-white fw-bold">Chapter 3 · Systems Integration & Tooling</div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Build systems: CMake, Meson, Bazel comparison</li>
+                        <li>Static/dynamic analysis (clang-tidy, AddressSanitizer)</li>
+                        <li>Cross-compilation toolchains, CI pipelines</li>
+                        <li>Lab: containerized build & integration tests</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

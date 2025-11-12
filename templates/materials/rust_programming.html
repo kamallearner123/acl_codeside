@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Rust Programming Materials{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6 fw-bold">Rust Programming Track</h1>
+            <p class="text-muted mb-0">Pragmatic chapters for systems engineers targeting safety-critical and embedded domains.</p>
+        </div>
+        <a class="btn btn-outline-primary" href="{% url 'materials:dashboard' %}">← Back to Materials</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="fw-bold">Chapter 1 · Ownership & Borrowing Deep Dive</h5>
+                    <ul class="mb-0">
+                        <li>Move semantics, lifetimes, borrowing patterns</li>
+                        <li>Error handling with Result and ? operator</li>
+                        <li>Macros for reducing boilerplate</li>
+                        <li>Lab: implement safe hardware abstraction layer</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="fw-bold">Chapter 2 · Concurrency & Embedded Rust</h5>
+                    <ul class="mb-0">
+                        <li>Send/Sync, channels, async runtimes</li>
+                        <li>RTIC, embassy, bare-metal deployment</li>
+                        <li>FFI with C/C++, safe wrappers</li>
+                        <li>Lab: build concurrent sensor fusion module</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="fw-bold">Chapter 3 · Production Rust Engineering</h5>
+                    <ul class="mb-0">
+                        <li>Workspace organization, crate publishing</li>
+                        <li>Testing pyramid: unit, property, integration</li>
+                        <li>Observability: tracing, metrics, logging</li>
+                        <li>Lab: release pipeline with cargo & GitHub Actions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

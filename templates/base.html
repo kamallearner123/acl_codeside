@@ -341,6 +341,30 @@
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-book-reader me-1"></i>Materials
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'materials:dashboard' %}">
+                                <i class="fas fa-list"></i> All Materials
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'materials:ml_handson' %}">
+                                <i class="fas fa-robot"></i> ML Hands-on
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'materials:python' %}">
+                                <i class="fab fa-python"></i> Python Programming
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'materials:rust' %}">
+                                <i class="fab fa-rust"></i> Rust Programming
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'materials:c_programming' %}">
+                                <i class="fab fa-cuttlefish"></i> C/C++ Programming
+                            </a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-industry me-1"></i>Services
                         </a>
                         <ul class="dropdown-menu">

@@ -32,6 +32,7 @@ urlpatterns = [
     path('submissions/', include('submissions.urls')),
     path('devtools/', include('devtools.urls')),
     path('contact/', include('contact.urls')),
+    path('materials/', include('materials.urls')),
 ]
 
 if settings.DEBUG:
