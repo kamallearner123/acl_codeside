@@ -129,7 +129,8 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-# Use standard storage for development, ManifestStaticFilesStorage for production
+# Storage configuration - use standard storage in development
+# Production settings are handled in settings_prod.py
 if DEBUG:
     STORAGES = {
         "default": {
@@ -140,12 +141,13 @@ if DEBUG:
         },
     }
 else:
+    # For any non-debug mode, use standard storage
     STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         },
     }
 
