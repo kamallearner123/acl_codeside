@@ -84,6 +84,7 @@ body {
     gap: 10px;
     padding: 10px;
     height: calc(100vh - 100px);
+    max-height: calc(100vh - 100px);
 }
 
 /* Panel Styles */
@@ -118,12 +119,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .panel-header h2 {
     font-size: 1.1em;
     font-weight: 600;
     color: var(--text-primary);
+    margin: 0;
 }
 
 .panel-header h2 i {
@@ -134,6 +137,7 @@ body {
 .panel-actions {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 /* Buttons */
@@ -427,47 +431,130 @@ body {
 @media (max-width: 1200px) {
     .container {
         grid-template-columns: 1fr;
-        grid-template-rows: 40vh 30vh 30vh;
+        grid-template-rows: 45vh 27vh 27vh;
+        gap: 8px;
+        padding: 8px;
+        height: calc(100vh - 120px);
     }
-    
+
     .editor-panel {
         grid-row: 1;
+        grid-column: 1;
     }
-    
+
     .output-panel {
         grid-column: 1;
         grid-row: 2;
     }
-    
+
     .plots-panel {
         grid-column: 1;
         grid-row: 3;
     }
-    
+
     .example-menu {
         min-width: 90vw;
     }
 }
 
 @media (max-width: 768px) {
+    .container {
+        grid-template-rows: 50vh 25vh 25vh;
+        gap: 6px;
+        padding: 6px;
+        height: calc(100vh - 140px);
+    }
+
+    .header {
+        padding: 15px;
+    }
+
+    .header h1 {
+        font-size: 1.8em;
+    }
+
+    .panel-header {
+        padding: 10px 12px;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .panel-header h2 {
+        font-size: 1em;
+    }
+
+    .panel-actions {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 6px;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        font-size: 0.85em;
+        min-width: 80px;
+    }
+
+    .monaco-editor {
+        min-height: 300px;
+    }
+
+    .output-content, .plots-content {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        grid-template-rows: 55vh 22vh 22vh;
+        gap: 4px;
+        padding: 4px;
+        height: calc(100vh - 160px);
+    }
+
+    .header {
+        padding: 10px;
+    }
+
     .header h1 {
         font-size: 1.5em;
     }
-    
+
     .panel-header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
+        padding: 8px 10px;
     }
-    
+
+    .panel-header h2 {
+        font-size: 0.95em;
+    }
+
     .panel-actions {
-        width: 100%;
-        flex-wrap: wrap;
+        gap: 4px;
     }
-    
+
     .btn {
-        flex: 1;
-        justify-content: center;
-        min-width: 100px;
+        padding: 5px 10px;
+        font-size: 0.8em;
+        min-width: 70px;
+    }
+
+    .monaco-editor {
+        min-height: 250px;
+    }
+
+    .output-content, .plots-content {
+        padding: 8px;
+        font-size: 0.85em;
+    }
+
+    .example-menu {
+        min-width: 95vw;
+        padding: 15px;
+    }
+
+    .example-grid {
+        grid-template-columns: 1fr;
+        gap: 6px;
     }
 }

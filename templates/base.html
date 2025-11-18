@@ -35,7 +35,7 @@
             padding: 0;
             margin-right: 2rem;
         }
-        .navbar-brand img {
+        .navbar-logo {
             width: 120px;
             height: 120px;
             margin-right: 25px;
@@ -45,7 +45,7 @@
             background: rgba(255, 255, 255, 0.1);
             padding: 10px;
         }
-        .navbar-brand:hover img {
+        .navbar-brand:hover .navbar-logo {
             transform: scale(1.08) rotate(2deg);
             filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
         }
@@ -229,17 +229,18 @@
             align-items: center;
         }
         @media (max-width: 991px) {
-            .navbar-brand img {
-                width: 90px;
-                height: 90px;
-                margin-right: 20px;
+            .navbar-logo {
+                width: 80px;
+                height: 80px;
+                margin-right: 15px;
             }
             .brand-title {
-                font-size: 2rem;
+                font-size: 1.8rem;
             }
             .navbar-nav .nav-link {
-                padding: 10px 15px;
+                padding: 12px 16px;
                 margin: 2px 0;
+                font-size: 0.95rem;
             }
             .dropdown-menu {
                 position: static !important;
@@ -251,9 +252,11 @@
                 border: 2px solid #007bff;
                 border-radius: 8px;
                 margin: 5px 0;
+                font-size: 0.9rem;
             }
             .dropdown-menu .dropdown-item {
                 color: #2d3748;
+                padding: 10px 15px;
             }
             .dropdown-menu .dropdown-item:hover {
                 background: linear-gradient(135deg, #007bff, #0056b3);
@@ -265,13 +268,25 @@
         }
         
         @media (max-width: 576px) {
-            .navbar-brand img {
-                width: 70px;
-                height: 70px;
-                margin-right: 15px;
+            .navbar-logo {
+                width: 60px;
+                height: 60px;
+                margin-right: 10px;
             }
             .brand-title {
-                font-size: 1.8rem;
+                font-size: 1.5rem;
+                letter-spacing: 0.5px;
+            }
+            .navbar-nav .nav-link {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+            .dropdown-menu {
+                margin: 2px 0;
+                font-size: 0.85rem;
+            }
+            .dropdown-menu .dropdown-item {
+                padding: 8px 12px;
             }
         }
     </style>
@@ -281,34 +296,26 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <!-- Brand Section -->
-            <div class="w-100">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="brand-section text-center py-3">
-                            <a class="navbar-brand d-inline-flex align-items-center justify-content-center" href="{% url 'home' %}">
-                                <img src="{% static 'img/apt.png' %}" alt="APT COMPUTING LABS">
-                                <span class="brand-title ms-3">APT COMPUTING LABS</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Navigation Menu -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="navigation-section">
-                            <button class="navbar-toggler mx-auto d-block d-lg-none mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                                <span class="navbar-toggler-icon"></span>
-                            </button>
-                            <div class="collapse navbar-collapse" id="navbarNav">
-                                <ul class="navbar-nav mx-auto">
+            <!-- Brand Section - Simplified for mobile -->
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <img src="{% static 'img/apt.png' %}" alt="APT COMPUTING LABS" class="navbar-logo">
+                <span class="brand-title ms-2">APT COMPUTING LABS</span>
+            </a>
+
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Menu -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">
                             <i class="fas fa-home me-1"></i>Home
                         </a>
                     </li>
-                    
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-book-open me-1"></i>Courses
@@ -435,6 +442,8 @@
                         </a>
                     </li>
                 </ul>
+
+                <!-- User Menu / Auth Buttons -->
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
@@ -459,14 +468,6 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item d-none d-lg-block ms-2">
-                            <form method="post" action="{% url 'accounts:logout' %}" class="d-inline m-0">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-light btn-sm">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
-                                </button>
-                            </form>
-                        </li>
                     {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'accounts:login' %}">
@@ -475,10 +476,6 @@
                         </li>
                     {% endif %}
                 </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </nav>

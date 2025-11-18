@@ -158,12 +158,111 @@ a:hover { color: var(--accent-color); text-decoration: none; }
     border-radius: 6px;
     font-weight: 500;
     padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-primary {
     background: linear-gradient(90deg,var(--primary-color),var(--accent-color));
     border-color: transparent;
     box-shadow: 0 6px 14px rgba(86, 102, 255, 0.12);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: linear-gradient(90deg,var(--accent-color),var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(86, 102, 255, 0.2);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(86, 102, 255, 0.15);
+}
+
+/* Touch-friendly button improvements */
+@media (max-width: 768px) {
+    .btn {
+        min-height: 44px; /* iOS/Android minimum touch target */
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn:not(.btn-sm) {
+        min-height: 48px;
+        padding: 0.875rem 1.5rem;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 0;
+        border-radius: 0;
+    }
+    
+    .btn-group .btn:first-child {
+        border-radius: 8px 0 0 8px;
+    }
+    
+    .btn-group .btn:last-child {
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .btn-group-vertical .btn {
+        border-radius: 0;
+        margin-bottom: 0;
+    }
+    
+    .btn-group-vertical .btn:first-child {
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .btn-group-vertical .btn:last-child {
+        border-radius: 0 0 8px 8px;
+    }
+    
+    /* Improve button spacing in forms */
+    .form-group .btn,
+    .input-group .btn {
+        margin-top: 0.5rem;
+    }
+    
+    /* Better button contrast on mobile */
+    .btn-outline-primary {
+        border-width: 2px;
+    }
+    
+    .btn-outline-secondary {
+        border-width: 2px;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn {
+        min-height: 46px;
+        padding: 0.875rem 1.25rem;
+        font-size: 1.05rem;
+    }
+    
+    .btn-sm {
+        min-height: 40px;
+        padding: 0.625rem 1rem;
+        font-size: 0.95rem;
+    }
+    
+    /* Stack buttons vertically on very small screens */
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-group .btn {
+        border-radius: 8px !important;
+        margin-bottom: 0.25rem;
+    }
+    
+    .btn-group .btn:last-child {
+        margin-bottom: 0;
+    }
 }
 
 .lead { color: rgba(15,23,36,0.85); }
@@ -353,6 +452,122 @@ footer {
     .CodeMirror-scroll {
         min-height: 300px;
     }
+    
+    /* Modal responsiveness */
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100vw - 1rem);
+    }
+    
+    .modal-content {
+        border-radius: 8px;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+    }
+    
+    .modal-header h5 {
+        font-size: 1.1rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-body .fa-4x {
+        font-size: 2.5rem !important;
+    }
+    
+    .modal-body h4 {
+        font-size: 1.25rem;
+    }
+    
+    .modal-footer {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        margin: 0;
+    }
+    
+    .modal-footer .btn-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .practice-features .row {
+        --bs-gutter-x: 0.5rem;
+        --bs-gutter-y: 0.5rem;
+    }
+    
+    .practice-features .feature-item {
+        padding: 0.75rem !important;
+        margin-bottom: 0.5rem;
+    }
+    
+    .practice-features .feature-item i {
+        font-size: 1.25rem !important;
+    }
+    
+    .practice-features .feature-item h6 {
+        font-size: 0.9rem;
+        margin: 0.5rem 0 0.25rem 0;
+    }
+    
+    .practice-features .feature-item small {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.25rem;
+        max-width: calc(100vw - 0.5rem);
+    }
+    
+    .modal-header {
+        padding: 0.75rem;
+    }
+    
+    .modal-header h5 {
+        font-size: 1rem;
+    }
+    
+    .modal-body {
+        padding: 0.75rem;
+    }
+    
+    .modal-body .fa-4x {
+        font-size: 2rem !important;
+    }
+    
+    .modal-body h4 {
+        font-size: 1.1rem;
+    }
+    
+    .modal-footer {
+        padding: 0.75rem;
+    }
+    
+    .practice-features .feature-item {
+        padding: 0.5rem !important;
+    }
+    
+    .practice-features .feature-item i {
+        font-size: 1rem !important;
+    }
+    
+    .practice-features .feature-item h6 {
+        font-size: 0.85rem;
+    }
+    
+    .practice-features .feature-item small {
+        font-size: 0.75rem;
+    }
 }
 
 /* Loading states */
@@ -361,20 +576,214 @@ footer {
     cursor: not-allowed;
 }
 
-/* Custom scrollbar for code areas */
-.CodeMirror-scroll::-webkit-scrollbar {
-    width: 8px;
+/* Touch Interactions and Mobile UX */
+@media (max-width: 768px) {
+    /* Improve touch targets for all interactive elements */
+    a, button, .btn, .nav-link, .dropdown-item, input, select, textarea {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Better spacing for touch interactions */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    /* Improve form elements for touch */
+    .form-control, .form-select {
+        min-height: 44px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    /* Better link spacing */
+    .nav-link {
+        padding: 0.875rem 1rem;
+        margin: 0.125rem 0;
+    }
+    
+    /* Improve dropdown items for touch */
+    .dropdown-item {
+        padding: 0.875rem 1.25rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Better table touch interactions */
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .table th, .table td {
+        padding: 0.875rem;
+        vertical-align: middle;
+    }
+    
+    /* Improve alert spacing */
+    .alert {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+    }
+    
+    .alert .btn-close {
+        padding: 1rem;
+    }
+    
+    /* Better pagination for touch */
+    .pagination .page-link {
+        padding: 0.75rem 1rem;
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    /* Improve badge touch targets */
+    .badge {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.9rem;
+        min-height: 28px;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    /* Better icon spacing */
+    .icon-circle {
+        width: 56px;
+        height: 56px;
+        margin-bottom: 1rem;
+    }
+    
+    /* Improve stats cards for touch */
+    .stats-card {
+        padding: 2.5rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .stats-card i {
+        font-size: 3.5rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    /* Better spacing for feature items */
+    .feature-item {
+        margin-bottom: 1rem;
+        padding: 1.25rem;
+    }
+    
+    /* Improve hero section touch interactions */
+    .hero {
+        padding: 4rem 1rem;
+    }
+    
+    .hero .cta {
+        margin-top: 2rem;
+    }
+    
+    /* Better touch feedback for cards */
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(25, 35, 50, 0.15);
+    }
+    
+    /* Remove hover effects on touch devices */
+    @media (hover: none) and (pointer: coarse) {
+        .card:hover {
+            transform: none;
+            box-shadow: 0 6px 18px rgba(25, 35, 50, 0.08);
+        }
+        
+        .btn:hover {
+            transform: none;
+        }
+        
+        .nav-link:hover {
+            background-color: transparent;
+        }
+    }
 }
 
-.CodeMirror-scroll::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-.CodeMirror-scroll::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-.CodeMirror-scroll::-webkit-scrollbar-thumb:hover {
-    background: #555;
+@media (max-width: 576px) {
+    /* Extra small screen optimizations */
+    .container-fluid {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    /* Better spacing for very small screens */
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .form-control, .form-select {
+        min-height: 48px;
+        padding: 0.875rem;
+        font-size: 1.05rem;
+    }
+    
+    .nav-link {
+        padding: 1rem;
+        font-size: 1.05rem;
+    }
+    
+    .dropdown-item {
+        padding: 1rem 1.25rem;
+    }
+    
+    .table th, .table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .alert {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+    }
+    
+    .pagination .page-link {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.9rem;
+    }
+    
+    .stats-card {
+        padding: 2rem 1rem;
+    }
+    
+    .stats-card i {
+        font-size: 3rem;
+    }
+    
+    .hero {
+        padding: 3rem 1rem;
+    }
+    
+    /* Better text sizing for readability */
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    h4 { font-size: 1.1rem; }
+    h5 { font-size: 1rem; }
+    h6 { font-size: 0.95rem; }
+    
+    .lead {
+        font-size: 1.1rem;
+    }
+    
+    p {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
 }
