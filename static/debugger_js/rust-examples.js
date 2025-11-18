@@ -703,6 +703,877 @@ fn main() {
     let v = vec_strs!["hello", "world", "rust"];
     println!("Strings: {:?}", v);
 }`
+    },
+    
+    "Testing & Debugging": {
+        "Unit Tests": `#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        assert_eq!(2 + 2, 4);
+    }
+    
+    #[test]
+    fn test_panic() {
+        panic!("This is a panic test");
+    }
+}
+
+fn main() {
+    println!("Run: cargo test");
+}`,
+        "Test with Should Panic": `fn divide(a: i32, b: i32) -> i32 {
+    if b == 0 {
+        panic!("Division by zero!");
+    }
+    a / b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[should_panic(expected = "Division by zero!")]
+    fn test_divide_by_zero() {
+        divide(10, 0);
+    }
+}
+
+fn main() {
+    println!("Result: {}", divide(10, 2));
+}`,
+        "Assert Macros": `fn main() {
+    let x = 5;
+    let y = 5;
+    
+    assert!(x == y);
+    assert_eq!(x, y);
+    assert_ne!(x, 3);
+    
+    let name = "Rust";
+    assert!(name.contains("Ru"), "Name should contain 'Ru'");
+    
+    println!("All assertions passed!");
+}`,
+        "Debug Trait": `#[derive(Debug)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+fn main() {
+    let p = Point { x: 10, y: 20 };
+    println!("Debug: {:?}", p);
+    println!("Pretty: {:#?}", p);
+    
+    let vec = vec![1, 2, 3, 4, 5];
+    println!("Vector debug: {:?}", vec);
+}`
+    },
+    
+    "File I/O & Modules": {
+        "Reading Files": `use std::fs;
+
+fn main() {
+    let contents = fs::read_to_string("Cargo.toml")
+        .expect("Something went wrong reading the file");
+    
+    println!("File contents:\\n{}", contents);
+}`,
+        "Writing Files": `use std::fs::File;
+use std::io::prelude::*;
+
+fn main() -> std::io::Result<()> {
+    let mut file = File::create("hello.txt")?;
+    file.write_all(b"Hello, file!")?;
+    
+    println!("File written successfully!");
+    Ok(())
+}`,
+        "Module Declaration": `mod math {
+    pub fn add(a: i32, b: i32) -> i32 {
+        a + b
+    }
+    
+    pub fn multiply(a: i32, b: i32) -> i32 {
+        a * b
+    }
+}
+
+fn main() {
+    let sum = math::add(5, 3);
+    let product = math::multiply(4, 6);
+    
+    println!("Sum: {}, Product: {}", sum, product);
+}`,
+        "Using External Crates": `// Add to Cargo.toml: rand = "0.8"
+use std::io;
+
+fn main() {
+    println!("Guess the number!");
+    println!("Please input your guess:");
+    
+    let mut guess = String::new();
+    io::stdin().read_line(&mut guess)
+        .expect("Failed to read line");
+        
+    println!("You guessed: {}", guess);
+}`,
+        "Path and Use": `use std::collections::HashMap;
+use std::io::Result;
+
+mod network {
+    pub mod server {
+        pub fn connect() {
+            println!("Connected to server");
+        }
+    }
+}
+
+fn main() {
+    let mut map = HashMap::new();
+    map.insert("key", "value");
+    
+    network::server::connect();
+    
+    println!("Map: {:?}", map);
+}`
+    },
+    
+    "Pattern Matching Advanced": {
+        "Match Guards": `fn main() {
+    let num = Some(4);
+    
+    match num {
+        Some(x) if x < 5 => println!("less than five: {}", x),
+        Some(x) => println!("{}", x),
+        None => (),
+    }
+    
+    let x = 4;
+    let y = false;
+    
+    match x {
+        4 | 5 | 6 if y => println!("yes"),
+        _ => println!("no"),
+    }
+}`,
+        "Destructuring": `struct Point { x: i32, y: i32 }
+
+fn main() {
+    let p = Point { x: 0, y: 7 };
+    
+    let Point { x: a, y: b } = p;
+    println!("a: {}, b: {}", a, b);
+    
+    match p {
+        Point { x, y: 0 } => println!("On the x axis at {}", x),
+        Point { x: 0, y } => println!("On the y axis at {}", y),
+        Point { x, y } => println!("On neither axis: ({}, {})", x, y),
+    }
+}`,
+        "Ignoring Values": `fn main() {
+    let numbers = (2, 4, 8, 16, 32);
+    
+    match numbers {
+        (first, _, third, _, fifth) => {
+            println!("Some numbers: {}, {}, {}", first, third, fifth)
+        },
+    }
+    
+    let mut setting_value = Some(5);
+    let new_setting_value = Some(10);
+    
+    match (setting_value, new_setting_value) {
+        (Some(_), Some(_)) => {
+            println!("Can't overwrite an existing customized value");
+        }
+        _ => {
+            setting_value = new_setting_value;
+        }
+    }
+}`,
+        "At Bindings": `enum Message {
+    Hello { id: i32 },
+}
+
+fn main() {
+    let msg = Message::Hello { id: 5 };
+    
+    match msg {
+        Message::Hello { id: id_variable @ 3..=7 } => {
+            println!("Found an id in range: {}", id_variable)
+        },
+        Message::Hello { id: 10..=12 } => {
+            println!("Found an id in another range")
+        },
+        Message::Hello { id } => {
+            println!("Found some other id: {}", id)
+        },
+    }
+}`
+    },
+    
+    "Custom Types & Implementations": {
+        "Custom Display": `use std::fmt;
+
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+impl fmt::Display for Point {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
+    }
+}
+
+fn main() {
+    let point = Point { x: 1, y: 2 };
+    println!("Display: {}", point);
+}`,
+        "Custom Operators": `use std::ops::Add;
+
+#[derive(Debug, PartialEq)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+impl Add for Point {
+    type Output = Point;
+    
+    fn add(self, other: Point) -> Point {
+        Point {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
+fn main() {
+    let p1 = Point { x: 1, y: 2 };
+    let p2 = Point { x: 3, y: 4 };
+    let p3 = p1 + p2;
+    
+    println!("Result: {:?}", p3);
+}`,
+        "Newtype Pattern": `struct Millimeters(u32);
+struct Meters(u32);
+
+impl Millimeters {
+    fn to_meters(&self) -> Meters {
+        Meters(self.0 / 1000)
+    }
+}
+
+fn main() {
+    let length = Millimeters(5000);
+    let meters = length.to_meters();
+    
+    println!("{}mm = {}m", length.0, meters.0);
+}`,
+        "Type Aliases": `type Kilometers = i32;
+type Result<T> = std::result::Result<T, std::io::Error>;
+
+fn main() {
+    let distance: Kilometers = 100;
+    println!("Distance: {}km", distance);
+    
+    let _result: Result<String> = Ok("success".to_string());
+}`,
+        "Associated Types": `trait Iterator {
+    type Item;
+    
+    fn next(&mut self) -> Option<Self::Item>;
+}
+
+struct Counter {
+    current: usize,
+    max: usize,
+}
+
+impl Counter {
+    fn new(max: usize) -> Counter {
+        Counter { current: 0, max }
+    }
+}
+
+impl Iterator for Counter {
+    type Item = usize;
+    
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.current < self.max {
+            let current = self.current;
+            self.current += 1;
+            Some(current)
+        } else {
+            None
+        }
+    }
+}
+
+fn main() {
+    let mut counter = Counter::new(3);
+    
+    while let Some(val) = counter.next() {
+        println!("Counter: {}", val);
+    }
+}`
+    },
+    
+    "Async Programming": {
+        "Basic Async": `async fn hello_world() {
+    println!("Hello, async world!");
+}
+
+fn main() {
+    // Note: This is a simplified example
+    // In real code, you'd use an async runtime like tokio
+    println!("Sync before async");
+    
+    // Async functions return Future that need to be awaited
+    let future = hello_world();
+    
+    println!("Sync after creating future");
+}`,
+        "Future and Await": `use std::future::Future;
+use std::pin::Pin;
+use std::task::{Context, Poll};
+
+struct SimpleFuture;
+
+impl Future for SimpleFuture {
+    type Output = String;
+    
+    fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+        Poll::Ready("Future completed!".to_string())
+    }
+}
+
+fn main() {
+    let future = SimpleFuture;
+    // In real async runtime, this would be awaited
+    println!("Created future");
+}`
+    },
+    
+    "Numeric & Mathematical": {
+        "Number Parsing": `fn main() {
+    let num_str = "42";
+    let num: i32 = num_str.parse().expect("Not a number!");
+    println!("Parsed: {}", num);
+    
+    let float_str = "3.14";
+    let float: f64 = float_str.parse().unwrap_or(0.0);
+    println!("Float: {}", float);
+    
+    // With error handling
+    match "not_a_number".parse::<i32>() {
+        Ok(n) => println!("Number: {}", n),
+        Err(_) => println!("Failed to parse"),
+    }
+}`,
+        "Math Operations": `fn main() {
+    let x = 10;
+    let y = 3;
+    
+    println!("Addition: {}", x + y);
+    println!("Subtraction: {}", x - y);
+    println!("Multiplication: {}", x * y);
+    println!("Division: {}", x / y);
+    println!("Remainder: {}", x % y);
+    
+    // Floating point
+    let a = 10.0;
+    let b = 3.0;
+    println!("Float division: {}", a / b);
+    
+    // Powers and roots
+    println!("Power: {}", x.pow(2));
+    println!("Square root: {}", (64.0_f64).sqrt());
+}`,
+        "Random Numbers": `// This example shows the structure, would need rand crate
+use std::collections::HashMap;
+
+fn pseudo_random(seed: u64) -> u64 {
+    // Simple pseudo-random number generator
+    seed.wrapping_mul(1103515245).wrapping_add(12345)
+}
+
+fn main() {
+    let mut seed = 12345;
+    
+    for i in 0..5 {
+        seed = pseudo_random(seed);
+        let random_num = seed % 100;
+        println!("Random {}: {}", i, random_num);
+    }
+    
+    // Simulating dice roll
+    seed = pseudo_random(seed);
+    let dice = (seed % 6) + 1;
+    println!("Dice roll: {}", dice);
+}`,
+        "Bitwise Operations": `fn main() {
+    let a = 0b1010; // 10 in binary
+    let b = 0b1100; // 12 in binary
+    
+    println!("a = {:04b} ({})", a, a);
+    println!("b = {:04b} ({})", b, b);
+    println!("a & b = {:04b} ({})", a & b, a & b);
+    println!("a | b = {:04b} ({})", a | b, a | b);
+    println!("a ^ b = {:04b} ({})", a ^ b, a ^ b);
+    println!("!a = {:04b} ({})", !a, !a);
+    println!("a << 1 = {:04b} ({})", a << 1, a << 1);
+    println!("a >> 1 = {:04b} ({})", a >> 1, a >> 1);
+}`
+    },
+    
+    "Date & Time": {
+        "Duration": `use std::time::{Duration, Instant};
+use std::thread;
+
+fn main() {
+    let start = Instant::now();
+    
+    // Simulate some work
+    thread::sleep(Duration::from_millis(100));
+    
+    let duration = start.elapsed();
+    println!("Time elapsed: {:?}", duration);
+    
+    // Working with durations
+    let five_seconds = Duration::from_secs(5);
+    let thirty_millis = Duration::from_millis(30);
+    
+    println!("5 seconds = {:?}", five_seconds);
+    println!("30 millis = {:?}", thirty_millis);
+    
+    if duration < five_seconds {
+        println!("That was quick!");
+    }
+}`,
+        "Measuring Time": `use std::time::{SystemTime, UNIX_EPOCH, Instant};
+
+fn main() {
+    // System time
+    let now = SystemTime::now();
+    let since_epoch = now.duration_since(UNIX_EPOCH).expect("Time went backwards");
+    println!("Seconds since Unix epoch: {}", since_epoch.as_secs());
+    
+    // High resolution timing
+    let start = Instant::now();
+    
+    // Do some work
+    for i in 0..1000 {
+        let _ = i * i;
+    }
+    
+    let elapsed = start.elapsed();
+    println!("Operation took: {:?}", elapsed);
+    println!("Nanoseconds: {}", elapsed.as_nanos());
+}`
+    },
+    
+    "Command Line": {
+        "Command Line Args": `use std::env;
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+    
+    println!("Program name: {}", args[0]);
+    
+    if args.len() > 1 {
+        println!("Arguments:");
+        for (i, arg) in args.iter().enumerate().skip(1) {
+            println!("  {}: {}", i, arg);
+        }
+    } else {
+        println!("No arguments provided");
+    }
+    
+    // Environment variables
+    match env::var("HOME") {
+        Ok(home) => println!("Home directory: {}", home),
+        Err(_) => println!("HOME not set"),
+    }
+}`,
+        "Exit Codes": `use std::process;
+
+fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    
+    if args.len() != 2 {
+        eprintln!("Usage: {} <number>", args[0]);
+        process::exit(1);
+    }
+    
+    let number: i32 = match args[1].parse() {
+        Ok(n) => n,
+        Err(_) => {
+            eprintln!("Error: '{}' is not a valid number", args[1]);
+            process::exit(2);
+        }
+    };
+    
+    if number < 0 {
+        eprintln!("Error: Number must be positive");
+        process::exit(3);
+    }
+    
+    println!("Square of {} is {}", number, number * number);
+    process::exit(0);
+}`,
+        "Process Management": `use std::process::{Command, Stdio};
+
+fn main() {
+    // Execute a simple command
+    let output = Command::new("echo")
+        .arg("Hello from Rust!")
+        .output()
+        .expect("Failed to execute command");
+    
+    println!("Output: {}", String::from_utf8_lossy(&output.stdout));
+    
+    // Execute with input/output handling
+    let mut child = Command::new("cat")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .expect("Failed to start cat");
+    
+    if let Some(stdin) = child.stdin.as_mut() {
+        use std::io::Write;
+        stdin.write_all(b"Hello from pipe!").expect("Failed to write");
+    }
+    
+    let output = child.wait_with_output().expect("Failed to read output");
+    println!("Pipe output: {}", String::from_utf8_lossy(&output.stdout));
+}`
+    },
+    
+    "Network & Web": {
+        "TCP Client": `use std::io::prelude::*;
+use std::net::TcpStream;
+
+fn main() {
+    match TcpStream::connect("127.0.0.1:7878") {
+        Ok(mut stream) => {
+            println!("Successfully connected to server");
+            
+            let msg = "Hello, server!";
+            stream.write(msg.as_bytes()).unwrap();
+            
+            let mut data = [0 as u8; 50];
+            match stream.read(&mut data) {
+                Ok(_) => {
+                    println!("Reply: {}", String::from_utf8_lossy(&data[..]));
+                },
+                Err(e) => {
+                    println!("Failed to receive data: {}", e);
+                }
+            }
+        },
+        Err(e) => {
+            println!("Failed to connect: {}", e);
+        }
+    }
+}`,
+        "HTTP Request": `// This example shows structure, real code would need reqwest crate
+use std::collections::HashMap;
+
+fn simulate_http_get(url: &str) -> Result<String, &'static str> {
+    if url.starts_with("http://") || url.starts_with("https://") {
+        Ok(format!("Response from {}", url))
+    } else {
+        Err("Invalid URL")
+    }
+}
+
+fn main() {
+    let url = "https://api.example.com/data";
+    
+    match simulate_http_get(url) {
+        Ok(response) => println!("Response: {}", response),
+        Err(e) => println!("Error: {}", e),
+    }
+    
+    // Headers simulation
+    let mut headers = HashMap::new();
+    headers.insert("User-Agent", "Rust-App/1.0");
+    headers.insert("Accept", "application/json");
+    
+    println!("Headers: {:?}", headers);
+}`
+    },
+    
+    "Performance & Optimization": {
+        "Box for Heap Allocation": `fn main() {
+    let x = 5;
+    let y = Box::new(x);
+    
+    println!("x = {}", x);
+    println!("y = {}", y);
+    
+    // Large data on heap
+    let large_array = Box::new([0; 1000]);
+    println!("Array length: {}", large_array.len());
+    
+    // Box with custom struct
+    #[derive(Debug)]
+    struct Point { x: f64, y: f64 }
+    
+    let point = Box::new(Point { x: 1.0, y: 2.0 });
+    println!("Point: {:?}", point);
+}`,
+        "Rc Reference Counting": `use std::rc::Rc;
+
+fn main() {
+    let value = Rc::new(String::from("Hello, Rc!"));
+    
+    println!("Reference count: {}", Rc::strong_count(&value));
+    
+    {
+        let value2 = Rc::clone(&value);
+        let value3 = Rc::clone(&value);
+        
+        println!("Reference count: {}", Rc::strong_count(&value));
+        println!("Value: {}", value2);
+        println!("Value: {}", value3);
+    }
+    
+    println!("Reference count after scope: {}", Rc::strong_count(&value));
+    println!("Final value: {}", value);
+}`,
+        "Zero Copy with Cow": `use std::borrow::Cow;
+
+fn process_text(input: &str) -> Cow<str> {
+    if input.contains("bad") {
+        Cow::Owned(input.replace("bad", "good"))
+    } else {
+        Cow::Borrowed(input)
+    }
+}
+
+fn main() {
+    let text1 = "This is good text";
+    let text2 = "This is bad text";
+    
+    let result1 = process_text(text1);
+    let result2 = process_text(text2);
+    
+    println!("Result 1: {}", result1);
+    println!("Result 2: {}", result2);
+    
+    // Check if borrowed or owned
+    match result1 {
+        Cow::Borrowed(_) => println!("Text1 was borrowed"),
+        Cow::Owned(_) => println!("Text1 was owned"),
+    }
+    
+    match result2 {
+        Cow::Borrowed(_) => println!("Text2 was borrowed"),
+        Cow::Owned(_) => println!("Text2 was owned"),
+    }
+}`
+    },
+    
+    "Unsafe Rust": {
+        "Raw Pointers": `fn main() {
+    let mut num = 5;
+    
+    let r1 = &num as *const i32;
+    let r2 = &mut num as *mut i32;
+    
+    unsafe {
+        println!("r1 is: {}", *r1);
+        println!("r2 is: {}", *r2);
+        
+        *r2 = 10;
+        println!("num is now: {}", num);
+    }
+    
+    // Arbitrary memory address (don't do this in real code!)
+    let address = 0x012345usize;
+    let r = address as *const i32;
+    
+    // This would be unsafe and likely crash:
+    // unsafe {
+    //     println!("Value at arbitrary address: {}", *r);
+    // }
+    
+    println!("Created pointer to address: {:p}", r);
+}`,
+        "Calling Unsafe Functions": `unsafe fn dangerous() {
+    println!("This is an unsafe function!");
+}
+
+fn split_at_mut(slice: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
+    let len = slice.len();
+    let ptr = slice.as_mut_ptr();
+    
+    assert!(mid <= len);
+    
+    unsafe {
+        (
+            std::slice::from_raw_parts_mut(ptr, mid),
+            std::slice::from_raw_parts_mut(ptr.add(mid), len - mid),
+        )
+    }
+}
+
+fn main() {
+    unsafe {
+        dangerous();
+    }
+    
+    let mut v = vec![1, 2, 3, 4, 5, 6];
+    let (left, right) = split_at_mut(&mut v, 3);
+    
+    println!("Left: {:?}", left);
+    println!("Right: {:?}", right);
+}`
+    },
+    
+    "FFI & C Integration": {
+        "External C Function": `extern "C" {
+    fn abs(input: i32) -> i32;
+}
+
+fn main() {
+    unsafe {
+        println!("Absolute value of -3 according to C: {}", abs(-3));
+    }
+}
+
+// Calling Rust from C
+#[no_mangle]
+pub extern "C" fn call_from_c() {
+    println!("Just got called from C!");
+}
+
+// Function that C can call
+#[no_mangle]
+pub extern "C" fn add_numbers(a: i32, b: i32) -> i32 {
+    a + b
+}`,
+        "Static Libraries": `// Creating a static library
+#[no_mangle]
+pub extern "C" fn rust_function(x: i32) -> i32 {
+    x * 2
+}
+
+// Union for FFI
+#[repr(C)]
+union Value {
+    integer: i32,
+    float: f32,
+}
+
+fn main() {
+    let val = Value { integer: 42 };
+    
+    unsafe {
+        println!("Integer: {}", val.integer);
+        
+        let val2 = Value { float: 3.14 };
+        println!("Float: {}", val2.float);
+    }
+}`
+    },
+    
+    "Serialization": {
+        "JSON Simulation": `use std::collections::HashMap;
+
+#[derive(Debug)]
+struct Person {
+    name: String,
+    age: u32,
+    email: String,
+}
+
+impl Person {
+    fn to_json_string(&self) -> String {
+        format!(
+            r#"{{"name": "{}", "age": {}, "email": "{}"}}"#,
+            self.name, self.age, self.email
+        )
+    }
+    
+    fn from_json_string(json: &str) -> Result<Person, &'static str> {
+        // Simple parser simulation (real code would use serde)
+        if json.contains("\"name\"") && json.contains("\"age\"") {
+            Ok(Person {
+                name: "Parsed Name".to_string(),
+                age: 25,
+                email: "parsed@example.com".to_string(),
+            })
+        } else {
+            Err("Invalid JSON")
+        }
+    }
+}
+
+fn main() {
+    let person = Person {
+        name: "Alice".to_string(),
+        age: 30,
+        email: "alice@example.com".to_string(),
+    };
+    
+    let json = person.to_json_string();
+    println!("JSON: {}", json);
+    
+    let parsed = Person::from_json_string(&json).unwrap();
+    println!("Parsed: {:?}", parsed);
+}`,
+        "Binary Serialization": `use std::mem;
+
+#[repr(C)]
+struct Data {
+    id: u32,
+    value: f64,
+    flag: bool,
+}
+
+impl Data {
+    fn to_bytes(&self) -> Vec<u8> {
+        unsafe {
+            let ptr = self as *const Data as *const u8;
+            let slice = std::slice::from_raw_parts(ptr, mem::size_of::<Data>());
+            slice.to_vec()
+        }
+    }
+    
+    fn from_bytes(bytes: &[u8]) -> Result<Data, &'static str> {
+        if bytes.len() != mem::size_of::<Data>() {
+            return Err("Invalid size");
+        }
+        
+        unsafe {
+            let ptr = bytes.as_ptr() as *const Data;
+            Ok(ptr.read())
+        }
+    }
+}
+
+fn main() {
+    let data = Data {
+        id: 42,
+        value: 3.14159,
+        flag: true,
+    };
+    
+    let bytes = data.to_bytes();
+    println!("Serialized {} bytes", bytes.len());
+    
+    let restored = Data::from_bytes(&bytes).unwrap();
+    println!("Restored: id={}, value={}, flag={}", restored.id, restored.value, restored.flag);
+}`
     }
 };
 
