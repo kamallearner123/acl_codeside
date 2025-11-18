@@ -124,27 +124,40 @@
     <!-- Monaco Editor -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
     
-    <!-- Custom Scripts -->
-    <script src="{% static 'debugger_js/rust-examples.js' %}"></script>
-    <script src="{% static 'debugger_js/editor.js' %}?v=3"></script>
-    <script src="{% static 'debugger_js/memory-visualizer.js' %}"></script>
-    <script src="{% static 'debugger_js/main.js' %}"></script>
-{% endblock %}
-
-{% block extra_js %}
-<script>
+    <!-- Custom Scripts - Load examples first -->
+    <script src="{% static 'debugger_js/rust-examples.js' %}?v=100"></script>
+    
+    <!-- Inline script for modal functionality -->
+    <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
+    console.log('RUST_EXAMPLES available:', typeof RUST_EXAMPLES !== 'undefined');
+    console.log('getExampleCategories available:', typeof getExampleCategories !== 'undefined');
+    
     let selectedExample = null;
     
     // Populate categories when modal is shown
     const examplesModal = document.getElementById('examplesModal');
     examplesModal.addEventListener('show.bs.modal', function() {
+        console.log('Modal show event triggered');
         populateCategories();
     });
     
     function populateCategories() {
+        console.log('populateCategories called');
+        console.log('getExampleCategories function:', typeof getExampleCategories);
+        
         const categoriesList = document.getElementById('exampleCategories');
+        
+        if (typeof getExampleCategories !== 'function') {
+            console.error('getExampleCategories is not available');
+            categoriesList.innerHTML = '<div class="alert alert-danger">Error: Examples not loaded</div>';
+            return;
+        }
+        
         const categories = getExampleCategories();
+        
+        console.log('Categories:', categories);
         
         categoriesList.innerHTML = '';
         
@@ -225,4 +238,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+    
+    <!-- Other Scripts -->
+    <script src="{% static 'debugger_js/editor.js' %}?v=3"></script>
+    <script src="{% static 'debugger_js/memory-visualizer.js' %}"></script>
+    <script src="{% static 'debugger_js/main.js' %}"></script>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Extra JS can be added here if needed -->
 {% endblock %}
