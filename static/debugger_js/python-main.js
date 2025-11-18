@@ -4816,10 +4816,243 @@ function selectPythonCategory(category) {
     });
 }
 
-function getPythonExampleCode(key) {
-    // This function would need access to the examples object
-    // For now, return a placeholder
-    return `# ${key} example code...`;
+function populatePythonExampleCategories() {
+    console.log('📋 [MODAL] Populating Python example categories');
+    
+    const categoriesContainer = document.getElementById('pythonExampleCategories');
+    if (!categoriesContainer) {
+        console.error('❌ [MODAL] Categories container not found');
+        return;
+    }
+    
+    // Clear existing content
+    categoriesContainer.innerHTML = '';
+    
+    // Define categories (extracted from showPythonExampleMenu)
+    const exampleCategories = [
+        {
+            name: 'Machine Learning Basics',
+            examples: [
+                { name: 'Linear Regression', key: 'ml_linear_regression' },
+                { name: 'Logistic Regression', key: 'ml_logistic_regression' },
+                { name: 'Decision Trees', key: 'ml_decision_trees' },
+                { name: 'Random Forest', key: 'ml_random_forest' },
+                { name: 'K-Means Clustering', key: 'ml_kmeans' },
+                { name: 'SVM Classification', key: 'ml_svm' },
+                { name: 'Naive Bayes', key: 'ml_naive_bayes' },
+                { name: 'K-Nearest Neighbors', key: 'ml_knn' },
+                { name: 'Gradient Boosting', key: 'ml_gradient_boosting' },
+                { name: 'AdaBoost', key: 'ml_adaboost' },
+                { name: 'Principal Component Analysis', key: 'ml_pca' },
+                { name: 'DBSCAN Clustering', key: 'ml_dbscan' }
+            ]
+        },
+        {
+            name: 'Advanced Machine Learning',
+            examples: [
+                { name: 'Cross-Validation', key: 'ml_cross_validation' },
+                { name: 'Grid Search Hyperparameters', key: 'ml_grid_search' },
+                { name: 'Feature Selection', key: 'ml_feature_selection' },
+                { name: 'Ensemble Methods', key: 'ml_ensemble' },
+                { name: 'Pipeline Creation', key: 'ml_pipeline' },
+                { name: 'Model Evaluation Metrics', key: 'ml_metrics' },
+                { name: 'Imbalanced Data Handling', key: 'ml_imbalanced' },
+                { name: 'Anomaly Detection', key: 'ml_anomaly' }
+            ]
+        },
+        {
+            name: 'Regression Models',
+            examples: [
+                { name: 'Ridge Regression', key: 'ml_ridge' },
+                { name: 'Lasso Regression', key: 'ml_lasso' },
+                { name: 'Polynomial Regression', key: 'ml_polynomial' },
+                { name: 'ElasticNet Regression', key: 'ml_elasticnet' }
+            ]
+        },
+        {
+            name: 'Deep Learning',
+            examples: [
+                { name: 'Neural Network (Basic)', key: 'dl_neural_network' },
+                { name: 'CNN - Image Classification', key: 'dl_cnn' },
+                { name: 'RNN - Time Series', key: 'dl_rnn' },
+                { name: 'Transfer Learning', key: 'dl_transfer_learning' }
+            ]
+        },
+        {
+            name: 'Data Science',
+            examples: [
+                { name: 'Pandas DataFrame Basics', key: 'ds_pandas_basics' },
+                { name: 'Data Cleaning', key: 'ds_data_cleaning' },
+                { name: 'Data Visualization', key: 'ds_visualization' },
+                { name: 'Statistical Analysis', key: 'ds_statistics' },
+                { name: 'Feature Engineering', key: 'ds_feature_engineering' }
+            ]
+        },
+        {
+            name: 'NumPy & Arrays',
+            examples: [
+                { name: 'Array Operations', key: 'np_array_ops' },
+                { name: 'Matrix Operations', key: 'np_matrix_ops' },
+                { name: 'Broadcasting', key: 'np_broadcasting' },
+                { name: 'Linear Algebra', key: 'np_linear_algebra' }
+            ]
+        },
+        {
+            name: 'Python Basics',
+            examples: [
+                { name: 'Variables & Types', key: 'py_basics' },
+                { name: 'Lists & Dictionaries', key: 'py_collections' },
+                { name: 'Functions', key: 'py_functions' },
+                { name: 'Classes & OOP', key: 'py_classes' },
+                { name: 'File I/O', key: 'py_file_io' },
+                { name: 'List Comprehensions', key: 'py_list_comp' },
+                { name: 'Decorators', key: 'py_decorators' },
+                { name: 'Generators', key: 'py_generators' },
+                { name: 'Context Managers', key: 'py_context_managers' },
+                { name: 'Exception Handling', key: 'py_exceptions' }
+            ]
+        },
+        {
+            name: 'Advanced Python',
+            examples: [
+                { name: 'Regular Expressions', key: 'py_regex' },
+                { name: 'JSON & APIs', key: 'py_json_api' },
+                { name: 'Multi-threading', key: 'py_threading' },
+                { name: 'Multi-processing', key: 'py_multiprocessing' },
+                { name: 'Async/Await', key: 'py_async' },
+                { name: 'Type Hints', key: 'py_type_hints' },
+                { name: 'Property Decorators', key: 'py_property' },
+                { name: 'Magic Methods', key: 'py_magic_methods' }
+            ]
+        },
+        {
+            name: 'Data Structures & Algorithms',
+            examples: [
+                { name: 'Binary Search', key: 'algo_binary_search' },
+                { name: 'Sorting Algorithms', key: 'algo_sorting' },
+                { name: 'Linked Lists', key: 'algo_linked_list' },
+                { name: 'Stacks & Queues', key: 'algo_stack_queue' },
+                { name: 'Trees & BST', key: 'algo_trees' },
+                { name: 'Graph Algorithms', key: 'algo_graphs' },
+                { name: 'Dynamic Programming', key: 'algo_dp' },
+                { name: 'Hash Tables', key: 'algo_hash' }
+            ]
+        },
+        {
+            name: 'Time Series & Finance',
+            examples: [
+                { name: 'Time Series Analysis', key: 'ts_analysis' },
+                { name: 'Moving Averages', key: 'ts_moving_avg' },
+                { name: 'Stock Price Analysis', key: 'finance_stocks' },
+                { name: 'Portfolio Optimization', key: 'finance_portfolio' }
+            ]
+        },
+        {
+            name: 'Text Processing & NLP',
+            examples: [
+                { name: 'Text Preprocessing', key: 'nlp_preprocess' },
+                { name: 'Word Frequency', key: 'nlp_word_freq' },
+                { name: 'Sentiment Analysis', key: 'nlp_sentiment' },
+                { name: 'TF-IDF Vectorization', key: 'nlp_tfidf' }
+            ]
+        },
+        {
+            name: 'Web Scraping & Automation',
+            examples: [
+                { name: 'Web Scraping Basics', key: 'web_scraping' },
+                { name: 'CSV Processing', key: 'data_csv' },
+                { name: 'Excel Operations', key: 'data_excel' },
+                { name: 'Email Automation', key: 'auto_email' }
+            ]
+        }
+    ];
+    
+    // Create category buttons
+    exampleCategories.forEach((category, index) => {
+        const categoryBtn = document.createElement('button');
+        categoryBtn.type = 'button';
+        categoryBtn.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+        categoryBtn.innerHTML = `
+            ${category.name}
+            <span class="badge bg-primary rounded-pill">${category.examples.length}</span>
+        `;
+        
+        categoryBtn.addEventListener('click', () => {
+            // Update active state
+            categoriesContainer.querySelectorAll('.list-group-item').forEach(btn => 
+                btn.classList.remove('active'));
+            categoryBtn.classList.add('active');
+            
+            // Populate examples for this category
+            populatePythonExamples(category);
+        });
+        
+        categoriesContainer.appendChild(categoryBtn);
+    });
+    
+    console.log('✅ [MODAL] Categories populated successfully');
+}
+
+function populatePythonExamples(category) {
+    console.log('📋 [MODAL] Populating examples for category:', category.name);
+    
+    const examplesContainer = document.getElementById('pythonExamplesList');
+    if (!examplesContainer) {
+        console.error('❌ [MODAL] Examples container not found');
+        return;
+    }
+    
+    // Clear existing content
+    examplesContainer.innerHTML = '';
+    
+    // Create examples grid
+    const examplesGrid = document.createElement('div');
+    examplesGrid.className = 'row g-3';
+    
+    category.examples.forEach(example => {
+        const col = document.createElement('div');
+        col.className = 'col-md-6';
+        
+        const card = document.createElement('div');
+        card.className = 'card example-card h-100';
+        card.style.cursor = 'pointer';
+        
+        const cardBody = document.createElement('div');
+        cardBody.className = 'card-body';
+        
+        const title = document.createElement('h6');
+        title.className = 'card-title';
+        title.textContent = example.name;
+        
+        const preview = document.createElement('p');
+        preview.className = 'card-text small text-muted';
+        preview.textContent = `Click to load ${example.name} example`;
+        
+        cardBody.appendChild(title);
+        cardBody.appendChild(preview);
+        card.appendChild(cardBody);
+        
+        card.addEventListener('click', () => {
+            selectedPythonExample = example;
+            
+            // Update selection state
+            examplesContainer.querySelectorAll('.example-card').forEach(el => 
+                el.classList.remove('border-primary'));
+            card.classList.add('border-primary');
+            
+            // Enable load button
+            const loadBtn = document.getElementById('loadSelectedPythonExample');
+            if (loadBtn) {
+                loadBtn.disabled = false;
+            }
+        });
+        
+        col.appendChild(card);
+        examplesGrid.appendChild(col);
+    });
+    
+    examplesContainer.appendChild(examplesGrid);
+    console.log('✅ [MODAL] Examples populated successfully');
 }
 
 function loadSelectedPythonExample() {
