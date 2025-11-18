@@ -7,19 +7,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="header">
-        <div class="header-content">
-            <div class="header-left">
-                <a href="{% url 'home' %}" class="home-btn btn btn-link" title="Home">
-                    <i class="fas fa-home"></i> Home
-                </a>
-                <h1><i class="fas fa-bug"></i> Rust Visual Memory Debugger</h1>
-            </div>
-            <p>Online Rust code editor with real-time memory visualization using Miri</p>
-        </div>
-    </div>
-
-    <div class="container">
+<div class="container">
         <!-- Code Editor Panel -->
         <div class="panel editor-panel">
             <div class="panel-header">
@@ -39,7 +27,7 @@
                     <button id="clearBtn" class="btn btn-secondary">
                         <i class="fas fa-trash"></i> Clear
                     </button>
-                    <button id="exampleBtn" class="btn btn-secondary">
+                    <button id="exampleBtn" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#examplesModal">
                         <i class="fas fa-file-code"></i> Load Example
                     </button>
                 </div>
@@ -93,6 +81,38 @@
         </div>
     </div>
 
+    <!-- Examples Modal -->
+    <div class="modal fade" id="examplesModal" tabindex="-1" aria-labelledby="examplesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="examplesModalLabel">
+                        <i class="fas fa-file-code me-2"></i>100 Rust Code Examples
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="list-group" id="exampleCategories">
+                                <!-- Categories will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div id="examplesList">
+                                <p class="text-muted">Select a category to view examples</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="loadSelectedExample" disabled>Load Example</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner">
@@ -105,10 +125,104 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
     
     <!-- Custom Scripts -->
+    <script src="{% static 'debugger_js/rust-examples.js' %}"></script>
     <script src="{% static 'debugger_js/editor.js' %}?v=3"></script>
     <script src="{% static 'debugger_js/memory-visualizer.js' %}"></script>
     <script src="{% static 'debugger_js/main.js' %}"></script>
 {% endblock %}
 
 {% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let selectedExample = null;
+    
+    // Populate categories when modal is shown
+    const examplesModal = document.getElementById('examplesModal');
+    examplesModal.addEventListener('show.bs.modal', function() {
+        populateCategories();
+    });
+    
+    function populateCategories() {
+        const categoriesList = document.getElementById('exampleCategories');
+        const categories = getExampleCategories();
+        
+        categoriesList.innerHTML = '';
+        
+        categories.forEach((category, index) => {
+            const item = document.createElement('a');
+            item.className = 'list-group-item list-group-item-action';
+            item.href = '#';
+            item.textContent = category;
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                selectCategory(category);
+                
+                // Update active state
+                categoriesList.querySelectorAll('.list-group-item').forEach(el => 
+                    el.classList.remove('active'));
+                item.classList.add('active');
+            });
+            
+            categoriesList.appendChild(item);
+        });
+    }
+    
+    function selectCategory(category) {
+        const examplesList = document.getElementById('examplesList');
+        const examples = getExamplesByCategory(category);
+        
+        examplesList.innerHTML = `<h6 class="mb-3">${category}</h6>`;
+        
+        for (const [name, code] of Object.entries(examples)) {
+            const card = document.createElement('div');
+            card.className = 'card mb-2 example-card';
+            card.style.cursor = 'pointer';
+            
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body py-2';
+            
+            const title = document.createElement('h6');
+            title.className = 'card-title mb-1';
+            title.textContent = name;
+            
+            const preview = document.createElement('small');
+            preview.className = 'text-muted';
+            preview.textContent = code.split('\\n')[0].substring(0, 60) + '...';
+            
+            cardBody.appendChild(title);
+            cardBody.appendChild(preview);
+            card.appendChild(cardBody);
+            
+            card.addEventListener('click', () => {
+                selectedExample = { category, name, code };
+                
+                // Update selection state
+                examplesList.querySelectorAll('.example-card').forEach(el => 
+                    el.classList.remove('border-primary'));
+                card.classList.add('border-primary');
+                
+                // Enable load button
+                document.getElementById('loadSelectedExample').disabled = false;
+            });
+            
+            examplesList.appendChild(card);
+        }
+    }
+    
+    // Load selected example
+    document.getElementById('loadSelectedExample').addEventListener('click', () => {
+        if (selectedExample && window.editor) {
+            window.editor.setValue(selectedExample.code);
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(examplesModal);
+            modal.hide();
+            
+            // Reset selection
+            selectedExample = null;
+            document.getElementById('loadSelectedExample').disabled = true;
+        }
+    });
+});
+</script>
 {% endblock %}
