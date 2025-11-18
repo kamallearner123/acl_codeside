@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Visualizer - Home</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #1e1e1e;
+            --bg-secondary: #252526;
+            --bg-tertiary: #2d2d30;
+            --text-primary: #d4d4d4;
+            --text-secondary: #888888;
+            --border-color: #3e3e42;
+            --accent-primary: #007acc;
+            --rust-color: #CE422B;
+            --python-color: #3776ab;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.2em;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .choice-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .choice-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            width: 350px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+            color: #333;
+        }
+
+        .choice-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .choice-card.rust:hover {
+            background: linear-gradient(135deg, #CE422B 0%, #f57c00 100%);
+            color: white;
+        }
+
+        .choice-card.python:hover {
+            background: linear-gradient(135deg, #3776ab 0%, #4B8BBE 100%);
+            color: white;
+        }
+
+        .choice-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .choice-card.rust .choice-icon {
+            color: var(--rust-color);
+        }
+
+        .choice-card.python .choice-icon {
+            color: var(--python-color);
+        }
+
+        .choice-card:hover .choice-icon {
+            color: white;
+            transform: scale(1.1);
+            transition: all 0.3s ease;
+        }
+
+        .choice-card h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .choice-card p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        .choice-card .features {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .choice-card .features li {
+            padding: 8px 0;
+            font-size: 0.95em;
+        }
+
+        .choice-card .features li i {
+            margin-right: 10px;
+            opacity: 0.7;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .choice-card:hover .btn {
+            background: white;
+            color: #333;
+            border-color: white;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .choice-card {
+                width: 100%;
+                max-width: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-code"></i> Code Visualizer</h1>
+        <p>Choose your programming language to start coding with interactive memory visualization and examples</p>
+    </div>
+
+    <div class="choice-container">
+        <a href="{% url 'debugger:rust_editor' %}" class="choice-card rust">
+            <div class="choice-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <h2>Rust Programming</h2>
+            <p>Memory-safe systems programming</p>
+            <ul class="features">
+                <li><i class="fas fa-check"></i> Visual Memory Debugger with Miri</li>
+                <li><i class="fas fa-check"></i> Ownership & Borrowing Visualization</li>
+                <li><i class="fas fa-check"></i> 20+ Interactive Examples</li>
+                <li><i class="fas fa-check"></i> Real-time Memory Tracing</li>
+            </ul>
+            <div class="btn">Start with Rust</div>
+        </a>
+
+        <a href="{% url 'debugger:python_editor' %}" class="choice-card python">
+            <div class="choice-icon">
+                <i class="fab fa-python"></i>
+            </div>
+            <h2>Python Programming</h2>
+            <p>High-level data science & ML</p>
+            <ul class="features">
+                <li><i class="fas fa-check"></i> Machine Learning Examples</li>
+                <li><i class="fas fa-check"></i> Data Science Libraries</li>
+                <li><i class="fas fa-check"></i> NumPy, Pandas, Scikit-learn</li>
+                <li><i class="fas fa-check"></i> Interactive Code Execution</li>
+            </ul>
+            <div class="btn">Start with Python</div>
+        </a>
+    </div>
+</body>
+</html>

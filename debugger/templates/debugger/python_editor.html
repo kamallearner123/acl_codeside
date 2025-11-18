@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Programming - ML & Data Science</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'debugger_css/python-style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="{% url 'debugger:home' %}" class="back-btn" title="Back to Home">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h1><i class="fab fa-python"></i> Python Programming</h1>
+            </div>
+            <p>Online Python editor with Machine Learning & Data Science examples</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Code Editor Panel -->
+        <div class="panel editor-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-code"></i> Python Code Editor</h2>
+                <div class="panel-actions">
+                    <button id="runBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Run Code
+                    </button>
+                    <button id="clearBtn" class="btn btn-secondary">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                    <button id="exampleBtn" class="btn btn-secondary">
+                        <i class="fas fa-file-code"></i> Load Example
+                    </button>
+                </div>
+            </div>
+            <div id="editor" class="monaco-editor"></div>
+        </div>
+
+        <!-- Output Panel -->
+        <div class="panel output-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-terminal"></i> Output</h2>
+                <div class="panel-actions">
+                    <button id="clearOutputBtn" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+            </div>
+            <div id="output" class="output-content">
+                <div class="output-placeholder">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Output will appear here after running your code</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plots Panel -->
+        <div class="panel plots-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-chart-line"></i> Plots & Visualizations</h2>
+                <div class="panel-actions">
+                    <button id="clearPlotsBtn" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+            </div>
+            <div id="plots" class="plots-content">
+                <div class="plots-placeholder">
+                    <i class="fas fa-chart-bar"></i>
+                    <p>Plots will appear here when you use matplotlib</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Executing Python code...</p>
+        </div>
+    </div>
+
+    <!-- Monaco Editor -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="{% static 'debugger_js/python-editor.js' %}?v=1763464706"></script>
+    <script src="{% static 'debugger_js/python-main.js' %}?v=1763464706"></script>
+</body>
+</html>

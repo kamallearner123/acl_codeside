@@ -336,6 +336,9 @@
                             <li><a class="dropdown-item" href="{% url 'courses:networking_security' %}">
                                 <i class="fas fa-shield-alt"></i> Networking & Security
                             </a></li>
+                            <li><a class="dropdown-item" href="{% url 'courses:ml_python' %}">
+                                <i class="fas fa-brain"></i> ML Using Python
+                            </a></li>
                         </ul>
                     </li>
 
@@ -348,6 +351,9 @@
                                 <i class="fas fa-list"></i> All Materials
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'materials:ml_python' %}">
+                                <i class="fas fa-brain"></i> ML Using Python
+                            </a></li>
                             <li><a class="dropdown-item" href="{% url 'materials:ml_handson' %}">
                                 <i class="fas fa-robot"></i> ML Hands-on
                             </a></li>
@@ -390,6 +396,10 @@
                             <i class="fas fa-code me-1"></i>Practice
                         </a>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'debugger:home' %}">
+                                <i class="fas fa-laptop-code"></i> Coding Practices
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'questions:list' %}">
                                 <i class="fas fa-question-circle"></i> Coding Problems
                             </a></li>

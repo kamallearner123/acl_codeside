@@ -6,6 +6,10 @@ class MaterialsDashboardView(LoginRequiredMixin, TemplateView):
     template_name = "materials/dashboard.html"
 
 
+class MLUsingPythonView(LoginRequiredMixin, TemplateView):
+    template_name = "materials/ml_using_python.html"
+
+
 class MLHandsonView(LoginRequiredMixin, TemplateView):
     template_name = "materials/ml_handson.html"
 

@@ -1,0 +1,1165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ML using Python - Apt Computing Labs{% endblock %}
+
+{% block content %}
+<style>
+    /* Course Page Specific Styles */
+    .course-hero {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+        color: white;
+        padding: 60px 0;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="white" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
+        z-index: 0;
+    }
+    
+    .course-hero .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .course-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    
+    .course-stats {
+        display: flex;
+        gap: 30px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px 20px;
+        border-radius: 8px;
+    }
+    
+    .stat-icon {
+        width: 24px;
+        height: 24px;
+        color: #ffd43b;
+    }
+    
+    .module-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid #6f42c1;
+        transition: all 0.3s ease;
+    }
+    
+    .module-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .module-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .module-number {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .module-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #6f42c1;
+        margin: 0;
+    }
+    
+    .module-duration {
+        color: #28a745;
+        font-weight: 600;
+        margin-left: auto;
+        background: #e8f5e8;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .topic-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+    
+    .topic-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .topic-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .topic-icon {
+        color: #6f42c1;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+    
+    .topic-content {
+        flex: 1;
+    }
+    
+    .topic-title {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 4px;
+    }
+    
+    .topic-desc {
+        color: #6b7280;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .hands-on-badge {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .ml-badge {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .tools-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 25px;
+        margin: 30px 0;
+    }
+    
+    .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .tool-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .tool-icon {
+        font-size: 2.5rem;
+        color: #6f42c1;
+        margin-bottom: 10px;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+        color: white;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        margin-top: 50px;
+    }
+    
+    .btn-enroll {
+        background: white;
+        color: #6f42c1;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+    }
+    
+    .btn-enroll:hover {
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .prerequisites {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .prerequisites-title {
+        color: #856404;
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .learning-outcomes {
+        background: #d1ecf1;
+        border: 1px solid #b8daff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+    
+    .outcomes-title {
+        color: #155724;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .outcome-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+    
+    .outcome-check {
+        color: #28a745;
+        margin-top: 2px;
+    }
+    
+    @media (max-width: 768px) {
+        .course-stats {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .module-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .module-duration {
+            margin-left: 0;
+        }
+        
+        .tool-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Course Hero Section -->
+    <div class="course-hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="course-badge">
+                        <i class="fas fa-brain"></i> Machine Learning & AI
+                    </div>
+                    <h1 class="display-4 fw-bold mb-3">ML using Python</h1>
+                    <p class="lead mb-4">Master machine learning and artificial intelligence from fundamentals to deployment. Learn Python, data science, deep learning, and build real-world AI projects with industry-standard tools and frameworks.</p>
+                    
+                    <div class="course-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-clock stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">50 Hours</div>
+                                <small>Duration</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-layer-group stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">14 Chapters</div>
+                                <small>Comprehensive</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-users stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">Beginner to Advanced</div>
+                                <small>Level</small>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-certificate stat-icon"></i>
+                            <div>
+                                <div class="fw-bold">Certificate</div>
+                                <small>Upon Completion</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Prerequisites -->
+        <div class="prerequisites">
+            <div class="prerequisites-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Prerequisites
+            </div>
+            <ul class="mb-0">
+                <li>Basic mathematics (high school level algebra and statistics)</li>
+                <li>Familiarity with computers and basic software installation</li>
+                <li>No prior programming experience required - we start from scratch!</li>
+                <li>Curiosity and willingness to learn</li>
+            </ul>
+        </div>
+
+        <!-- Learning Outcomes -->
+        <div class="learning-outcomes">
+            <div class="outcomes-title">
+                <i class="fas fa-bullseye"></i>
+                What You'll Achieve
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Master Python programming from basics to advanced concepts</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Build and deploy machine learning models for real-world problems</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Implement deep learning solutions using TensorFlow/Keras</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Work with NLP, computer vision, and data visualization</span>
+            </div>
+            <div class="outcome-item">
+                <i class="fas fa-check outcome-check"></i>
+                <span>Deploy ML applications with web interfaces using Streamlit</span>
+            </div>
+        </div>
+
+        <!-- Course Modules -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center mb-5">Course Curriculum</h2>
+                
+                <!-- Chapter 1 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">1</div>
+                        <h3 class="module-title">Introduction to Python and AI</h3>
+                        <div class="module-duration">3 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-download topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Installing Python and Setting Up the Environment</div>
+                                <div class="topic-desc">IDEs like VS Code, Jupyter Notebook setup and configuration</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-code topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Basic Syntax and Writing Your First Python Script</div>
+                                <div class="topic-desc">Understanding Python syntax, variables, and running programs <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-robot topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Overview of AI</div>
+                                <div class="topic-desc">What is AI, Machine Learning, Deep Learning, and their applications</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fab fa-python topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Python's Role in AI</div>
+                                <div class="topic-desc">Why Python for AI and its ecosystem</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-book topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Introduction to Key AI Libraries</div>
+                                <div class="topic-desc">NumPy, Pandas, Scikit-learn, TensorFlow/PyTorch overview</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 2 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">2</div>
+                        <h3 class="module-title">Python Basics - Data Types, Operators, and Control Structures</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-database topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Variables and Basic Data Types</div>
+                                <div class="topic-desc">Integers, floats, strings, booleans and type conversion</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-keyboard topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Input/Output Functions</div>
+                                <div class="topic-desc">Reading user input and displaying output <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-calculator topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Operators</div>
+                                <div class="topic-desc">Arithmetic, comparison, logical, and assignment operators</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-code-branch topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Control Structures</div>
+                                <div class="topic-desc">if, elif, else statements for decision making</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-redo topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Loops</div>
+                                <div class="topic-desc">for and while loops for iteration <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 3 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">3</div>
+                        <h3 class="module-title">Functions, Scope, and Recursion</h3>
+                        <div class="module-duration">3 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-function topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Defining and Calling Functions</div>
+                                <div class="topic-desc">Function syntax, arguments, and return values</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-arrow-right topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Parameters, Arguments, and Return Values</div>
+                                <div class="topic-desc">Positional, keyword, default arguments <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-globe topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Variable Scope</div>
+                                <div class="topic-desc">Local vs Global variables and scoping rules</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-recycle topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Recursion Basics and Use Cases in AI</div>
+                                <div class="topic-desc">Tree Traversals and recursive algorithms</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-bolt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Lambda Functions</div>
+                                <div class="topic-desc">Anonymous functions for concise code</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 4 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">4</div>
+                        <h3 class="module-title">Data Structures in Python</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-list topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Lists</div>
+                                <div class="topic-desc">Creation, access, modification, and methods <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-lock topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Tuples</div>
+                                <div class="topic-desc">Immutability and use cases</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-set topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Sets</div>
+                                <div class="topic-desc">Operations and unique data handling</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-book-open topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Dictionaries</div>
+                                <div class="topic-desc">Key-value pairs, iteration, and methods <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-magic topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Comprehensions</div>
+                                <div class="topic-desc">List, dict, and set comprehensions for efficient data manipulation</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 5 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">5</div>
+                        <h3 class="module-title">File Handling, Exceptions, and Modules</h3>
+                        <div class="module-duration">3 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-file topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Reading and Writing Text/CSV Files</div>
+                                <div class="topic-desc">File I/O operations and CSV handling <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-shield-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Context Managers</div>
+                                <div class="topic-desc">Using with statement for safe file operations</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-exclamation-circle topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Exception Handling</div>
+                                <div class="topic-desc">try, except, else, finally blocks</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-puzzle-piece topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Importing and Creating Modules</div>
+                                <div class="topic-desc">Code organization and reusability</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-toolbox topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Standard Libraries</div>
+                                <div class="topic-desc">os, sys, datetime and other built-in modules</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 6 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">6</div>
+                        <h3 class="module-title">Object-Oriented Programming in Python</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-cube topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Classes, Objects, and the self Parameter</div>
+                                <div class="topic-desc">Introduction to OOP concepts <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-cog topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Attributes, Methods, and Constructors</div>
+                                <div class="topic-desc">__init__ and instance/class attributes</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-sitemap topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Inheritance and super()</div>
+                                <div class="topic-desc">Code reusability through inheritance</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-shapes topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Polymorphism and Method Overriding</div>
+                                <div class="topic-desc">Dynamic behavior in OOP</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-eye-slash topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Encapsulation and Special Methods</div>
+                                <div class="topic-desc">__str__, __repr__ and magic methods</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 7 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">7</div>
+                        <h3 class="module-title">Data Manipulation with NumPy and Pandas</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-table topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">NumPy Arrays</div>
+                                <div class="topic-desc">Creation, operations, broadcasting <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-cut topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Array Manipulation</div>
+                                <div class="topic-desc">Slicing, reshaping, aggregation operations</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-chart-line topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Pandas: Series and DataFrames</div>
+                                <div class="topic-desc">Working with tabular data structures <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-filter topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Data Cleaning, Filtering, Grouping, and Merging</div>
+                                <div class="topic-desc">Essential data preprocessing techniques</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-file-import topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Reading/Writing Data</div>
+                                <div class="topic-desc">CSV, Excel, JSON format handling</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 8 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">8</div>
+                        <h3 class="module-title">Data Visualization with Matplotlib and Seaborn</h3>
+                        <div class="module-duration">3 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-chart-line topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Matplotlib Basics</div>
+                                <div class="topic-desc">Line, bar, scatter plots <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-paint-brush topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Customizing Plots</div>
+                                <div class="topic-desc">Labels, titles, legends, and styling</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-chart-bar topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Seaborn for Statistical Visualizations</div>
+                                <div class="topic-desc">Heatmaps, pairplots, and distribution plots</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-link topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Integrating with Pandas</div>
+                                <div class="topic-desc">Direct DataFrame visualization</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-th topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Visualizing AI Results</div>
+                                <div class="topic-desc">Confusion matrices and model performance <span class="ml-badge">ML</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 9 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">9</div>
+                        <h3 class="module-title">Introduction to Machine Learning</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-brain topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Types of ML</div>
+                                <div class="topic-desc">Supervised, unsupervised, reinforcement learning <span class="ml-badge">ML</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-project-diagram topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">ML Workflow</div>
+                                <div class="topic-desc">Data collection, preprocessing, model training</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-wrench topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Feature Engineering and Scaling</div>
+                                <div class="topic-desc">Feature selection, normalization, standardization <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-divide topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Train-Test Split and Cross-Validation</div>
+                                <div class="topic-desc">Model evaluation strategies</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-tachometer-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Evaluation Metrics</div>
+                                <div class="topic-desc">Accuracy, precision, recall, F1-score <span class="ml-badge">ML</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 10 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">10</div>
+                        <h3 class="module-title">Supervised Learning - Regression and Classification</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-chart-line topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Linear Regression and Polynomial Regression</div>
+                                <div class="topic-desc">Predicting continuous values <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-divide topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Logistic Regression for Classification</div>
+                                <div class="topic-desc">Binary and multiclass classification <span class="ml-badge">ML</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-tree topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Decision Trees and Random Forests</div>
+                                <div class="topic-desc">Ensemble methods for improved accuracy</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-vector-square topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Support Vector Machines (SVM)</div>
+                                <div class="topic-desc">Classification with optimal hyperplanes</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-sliders-h topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Hyperparameter Tuning with GridSearchCV</div>
+                                <div class="topic-desc">Optimizing model performance <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 11 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">11</div>
+                        <h3 class="module-title">Unsupervised Learning</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-circle-notch topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">K-Means Clustering</div>
+                                <div class="topic-desc">Grouping similar data points <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-sitemap topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Hierarchical Clustering</div>
+                                <div class="topic-desc">Dendrogram-based clustering <span class="ml-badge">ML</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-compress topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Principal Component Analysis (PCA)</div>
+                                <div class="topic-desc">Dimensionality reduction techniques</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-exclamation-triangle topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Anomaly Detection Basics</div>
+                                <div class="topic-desc">Identifying outliers in data</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-chart-area topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Evaluating Unsupervised Models</div>
+                                <div class="topic-desc">Silhouette score and other metrics</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 12 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">12</div>
+                        <h3 class="module-title">Introduction to Deep Learning</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-network-wired topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Neural Networks Basics</div>
+                                <div class="topic-desc">Neurons, layers, activation functions <span class="ml-badge">DL</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-code topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Using Keras/TensorFlow for Feedforward Networks</div>
+                                <div class="topic-desc">Building neural networks <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-graduation-cap topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Training Models</div>
+                                <div class="topic-desc">Loss functions, optimizers (SGD, Adam)</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-shield-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Handling Overfitting</div>
+                                <div class="topic-desc">Dropout, regularization techniques <span class="ml-badge">DL</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-image topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Simple CNN for Image Classification</div>
+                                <div class="topic-desc">Convolutional neural networks basics <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 13 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">13</div>
+                        <h3 class="module-title">Natural Language Processing Basics</h3>
+                        <div class="module-duration">4 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-text-width topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Text Preprocessing</div>
+                                <div class="topic-desc">Tokenization, stemming, lemmatization <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-bag-shopping topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Bag of Words and TF-IDF</div>
+                                <div class="topic-desc">Text vectorization techniques <span class="ml-badge">NLP</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-language topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Word Embeddings</div>
+                                <div class="topic-desc">Word2Vec introduction and applications</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-robot topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Building a Simple NLP Model with Scikit-learn</div>
+                                <div class="topic-desc">Text classification projects <span class="hands-on-badge">Hands-on</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-smile topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Sentiment Analysis Project Snippet</div>
+                                <div class="topic-desc">Real-world NLP application <span class="ml-badge">NLP</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Chapter 14 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div class="module-number">14</div>
+                        <h3 class="module-title">Final Project and Deployment Basics</h3>
+                        <div class="module-duration">5 hours</div>
+                    </div>
+                    <ul class="topic-list">
+                        <li>
+                            <i class="fas fa-clipboard-list topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Project Planning</div>
+                                <div class="topic-desc">Choosing an AI problem (predictive model or classifier) <span class="hands-on-badge">Project</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-tasks topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Implementing End-to-End</div>
+                                <div class="topic-desc">Data prep, model building, evaluation <span class="hands-on-badge">Project</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-cubes topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Using OOP for Project Structure</div>
+                                <div class="topic-desc">Clean, maintainable code architecture</div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-rocket topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Basic Deployment</div>
+                                <div class="topic-desc">Saving models, using Streamlit for web apps <span class="hands-on-badge">Deploy</span></div>
+                            </div>
+                        </li>
+                        <li>
+                            <i class="fas fa-file-alt topic-icon"></i>
+                            <div class="topic-content">
+                                <div class="topic-title">Documentation, Testing, and Presentation</div>
+                                <div class="topic-desc">Professional project delivery</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Tools -->
+        <div class="tools-section">
+            <h3 class="text-center mb-4">Development Tools & Libraries</h3>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <h5>Python 3.x</h5>
+                    <p class="text-muted small">Latest Python</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h5>Jupyter</h5>
+                    <p class="text-muted small">Interactive notebooks</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-table"></i>
+                    </div>
+                    <h5>NumPy & Pandas</h5>
+                    <p class="text-muted small">Data manipulation</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h5>Matplotlib & Seaborn</h5>
+                    <p class="text-muted small">Visualization</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h5>Scikit-learn</h5>
+                    <p class="text-muted small">Machine learning</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h5>TensorFlow/Keras</h5>
+                    <p class="text-muted small">Deep learning</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <h5>PyTorch</h5>
+                    <p class="text-muted small">Neural networks</p>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h5>Streamlit</h5>
+                    <p class="text-muted small">Web deployment</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2 class="mb-3">Ready to Master Machine Learning?</h2>
+            <p class="lead mb-4">Join our comprehensive ML course and transform into an AI professional. Build real projects, learn industry-standard tools, and launch your ML career.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <button class="btn btn-enroll">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Enroll Now
+                </button>
+                <a href="{% url 'home' %}#livecoding" class="btn btn-outline-light">
+                    <i class="fas fa-play me-2"></i>
+                    Try Live Coding
+                </a>
+            </div>
+            <div class="mt-4">
+                <small>
+                    <i class="fas fa-phone me-2"></i>+91 9739858111
+                    <span class="mx-3">|</span>
+                    <i class="fas fa-envelope me-2"></i>info@aptcomputinglabs.com
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Add animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe module cards for animation
+    document.querySelectorAll('.module-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s ease';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}

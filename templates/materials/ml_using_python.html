@@ -1,0 +1,2462 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}ML Using Python - Learning Materials{% endblock %}
+{% block content %}
+<style>
+/* Floating Sidebar Styles */
+.floating-sidebar {
+    position: fixed;
+    left: 0;
+    top: 180px;
+    width: 300px;
+    max-height: calc(100vh - 200px);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 0 15px 15px 0;
+    box-shadow: 5px 5px 25px rgba(0, 0, 0, 0.3);
+    transition: left 0.4s ease;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.floating-sidebar.closed {
+    left: -300px;
+}
+
+.sidebar-toggle {
+    position: fixed;
+    left: 300px;
+    top: 200px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 0 10px 10px 0;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+
+.floating-sidebar.closed ~ .sidebar-toggle {
+    left: 0;
+}
+
+.sidebar-toggle:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateX(5px);
+}
+
+.sidebar-content {
+    padding: 25px 20px;
+}
+
+.sidebar-title {
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 15px;
+}
+
+.sidebar-chapters {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-chapters li {
+    margin-bottom: 8px;
+}
+
+.sidebar-chapters a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-chapters a:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateX(5px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-chapters a.active {
+    background: rgba(255, 255, 255, 0.3);
+    font-weight: 600;
+}
+
+.chapter-number-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    margin-right: 12px;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.sidebar-chapters a:hover .chapter-number-badge {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Scrollbar styles for sidebar */
+.floating-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.floating-sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.floating-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.floating-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.chapter-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border-left: 5px solid #6f42c1;
+    transition: all 0.3s ease;
+}
+.chapter-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+.chapter-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+.chapter-number {
+    background: linear-gradient(135deg, #6f42c1, #e83e8c);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.3rem;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+.chapter-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0;
+}
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #6f42c1;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.code-block {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 15px 0;
+    overflow-x: auto;
+}
+.code-block pre {
+    margin: 0;
+    color: #d4d4d4;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+.code-comment {
+    color: #6a9955;
+}
+.code-keyword {
+    color: #569cd6;
+}
+.code-string {
+    color: #ce9178;
+}
+.code-function {
+    color: #dcdcaa;
+}
+.code-number {
+    color: #b5cea8;
+}
+.explanation-box {
+    background: #f8f9fa;
+    border-left: 4px solid #6f42c1;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+.key-points {
+    background: #e7f3ff;
+    border-left: 4px solid #0066cc;
+    padding: 15px 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+.key-points ul {
+    margin-bottom: 0;
+    padding-left: 20px;
+}
+.output-box {
+    background: #f0f0f0;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    padding: 15px;
+    margin: 15px 0;
+    font-family: 'Courier New', monospace;
+}
+.badge-ml {
+    background: linear-gradient(135deg, #6f42c1, #e83e8c);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.badge-hands-on {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.image-placeholder {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    color: white;
+    margin: 20px 0;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.concept-diagram {
+    background: white;
+    border: 2px solid #6f42c1;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+}
+</style>
+
+<!-- Floating Sidebar Toggle Button -->
+<button class="sidebar-toggle" id="sidebarToggle">
+    <i class="fas fa-times"></i>
+</button>
+
+<!-- Floating Sidebar -->
+<div class="floating-sidebar" id="chapterSidebar">
+    <div class="sidebar-content">
+        <div class="sidebar-title">
+            <i class="fas fa-book-open"></i> Course Chapters
+        </div>
+        <ul class="sidebar-chapters">
+            <li><a href="#chapter-1"><span class="chapter-number-badge">1</span>Introduction to Python & AI</a></li>
+            <li><a href="#chapter-2"><span class="chapter-number-badge">2</span>Python Basics</a></li>
+            <li><a href="#chapter-3"><span class="chapter-number-badge">3</span>Functions</a></li>
+            <li><a href="#chapter-4"><span class="chapter-number-badge">4</span>Data Structures</a></li>
+            <li><a href="#chapter-5"><span class="chapter-number-badge">5</span>File Handling & Modules</a></li>
+            <li><a href="#chapter-6"><span class="chapter-number-badge">6</span>Object-Oriented Programming</a></li>
+            <li><a href="#chapter-7"><span class="chapter-number-badge">7</span>NumPy & Pandas</a></li>
+            <li><a href="#chapter-8"><span class="chapter-number-badge">8</span>Data Visualization</a></li>
+            <li><a href="#chapter-9"><span class="chapter-number-badge">9</span>Introduction to ML</a></li>
+            <li><a href="#chapter-10"><span class="chapter-number-badge">10</span>Supervised Learning</a></li>
+            <li><a href="#chapter-11"><span class="chapter-number-badge">11</span>Unsupervised Learning</a></li>
+            <li><a href="#chapter-12"><span class="chapter-number-badge">12</span>Deep Learning</a></li>
+            <li><a href="#chapter-13"><span class="chapter-number-badge">13</span>Natural Language Processing</a></li>
+            <li><a href="#chapter-14"><span class="chapter-number-badge">14</span>Final Project</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="display-5 fw-bold text-gradient">ML Using Python</h1>
+            <p class="lead text-muted">Complete Machine Learning Course: From Python Basics to AI Deployment</p>
+        </div>
+        <a class="btn btn-outline-primary" href="{% url 'materials:dashboard' %}">← Back to Materials</a>
+    </div>
+
+    <!-- Chapter 1: Introduction to Python and AI -->
+    <div class="chapter-card" id="chapter-1">
+        <div class="chapter-header">
+            <div class="chapter-number">1</div>
+            <h2 class="chapter-title">Introduction to Python and AI</h2>
+        </div>
+
+        <div class="explanation-box">
+            <p><strong>What you'll learn:</strong> Set up your Python environment, write your first programs, and understand the fundamentals of artificial intelligence and machine learning.</p>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-download"></i> Installing Python and Setting Up Environment
+        </div>
+        <p>Python is available for all major operating systems. Let's get started:</p>
+        
+        <div class="key-points">
+            <strong>Key Steps:</strong>
+            <ul>
+                <li>Download Python 3.x from <a href="https://python.org" target="_blank">python.org</a></li>
+                <li>Install VS Code or Jupyter Notebook for interactive development</li>
+                <li>Verify installation using command line</li>
+            </ul>
+        </div>
+
+        <div class="code-block">
+<pre><code><span class="code-comment"># Check Python version</span>
+python --version
+
+<span class="code-comment"># Install Jupyter Notebook</span>
+pip install jupyter notebook
+
+<span class="code-comment"># Launch Jupyter</span>
+jupyter notebook
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-code"></i> Your First Python Program <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># hello_world.py - Your first Python program</span>
+<span class="code-keyword">print</span>(<span class="code-string">"Hello, World!"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">"Welcome to ML using Python"</span>)
+
+<span class="code-comment"># Variables and basic operations</span>
+name = <span class="code-string">"Alice"</span>
+age = <span class="code-number">25</span>
+height = <span class="code-number">5.6</span>
+
+<span class="code-keyword">print</span>(<span class="code-string">f"My name is {name}, I am {age} years old"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"My height is {height} feet"</span>)
+
+<span class="code-comment"># Basic arithmetic</span>
+x = <span class="code-number">10</span>
+y = <span class="code-number">3</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Sum: {x + y}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Product: {x * y}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Division: {x / y}"</span>)
+</code></pre>
+        </div>
+
+        <div class="output-box">
+<strong>Output:</strong>
+Hello, World!
+Welcome to ML using Python
+My name is Alice, I am 25 years old
+My height is 5.6 feet
+Sum: 13
+Product: 30
+Division: 3.3333333333333335
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-robot"></i> Overview of AI, ML, and Deep Learning
+        </div>
+        
+        <div class="concept-diagram">
+            <h4>AI Hierarchy</h4>
+            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 20px;">
+                <div style="text-align: center;">
+                    <div style="width: 150px; height: 150px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin: auto;">
+                        <strong>AI</strong>
+                    </div>
+                    <p style="margin-top: 10px;">Artificial Intelligence<br><small>Machines mimicking human intelligence</small></p>
+                </div>
+                <div style="font-size: 2rem; color: #6f42c1;">⊃</div>
+                <div style="text-align: center;">
+                    <div style="width: 120px; height: 120px; background: #764ba2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin: auto;">
+                        <strong>ML</strong>
+                    </div>
+                    <p style="margin-top: 10px;">Machine Learning<br><small>Learning from data</small></p>
+                </div>
+                <div style="font-size: 2rem; color: #6f42c1;">⊃</div>
+                <div style="text-align: center;">
+                    <div style="width: 90px; height: 90px; background: #e83e8c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin: auto;">
+                        <strong>DL</strong>
+                    </div>
+                    <p style="margin-top: 10px;">Deep Learning<br><small>Neural networks</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="explanation-box">
+            <strong>Understanding the Hierarchy:</strong>
+            <ul>
+                <li><strong>Artificial Intelligence (AI):</strong> Machines performing tasks that typically require human intelligence (reasoning, learning, problem-solving)</li>
+                <li><strong>Machine Learning (ML):</strong> Subset of AI where systems learn from data without explicit programming</li>
+                <li><strong>Deep Learning (DL):</strong> Subset of ML using neural networks with multiple layers to learn complex patterns</li>
+            </ul>
+        </div>
+
+        <div class="section-title">
+            <i class="fab fa-python"></i> Why Python for AI?
+        </div>
+        
+        <div class="key-points">
+            <strong>Python's Advantages in AI/ML:</strong>
+            <ul>
+                <li><strong>Simple Syntax:</strong> Easy to learn and read, allowing focus on algorithms rather than syntax</li>
+                <li><strong>Rich Libraries:</strong> NumPy, Pandas, Scikit-learn, TensorFlow, PyTorch</li>
+                <li><strong>Community Support:</strong> Massive ecosystem and extensive documentation</li>
+                <li><strong>Versatility:</strong> From data processing to web deployment</li>
+                <li><strong>Industry Standard:</strong> Used by Google, Facebook, Netflix, and more</li>
+            </ul>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-book"></i> Key AI Libraries Introduction
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Installing essential AI/ML libraries</span>
+pip install numpy pandas scikit-learn matplotlib seaborn
+pip install tensorflow  <span class="code-comment"># For deep learning</span>
+pip install torch  <span class="code-comment"># Alternative: PyTorch</span>
+
+<span class="code-comment"># Quick test of libraries</span>
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+<span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
+
+<span class="code-keyword">print</span>(<span class="code-string">"NumPy version:"</span>, np.__version__)
+<span class="code-keyword">print</span>(<span class="code-string">"Pandas version:"</span>, pd.__version__)
+<span class="code-keyword">print</span>(<span class="code-string">"Libraries loaded successfully!"</span>)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 2: Python Basics -->
+    <div class="chapter-card" id="chapter-2">
+        <div class="chapter-header">
+            <div class="chapter-number">2</div>
+            <h2 class="chapter-title">Python Basics - Data Types, Operators, and Control Structures</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-database"></i> Variables and Basic Data Types
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Integer</span>
+age = <span class="code-number">25</span>
+year = <span class="code-number">2024</span>
+<span class="code-keyword">print</span>(<span class="code-keyword">type</span>(age))  <span class="code-comment"># &lt;class 'int'&gt;</span>
+
+<span class="code-comment"># Float</span>
+height = <span class="code-number">5.9</span>
+weight = <span class="code-number">68.5</span>
+<span class="code-keyword">print</span>(<span class="code-keyword">type</span>(height))  <span class="code-comment"># &lt;class 'float'&gt;</span>
+
+<span class="code-comment"># String</span>
+name = <span class="code-string">"Alice"</span>
+city = <span class="code-string">'New York'</span>
+message = <span class="code-string">"""This is a 
+multi-line string"""</span>
+<span class="code-keyword">print</span>(<span class="code-keyword">type</span>(name))  <span class="code-comment"># &lt;class 'str'&gt;</span>
+
+<span class="code-comment"># Boolean</span>
+is_student = <span class="code-keyword">True</span>
+has_passed = <span class="code-keyword">False</span>
+<span class="code-keyword">print</span>(<span class="code-keyword">type</span>(is_student))  <span class="code-comment"># &lt;class 'bool'&gt;</span>
+
+<span class="code-comment"># Type conversion</span>
+num_str = <span class="code-string">"42"</span>
+num_int = <span class="code-keyword">int</span>(num_str)
+<span class="code-keyword">print</span>(<span class="code-string">f"Converted: {num_int}, Type: {</span><span class="code-keyword">type</span>(num_int)<span class="code-string">}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-keyboard"></i> Input/Output Functions <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Getting user input</span>
+name = <span class="code-keyword">input</span>(<span class="code-string">"Enter your name: "</span>)
+age = <span class="code-keyword">int</span>(<span class="code-keyword">input</span>(<span class="code-string">"Enter your age: "</span>))
+
+<span class="code-comment"># Formatted output</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Hello {name}! You are {age} years old."</span>)
+
+<span class="code-comment"># Multiple values on one line</span>
+x, y, z = <span class="code-number">10</span>, <span class="code-number">20</span>, <span class="code-number">30</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Values: x={x}, y={y}, z={z}"</span>)
+
+<span class="code-comment"># String formatting methods</span>
+price = <span class="code-number">19.99</span>
+<span class="code-keyword">print</span>(<span class="code-string">"Price: $%.2f"</span> % price)  <span class="code-comment"># Old style</span>
+<span class="code-keyword">print</span>(<span class="code-string">"Price: ${:.2f}"</span>.format(price))  <span class="code-comment"># New style</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Price: ${price:.2f}"</span>)  <span class="code-comment"># f-string (recommended)</span>
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-calculator"></i> Operators
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Arithmetic operators</span>
+a, b = <span class="code-number">10</span>, <span class="code-number">3</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Addition: {a + b}"</span>)        <span class="code-comment"># 13</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Subtraction: {a - b}"</span>)     <span class="code-comment"># 7</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Multiplication: {a * b}"</span>)  <span class="code-comment"># 30</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Division: {a / b}"</span>)        <span class="code-comment"># 3.333...</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Floor Division: {a // b}"</span>) <span class="code-comment"># 3</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Modulus: {a % b}"</span>)         <span class="code-comment"># 1</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Exponentiation: {a ** b}"</span>) <span class="code-comment"># 1000</span>
+
+<span class="code-comment"># Comparison operators</span>
+x, y = <span class="code-number">5</span>, <span class="code-number">10</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"x == y: {x == y}"</span>)  <span class="code-comment"># False</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"x != y: {x != y}"</span>)  <span class="code-comment"># True</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"x &lt; y: {x &lt; y}"</span>)    <span class="code-comment"># True</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"x &gt; y: {x &gt; y}"</span>)    <span class="code-comment"># False</span>
+
+<span class="code-comment"># Logical operators</span>
+p, q = <span class="code-keyword">True</span>, <span class="code-keyword">False</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"p and q: {p and q}"</span>)  <span class="code-comment"># False</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"p or q: {p or q}"</span>)    <span class="code-comment"># True</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"not p: {not p}"</span>)      <span class="code-comment"># False</span>
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-code-branch"></i> Control Structures: if, elif, else
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Simple if statement</span>
+temperature = <span class="code-number">25</span>
+
+<span class="code-keyword">if</span> temperature &gt; <span class="code-number">30</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">"It's hot!"</span>)
+<span class="code-keyword">elif</span> temperature &gt; <span class="code-number">20</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">"It's warm"</span>)
+<span class="code-keyword">elif</span> temperature &gt; <span class="code-number">10</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">"It's cool"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">"It's cold!"</span>)
+
+<span class="code-comment"># Practical example: Grade calculator</span>
+score = <span class="code-number">85</span>
+
+<span class="code-keyword">if</span> score &gt;= <span class="code-number">90</span>:
+    grade = <span class="code-string">'A'</span>
+<span class="code-keyword">elif</span> score &gt;= <span class="code-number">80</span>:
+    grade = <span class="code-string">'B'</span>
+<span class="code-keyword">elif</span> score &gt;= <span class="code-number">70</span>:
+    grade = <span class="code-string">'C'</span>
+<span class="code-keyword">elif</span> score &gt;= <span class="code-number">60</span>:
+    grade = <span class="code-string">'D'</span>
+<span class="code-keyword">else</span>:
+    grade = <span class="code-string">'F'</span>
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Score: {score}, Grade: {grade}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-redo"></i> Loops: for and while <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># For loop - iterate over a range</span>
+<span class="code-keyword">print</span>(<span class="code-string">"Counting from 1 to 5:"</span>)
+<span class="code-keyword">for</span> i <span class="code-keyword">in</span> <span class="code-keyword">range</span>(<span class="code-number">1</span>, <span class="code-number">6</span>):
+    <span class="code-keyword">print</span>(i, end=<span class="code-string">" "</span>)
+<span class="code-keyword">print</span>()
+
+<span class="code-comment"># For loop - iterate over a list</span>
+fruits = [<span class="code-string">"apple"</span>, <span class="code-string">"banana"</span>, <span class="code-string">"cherry"</span>]
+<span class="code-keyword">for</span> fruit <span class="code-keyword">in</span> fruits:
+    <span class="code-keyword">print</span>(<span class="code-string">f"I like {fruit}"</span>)
+
+<span class="code-comment"># While loop</span>
+count = <span class="code-number">1</span>
+<span class="code-keyword">while</span> count &lt;= <span class="code-number">5</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">f"Count: {count}"</span>)
+    count += <span class="code-number">1</span>
+
+<span class="code-comment"># Loop control: break and continue</span>
+<span class="code-keyword">for</span> num <span class="code-keyword">in</span> <span class="code-keyword">range</span>(<span class="code-number">1</span>, <span class="code-number">11</span>):
+    <span class="code-keyword">if</span> num == <span class="code-number">5</span>:
+        <span class="code-keyword">continue</span>  <span class="code-comment"># Skip 5</span>
+    <span class="code-keyword">if</span> num == <span class="code-number">8</span>:
+        <span class="code-keyword">break</span>  <span class="code-comment"># Stop at 8</span>
+    <span class="code-keyword">print</span>(num, end=<span class="code-string">" "</span>)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 3: Functions, Scope, and Recursion -->
+    <div class="chapter-card" id="chapter-3">
+        <div class="chapter-header">
+            <div class="chapter-number">3</div>
+            <h2 class="chapter-title">Functions, Scope, and Recursion</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-function"></i> Defining and Calling Functions
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Simple function</span>
+<span class="code-keyword">def</span> <span class="code-function">greet</span>():
+    <span class="code-keyword">print</span>(<span class="code-string">"Hello, World!"</span>)
+
+<span class="code-function">greet</span>()  <span class="code-comment"># Call the function</span>
+
+<span class="code-comment"># Function with parameters</span>
+<span class="code-keyword">def</span> <span class="code-function">greet_person</span>(name):
+    <span class="code-keyword">print</span>(<span class="code-string">f"Hello, {name}!"</span>)
+
+<span class="code-function">greet_person</span>(<span class="code-string">"Alice"</span>)
+<span class="code-function">greet_person</span>(<span class="code-string">"Bob"</span>)
+
+<span class="code-comment"># Function with return value</span>
+<span class="code-keyword">def</span> <span class="code-function">add</span>(a, b):
+    <span class="code-keyword">return</span> a + b
+
+result = <span class="code-function">add</span>(<span class="code-number">5</span>, <span class="code-number">3</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"5 + 3 = {result}"</span>)
+
+<span class="code-comment"># Function with multiple return values</span>
+<span class="code-keyword">def</span> <span class="code-function">calculate</span>(a, b):
+    <span class="code-keyword">return</span> a + b, a - b, a * b, a / b
+
+sum_val, diff, prod, quot = <span class="code-function">calculate</span>(<span class="code-number">10</span>, <span class="code-number">2</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Sum: {sum_val}, Diff: {diff}, Product: {prod}, Quotient: {quot}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-arrow-right"></i> Parameters, Arguments, and Default Values <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Default parameters</span>
+<span class="code-keyword">def</span> <span class="code-function">power</span>(base, exponent=<span class="code-number">2</span>):
+    <span class="code-keyword">return</span> base ** exponent
+
+<span class="code-keyword">print</span>(<span class="code-function">power</span>(<span class="code-number">5</span>))        <span class="code-comment"># Uses default exponent=2, returns 25</span>
+<span class="code-keyword">print</span>(<span class="code-function">power</span>(<span class="code-number">5</span>, <span class="code-number">3</span>))     <span class="code-comment"># Returns 125</span>
+
+<span class="code-comment"># Keyword arguments</span>
+<span class="code-keyword">def</span> <span class="code-function">describe_pet</span>(animal_type, pet_name):
+    <span class="code-keyword">print</span>(<span class="code-string">f"I have a {animal_type} named {pet_name}"</span>)
+
+<span class="code-function">describe_pet</span>(animal_type=<span class="code-string">"dog"</span>, pet_name=<span class="code-string">"Max"</span>)
+<span class="code-function">describe_pet</span>(pet_name=<span class="code-string">"Whiskers"</span>, animal_type=<span class="code-string">"cat"</span>)
+
+<span class="code-comment"># Variable-length arguments</span>
+<span class="code-keyword">def</span> <span class="code-function">sum_all</span>(*numbers):
+    total = <span class="code-number">0</span>
+    <span class="code-keyword">for</span> num <span class="code-keyword">in</span> numbers:
+        total += num
+    <span class="code-keyword">return</span> total
+
+<span class="code-keyword">print</span>(<span class="code-function">sum_all</span>(<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>))           <span class="code-comment"># 6</span>
+<span class="code-keyword">print</span>(<span class="code-function">sum_all</span>(<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>))    <span class="code-comment"># 15</span>
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-globe"></i> Variable Scope (Local vs Global)
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Global variable</span>
+global_var = <span class="code-number">100</span>
+
+<span class="code-keyword">def</span> <span class="code-function">test_scope</span>():
+    <span class="code-comment"># Local variable</span>
+    local_var = <span class="code-number">50</span>
+    <span class="code-keyword">print</span>(<span class="code-string">f"Inside function: global_var = {global_var}"</span>)
+    <span class="code-keyword">print</span>(<span class="code-string">f"Inside function: local_var = {local_var}"</span>)
+
+<span class="code-function">test_scope</span>()
+<span class="code-keyword">print</span>(<span class="code-string">f"Outside function: global_var = {global_var}"</span>)
+<span class="code-comment"># print(local_var)  # This would cause an error!</span>
+
+<span class="code-comment"># Modifying global variable</span>
+counter = <span class="code-number">0</span>
+
+<span class="code-keyword">def</span> <span class="code-function">increment</span>():
+    <span class="code-keyword">global</span> counter
+    counter += <span class="code-number">1</span>
+
+<span class="code-function">increment</span>()
+<span class="code-function">increment</span>()
+<span class="code-keyword">print</span>(<span class="code-string">f"Counter: {counter}"</span>)  <span class="code-comment"># 2</span>
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-recycle"></i> Recursion Basics
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Factorial using recursion</span>
+<span class="code-keyword">def</span> <span class="code-function">factorial</span>(n):
+    <span class="code-keyword">if</span> n == <span class="code-number">0</span> <span class="code-keyword">or</span> n == <span class="code-number">1</span>:
+        <span class="code-keyword">return</span> <span class="code-number">1</span>
+    <span class="code-keyword">else</span>:
+        <span class="code-keyword">return</span> n * <span class="code-function">factorial</span>(n - <span class="code-number">1</span>)
+
+<span class="code-keyword">print</span>(<span class="code-string">f"5! = {</span><span class="code-function">factorial</span>(<span class="code-number">5</span>)<span class="code-string">}"</span>)  <span class="code-comment"># 120</span>
+
+<span class="code-comment"># Fibonacci sequence using recursion</span>
+<span class="code-keyword">def</span> <span class="code-function">fibonacci</span>(n):
+    <span class="code-keyword">if</span> n &lt;= <span class="code-number">1</span>:
+        <span class="code-keyword">return</span> n
+    <span class="code-keyword">else</span>:
+        <span class="code-keyword">return</span> <span class="code-function">fibonacci</span>(n-<span class="code-number">1</span>) + <span class="code-function">fibonacci</span>(n-<span class="code-number">2</span>)
+
+<span class="code-keyword">print</span>(<span class="code-string">"First 10 Fibonacci numbers:"</span>)
+<span class="code-keyword">for</span> i <span class="code-keyword">in</span> <span class="code-keyword">range</span>(<span class="code-number">10</span>):
+    <span class="code-keyword">print</span>(<span class="code-function">fibonacci</span>(i), end=<span class="code-string">" "</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-bolt"></i> Lambda Functions
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Lambda function syntax: lambda arguments: expression</span>
+
+<span class="code-comment"># Simple lambda function</span>
+square = <span class="code-keyword">lambda</span> x: x ** <span class="code-number">2</span>
+<span class="code-keyword">print</span>(<span class="code-function">square</span>(<span class="code-number">5</span>))  <span class="code-comment"># 25</span>
+
+<span class="code-comment"># Lambda with multiple arguments</span>
+add = <span class="code-keyword">lambda</span> a, b: a + b
+<span class="code-keyword">print</span>(<span class="code-function">add</span>(<span class="code-number">3</span>, <span class="code-number">7</span>))  <span class="code-comment"># 10</span>
+
+<span class="code-comment"># Using lambda with map()</span>
+numbers = [<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>]
+squared = <span class="code-keyword">list</span>(<span class="code-keyword">map</span>(<span class="code-keyword">lambda</span> x: x ** <span class="code-number">2</span>, numbers))
+<span class="code-keyword">print</span>(<span class="code-string">f"Squared: {squared}"</span>)
+
+<span class="code-comment"># Using lambda with filter()</span>
+even_numbers = <span class="code-keyword">list</span>(<span class="code-keyword">filter</span>(<span class="code-keyword">lambda</span> x: x % <span class="code-number">2</span> == <span class="code-number">0</span>, numbers))
+<span class="code-keyword">print</span>(<span class="code-string">f"Even numbers: {even_numbers}"</span>)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 4: Data Structures in Python -->
+    <div class="chapter-card" id="chapter-4">
+        <div class="chapter-header">
+            <div class="chapter-number">4</div>
+            <h2 class="chapter-title">Data Structures in Python</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-list"></i> Lists - Creation, Access, Modification <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Creating lists</span>
+fruits = [<span class="code-string">"apple"</span>, <span class="code-string">"banana"</span>, <span class="code-string">"cherry"</span>]
+numbers = [<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>]
+mixed = [<span class="code-number">1</span>, <span class="code-string">"hello"</span>, <span class="code-number">3.14</span>, <span class="code-keyword">True</span>]
+
+<span class="code-comment"># Accessing elements (indexing starts at 0)</span>
+<span class="code-keyword">print</span>(fruits[<span class="code-number">0</span>])   <span class="code-comment"># apple</span>
+<span class="code-keyword">print</span>(fruits[<span class="code-number">-1</span>])  <span class="code-comment"># cherry (last element)</span>
+
+<span class="code-comment"># Slicing</span>
+<span class="code-keyword">print</span>(numbers[<span class="code-number">1</span>:<span class="code-number">4</span>])   <span class="code-comment"># [2, 3, 4]</span>
+<span class="code-keyword">print</span>(numbers[:<span class="code-number">3</span>])    <span class="code-comment"># [1, 2, 3]</span>
+<span class="code-keyword">print</span>(numbers[<span class="code-number">2</span>:])    <span class="code-comment"># [3, 4, 5]</span>
+
+<span class="code-comment"># Modifying lists</span>
+fruits[<span class="code-number">1</span>] = <span class="code-string">"blueberry"</span>
+fruits.append(<span class="code-string">"orange"</span>)        <span class="code-comment"># Add to end</span>
+fruits.insert(<span class="code-number">0</span>, <span class="code-string">"mango"</span>)   <span class="code-comment"># Insert at position</span>
+fruits.remove(<span class="code-string">"cherry"</span>)       <span class="code-comment"># Remove by value</span>
+popped = fruits.pop()           <span class="code-comment"># Remove and return last</span>
+
+<span class="code-keyword">print</span>(fruits)
+<span class="code-keyword">print</span>(<span class="code-string">f"Length: {</span><span class="code-keyword">len</span>(fruits)<span class="code-string">}"</span>)
+
+<span class="code-comment"># List methods</span>
+numbers = [<span class="code-number">3</span>, <span class="code-number">1</span>, <span class="code-number">4</span>, <span class="code-number">1</span>, <span class="code-number">5</span>, <span class="code-number">9</span>]
+numbers.sort()                  <span class="code-comment"># Sort in place</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Sorted: {numbers}"</span>)
+numbers.reverse()               <span class="code-comment"># Reverse in place</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Reversed: {numbers}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Count of 1: {numbers.count(</span><span class="code-number">1</span><span class="code-string">)}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-lock"></i> Tuples - Immutability and Use Cases
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Creating tuples (immutable - cannot be changed)</span>
+coordinates = (<span class="code-number">10</span>, <span class="code-number">20</span>)
+rgb_color = (<span class="code-number">255</span>, <span class="code-number">128</span>, <span class="code-number">0</span>)
+person = (<span class="code-string">"Alice"</span>, <span class="code-number">25</span>, <span class="code-string">"Engineer"</span>)
+
+<span class="code-comment"># Accessing elements</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"X: {coordinates[</span><span class="code-number">0</span><span class="code-string">]}, Y: {coordinates[</span><span class="code-number">1</span><span class="code-string">]}"</span>)
+
+<span class="code-comment"># Tuple unpacking</span>
+name, age, profession = person
+<span class="code-keyword">print</span>(<span class="code-string">f"{name} is {age} years old and works as {profession}"</span>)
+
+<span class="code-comment"># Tuples are useful for returning multiple values</span>
+<span class="code-keyword">def</span> <span class="code-function">get_min_max</span>(numbers):
+    <span class="code-keyword">return</span> <span class="code-keyword">min</span>(numbers), <span class="code-keyword">max</span>(numbers)
+
+min_val, max_val = <span class="code-function">get_min_max</span>([<span class="code-number">5</span>, <span class="code-number">2</span>, <span class="code-number">9</span>, <span class="code-number">1</span>, <span class="code-number">7</span>])
+<span class="code-keyword">print</span>(<span class="code-string">f"Min: {min_val}, Max: {max_val}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-object-group"></i> Sets - Operations and Unique Data
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Creating sets (unordered, unique elements)</span>
+fruits = {<span class="code-string">"apple"</span>, <span class="code-string">"banana"</span>, <span class="code-string">"cherry"</span>}
+numbers = {<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">5</span>}  <span class="code-comment"># Duplicates removed</span>
+<span class="code-keyword">print</span>(numbers)  <span class="code-comment"># {1, 2, 3, 4, 5}</span>
+
+<span class="code-comment"># Set operations</span>
+fruits.add(<span class="code-string">"orange"</span>)
+fruits.remove(<span class="code-string">"banana"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">"apple"</span> <span class="code-keyword">in</span> fruits)  <span class="code-comment"># True</span>
+
+<span class="code-comment"># Set mathematics</span>
+set_a = {<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>}
+set_b = {<span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>, <span class="code-number">6</span>}
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Union: {set_a | set_b}"</span>)           <span class="code-comment"># {1, 2, 3, 4, 5, 6}</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Intersection: {set_a & set_b}"</span>)  <span class="code-comment"># {3, 4}</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Difference: {set_a - set_b}"</span>)    <span class="code-comment"># {1, 2}</span>
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-book-open"></i> Dictionaries - Key-Value Pairs <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Creating dictionaries</span>
+student = {
+    <span class="code-string">"name"</span>: <span class="code-string">"Alice"</span>,
+    <span class="code-string">"age"</span>: <span class="code-number">20</span>,
+    <span class="code-string">"grade"</span>: <span class="code-string">"A"</span>,
+    <span class="code-string">"courses"</span>: [<span class="code-string">"Math"</span>, <span class="code-string">"Physics"</span>]
+}
+
+<span class="code-comment"># Accessing values</span>
+<span class="code-keyword">print</span>(student[<span class="code-string">"name"</span>])
+<span class="code-keyword">print</span>(student.get(<span class="code-string">"age"</span>))
+<span class="code-keyword">print</span>(student.get(<span class="code-string">"email"</span>, <span class="code-string">"Not found"</span>))  <span class="code-comment"># Default value</span>
+
+<span class="code-comment"># Modifying dictionaries</span>
+student[<span class="code-string">"age"</span>] = <span class="code-number">21</span>
+student[<span class="code-string">"email"</span>] = <span class="code-string">"alice@email.com"</span>
+<span class="code-keyword">del</span> student[<span class="code-string">"grade"</span>]
+
+<span class="code-comment"># Iterating through dictionaries</span>
+<span class="code-keyword">for</span> key, value <span class="code-keyword">in</span> student.items():
+    <span class="code-keyword">print</span>(<span class="code-string">f"{key}: {value}"</span>)
+
+<span class="code-comment"># Dictionary methods</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Keys: {</span><span class="code-keyword">list</span>(student.keys())<span class="code-string">}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Values: {</span><span class="code-keyword">list</span>(student.values())<span class="code-string">}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-magic"></i> Comprehensions for Efficient Code
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># List comprehension</span>
+squares = [x**<span class="code-number">2</span> <span class="code-keyword">for</span> x <span class="code-keyword">in</span> <span class="code-keyword">range</span>(<span class="code-number">1</span>, <span class="code-number">11</span>)]
+<span class="code-keyword">print</span>(<span class="code-string">f"Squares: {squares}"</span>)
+
+even_squares = [x**<span class="code-number">2</span> <span class="code-keyword">for</span> x <span class="code-keyword">in</span> <span class="code-keyword">range</span>(<span class="code-number">1</span>, <span class="code-number">11</span>) <span class="code-keyword">if</span> x % <span class="code-number">2</span> == <span class="code-number">0</span>]
+<span class="code-keyword">print</span>(<span class="code-string">f"Even squares: {even_squares}"</span>)
+
+<span class="code-comment"># Dictionary comprehension</span>
+word_lengths = {word: <span class="code-keyword">len</span>(word) <span class="code-keyword">for</span> word <span class="code-keyword">in</span> [<span class="code-string">"apple"</span>, <span class="code-string">"banana"</span>, <span class="code-string">"cherry"</span>]}
+<span class="code-keyword">print</span>(<span class="code-string">f"Word lengths: {word_lengths}"</span>)
+
+<span class="code-comment"># Set comprehension</span>
+unique_chars = {char <span class="code-keyword">for</span> char <span class="code-keyword">in</span> <span class="code-string">"hello world"</span> <span class="code-keyword">if</span> char != <span class="code-string">" "</span>}
+<span class="code-keyword">print</span>(<span class="code-string">f"Unique characters: {unique_chars}"</span>)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 5: File Handling, Exceptions, and Modules -->
+    <div class="chapter-card" id="chapter-5">
+        <div class="chapter-header">
+            <div class="chapter-number">5</div>
+            <h2 class="chapter-title">File Handling, Exceptions, and Modules</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-file"></i> Reading and Writing Files <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Writing to a file</span>
+<span class="code-keyword">with</span> <span class="code-keyword">open</span>(<span class="code-string">"sample.txt"</span>, <span class="code-string">"w"</span>) <span class="code-keyword">as</span> file:
+    file.write(<span class="code-string">"Hello, World!\n"</span>)
+    file.write(<span class="code-string">"Welcome to Python file handling.\n"</span>)
+
+<span class="code-comment"># Reading from a file</span>
+<span class="code-keyword">with</span> <span class="code-keyword">open</span>(<span class="code-string">"sample.txt"</span>, <span class="code-string">"r"</span>) <span class="code-keyword">as</span> file:
+    content = file.read()
+    <span class="code-keyword">print</span>(content)
+
+<span class="code-comment"># Reading line by line</span>
+<span class="code-keyword">with</span> <span class="code-keyword">open</span>(<span class="code-string">"sample.txt"</span>, <span class="code-string">"r"</span>) <span class="code-keyword">as</span> file:
+    <span class="code-keyword">for</span> line <span class="code-keyword">in</span> file:
+        <span class="code-keyword">print</span>(line.strip())
+
+<span class="code-comment"># Appending to a file</span>
+<span class="code-keyword">with</span> <span class="code-keyword">open</span>(<span class="code-string">"sample.txt"</span>, <span class="code-string">"a"</span>) <span class="code-keyword">as</span> file:
+    file.write(<span class="code-string">"This line is appended.\n"</span>)
+
+<span class="code-comment"># Working with CSV files</span>
+<span class="code-keyword">import</span> csv
+
+<span class="code-comment"># Writing CSV</span>
+data = [
+    [<span class="code-string">"Name"</span>, <span class="code-string">"Age"</span>, <span class="code-string">"City"</span>],
+    [<span class="code-string">"Alice"</span>, <span class="code-number">25</span>, <span class="code-string">"New York"</span>],
+    [<span class="code-string">"Bob"</span>, <span class="code-number">30</span>, <span class="code-string">"San Francisco"</span>]
+]
+
+<span class="code-keyword">with</span> <span class="code-keyword">open</span>(<span class="code-string">"people.csv"</span>, <span class="code-string">"w"</span>, newline=<span class="code-string">""</span>) <span class="code-keyword">as</span> file:
+    writer = csv.writer(file)
+    writer.writerows(data)
+
+<span class="code-comment"># Reading CSV</span>
+<span class="code-keyword">with</span> <span class="code-keyword">open</span>(<span class="code-string">"people.csv"</span>, <span class="code-string">"r"</span>) <span class="code-keyword">as</span> file:
+    reader = csv.reader(file)
+    <span class="code-keyword">for</span> row <span class="code-keyword">in</span> reader:
+        <span class="code-keyword">print</span>(row)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-exclamation-circle"></i> Exception Handling
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Basic try-except</span>
+<span class="code-keyword">try</span>:
+    result = <span class="code-number">10</span> / <span class="code-number">0</span>
+<span class="code-keyword">except</span> <span class="code-keyword">ZeroDivisionError</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">"Error: Cannot divide by zero!"</span>)
+
+<span class="code-comment"># Multiple exception types</span>
+<span class="code-keyword">try</span>:
+    num = <span class="code-keyword">int</span>(<span class="code-keyword">input</span>(<span class="code-string">"Enter a number: "</span>))
+    result = <span class="code-number">100</span> / num
+    <span class="code-keyword">print</span>(<span class="code-string">f"Result: {result}"</span>)
+<span class="code-keyword">except</span> <span class="code-keyword">ValueError</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">"Error: Please enter a valid number"</span>)
+<span class="code-keyword">except</span> <span class="code-keyword">ZeroDivisionError</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">"Error: Cannot divide by zero"</span>)
+
+<span class="code-comment"># try-except-else-finally</span>
+<span class="code-keyword">try</span>:
+    file = <span class="code-keyword">open</span>(<span class="code-string">"data.txt"</span>, <span class="code-string">"r"</span>)
+    content = file.read()
+<span class="code-keyword">except</span> <span class="code-keyword">FileNotFoundError</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">"Error: File not found"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">"File read successfully"</span>)
+<span class="code-keyword">finally</span>:
+    <span class="code-keyword">print</span>(<span class="code-string">"Execution completed"</span>)
+
+<span class="code-comment"># Raising exceptions</span>
+<span class="code-keyword">def</span> <span class="code-function">validate_age</span>(age):
+    <span class="code-keyword">if</span> age &lt; <span class="code-number">0</span>:
+        <span class="code-keyword">raise</span> <span class="code-keyword">ValueError</span>(<span class="code-string">"Age cannot be negative"</span>)
+    <span class="code-keyword">if</span> age &gt; <span class="code-number">150</span>:
+        <span class="code-keyword">raise</span> <span class="code-keyword">ValueError</span>(<span class="code-string">"Age seems unrealistic"</span>)
+    <span class="code-keyword">return</span> <span class="code-keyword">True</span>
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-puzzle-piece"></i> Modules and Packages
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Importing standard library modules</span>
+<span class="code-keyword">import</span> math
+<span class="code-keyword">print</span>(math.pi)
+<span class="code-keyword">print</span>(math.sqrt(<span class="code-number">16</span>))
+
+<span class="code-comment"># Importing with alias</span>
+<span class="code-keyword">import</span> datetime <span class="code-keyword">as</span> dt
+now = dt.datetime.now()
+<span class="code-keyword">print</span>(<span class="code-string">f"Current time: {now}"</span>)
+
+<span class="code-comment"># Importing specific functions</span>
+<span class="code-keyword">from</span> random <span class="code-keyword">import</span> randint, choice
+<span class="code-keyword">print</span>(<span class="code-function">randint</span>(<span class="code-number">1</span>, <span class="code-number">100</span>))
+<span class="code-keyword">print</span>(<span class="code-function">choice</span>([<span class="code-string">"apple"</span>, <span class="code-string">"banana"</span>, <span class="code-string">"cherry"</span>]))
+
+<span class="code-comment"># Common standard library modules</span>
+<span class="code-keyword">import</span> os
+<span class="code-keyword">print</span>(<span class="code-string">f"Current directory: {os.getcwd()}"</span>)
+
+<span class="code-keyword">import</span> sys
+<span class="code-keyword">print</span>(<span class="code-string">f"Python version: {sys.version}"</span>)
+
+<span class="code-comment"># Creating your own module (save as mymodule.py)</span>
+<span class="code-comment"># def greet(name):</span>
+<span class="code-comment">#     return f"Hello, {name}!"</span>
+<span class="code-comment"># </span>
+<span class="code-comment"># PI = 3.14159</span>
+
+<span class="code-comment"># Then import it:</span>
+<span class="code-comment"># import mymodule</span>
+<span class="code-comment"># print(mymodule.greet("Alice"))</span>
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 6: Object-Oriented Programming -->
+    <div class="chapter-card" id="chapter-6">
+        <div class="chapter-header">
+            <div class="chapter-number">6</div>
+            <h2 class="chapter-title">Object-Oriented Programming in Python</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-cube"></i> Classes and Objects <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Defining a class</span>
+<span class="code-keyword">class</span> <span class="code-function">Dog</span>:
+    <span class="code-comment"># Constructor</span>
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>, name, age):
+        <span class="code-keyword">self</span>.name = name    <span class="code-comment"># Instance attribute</span>
+        <span class="code-keyword">self</span>.age = age
+    
+    <span class="code-comment"># Instance method</span>
+    <span class="code-keyword">def</span> <span class="code-function">bark</span>(<span class="code-keyword">self</span>):
+        <span class="code-keyword">return</span> <span class="code-string">f"{</span><span class="code-keyword">self</span>.name<span class="code-string">} says Woof!"</span>
+    
+    <span class="code-keyword">def</span> <span class="code-function">get_age_in_dog_years</span>(<span class="code-keyword">self</span>):
+        <span class="code-keyword">return</span> <span class="code-keyword">self</span>.age * <span class="code-number">7</span>
+
+<span class="code-comment"># Creating objects (instances)</span>
+dog1 = <span class="code-function">Dog</span>(<span class="code-string">"Buddy"</span>, <span class="code-number">3</span>)
+dog2 = <span class="code-function">Dog</span>(<span class="code-string">"Max"</span>, <span class="code-number">5</span>)
+
+<span class="code-keyword">print</span>(dog1.<span class="code-function">bark</span>())
+<span class="code-keyword">print</span>(<span class="code-string">f"{dog2.name} is {dog2.</span><span class="code-function">get_age_in_dog_years</span>()<span class="code-string">} in dog years"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-sitemap"></i> Inheritance
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Parent class</span>
+<span class="code-keyword">class</span> <span class="code-function">Animal</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>, name):
+        <span class="code-keyword">self</span>.name = name
+    
+    <span class="code-keyword">def</span> <span class="code-function">speak</span>(<span class="code-keyword">self</span>):
+        <span class="code-keyword">return</span> <span class="code-string">"Some sound"</span>
+
+<span class="code-comment"># Child class inheriting from Animal</span>
+<span class="code-keyword">class</span> <span class="code-function">Cat</span>(Animal):
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>, name, color):
+        <span class="code-keyword">super</span>().<span class="code-function">__init__</span>(name)  <span class="code-comment"># Call parent constructor</span>
+        <span class="code-keyword">self</span>.color = color
+    
+    <span class="code-comment"># Method overriding</span>
+    <span class="code-keyword">def</span> <span class="code-function">speak</span>(<span class="code-keyword">self</span>):
+        <span class="code-keyword">return</span> <span class="code-string">f"{</span><span class="code-keyword">self</span>.name<span class="code-string">} says Meow!"</span>
+
+<span class="code-keyword">class</span> <span class="code-function">Dog</span>(Animal):
+    <span class="code-keyword">def</span> <span class="code-function">speak</span>(<span class="code-keyword">self</span>):
+        <span class="code-keyword">return</span> <span class="code-string">f"{</span><span class="code-keyword">self</span>.name<span class="code-string">} says Woof!"</span>
+
+<span class="code-comment"># Creating instances</span>
+cat = <span class="code-function">Cat</span>(<span class="code-string">"Whiskers"</span>, <span class="code-string">"orange"</span>)
+dog = <span class="code-function">Dog</span>(<span class="code-string">"Buddy"</span>)
+
+<span class="code-keyword">print</span>(cat.<span class="code-function">speak</span>())
+<span class="code-keyword">print</span>(dog.<span class="code-function">speak</span>())
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-shapes"></i> Polymorphism and Encapsulation
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># Polymorphism example</span>
+<span class="code-keyword">def</span> <span class="code-function">animal_sound</span>(animal):
+    <span class="code-keyword">print</span>(animal.<span class="code-function">speak</span>())
+
+animals = [<span class="code-function">Cat</span>(<span class="code-string">"Mittens"</span>, <span class="code-string">"white"</span>), <span class="code-function">Dog</span>(<span class="code-string">"Rex"</span>)]
+<span class="code-keyword">for</span> animal <span class="code-keyword">in</span> animals:
+    <span class="code-function">animal_sound</span>(animal)
+
+<span class="code-comment"># Encapsulation with private attributes</span>
+<span class="code-keyword">class</span> <span class="code-function">BankAccount</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>, owner, balance=<span class="code-number">0</span>):
+        <span class="code-keyword">self</span>.owner = owner
+        <span class="code-keyword">self</span>.__balance = balance  <span class="code-comment"># Private attribute</span>
+    
+    <span class="code-keyword">def</span> <span class="code-function">deposit</span>(<span class="code-keyword">self</span>, amount):
+        <span class="code-keyword">if</span> amount &gt; <span class="code-number">0</span>:
+            <span class="code-keyword">self</span>.__balance += amount
+            <span class="code-keyword">return</span> <span class="code-keyword">True</span>
+        <span class="code-keyword">return</span> <span class="code-keyword">False</span>
+    
+    <span class="code-keyword">def</span> <span class="code-function">withdraw</span>(<span class="code-keyword">self</span>, amount):
+        <span class="code-keyword">if</span> <span class="code-number">0</span> &lt; amount &lt;= <span class="code-keyword">self</span>.__balance:
+            <span class="code-keyword">self</span>.__balance -= amount
+            <span class="code-keyword">return</span> <span class="code-keyword">True</span>
+        <span class="code-keyword">return</span> <span class="code-keyword">False</span>
+    
+    <span class="code-keyword">def</span> <span class="code-function">get_balance</span>(<span class="code-keyword">self</span>):
+        <span class="code-keyword">return</span> <span class="code-keyword">self</span>.__balance
+    
+    <span class="code-comment"># Special method</span>
+    <span class="code-keyword">def</span> <span class="code-function">__str__</span>(<span class="code-keyword">self</span>):
+        <span class="code-keyword">return</span> <span class="code-string">f"Account({</span><span class="code-keyword">self</span>.owner<span class="code-string">}, Balance: ${</span><span class="code-keyword">self</span>.__balance<span class="code-string">})"</span>
+
+account = <span class="code-function">BankAccount</span>(<span class="code-string">"Alice"</span>, <span class="code-number">1000</span>)
+account.<span class="code-function">deposit</span>(<span class="code-number">500</span>)
+account.<span class="code-function">withdraw</span>(<span class="code-number">200</span>)
+<span class="code-keyword">print</span>(account)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 7: Data Manipulation with NumPy and Pandas -->
+    <div class="chapter-card" id="chapter-7">
+        <div class="chapter-header">
+            <div class="chapter-number">7</div>
+            <h2 class="chapter-title">Data Manipulation with NumPy and Pandas</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-th"></i> NumPy Arrays <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Creating arrays</span>
+arr1 = np.array([<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>])
+arr2 = np.zeros((<span class="code-number">3</span>, <span class="code-number">3</span>))
+arr3 = np.ones((<span class="code-number">2</span>, <span class="code-number">4</span>))
+arr4 = np.arange(<span class="code-number">0</span>, <span class="code-number">10</span>, <span class="code-number">2</span>)  <span class="code-comment"># [0, 2, 4, 6, 8]</span>
+arr5 = np.linspace(<span class="code-number">0</span>, <span class="code-number">1</span>, <span class="code-number">5</span>)  <span class="code-comment"># 5 values from 0 to 1</span>
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Array: {arr1}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Shape: {arr1.shape}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Data type: {arr1.dtype}"</span>)
+
+<span class="code-comment"># Array operations</span>
+arr = np.array([<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>])
+<span class="code-keyword">print</span>(<span class="code-string">f"Sum: {arr.sum()}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Mean: {arr.mean()}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Std Dev: {arr.std()}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Max: {arr.max()}, Min: {arr.min()}"</span>)
+
+<span class="code-comment"># Broadcasting and element-wise operations</span>
+arr = np.array([<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>])
+<span class="code-keyword">print</span>(arr * <span class="code-number">2</span>)           <span class="code-comment"># [2, 4, 6, 8]</span>
+<span class="code-keyword">print</span>(arr ** <span class="code-number">2</span>)          <span class="code-comment"># [1, 4, 9, 16]</span>
+<span class="code-keyword">print</span>(arr + arr)         <span class="code-comment"># [2, 4, 6, 8]</span>
+
+<span class="code-comment"># Indexing and slicing</span>
+matrix = np.array([[<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>], [<span class="code-number">4</span>, <span class="code-number">5</span>, <span class="code-number">6</span>], [<span class="code-number">7</span>, <span class="code-number">8</span>, <span class="code-number">9</span>]])
+<span class="code-keyword">print</span>(matrix[<span class="code-number">0</span>, <span class="code-number">0</span>])       <span class="code-comment"># 1</span>
+<span class="code-keyword">print</span>(matrix[<span class="code-number">1</span>])          <span class="code-comment"># [4, 5, 6]</span>
+<span class="code-keyword">print</span>(matrix[:, <span class="code-number">1</span>])      <span class="code-comment"># [2, 5, 8] (second column)</span>
+
+<span class="code-comment"># Reshaping</span>
+arr = np.arange(<span class="code-number">12</span>)
+reshaped = arr.reshape(<span class="code-number">3</span>, <span class="code-number">4</span>)
+<span class="code-keyword">print</span>(reshaped)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-table"></i> Pandas DataFrames <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+
+<span class="code-comment"># Creating DataFrames</span>
+data = {
+    <span class="code-string">'Name'</span>: [<span class="code-string">'Alice'</span>, <span class="code-string">'Bob'</span>, <span class="code-string">'Charlie'</span>, <span class="code-string">'David'</span>],
+    <span class="code-string">'Age'</span>: [<span class="code-number">25</span>, <span class="code-number">30</span>, <span class="code-number">35</span>, <span class="code-number">28</span>],
+    <span class="code-string">'City'</span>: [<span class="code-string">'New York'</span>, <span class="code-string">'Paris'</span>, <span class="code-string">'London'</span>, <span class="code-string">'Tokyo'</span>],
+    <span class="code-string">'Salary'</span>: [<span class="code-number">70000</span>, <span class="code-number">80000</span>, <span class="code-number">90000</span>, <span class="code-number">75000</span>]
+}
+df = pd.DataFrame(data)
+
+<span class="code-comment"># Viewing data</span>
+<span class="code-keyword">print</span>(df.head())
+<span class="code-keyword">print</span>(df.info())
+<span class="code-keyword">print</span>(df.describe())
+
+<span class="code-comment"># Selecting data</span>
+<span class="code-keyword">print</span>(df[<span class="code-string">'Name'</span>])              <span class="code-comment"># Select column</span>
+<span class="code-keyword">print</span>(df[[<span class="code-string">'Name'</span>, <span class="code-string">'Age'</span>]])  <span class="code-comment"># Multiple columns</span>
+<span class="code-keyword">print</span>(df.loc[<span class="code-number">0</span>])               <span class="code-comment"># Select row by label</span>
+<span class="code-keyword">print</span>(df.iloc[<span class="code-number">1</span>:<span class="code-number">3</span>])           <span class="code-comment"># Select rows by position</span>
+
+<span class="code-comment"># Filtering data</span>
+<span class="code-keyword">print</span>(df[df[<span class="code-string">'Age'</span>] &gt; <span class="code-number">28</span>])
+<span class="code-keyword">print</span>(df[(df[<span class="code-string">'Age'</span>] &gt; <span class="code-number">25</span>) & (df[<span class="code-string">'Salary'</span>] &lt; <span class="code-number">85000</span>)])
+
+<span class="code-comment"># Data manipulation</span>
+df[<span class="code-string">'Bonus'</span>] = df[<span class="code-string">'Salary'</span>] * <span class="code-number">0.1</span>  <span class="code-comment"># New column</span>
+df[<span class="code-string">'Age_Group'</span>] = df[<span class="code-string">'Age'</span>].apply(<span class="code-keyword">lambda</span> x: <span class="code-string">'Young'</span> <span class="code-keyword">if</span> x &lt; <span class="code-number">30</span> <span class="code-keyword">else</span> <span class="code-string">'Senior'</span>)
+
+<span class="code-comment"># Grouping and aggregation</span>
+grouped = df.groupby(<span class="code-string">'Age_Group'</span>)[<span class="code-string">'Salary'</span>].mean()
+<span class="code-keyword">print</span>(grouped)
+
+<span class="code-comment"># Reading and writing files</span>
+<span class="code-comment"># df.to_csv('data.csv', index=False)</span>
+<span class="code-comment"># df_loaded = pd.read_csv('data.csv')</span>
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-broom"></i> Data Cleaning and Processing
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Handling missing data</span>
+data = {
+    <span class="code-string">'A'</span>: [<span class="code-number">1</span>, <span class="code-number">2</span>, np.nan, <span class="code-number">4</span>],
+    <span class="code-string">'B'</span>: [<span class="code-number">5</span>, np.nan, np.nan, <span class="code-number">8</span>],
+    <span class="code-string">'C'</span>: [<span class="code-number">9</span>, <span class="code-number">10</span>, <span class="code-number">11</span>, <span class="code-number">12</span>]
+}
+df = pd.DataFrame(data)
+
+<span class="code-keyword">print</span>(<span class="code-string">"Missing values:"</span>)
+<span class="code-keyword">print</span>(df.isnull().sum())
+
+<span class="code-comment"># Drop rows with missing values</span>
+df_dropped = df.dropna()
+
+<span class="code-comment"># Fill missing values</span>
+df_filled = df.fillna(<span class="code-number">0</span>)
+df_filled_mean = df.fillna(df.mean())
+
+<span class="code-comment"># Removing duplicates</span>
+df_no_dup = df.drop_duplicates()
+
+<span class="code-comment"># Merging DataFrames</span>
+df1 = pd.DataFrame({<span class="code-string">'ID'</span>: [<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>], <span class="code-string">'Name'</span>: [<span class="code-string">'Alice'</span>, <span class="code-string">'Bob'</span>, <span class="code-string">'Charlie'</span>]})
+df2 = pd.DataFrame({<span class="code-string">'ID'</span>: [<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">4</span>], <span class="code-string">'Salary'</span>: [<span class="code-number">70000</span>, <span class="code-number">80000</span>, <span class="code-number">90000</span>]})
+
+merged = pd.merge(df1, df2, on=<span class="code-string">'ID'</span>, how=<span class="code-string">'inner'</span>)
+<span class="code-keyword">print</span>(merged)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 8: Data Visualization -->
+    <div class="chapter-card" id="chapter-8">
+        <div class="chapter-header">
+            <div class="chapter-number">8</div>
+            <h2 class="chapter-title">Data Visualization with Matplotlib and Seaborn</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-chart-line"></i> Matplotlib Basics <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Line plot</span>
+x = np.linspace(<span class="code-number">0</span>, <span class="code-number">10</span>, <span class="code-number">100</span>)
+y = np.sin(x)
+
+plt.figure(figsize=(<span class="code-number">10</span>, <span class="code-number">6</span>))
+plt.plot(x, y, label=<span class="code-string">'sin(x)'</span>, color=<span class="code-string">'blue'</span>, linewidth=<span class="code-number">2</span>)
+plt.plot(x, np.cos(x), label=<span class="code-string">'cos(x)'</span>, color=<span class="code-string">'red'</span>, linestyle=<span class="code-string">'--'</span>)
+plt.xlabel(<span class="code-string">'X axis'</span>)
+plt.ylabel(<span class="code-string">'Y axis'</span>)
+plt.title(<span class="code-string">'Trigonometric Functions'</span>)
+plt.legend()
+plt.grid(<span class="code-keyword">True</span>)
+plt.show()
+
+<span class="code-comment"># Bar chart</span>
+categories = [<span class="code-string">'A'</span>, <span class="code-string">'B'</span>, <span class="code-string">'C'</span>, <span class="code-string">'D'</span>]
+values = [<span class="code-number">23</span>, <span class="code-number">45</span>, <span class="code-number">56</span>, <span class="code-number">78</span>]
+
+plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">6</span>))
+plt.bar(categories, values, color=<span class="code-string">'skyblue'</span>)
+plt.xlabel(<span class="code-string">'Categories'</span>)
+plt.ylabel(<span class="code-string">'Values'</span>)
+plt.title(<span class="code-string">'Bar Chart Example'</span>)
+plt.show()
+
+<span class="code-comment"># Scatter plot</span>
+x = np.random.randn(<span class="code-number">100</span>)
+y = np.random.randn(<span class="code-number">100</span>)
+colors = np.random.rand(<span class="code-number">100</span>)
+
+plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">6</span>))
+plt.scatter(x, y, c=colors, s=<span class="code-number">50</span>, alpha=<span class="code-number">0.6</span>, cmap=<span class="code-string">'viridis'</span>)
+plt.colorbar()
+plt.xlabel(<span class="code-string">'X'</span>)
+plt.ylabel(<span class="code-string">'Y'</span>)
+plt.title(<span class="code-string">'Scatter Plot Example'</span>)
+plt.show()
+
+<span class="code-comment"># Histogram</span>
+data = np.random.normal(<span class="code-number">0</span>, <span class="code-number">1</span>, <span class="code-number">1000</span>)
+plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">6</span>))
+plt.hist(data, bins=<span class="code-number">30</span>, color=<span class="code-string">'green'</span>, alpha=<span class="code-number">0.7</span>)
+plt.xlabel(<span class="code-string">'Value'</span>)
+plt.ylabel(<span class="code-string">'Frequency'</span>)
+plt.title(<span class="code-string">'Histogram Example'</span>)
+plt.show()
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-palette"></i> Seaborn for Statistical Plots
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns
+<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+<span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
+
+<span class="code-comment"># Set style</span>
+sns.set_style(<span class="code-string">"whitegrid"</span>)
+
+<span class="code-comment"># Load sample data</span>
+tips = sns.load_dataset(<span class="code-string">"tips"</span>)
+
+<span class="code-comment"># Box plot</span>
+plt.figure(figsize=(<span class="code-number">10</span>, <span class="code-number">6</span>))
+sns.boxplot(x=<span class="code-string">'day'</span>, y=<span class="code-string">'total_bill'</span>, data=tips)
+plt.title(<span class="code-string">'Total Bill by Day'</span>)
+plt.show()
+
+<span class="code-comment"># Violin plot</span>
+plt.figure(figsize=(<span class="code-number">10</span>, <span class="code-number">6</span>))
+sns.violinplot(x=<span class="code-string">'day'</span>, y=<span class="code-string">'total_bill'</span>, hue=<span class="code-string">'sex'</span>, data=tips)
+plt.title(<span class="code-string">'Total Bill Distribution by Day and Gender'</span>)
+plt.show()
+
+<span class="code-comment"># Heatmap (correlation matrix)</span>
+data = pd.DataFrame({
+    <span class="code-string">'A'</span>: np.random.randn(<span class="code-number">100</span>),
+    <span class="code-string">'B'</span>: np.random.randn(<span class="code-number">100</span>),
+    <span class="code-string">'C'</span>: np.random.randn(<span class="code-number">100</span>)
+})
+correlation = data.corr()
+
+plt.figure(figsize=(<span class="code-number">8</span>, <span class="code-number">6</span>))
+sns.heatmap(correlation, annot=<span class="code-keyword">True</span>, cmap=<span class="code-string">'coolwarm'</span>, center=<span class="code-number">0</span>)
+plt.title(<span class="code-string">'Correlation Heatmap'</span>)
+plt.show()
+
+<span class="code-comment"># Pair plot</span>
+iris = sns.load_dataset(<span class="code-string">"iris"</span>)
+sns.pairplot(iris, hue=<span class="code-string">"species"</span>)
+plt.show()
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 9: Introduction to Machine Learning -->
+    <div class="chapter-card" id="chapter-9">
+        <div class="chapter-header">
+            <div class="chapter-number">9</div>
+            <h2 class="chapter-title">Introduction to Machine Learning</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-brain"></i> ML Concepts and Workflow
+        </div>
+        
+        <div class="explanation-box">
+            <h5>Types of Machine Learning:</h5>
+            <ul>
+                <li><strong>Supervised Learning:</strong> Learning from labeled data (classification, regression)</li>
+                <li><strong>Unsupervised Learning:</strong> Finding patterns in unlabeled data (clustering, dimensionality reduction)</li>
+                <li><strong>Reinforcement Learning:</strong> Learning through reward/penalty system</li>
+            </ul>
+        </div>
+
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+<span class="code-keyword">from</span> sklearn.preprocessing <span class="code-keyword">import</span> StandardScaler
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Basic ML workflow example</span>
+
+<span class="code-comment"># 1. Load/Create data</span>
+X = np.random.rand(<span class="code-number">100</span>, <span class="code-number">5</span>)  <span class="code-comment"># Features</span>
+y = np.random.randint(<span class="code-number">0</span>, <span class="code-number">2</span>, <span class="code-number">100</span>)  <span class="code-comment"># Target (binary)</span>
+
+<span class="code-comment"># 2. Split data into training and testing sets</span>
+X_train, X_test, y_train, y_test = <span class="code-function">train_test_split</span>(
+    X, y, test_size=<span class="code-number">0.2</span>, random_state=<span class="code-number">42</span>
+)
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Training set: {X_train.shape}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Testing set: {X_test.shape}"</span>)
+
+<span class="code-comment"># 3. Feature scaling</span>
+scaler = <span class="code-function">StandardScaler</span>()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Mean before scaling: {X_train.mean():.2f}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Mean after scaling: {X_train_scaled.mean():.2f}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-check-double"></i> Model Evaluation Metrics <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> accuracy_score, precision_score, recall_score, f1_score
+<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> confusion_matrix, classification_report
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Example predictions</span>
+y_true = np.array([<span class="code-number">0</span>, <span class="code-number">1</span>, <span class="code-number">1</span>, <span class="code-number">0</span>, <span class="code-number">1</span>, <span class="code-number">1</span>, <span class="code-number">0</span>, <span class="code-number">0</span>])
+y_pred = np.array([<span class="code-number">0</span>, <span class="code-number">1</span>, <span class="code-number">0</span>, <span class="code-number">0</span>, <span class="code-number">1</span>, <span class="code-number">1</span>, <span class="code-number">0</span>, <span class="code-number">1</span>])
+
+<span class="code-comment"># Calculate metrics</span>
+accuracy = <span class="code-function">accuracy_score</span>(y_true, y_pred)
+precision = <span class="code-function">precision_score</span>(y_true, y_pred)
+recall = <span class="code-function">recall_score</span>(y_true, y_pred)
+f1 = <span class="code-function">f1_score</span>(y_true, y_pred)
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Accuracy: {accuracy:.2f}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Precision: {precision:.2f}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Recall: {recall:.2f}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"F1 Score: {f1:.2f}"</span>)
+
+<span class="code-comment"># Confusion matrix</span>
+cm = <span class="code-function">confusion_matrix</span>(y_true, y_pred)
+<span class="code-keyword">print</span>(<span class="code-string">f"Confusion Matrix:\n{cm}"</span>)
+
+<span class="code-comment"># Classification report</span>
+<span class="code-keyword">print</span>(<span class="code-string">"\nClassification Report:"</span>)
+<span class="code-keyword">print</span>(<span class="code-function">classification_report</span>(y_true, y_pred))
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-sync"></i> Cross-Validation
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> cross_val_score
+<span class="code-keyword">from</span> sklearn.linear_model <span class="code-keyword">import</span> LogisticRegression
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Create sample data</span>
+X = np.random.rand(<span class="code-number">100</span>, <span class="code-number">10</span>)
+y = np.random.randint(<span class="code-number">0</span>, <span class="code-number">2</span>, <span class="code-number">100</span>)
+
+<span class="code-comment"># Create model</span>
+model = <span class="code-function">LogisticRegression</span>()
+
+<span class="code-comment"># Perform 5-fold cross-validation</span>
+scores = <span class="code-function">cross_val_score</span>(model, X, y, cv=<span class="code-number">5</span>)
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Cross-validation scores: {scores}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Mean accuracy: {scores.mean():.2f} (+/- {scores.std() * </span><span class="code-number">2</span><span class="code-string">:.2f})"</span>)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 10: Supervised Learning Algorithms -->
+    <div class="chapter-card" id="chapter-10">
+        <div class="chapter-header">
+            <div class="chapter-number">10</div>
+            <h2 class="chapter-title">Supervised Learning Algorithms</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-chart-line"></i> Linear Regression <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.linear_model <span class="code-keyword">import</span> LinearRegression
+<span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> mean_squared_error, r2_score
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Create sample data</span>
+X = np.random.rand(<span class="code-number">100</span>, <span class="code-number">1</span>) * <span class="code-number">10</span>
+y = <span class="code-number">2</span> * X + <span class="code-number">3</span> + np.random.randn(<span class="code-number">100</span>, <span class="code-number">1</span>)
+
+<span class="code-comment"># Split data</span>
+X_train, X_test, y_train, y_test = <span class="code-function">train_test_split</span>(
+    X, y, test_size=<span class="code-number">0.2</span>, random_state=<span class="code-number">42</span>
+)
+
+<span class="code-comment"># Train model</span>
+model = <span class="code-function">LinearRegression</span>()
+model.fit(X_train, y_train)
+
+<span class="code-comment"># Make predictions</span>
+y_pred = model.predict(X_test)
+
+<span class="code-comment"># Evaluate</span>
+mse = <span class="code-function">mean_squared_error</span>(y_test, y_pred)
+r2 = <span class="code-function">r2_score</span>(y_test, y_pred)
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Coefficient: {model.coef_[</span><span class="code-number">0</span><span class="code-string">][</span><span class="code-number">0</span><span class="code-string">]:.2f}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Intercept: {model.intercept_[</span><span class="code-number">0</span><span class="code-string">]:.2f}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"MSE: {mse:.2f}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"R² Score: {r2:.2f}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-project-diagram"></i> Logistic Regression for Classification
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.linear_model <span class="code-keyword">import</span> LogisticRegression
+<span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
+<span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> accuracy_score, classification_report
+
+<span class="code-comment"># Load iris dataset</span>
+iris = <span class="code-function">load_iris</span>()
+X = iris.data
+y = (iris.target == <span class="code-number">0</span>).astype(int)  <span class="code-comment"># Binary classification</span>
+
+<span class="code-comment"># Split data</span>
+X_train, X_test, y_train, y_test = <span class="code-function">train_test_split</span>(
+    X, y, test_size=<span class="code-number">0.3</span>, random_state=<span class="code-number">42</span>
+)
+
+<span class="code-comment"># Train model</span>
+model = <span class="code-function">LogisticRegression</span>(max_iter=<span class="code-number">200</span>)
+model.fit(X_train, y_train)
+
+<span class="code-comment"># Predict</span>
+y_pred = model.predict(X_test)
+y_proba = model.predict_proba(X_test)
+
+<span class="code-comment"># Evaluate</span>
+accuracy = <span class="code-function">accuracy_score</span>(y_test, y_pred)
+<span class="code-keyword">print</span>(<span class="code-string">f"Accuracy: {accuracy:.2f}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">"\nClassification Report:"</span>)
+<span class="code-keyword">print</span>(<span class="code-function">classification_report</span>(y_test, y_pred))
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-tree"></i> Decision Trees and Random Forests <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.tree <span class="code-keyword">import</span> DecisionTreeClassifier
+<span class="code-keyword">from</span> sklearn.ensemble <span class="code-keyword">import</span> RandomForestClassifier
+<span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
+<span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> accuracy_score
+
+<span class="code-comment"># Load data</span>
+iris = <span class="code-function">load_iris</span>()
+X_train, X_test, y_train, y_test = <span class="code-function">train_test_split</span>(
+    iris.data, iris.target, test_size=<span class="code-number">0.3</span>, random_state=<span class="code-number">42</span>
+)
+
+<span class="code-comment"># Decision Tree</span>
+dt_model = <span class="code-function">DecisionTreeClassifier</span>(max_depth=<span class="code-number">3</span>, random_state=<span class="code-number">42</span>)
+dt_model.fit(X_train, y_train)
+dt_pred = dt_model.predict(X_test)
+dt_accuracy = <span class="code-function">accuracy_score</span>(y_test, dt_pred)
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Decision Tree Accuracy: {dt_accuracy:.2f}"</span>)
+
+<span class="code-comment"># Random Forest</span>
+rf_model = <span class="code-function">RandomForestClassifier</span>(n_estimators=<span class="code-number">100</span>, random_state=<span class="code-number">42</span>)
+rf_model.fit(X_train, y_train)
+rf_pred = rf_model.predict(X_test)
+rf_accuracy = <span class="code-function">accuracy_score</span>(y_test, rf_pred)
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Random Forest Accuracy: {rf_accuracy:.2f}"</span>)
+
+<span class="code-comment"># Feature importance</span>
+importances = rf_model.feature_importances_
+<span class="code-keyword">for</span> i, importance <span class="code-keyword">in</span> <span class="code-keyword">enumerate</span>(importances):
+    <span class="code-keyword">print</span>(<span class="code-string">f"Feature {i}: {importance:.4f}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-sliders-h"></i> Support Vector Machines (SVM)
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.svm <span class="code-keyword">import</span> SVC
+<span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> make_classification
+<span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+<span class="code-keyword">from</span> sklearn.preprocessing <span class="code-keyword">import</span> StandardScaler
+<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> accuracy_score
+
+<span class="code-comment"># Create dataset</span>
+X, y = <span class="code-function">make_classification</span>(n_samples=<span class="code-number">200</span>, n_features=<span class="code-number">10</span>, random_state=<span class="code-number">42</span>)
+
+<span class="code-comment"># Split and scale</span>
+X_train, X_test, y_train, y_test = <span class="code-function">train_test_split</span>(
+    X, y, test_size=<span class="code-number">0.3</span>, random_state=<span class="code-number">42</span>
+)
+scaler = <span class="code-function">StandardScaler</span>()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+<span class="code-comment"># Train SVM with different kernels</span>
+kernels = [<span class="code-string">'linear'</span>, <span class="code-string">'rbf'</span>, <span class="code-string">'poly'</span>]
+<span class="code-keyword">for</span> kernel <span class="code-keyword">in</span> kernels:
+    model = <span class="code-function">SVC</span>(kernel=kernel, random_state=<span class="code-number">42</span>)
+    model.fit(X_train_scaled, y_train)
+    y_pred = model.predict(X_test_scaled)
+    accuracy = <span class="code-function">accuracy_score</span>(y_test, y_pred)
+    <span class="code-keyword">print</span>(<span class="code-string">f"SVM ({kernel} kernel) Accuracy: {accuracy:.2f}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-cogs"></i> Hyperparameter Tuning with GridSearchCV
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> GridSearchCV
+<span class="code-keyword">from</span> sklearn.ensemble <span class="code-keyword">import</span> RandomForestClassifier
+<span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
+
+<span class="code-comment"># Load data</span>
+iris = <span class="code-function">load_iris</span>()
+X, y = iris.data, iris.target
+
+<span class="code-comment"># Define parameter grid</span>
+param_grid = {
+    <span class="code-string">'n_estimators'</span>: [<span class="code-number">50</span>, <span class="code-number">100</span>, <span class="code-number">200</span>],
+    <span class="code-string">'max_depth'</span>: [<span class="code-number">3</span>, <span class="code-number">5</span>, <span class="code-number">7</span>, <span class="code-keyword">None</span>],
+    <span class="code-string">'min_samples_split'</span>: [<span class="code-number">2</span>, <span class="code-number">5</span>, <span class="code-number">10</span>]
+}
+
+<span class="code-comment"># Perform grid search</span>
+rf = <span class="code-function">RandomForestClassifier</span>(random_state=<span class="code-number">42</span>)
+grid_search = <span class="code-function">GridSearchCV</span>(rf, param_grid, cv=<span class="code-number">5</span>, scoring=<span class="code-string">'accuracy'</span>)
+grid_search.fit(X, y)
+
+<span class="code-comment"># Best parameters</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Best parameters: {grid_search.best_params_}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Best cross-validation score: {grid_search.best_score_:.2f}"</span>)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 11: Unsupervised Learning -->
+    <div class="chapter-card" id="chapter-11">
+        <div class="chapter-header">
+            <div class="chapter-number">11</div>
+            <h2 class="chapter-title">Unsupervised Learning Algorithms</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-sitemap"></i> K-Means Clustering <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.cluster <span class="code-keyword">import</span> KMeans
+<span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> make_blobs
+<span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Create sample data</span>
+X, y_true = <span class="code-function">make_blobs</span>(n_samples=<span class="code-number">300</span>, centers=<span class="code-number">4</span>, random_state=<span class="code-number">42</span>)
+
+<span class="code-comment"># Apply K-Means</span>
+kmeans = <span class="code-function">KMeans</span>(n_clusters=<span class="code-number">4</span>, random_state=<span class="code-number">42</span>)
+y_pred = kmeans.fit_predict(X)
+
+<span class="code-comment"># Get cluster centers</span>
+centers = kmeans.cluster_centers_
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Cluster centers:\n{centers}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Inertia: {kmeans.inertia_:.2f}"</span>)
+
+<span class="code-comment"># Plot results</span>
+plt.figure(figsize=(<span class="code-number">10</span>, <span class="code-number">6</span>))
+plt.scatter(X[:, <span class="code-number">0</span>], X[:, <span class="code-number">1</span>], c=y_pred, cmap=<span class="code-string">'viridis'</span>, alpha=<span class="code-number">0.6</span>)
+plt.scatter(centers[:, <span class="code-number">0</span>], centers[:, <span class="code-number">1</span>], c=<span class="code-string">'red'</span>, marker=<span class="code-string">'X'</span>, s=<span class="code-number">200</span>, 
+            edgecolors=<span class="code-string">'black'</span>, label=<span class="code-string">'Centroids'</span>)
+plt.title(<span class="code-string">'K-Means Clustering'</span>)
+plt.legend()
+plt.show()
+
+<span class="code-comment"># Elbow method to find optimal k</span>
+inertias = []
+K_range = <span class="code-keyword">range</span>(<span class="code-number">1</span>, <span class="code-number">11</span>)
+<span class="code-keyword">for</span> k <span class="code-keyword">in</span> K_range:
+    kmeans = <span class="code-function">KMeans</span>(n_clusters=k, random_state=<span class="code-number">42</span>)
+    kmeans.fit(X)
+    inertias.append(kmeans.inertia_)
+
+plt.figure(figsize=(<span class="code-number">10</span>, <span class="code-number">6</span>))
+plt.plot(K_range, inertias, marker=<span class="code-string">'o'</span>)
+plt.xlabel(<span class="code-string">'Number of Clusters (k)'</span>)
+plt.ylabel(<span class="code-string">'Inertia'</span>)
+plt.title(<span class="code-string">'Elbow Method'</span>)
+plt.show()
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-compress"></i> Principal Component Analysis (PCA)
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.decomposition <span class="code-keyword">import</span> PCA
+<span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
+<span class="code-keyword">from</span> sklearn.preprocessing <span class="code-keyword">import</span> StandardScaler
+<span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
+
+<span class="code-comment"># Load data</span>
+iris = <span class="code-function">load_iris</span>()
+X = iris.data
+y = iris.target
+
+<span class="code-comment"># Standardize features</span>
+scaler = <span class="code-function">StandardScaler</span>()
+X_scaled = scaler.fit_transform(X)
+
+<span class="code-comment"># Apply PCA</span>
+pca = <span class="code-function">PCA</span>(n_components=<span class="code-number">2</span>)
+X_pca = pca.fit_transform(X_scaled)
+
+<span class="code-comment"># Explained variance</span>
+<span class="code-keyword">print</span>(<span class="code-string">f"Explained variance ratio: {pca.explained_variance_ratio_}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Total variance explained: {pca.explained_variance_ratio_.sum():.2f}"</span>)
+
+<span class="code-comment"># Plot PCA results</span>
+plt.figure(figsize=(<span class="code-number">10</span>, <span class="code-number">6</span>))
+colors = [<span class="code-string">'red'</span>, <span class="code-string">'green'</span>, <span class="code-string">'blue'</span>]
+<span class="code-keyword">for</span> i, color <span class="code-keyword">in</span> <span class="code-keyword">enumerate</span>(colors):
+    plt.scatter(X_pca[y == i, <span class="code-number">0</span>], X_pca[y == i, <span class="code-number">1</span>], 
+                color=color, label=iris.target_names[i], alpha=<span class="code-number">0.7</span>)
+plt.xlabel(<span class="code-string">f'PC1 ({pca.explained_variance_ratio_[</span><span class="code-number">0</span><span class="code-string">]:.2%})'</span>)
+plt.ylabel(<span class="code-string">f'PC2 ({pca.explained_variance_ratio_[</span><span class="code-number">1</span><span class="code-string">]:.2%})'</span>)
+plt.title(<span class="code-string">'PCA of Iris Dataset'</span>)
+plt.legend()
+plt.show()
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-exclamation-triangle"></i> Anomaly Detection
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.ensemble <span class="code-keyword">import</span> IsolationForest
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+<span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
+
+<span class="code-comment"># Create normal data with some outliers</span>
+np.random.seed(<span class="code-number">42</span>)
+X_normal = <span class="code-number">0.3</span> * np.random.randn(<span class="code-number">100</span>, <span class="code-number">2</span>)
+X_outliers = np.random.uniform(low=<span class="code-number">-4</span>, high=<span class="code-number">4</span>, size=(<span class="code-number">20</span>, <span class="code-number">2</span>))
+X = np.vstack([X_normal, X_outliers])
+
+<span class="code-comment"># Train Isolation Forest</span>
+clf = <span class="code-function">IsolationForest</span>(contamination=<span class="code-number">0.15</span>, random_state=<span class="code-number">42</span>)
+y_pred = clf.fit_predict(X)
+
+<span class="code-comment"># Plot results</span>
+plt.figure(figsize=(<span class="code-number">10</span>, <span class="code-number">6</span>))
+colors = np.array([<span class="code-string">'blue'</span>, <span class="code-string">'red'</span>])
+plt.scatter(X[:, <span class="code-number">0</span>], X[:, <span class="code-number">1</span>], c=colors[(y_pred + <span class="code-number">1</span>) // <span class="code-number">2</span>], alpha=<span class="code-number">0.6</span>)
+plt.title(<span class="code-string">'Anomaly Detection (Blue: Normal, Red: Anomaly)'</span>)
+plt.show()
+
+<span class="code-keyword">print</span>(<span class="code-string">f"Number of anomalies detected: {(y_pred == -</span><span class="code-number">1</span><span class="code-string">).sum()}"</span>)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 12: Introduction to Deep Learning -->
+    <div class="chapter-card" id="chapter-12">
+        <div class="chapter-header">
+            <div class="chapter-number">12</div>
+            <h2 class="chapter-title">Introduction to Deep Learning</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-network-wired"></i> Neural Network Basics <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="explanation-box">
+            <h5>Neural Network Components:</h5>
+            <ul>
+                <li><strong>Neurons:</strong> Basic computational units</li>
+                <li><strong>Layers:</strong> Input layer, hidden layers, output layer</li>
+                <li><strong>Activation Functions:</strong> ReLU, Sigmoid, Tanh, Softmax</li>
+                <li><strong>Loss Functions:</strong> MSE, Cross-Entropy</li>
+                <li><strong>Optimizers:</strong> SGD, Adam, RMSprop</li>
+            </ul>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">import</span> tensorflow <span class="code-keyword">as</span> tf
+<span class="code-keyword">from</span> tensorflow <span class="code-keyword">import</span> keras
+<span class="code-keyword">from</span> tensorflow.keras <span class="code-keyword">import</span> layers
+<span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
+<span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+<span class="code-keyword">from</span> sklearn.preprocessing <span class="code-keyword">import</span> StandardScaler
+
+<span class="code-comment"># Load and prepare data</span>
+iris = <span class="code-function">load_iris</span>()
+X = iris.data
+y = keras.utils.to_categorical(iris.target)  <span class="code-comment"># One-hot encoding</span>
+
+<span class="code-comment"># Split and scale</span>
+X_train, X_test, y_train, y_test = <span class="code-function">train_test_split</span>(
+    X, y, test_size=<span class="code-number">0.2</span>, random_state=<span class="code-number">42</span>
+)
+scaler = <span class="code-function">StandardScaler</span>()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+<span class="code-comment"># Build neural network</span>
+model = keras.Sequential([
+    layers.Dense(<span class="code-number">64</span>, activation=<span class="code-string">'relu'</span>, input_shape=(<span class="code-number">4</span>,)),
+    layers.Dropout(<span class="code-number">0.2</span>),
+    layers.Dense(<span class="code-number">32</span>, activation=<span class="code-string">'relu'</span>),
+    layers.Dense(<span class="code-number">3</span>, activation=<span class="code-string">'softmax'</span>)
+])
+
+<span class="code-comment"># Compile model</span>
+model.compile(
+    optimizer=<span class="code-string">'adam'</span>,
+    loss=<span class="code-string">'categorical_crossentropy'</span>,
+    metrics=[<span class="code-string">'accuracy'</span>]
+)
+
+<span class="code-comment"># Train model</span>
+history = model.fit(
+    X_train, y_train,
+    epochs=<span class="code-number">100</span>,
+    batch_size=<span class="code-number">16</span>,
+    validation_split=<span class="code-number">0.2</span>,
+    verbose=<span class="code-number">0</span>
+)
+
+<span class="code-comment"># Evaluate</span>
+test_loss, test_acc = model.evaluate(X_test, y_test)
+<span class="code-keyword">print</span>(<span class="code-string">f"Test Accuracy: {test_acc:.2f}"</span>)
+
+<span class="code-comment"># Make predictions</span>
+predictions = model.predict(X_test[:<span class="code-number">5</span>])
+<span class="code-keyword">print</span>(<span class="code-string">f"Predictions:\n{predictions}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-image"></i> Convolutional Neural Networks (CNN)
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">import</span> tensorflow <span class="code-keyword">as</span> tf
+<span class="code-keyword">from</span> tensorflow <span class="code-keyword">import</span> keras
+<span class="code-keyword">from</span> tensorflow.keras <span class="code-keyword">import</span> layers
+
+<span class="code-comment"># Load MNIST dataset</span>
+(X_train, y_train), (X_test, y_test) = keras.datasets.mnist.load_data()
+
+<span class="code-comment"># Preprocess data</span>
+X_train = X_train.reshape(-<span class="code-number">1</span>, <span class="code-number">28</span>, <span class="code-number">28</span>, <span class="code-number">1</span>).astype(<span class="code-string">'float32'</span>) / <span class="code-number">255</span>
+X_test = X_test.reshape(-<span class="code-number">1</span>, <span class="code-number">28</span>, <span class="code-number">28</span>, <span class="code-number">1</span>).astype(<span class="code-string">'float32'</span>) / <span class="code-number">255</span>
+
+<span class="code-comment"># Build CNN model</span>
+model = keras.Sequential([
+    layers.Conv2D(<span class="code-number">32</span>, (<span class="code-number">3</span>, <span class="code-number">3</span>), activation=<span class="code-string">'relu'</span>, input_shape=(<span class="code-number">28</span>, <span class="code-number">28</span>, <span class="code-number">1</span>)),
+    layers.MaxPooling2D((<span class="code-number">2</span>, <span class="code-number">2</span>)),
+    layers.Conv2D(<span class="code-number">64</span>, (<span class="code-number">3</span>, <span class="code-number">3</span>), activation=<span class="code-string">'relu'</span>),
+    layers.MaxPooling2D((<span class="code-number">2</span>, <span class="code-number">2</span>)),
+    layers.Conv2D(<span class="code-number">64</span>, (<span class="code-number">3</span>, <span class="code-number">3</span>), activation=<span class="code-string">'relu'</span>),
+    layers.Flatten(),
+    layers.Dense(<span class="code-number">64</span>, activation=<span class="code-string">'relu'</span>),
+    layers.Dropout(<span class="code-number">0.5</span>),
+    layers.Dense(<span class="code-number">10</span>, activation=<span class="code-string">'softmax'</span>)
+])
+
+<span class="code-comment"># Compile</span>
+model.compile(
+    optimizer=<span class="code-string">'adam'</span>,
+    loss=<span class="code-string">'sparse_categorical_crossentropy'</span>,
+    metrics=[<span class="code-string">'accuracy'</span>]
+)
+
+<span class="code-comment"># Model summary</span>
+model.summary()
+
+<span class="code-comment"># Train (using small epochs for demo)</span>
+history = model.fit(
+    X_train[:<span class="code-number">5000</span>], y_train[:<span class="code-number">5000</span>],
+    epochs=<span class="code-number">5</span>,
+    batch_size=<span class="code-number">64</span>,
+    validation_split=<span class="code-number">0.1</span>
+)
+
+<span class="code-comment"># Evaluate</span>
+test_loss, test_acc = model.evaluate(X_test)
+<span class="code-keyword">print</span>(<span class="code-string">f"Test Accuracy: {test_acc:.2f}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-save"></i> Model Saving and Loading
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">import</span> tensorflow <span class="code-keyword">as</span> tf
+<span class="code-keyword">from</span> tensorflow <span class="code-keyword">import</span> keras
+
+<span class="code-comment"># Save entire model</span>
+model.save(<span class="code-string">'my_model.h5'</span>)
+
+<span class="code-comment"># Load model</span>
+loaded_model = keras.models.load_model(<span class="code-string">'my_model.h5'</span>)
+
+<span class="code-comment"># Save only weights</span>
+model.save_weights(<span class="code-string">'model_weights.h5'</span>)
+
+<span class="code-comment"># Load weights</span>
+model.load_weights(<span class="code-string">'model_weights.h5'</span>)
+
+<span class="code-comment"># Save in SavedModel format (recommended)</span>
+model.save(<span class="code-string">'saved_model/'</span>)
+loaded_model = keras.models.load_model(<span class="code-string">'saved_model/'</span>)
+
+<span class="code-keyword">print</span>(<span class="code-string">"Model saved and loaded successfully!"</span>)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 13: Natural Language Processing (NLP) -->
+    <div class="chapter-card" id="chapter-13">
+        <div class="chapter-header">
+            <div class="chapter-number">13</div>
+            <h2 class="chapter-title">Natural Language Processing (NLP)</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-text-width"></i> Text Preprocessing <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">import</span> nltk
+<span class="code-keyword">from</span> nltk.tokenize <span class="code-keyword">import</span> word_tokenize, sent_tokenize
+<span class="code-keyword">from</span> nltk.corpus <span class="code-keyword">import</span> stopwords
+<span class="code-keyword">from</span> nltk.stem <span class="code-keyword">import</span> PorterStemmer, WordNetLemmatizer
+<span class="code-keyword">import</span> string
+
+<span class="code-comment"># Download required NLTK data (run once)</span>
+<span class="code-comment"># nltk.download('punkt')</span>
+<span class="code-comment"># nltk.download('stopwords')</span>
+<span class="code-comment"># nltk.download('wordnet')</span>
+
+text = <span class="code-string">"Natural Language Processing is fascinating! It helps computers understand human language."</span>
+
+<span class="code-comment"># Tokenization</span>
+words = <span class="code-function">word_tokenize</span>(text)
+sentences = <span class="code-function">sent_tokenize</span>(text)
+<span class="code-keyword">print</span>(<span class="code-string">f"Words: {words}"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Sentences: {sentences}"</span>)
+
+<span class="code-comment"># Lowercasing and punctuation removal</span>
+words_lower = [word.lower() <span class="code-keyword">for</span> word <span class="code-keyword">in</span> words]
+words_clean = [word <span class="code-keyword">for</span> word <span class="code-keyword">in</span> words_lower 
+               <span class="code-keyword">if</span> word <span class="code-keyword">not</span> <span class="code-keyword">in</span> string.punctuation]
+
+<span class="code-comment"># Remove stopwords</span>
+stop_words = <span class="code-keyword">set</span>(<span class="code-function">stopwords</span>.words(<span class="code-string">'english'</span>))
+filtered_words = [word <span class="code-keyword">for</span> word <span class="code-keyword">in</span> words_clean 
+                  <span class="code-keyword">if</span> word <span class="code-keyword">not</span> <span class="code-keyword">in</span> stop_words]
+<span class="code-keyword">print</span>(<span class="code-string">f"Filtered: {filtered_words}"</span>)
+
+<span class="code-comment"># Stemming</span>
+stemmer = <span class="code-function">PorterStemmer</span>()
+stemmed = [stemmer.stem(word) <span class="code-keyword">for</span> word <span class="code-keyword">in</span> filtered_words]
+<span class="code-keyword">print</span>(<span class="code-string">f"Stemmed: {stemmed}"</span>)
+
+<span class="code-comment"># Lemmatization</span>
+lemmatizer = <span class="code-function">WordNetLemmatizer</span>()
+lemmatized = [lemmatizer.lemmatize(word) <span class="code-keyword">for</span> word <span class="code-keyword">in</span> filtered_words]
+<span class="code-keyword">print</span>(<span class="code-string">f"Lemmatized: {lemmatized}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-database"></i> Feature Extraction: Bag of Words & TF-IDF
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> CountVectorizer, TfidfVectorizer
+
+<span class="code-comment"># Sample documents</span>
+documents = [
+    <span class="code-string">"Machine learning is great"</span>,
+    <span class="code-string">"Deep learning is a subset of machine learning"</span>,
+    <span class="code-string">"Natural language processing is fascinating"</span>,
+    <span class="code-string">"Python is great for machine learning"</span>
+]
+
+<span class="code-comment"># Bag of Words</span>
+vectorizer = <span class="code-function">CountVectorizer</span>()
+X_bow = vectorizer.fit_transform(documents)
+
+<span class="code-keyword">print</span>(<span class="code-string">"Vocabulary:"</span>)
+<span class="code-keyword">print</span>(vectorizer.get_feature_names_out())
+<span class="code-keyword">print</span>(<span class="code-string">f"\nBag of Words Matrix:\n{X_bow.toarray()}"</span>)
+
+<span class="code-comment"># TF-IDF</span>
+tfidf_vectorizer = <span class="code-function">TfidfVectorizer</span>()
+X_tfidf = tfidf_vectorizer.fit_transform(documents)
+
+<span class="code-keyword">print</span>(<span class="code-string">f"\nTF-IDF Matrix:\n{X_tfidf.toarray()}"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-smile"></i> Sentiment Analysis <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> TfidfVectorizer
+<span class="code-keyword">from</span> sklearn.naive_bayes <span class="code-keyword">import</span> MultinomialNB
+<span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> accuracy_score, classification_report
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+
+<span class="code-comment"># Sample sentiment data</span>
+texts = [
+    <span class="code-string">"I love this product"</span>, <span class="code-string">"Great quality"</span>, <span class="code-string">"Amazing experience"</span>,
+    <span class="code-string">"Terrible service"</span>, <span class="code-string">"Waste of money"</span>, <span class="code-string">"Very disappointed"</span>,
+    <span class="code-string">"Excellent value"</span>, <span class="code-string">"Highly recommend"</span>, <span class="code-string">"Outstanding"</span>,
+    <span class="code-string">"Poor quality"</span>, <span class="code-string">"Not satisfied"</span>, <span class="code-string">"Horrible"</span>
+]
+labels = [<span class="code-number">1</span>, <span class="code-number">1</span>, <span class="code-number">1</span>, <span class="code-number">0</span>, <span class="code-number">0</span>, <span class="code-number">0</span>, <span class="code-number">1</span>, <span class="code-number">1</span>, <span class="code-number">1</span>, <span class="code-number">0</span>, <span class="code-number">0</span>, <span class="code-number">0</span>]  <span class="code-comment"># 1=positive, 0=negative</span>
+
+<span class="code-comment"># Split data</span>
+X_train, X_test, y_train, y_test = <span class="code-function">train_test_split</span>(
+    texts, labels, test_size=<span class="code-number">0.25</span>, random_state=<span class="code-number">42</span>
+)
+
+<span class="code-comment"># Vectorize text</span>
+vectorizer = <span class="code-function">TfidfVectorizer</span>()
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
+
+<span class="code-comment"># Train classifier</span>
+classifier = <span class="code-function">MultinomialNB</span>()
+classifier.fit(X_train_vec, y_train)
+
+<span class="code-comment"># Predict</span>
+y_pred = classifier.predict(X_test_vec)
+
+<span class="code-comment"># Evaluate</span>
+accuracy = <span class="code-function">accuracy_score</span>(y_test, y_pred)
+<span class="code-keyword">print</span>(<span class="code-string">f"Accuracy: {accuracy:.2f}"</span>)
+
+<span class="code-comment"># Test with new text</span>
+new_texts = [<span class="code-string">"This is wonderful"</span>, <span class="code-string">"Really bad experience"</span>]
+new_vec = vectorizer.transform(new_texts)
+predictions = classifier.predict(new_vec)
+
+<span class="code-keyword">for</span> text, pred <span class="code-keyword">in</span> <span class="code-keyword">zip</span>(new_texts, predictions):
+    sentiment = <span class="code-string">"Positive"</span> <span class="code-keyword">if</span> pred == <span class="code-number">1</span> <span class="code-keyword">else</span> <span class="code-string">"Negative"</span>
+    <span class="code-keyword">print</span>(<span class="code-string">f"'{text}' → {sentiment}"</span>)
+</code></pre>
+        </div>
+    </div>
+
+    <!-- Chapter 14: Final Project - End-to-End ML Application -->
+    <div class="chapter-card" id="chapter-14">
+        <div class="chapter-header">
+            <div class="chapter-number">14</div>
+            <h2 class="chapter-title">Final Project: End-to-End ML Application</h2>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-project-diagram"></i> Project Planning & Structure
+        </div>
+        
+        <div class="explanation-box">
+            <h5>Project Components:</h5>
+            <ol>
+                <li><strong>Data Collection:</strong> Gather and understand your dataset</li>
+                <li><strong>Data Preprocessing:</strong> Clean, transform, and prepare data</li>
+                <li><strong>Feature Engineering:</strong> Create meaningful features</li>
+                <li><strong>Model Selection:</strong> Choose appropriate algorithms</li>
+                <li><strong>Model Training:</strong> Train with proper validation</li>
+                <li><strong>Model Evaluation:</strong> Assess performance metrics</li>
+                <li><strong>Deployment:</strong> Create user interface and deploy</li>
+                <li><strong>Documentation:</strong> Document code and usage</li>
+            </ol>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-code"></i> Complete ML Pipeline Example <span class="badge-hands-on">Hands-on</span>
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># ml_pipeline.py - Complete ML Project Structure</span>
+
+<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+<span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+<span class="code-keyword">from</span> sklearn.preprocessing <span class="code-keyword">import</span> StandardScaler
+<span class="code-keyword">from</span> sklearn.ensemble <span class="code-keyword">import</span> RandomForestClassifier
+<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> accuracy_score, classification_report
+<span class="code-keyword">import</span> joblib
+
+<span class="code-keyword">class</span> <span class="code-function">MLPipeline</span>:
+    <span class="code-string">"""Complete ML Pipeline for classification tasks"""</span>
+    
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>):
+        <span class="code-keyword">self</span>.scaler = <span class="code-function">StandardScaler</span>()
+        <span class="code-keyword">self</span>.model = <span class="code-function">RandomForestClassifier</span>(n_estimators=<span class="code-number">100</span>, random_state=<span class="code-number">42</span>)
+    
+    <span class="code-keyword">def</span> <span class="code-function">load_data</span>(<span class="code-keyword">self</span>, filepath):
+        <span class="code-string">"""Load data from CSV file"""</span>
+        <span class="code-keyword">self</span>.data = pd.read_csv(filepath)
+        <span class="code-keyword">print</span>(<span class="code-string">f"Data loaded: {</span><span class="code-keyword">self</span>.data.shape<span class="code-string">}"</span>)
+        <span class="code-keyword">return</span> <span class="code-keyword">self</span>.data
+    
+    <span class="code-keyword">def</span> <span class="code-function">preprocess</span>(<span class="code-keyword">self</span>, X, y=<span class="code-keyword">None</span>):
+        <span class="code-string">"""Preprocess features"""</span>
+        <span class="code-comment"># Handle missing values</span>
+        X = X.fillna(X.mean())
+        
+        <span class="code-comment"># Scale features</span>
+        <span class="code-keyword">if</span> y <span class="code-keyword">is</span> <span class="code-keyword">not</span> <span class="code-keyword">None</span>:
+            X_scaled = <span class="code-keyword">self</span>.scaler.fit_transform(X)
+        <span class="code-keyword">else</span>:
+            X_scaled = <span class="code-keyword">self</span>.scaler.transform(X)
+        
+        <span class="code-keyword">return</span> X_scaled
+    
+    <span class="code-keyword">def</span> <span class="code-function">train</span>(<span class="code-keyword">self</span>, X_train, y_train):
+        <span class="code-string">"""Train the model"""</span>
+        X_train_scaled = <span class="code-keyword">self</span>.<span class="code-function">preprocess</span>(X_train, y_train)
+        <span class="code-keyword">self</span>.model.fit(X_train_scaled, y_train)
+        <span class="code-keyword">print</span>(<span class="code-string">"Model training completed"</span>)
+    
+    <span class="code-keyword">def</span> <span class="code-function">evaluate</span>(<span class="code-keyword">self</span>, X_test, y_test):
+        <span class="code-string">"""Evaluate model performance"""</span>
+        X_test_scaled = <span class="code-keyword">self</span>.<span class="code-function">preprocess</span>(X_test)
+        y_pred = <span class="code-keyword">self</span>.model.predict(X_test_scaled)
+        
+        accuracy = <span class="code-function">accuracy_score</span>(y_test, y_pred)
+        <span class="code-keyword">print</span>(<span class="code-string">f"Accuracy: {accuracy:.2f}"</span>)
+        <span class="code-keyword">print</span>(<span class="code-string">"\nClassification Report:"</span>)
+        <span class="code-keyword">print</span>(<span class="code-function">classification_report</span>(y_test, y_pred))
+        
+        <span class="code-keyword">return</span> accuracy
+    
+    <span class="code-keyword">def</span> <span class="code-function">predict</span>(<span class="code-keyword">self</span>, X):
+        <span class="code-string">"""Make predictions on new data"""</span>
+        X_scaled = <span class="code-keyword">self</span>.<span class="code-function">preprocess</span>(X)
+        <span class="code-keyword">return</span> <span class="code-keyword">self</span>.model.predict(X_scaled)
+    
+    <span class="code-keyword">def</span> <span class="code-function">save_model</span>(<span class="code-keyword">self</span>, filepath):
+        <span class="code-string">"""Save trained model"""</span>
+        joblib.dump({<span class="code-string">'model'</span>: <span class="code-keyword">self</span>.model, <span class="code-string">'scaler'</span>: <span class="code-keyword">self</span>.scaler}, filepath)
+        <span class="code-keyword">print</span>(<span class="code-string">f"Model saved to {filepath}"</span>)
+    
+    <span class="code-keyword">def</span> <span class="code-function">load_model</span>(<span class="code-keyword">self</span>, filepath):
+        <span class="code-string">"""Load trained model"""</span>
+        saved = joblib.load(filepath)
+        <span class="code-keyword">self</span>.model = saved[<span class="code-string">'model'</span>]
+        <span class="code-keyword">self</span>.scaler = saved[<span class="code-string">'scaler'</span>]
+        <span class="code-keyword">print</span>(<span class="code-string">f"Model loaded from {filepath}"</span>)
+
+<span class="code-comment"># Usage example</span>
+<span class="code-keyword">if</span> __name__ == <span class="code-string">"__main__"</span>:
+    <span class="code-comment"># Initialize pipeline</span>
+    pipeline = <span class="code-function">MLPipeline</span>()
+    
+    <span class="code-comment"># Load and prepare data (example with iris)</span>
+    <span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
+    iris = <span class="code-function">load_iris</span>()
+    X = pd.DataFrame(iris.data, columns=iris.feature_names)
+    y = iris.target
+    
+    <span class="code-comment"># Split data</span>
+    X_train, X_test, y_train, y_test = <span class="code-function">train_test_split</span>(
+        X, y, test_size=<span class="code-number">0.2</span>, random_state=<span class="code-number">42</span>
+    )
+    
+    <span class="code-comment"># Train and evaluate</span>
+    pipeline.<span class="code-function">train</span>(X_train, y_train)
+    pipeline.<span class="code-function">evaluate</span>(X_test, y_test)
+    
+    <span class="code-comment"># Save model</span>
+    pipeline.<span class="code-function">save_model</span>(<span class="code-string">'ml_model.pkl'</span>)
+    
+    <span class="code-keyword">print</span>(<span class="code-string">"\nPipeline completed successfully!"</span>)
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-desktop"></i> Streamlit Deployment Example
+        </div>
+        
+        <div class="code-block">
+<pre><code><span class="code-comment"># app.py - Streamlit web application</span>
+
+<span class="code-keyword">import</span> streamlit <span class="code-keyword">as</span> st
+<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+<span class="code-keyword">import</span> joblib
+
+st.title(<span class="code-string">"🤖 ML Model Deployment"</span>)
+st.write(<span class="code-string">"Welcome to our Machine Learning Application!"</span>)
+
+<span class="code-comment"># Load model</span>
+@st.cache_resource
+<span class="code-keyword">def</span> <span class="code-function">load_model</span>():
+    <span class="code-keyword">return</span> joblib.load(<span class="code-string">'ml_model.pkl'</span>)
+
+model_data = <span class="code-function">load_model</span>()
+model = model_data[<span class="code-string">'model'</span>]
+scaler = model_data[<span class="code-string">'scaler'</span>]
+
+<span class="code-comment"># Sidebar for input</span>
+st.sidebar.header(<span class="code-string">"Input Features"</span>)
+feature1 = st.sidebar.slider(<span class="code-string">"Feature 1"</span>, <span class="code-number">0.0</span>, <span class="code-number">10.0</span>, <span class="code-number">5.0</span>)
+feature2 = st.sidebar.slider(<span class="code-string">"Feature 2"</span>, <span class="code-number">0.0</span>, <span class="code-number">10.0</span>, <span class="code-number">5.0</span>)
+feature3 = st.sidebar.slider(<span class="code-string">"Feature 3"</span>, <span class="code-number">0.0</span>, <span class="code-number">10.0</span>, <span class="code-number">5.0</span>)
+feature4 = st.sidebar.slider(<span class="code-string">"Feature 4"</span>, <span class="code-number">0.0</span>, <span class="code-number">10.0</span>, <span class="code-number">5.0</span>)
+
+<span class="code-comment"># Make prediction</span>
+<span class="code-keyword">if</span> st.button(<span class="code-string">"Predict"</span>):
+    <span class="code-comment"># Prepare input</span>
+    input_data = pd.DataFrame([[feature1, feature2, feature3, feature4]])
+    input_scaled = scaler.transform(input_data)
+    
+    <span class="code-comment"># Predict</span>
+    prediction = model.predict(input_scaled)
+    probability = model.predict_proba(input_scaled)
+    
+    <span class="code-comment"># Display results</span>
+    st.success(<span class="code-string">f"Prediction: Class {prediction[</span><span class="code-number">0</span><span class="code-string">]}"</span>)
+    st.write(<span class="code-string">"Prediction Probabilities:"</span>)
+    st.bar_chart(probability[<span class="code-number">0</span>])
+
+st.info(<span class="code-string">"💡 Adjust the sliders in the sidebar and click Predict!"</span>)
+
+<span class="code-comment"># Run with: streamlit run app.py</span>
+</code></pre>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-clipboard-check"></i> Project Best Practices
+        </div>
+        
+        <div class="key-points">
+            <ul>
+                <li><strong>Version Control:</strong> Use Git for code management</li>
+                <li><strong>Documentation:</strong> Write clear README and docstrings</li>
+                <li><strong>Testing:</strong> Create unit tests for your functions</li>
+                <li><strong>Logging:</strong> Implement proper logging for debugging</li>
+                <li><strong>Configuration:</strong> Use config files for parameters</li>
+                <li><strong>Requirements:</strong> Maintain requirements.txt file</li>
+                <li><strong>Error Handling:</strong> Add try-except blocks</li>
+                <li><strong>Code Quality:</strong> Follow PEP 8 style guidelines</li>
+                <li><strong>Monitoring:</strong> Track model performance over time</li>
+                <li><strong>Security:</strong> Protect API keys and credentials</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Completion Message -->
+    <div class="alert alert-success mt-5">
+        <h3><i class="fas fa-graduation-cap"></i> Congratulations! Course Complete!</h3>
+        <p>You've completed all 14 chapters of the ML using Python course. You now have:</p>
+        <ul>
+            <li>✅ Strong foundation in Python programming</li>
+            <li>✅ Data manipulation skills with NumPy and Pandas</li>
+            <li>✅ Data visualization expertise</li>
+            <li>✅ Machine learning algorithm knowledge</li>
+            <li>✅ Deep learning and neural network understanding</li>
+            <li>✅ NLP processing capabilities</li>
+            <li>✅ End-to-end project deployment experience</li>
+        </ul>
+        <p><strong>Next Steps:</strong> Build your own projects, contribute to open source, and keep learning!</p>
+    </div>
+
+    <div class="text-center mt-5 mb-5">
+        <a href="{% url 'materials:dashboard' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-arrow-left"></i> Back to Materials Dashboard
+        </a>
+        <a href="{% url 'courses:ml_python' %}" class="btn btn-outline-primary btn-lg ml-3">
+            <i class="fas fa-book"></i> View Course Outline
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('chapterSidebar');
+    const toggle = document.getElementById('sidebarToggle');
+    const chapterLinks = document.querySelectorAll('.sidebar-chapters a');
+    
+    // Toggle sidebar (open by default, toggle to close/open)
+    toggle.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevent document click handler from firing
+        sidebar.classList.toggle('closed');
+        const icon = toggle.querySelector('i');
+        if (sidebar.classList.contains('closed')) {
+            icon.className = 'fas fa-list';
+        } else {
+            icon.className = 'fas fa-times';
+        }
+    });
+    
+    // Close sidebar when clicking a chapter link
+    chapterLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                // Smooth scroll to chapter
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // Update active state
+                chapterLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Don't auto-close sidebar anymore - keep it open for easy navigation
+            }
+        });
+    });
+    
+    // Highlight active chapter on scroll
+    const observerOptions = {
+        root: null,
+        rootMargin: '-20% 0px -70% 0px',
+        threshold: 0
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                chapterLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${id}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all chapter cards
+    document.querySelectorAll('.chapter-card').forEach(card => {
+        observer.observe(card);
+    });
+    
+    // Optional: Close sidebar when clicking outside (removed to keep it open by default)
+    // Users can manually close using the toggle button if needed
+    
+    // Prevent closing when clicking inside sidebar
+    sidebar.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
+});
+</script>
+{% endblock %}

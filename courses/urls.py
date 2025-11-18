@@ -11,4 +11,5 @@ urlpatterns = [
     path('linux-os-concepts/', views.LinuxOSConceptsView.as_view(), name='linux_os_concepts'),
     path('iot-devices/', views.IoTDevicesView.as_view(), name='iot_devices'),
     path('networking-security/', views.NetworkingSecurityView.as_view(), name='networking_security'),
+    path('ml-python/', views.MLPythonView.as_view(), name='ml_python'),
 ]

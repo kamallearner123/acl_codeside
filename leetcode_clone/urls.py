@@ -33,6 +33,7 @@ urlpatterns = [
     path('devtools/', include('devtools.urls')),
     path('contact/', include('contact.urls')),
     path('materials/', include('materials.urls')),
+    path('coding-practices/', include('debugger.urls')),
 ]
 
 if settings.DEBUG:

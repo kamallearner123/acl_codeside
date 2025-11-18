@@ -118,6 +118,21 @@
             <div class="highlight">Secure networks with advanced protocols and defense mechanisms against modern threats.</div>
             <button class="course-btn" onclick="navigateToNetworkingSecurity()">Get more details</button>
         </div>
+
+        <div class="course-card">
+            <h3 onclick="navigateToMLPython()">ML using Python</h3>
+            <div class="duration">50 Hours</div>
+            <ul>
+                <li>Python Fundamentals for AI</li>
+                <li>Data Manipulation with NumPy & Pandas</li>
+                <li>Machine Learning with Scikit-learn</li>
+                <li>Deep Learning & Neural Networks</li>
+                <li>Natural Language Processing</li>
+                <li>End-to-End ML Projects</li>
+            </ul>
+            <div class="highlight">Master machine learning and AI from basics to deployment using Python.</div>
+            <button class="course-btn" onclick="navigateToMLPython()">Get more details</button>
+        </div>
     </div>
 </div>
 
@@ -148,6 +163,10 @@ function navigateToIoTDevices() {
 
 function navigateToNetworkingSecurity() {
     window.location.href = "{% url 'courses:networking_security' %}";
+}
+
+function navigateToMLPython() {
+    window.location.href = "{% url 'courses:ml_python' %}";
 }
 
 function getCourseDetails(courseId) {

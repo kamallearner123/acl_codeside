@@ -30,3 +30,7 @@ class IoTDevicesView(TemplateView):
 
 class NetworkingSecurityView(TemplateView):
     template_name = 'courses/networking_security.html'
+
+
+class MLPythonView(TemplateView):
+    template_name = 'courses/ml_python.html'
