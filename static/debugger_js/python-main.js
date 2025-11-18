@@ -497,6 +497,65 @@ print(f"Features: {X_train.shape[1]}")
 # model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 # history = model.fit(X_train, y_train, epochs=50, validation_split=0.2, verbose=0)
 `,
+    'dl_cnn': `# CNN Example (Image Classification) using TensorFlow/Keras
+# Note: TensorFlow required; this is a minimal illustrative example
+import numpy as np
+# from tensorflow import keras
+# from tensorflow.keras import layers
+
+# Example structure only — real training requires image data
+# model = keras.Sequential([
+#     layers.Input(shape=(64,64,3)),
+#     layers.Conv2D(32, (3,3), activation='relu'),
+#     layers.MaxPooling2D((2,2)),
+#     layers.Conv2D(64, (3,3), activation='relu'),
+#     layers.MaxPooling2D((2,2)),
+#     layers.Flatten(),
+#     layers.Dense(64, activation='relu'),
+#     layers.Dense(10, activation='softmax')
+# ])
+# model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+# print(model.summary())
+print('CNN example (structure) — uncomment TensorFlow imports to run')
+`,
+    'dl_rnn': `# RNN / LSTM Example for Time Series (Keras)
+# Note: TensorFlow required for real runs
+import numpy as np
+# from tensorflow import keras
+# from tensorflow.keras import layers
+
+# Simple synthetic sequence example
+def create_sequences(n_samples=200, seq_len=20):
+    X = np.random.randn(n_samples, seq_len, 1)
+    y = (X.mean(axis=1) > 0).astype(int)
+    return X, y
+
+X, y = create_sequences()
+print('Prepared synthetic sequences:', X.shape)
+# model = keras.Sequential([
+#     layers.LSTM(32, input_shape=(X.shape[1], X.shape[2])),
+#     layers.Dense(1, activation='sigmoid')
+# ])
+# model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+# history = model.fit(X, y, epochs=10, validation_split=0.2, verbose=0)
+print('RNN example (structure) — uncomment TensorFlow imports to run')
+`,
+    'dl_transfer_learning': `# Transfer Learning Example (MobileNetV2) with Keras
+# Note: TensorFlow required. This snippet shows the pattern.
+# from tensorflow import keras
+# from tensorflow.keras import layers, applications
+
+# base_model = applications.MobileNetV2(weights='imagenet', include_top=False, input_shape=(160,160,3))
+# base_model.trainable = False
+# model = keras.Sequential([
+#     base_model,
+#     layers.GlobalAveragePooling2D(),
+#     layers.Dense(128, activation='relu'),
+#     layers.Dense(1, activation='sigmoid')
+# ])
+# model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+print('Transfer learning example (MobileNetV2) — uncomment to use TensorFlow')
+`,
         'ds_pandas_basics': `# Pandas DataFrame Basics
 import pandas as pd
 import numpy as np
