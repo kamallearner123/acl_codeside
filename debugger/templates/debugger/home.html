@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Visualizer - Home</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+{% extends "base.html" %}
+{% block title %}Quick Practice on Programming{% endblock %}
+
+{% block extra_css %}
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -191,11 +187,13 @@
             }
         }
     </style>
-</head>
-<body>
-    <div class="header">
-        <h1><i class="fas fa-code"></i> Code Visualizer</h1>
-        <p>Choose your programming language to start coding with interactive memory visualization and examples</p>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold"><i class="fas fa-code me-2"></i> Quick Practice on Programming</h1>
+        <p class="lead text-muted">Choose your programming language to start coding with interactive memory visualization and examples</p>
     </div>
 
     <div class="choice-container">
@@ -229,5 +227,5 @@
             <div class="btn">Start with Python</div>
         </a>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

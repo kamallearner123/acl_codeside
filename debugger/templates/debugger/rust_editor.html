@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rust Visual Memory Debugger</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'debugger_css/style.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Rust Visual Memory Debugger{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'debugger_css/style.css' %}">
+{% endblock %}
+
+{% block content %}
     <div class="header">
         <div class="header-content">
             <div class="header-left">
@@ -110,5 +107,7 @@
     <script src="{% static 'debugger_js/editor.js' %}?v=3"></script>
     <script src="{% static 'debugger_js/memory-visualizer.js' %}"></script>
     <script src="{% static 'debugger_js/main.js' %}"></script>
-</body>
-</html>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
