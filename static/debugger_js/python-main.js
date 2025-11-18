@@ -28,13 +28,29 @@ function setupEventListeners() {
         });
     }
     
-    // Example button
+    // Example button - Updated to use modal
     const exampleBtn = document.getElementById('exampleBtn');
     if (exampleBtn) {
-        exampleBtn.addEventListener('click', function() {
-            console.log('🔘 [USER ACTION] Example button clicked');
-            showPythonExampleMenu();
+        // Remove old event listener
+        exampleBtn.removeAttribute('onclick');
+        
+        // The button now triggers the modal via data-bs-toggle
+        console.log('🔘 [SETUP] Example button configured for modal');
+    }
+    
+    // Modal event listeners
+    const pythonExamplesModal = document.getElementById('pythonExamplesModal');
+    if (pythonExamplesModal) {
+        pythonExamplesModal.addEventListener('show.bs.modal', function() {
+            console.log('📋 [MODAL] Python examples modal opening');
+            populatePythonExampleCategories();
         });
+    }
+    
+    // Load selected example button
+    const loadBtn = document.getElementById('loadSelectedPythonExample');
+    if (loadBtn) {
+        loadBtn.addEventListener('click', loadSelectedPythonExample);
     }
     
     // Clear output button
@@ -4655,3 +4671,172 @@ window.testLoadExample = function() {
     loadPythonExample('ml_linear_regression');
 };
 console.log('✓ Test function available: Type window.testLoadExample() in console to test');
+
+// Global variable for selected example
+let selectedPythonExample = null;
+
+// Populate Python example categories in modal
+function populatePythonExampleCategories() {
+    console.log('📋 [MODAL] Populating Python example categories');
+    
+    const exampleCategories = [
+        {
+            name: 'Machine Learning Basics',
+            examples: [
+                { name: 'Linear Regression', key: 'ml_linear_regression' },
+                { name: 'Logistic Regression', key: 'ml_logistic_regression' },
+                { name: 'Decision Trees', key: 'ml_decision_trees' },
+                { name: 'Random Forest', key: 'ml_random_forest' },
+                { name: 'K-Means Clustering', key: 'ml_kmeans' },
+                { name: 'SVM Classification', key: 'ml_svm' },
+                { name: 'Naive Bayes', key: 'ml_naive_bayes' },
+                { name: 'K-Nearest Neighbors', key: 'ml_knn' },
+                { name: 'Gradient Boosting', key: 'ml_gradient_boosting' },
+                { name: 'AdaBoost', key: 'ml_adaboost' },
+                { name: 'Principal Component Analysis', key: 'ml_pca' },
+                { name: 'DBSCAN Clustering', key: 'ml_dbscan' }
+            ]
+        },
+        {
+            name: 'Advanced Machine Learning',
+            examples: [
+                { name: 'Cross-Validation', key: 'ml_cross_validation' },
+                { name: 'Grid Search Hyperparameters', key: 'ml_grid_search' },
+                { name: 'Feature Selection', key: 'ml_feature_selection' },
+                { name: 'Ensemble Methods', key: 'ml_ensemble' },
+                { name: 'Pipeline Creation', key: 'ml_pipeline' },
+                { name: 'Ridge Regression', key: 'ml_ridge' },
+                { name: 'Lasso Regression', key: 'ml_lasso' },
+                { name: 'Polynomial Regression', key: 'ml_polynomial' }
+            ]
+        },
+        {
+            name: 'Deep Learning',
+            examples: [
+                { name: 'Neural Network (Basic)', key: 'dl_neural_network' },
+                { name: 'CNN - Image Classification', key: 'dl_cnn' },
+                { name: 'RNN - Time Series', key: 'dl_rnn' },
+                { name: 'Transfer Learning', key: 'dl_transfer_learning' }
+            ]
+        },
+        {
+            name: 'Data Science',
+            examples: [
+                { name: 'Pandas DataFrame Basics', key: 'ds_pandas_basics' },
+                { name: 'Data Cleaning', key: 'ds_data_cleaning' },
+                { name: 'Data Visualization', key: 'ds_visualization' },
+                { name: 'Statistical Analysis', key: 'ds_statistics' },
+                { name: 'Feature Engineering', key: 'ds_feature_engineering' }
+            ]
+        },
+        {
+            name: 'NumPy & Arrays',
+            examples: [
+                { name: 'Array Operations', key: 'np_array_ops' },
+                { name: 'Matrix Operations', key: 'np_matrix_ops' },
+                { name: 'Broadcasting', key: 'np_broadcasting' },
+                { name: 'Linear Algebra', key: 'np_linear_algebra' }
+            ]
+        },
+        {
+            name: 'Python Basics',
+            examples: [
+                { name: 'Variables & Types', key: 'py_basics' },
+                { name: 'Lists & Dictionaries', key: 'py_collections' },
+                { name: 'Functions', key: 'py_functions' },
+                { name: 'Classes & OOP', key: 'py_classes' },
+                { name: 'File I/O', key: 'py_file_io' }
+            ]
+        }
+    ];
+    
+    const categoriesList = document.getElementById('pythonExampleCategories');
+    categoriesList.innerHTML = '';
+    
+    exampleCategories.forEach((category, index) => {
+        const item = document.createElement('a');
+        item.className = 'list-group-item list-group-item-action';
+        item.href = '#';
+        item.textContent = category.name;
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            selectPythonCategory(category);
+            
+            // Update active state
+            categoriesList.querySelectorAll('.list-group-item').forEach(el => 
+                el.classList.remove('active'));
+            item.classList.add('active');
+        });
+        
+        categoriesList.appendChild(item);
+    });
+}
+
+function selectPythonCategory(category) {
+    const examplesList = document.getElementById('pythonExamplesList');
+    
+    examplesList.innerHTML = `<h6 class="mb-3">${category.name}</h6>`;
+    
+    category.examples.forEach(example => {
+        const card = document.createElement('div');
+        card.className = 'card mb-2 example-card';
+        card.style.cursor = 'pointer';
+        
+        const cardBody = document.createElement('div');
+        cardBody.className = 'card-body py-2';
+        
+        const title = document.createElement('h6');
+        title.className = 'card-title mb-1';
+        title.textContent = example.name;
+        
+        const preview = document.createElement('small');
+        preview.className = 'text-muted';
+        // Get first line of the example for preview
+        const exampleCode = getPythonExampleCode(example.key);
+        const firstLine = exampleCode ? exampleCode.split('\n')[0] : 'Loading...';
+        preview.textContent = firstLine.substring(0, 60) + '...';
+        
+        cardBody.appendChild(title);
+        cardBody.appendChild(preview);
+        card.appendChild(cardBody);
+        
+        card.addEventListener('click', () => {
+            selectedPythonExample = example;
+            
+            // Update selection state
+            examplesList.querySelectorAll('.example-card').forEach(el => 
+                el.classList.remove('border-primary'));
+            card.classList.add('border-primary');
+            
+            // Enable load button
+            document.getElementById('loadSelectedPythonExample').disabled = false;
+        });
+        
+        examplesList.appendChild(card);
+    });
+}
+
+function getPythonExampleCode(key) {
+    // This function would need access to the examples object
+    // For now, return a placeholder
+    return `# ${key} example code...`;
+}
+
+function loadSelectedPythonExample() {
+    console.log('📥 [LOAD] Loading selected Python example');
+    
+    if (selectedPythonExample && window.editor) {
+        console.log('Loading example:', selectedPythonExample.key);
+        loadPythonExample(selectedPythonExample.key);
+        
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('pythonExamplesModal'));
+        if (modal) {
+            modal.hide();
+        }
+        
+        // Reset selection
+        selectedPythonExample = null;
+        document.getElementById('loadSelectedPythonExample').disabled = true;
+    }
+}

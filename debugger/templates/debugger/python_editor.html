@@ -19,7 +19,7 @@
                     <button id="clearBtn" class="btn btn-secondary">
                         <i class="fas fa-trash"></i> Clear
                     </button>
-                    <button id="exampleBtn" class="btn btn-secondary">
+                    <button id="exampleBtn" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#pythonExamplesModal">
                         <i class="fas fa-file-code"></i> Load Example
                     </button>
                 </div>
@@ -64,6 +64,38 @@
         </div>
     </div>
 
+    <!-- Python Examples Modal -->
+    <div class="modal fade" id="pythonExamplesModal" tabindex="-1" aria-labelledby="pythonExamplesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pythonExamplesModalLabel">
+                        <i class="fas fa-brain me-2"></i>Python & Machine Learning Examples
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="list-group" id="pythonExampleCategories">
+                                <!-- Categories will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div id="pythonExamplesList">
+                                <p class="text-muted">Select a category to view examples</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="loadSelectedPythonExample" disabled>Load Example</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner">
@@ -76,8 +108,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
     
     <!-- Custom Scripts -->
-    <script src="{% static 'debugger_js/python-editor.js' %}?v=1763464706"></script>
-    <script src="{% static 'debugger_js/python-main.js' %}?v=1763464706"></script>
+    <script src="{% static 'debugger_js/python-editor.js' %}?v=2"></script>
+    <script src="{% static 'debugger_js/python-main.js' %}?v=2"></script>
 {% endblock %}
 
 {% block extra_js %}
