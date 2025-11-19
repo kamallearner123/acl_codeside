@@ -100,13 +100,20 @@ class PythonExecutor:
         plot_dir = os.path.join(temp_dir, 'plots')
         os.makedirs(plot_dir, exist_ok=True)
         
-        # Inject plot saving code
+        # Create matplotlib config directory to avoid configuration issues
+        mpl_config_dir = os.path.join(temp_dir, 'mpl_config')
+        os.makedirs(mpl_config_dir, exist_ok=True)
+        
+        # Inject plot saving code with proper matplotlib configuration
         plot_setup = f"""
 import os
 import sys
 
-# Setup for matplotlib
+# Setup for matplotlib - must be done before importing matplotlib
 try:
+    # Set environment variables before importing matplotlib
+    os.environ['MPLCONFIGDIR'] = r'{mpl_config_dir}'
+    
     import matplotlib
     matplotlib.use('Agg')  # Use non-interactive backend
     import matplotlib.pyplot as plt
@@ -148,6 +155,9 @@ except ImportError:
             # Execute the Python code with proper environment
             env = os.environ.copy()
             env['PYTHONIOENCODING'] = 'utf-8'
+            env['MPLCONFIGDIR'] = mpl_config_dir  # Set matplotlib config directory
+            env['PYTHONDONTWRITEBYTECODE'] = '1'  # Prevent .pyc files
+            # Don't override HOME as it may cause other issues
             
             process = subprocess.Popen(
                 [self.python_executable, temp_script_path],
@@ -206,6 +216,13 @@ except ImportError:
                             pass
                     try:
                         os.rmdir(plot_dir)
+                    except:
+                        pass
+                # Clean up matplotlib config directory
+                if os.path.exists(mpl_config_dir):
+                    try:
+                        import shutil
+                        shutil.rmtree(mpl_config_dir, ignore_errors=True)
                     except:
                         pass
                 # Clean up temp directory
