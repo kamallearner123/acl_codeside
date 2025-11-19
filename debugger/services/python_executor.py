@@ -104,6 +104,12 @@ class PythonExecutor:
         mpl_config_dir = os.path.join(temp_dir, 'mpl_config')
         os.makedirs(mpl_config_dir, exist_ok=True)
         
+        # Create a minimal matplotlibrc file to prevent loading defaults
+        matplotlibrc_path = os.path.join(mpl_config_dir, 'matplotlibrc')
+        with open(matplotlibrc_path, 'w') as f:
+            f.write('backend: Agg\n')
+            f.write('interactive: False\n')
+        
         # Inject plot saving code with proper matplotlib configuration
         plot_setup = f"""
 import os
@@ -111,9 +117,16 @@ import sys
 
 # Setup for matplotlib - must be done before importing matplotlib
 try:
-    # Set environment variables before importing matplotlib
+    # Completely disable matplotlib configuration loading
     os.environ['MPLCONFIGDIR'] = r'{mpl_config_dir}'
     os.environ['MPLBACKEND'] = 'Agg'
+    os.environ['MATPLOTLIBRC'] = r'{mpl_config_dir}'
+    
+    # Create a minimal matplotlibrc file to prevent loading defaults
+    matplotlibrc_path = os.path.join(r'{mpl_config_dir}', 'matplotlibrc')
+    with open(matplotlibrc_path, 'w') as f:
+        f.write('backend: Agg\\n')
+        f.write('interactive: False\\n')
     
     import matplotlib
     # Force Agg backend before any other matplotlib imports
@@ -122,8 +135,9 @@ try:
     # Set matplotlib to use our custom config directory
     import matplotlib.pyplot as plt
     
-    # Disable interactive mode
+    # Disable interactive mode and any configuration loading
     plt.ioff()
+    plt.rcParams['backend'] = 'Agg'
     
     # Store original show function
     _original_show = plt.show
@@ -169,6 +183,7 @@ except Exception as e:
             env['PYTHONIOENCODING'] = 'utf-8'
             env['MPLCONFIGDIR'] = mpl_config_dir  # Set matplotlib config directory
             env['MPLBACKEND'] = 'Agg'  # Force Agg backend
+            env['MATPLOTLIBRC'] = mpl_config_dir  # Point to our custom matplotlibrc
             env['PYTHONDONTWRITEBYTECODE'] = '1'  # Prevent .pyc files
             # Set XDG directories to temp to avoid permission issues
             env['XDG_CACHE_HOME'] = os.path.join(temp_dir, '.cache')
