@@ -113,10 +113,17 @@ import sys
 try:
     # Set environment variables before importing matplotlib
     os.environ['MPLCONFIGDIR'] = r'{mpl_config_dir}'
+    os.environ['MPLBACKEND'] = 'Agg'
     
     import matplotlib
-    matplotlib.use('Agg')  # Use non-interactive backend
+    # Force Agg backend before any other matplotlib imports
+    matplotlib.use('Agg', force=True)
+    
+    # Set matplotlib to use our custom config directory
     import matplotlib.pyplot as plt
+    
+    # Disable interactive mode
+    plt.ioff()
     
     # Store original show function
     _original_show = plt.show
@@ -126,13 +133,18 @@ try:
         # Save the current figure
         _plot_counter[0] += 1
         plot_path = os.path.join(r'{plot_dir}', f'plot_{{_plot_counter[0]}}.png')
-        plt.savefig(plot_path, dpi=100, bbox_inches='tight')
-        plt.close()
+        try:
+            plt.savefig(plot_path, dpi=100, bbox_inches='tight')
+            plt.close()
+        except Exception as e:
+            print(f"Warning: Could not save plot: {{e}}", file=sys.stderr)
     
     # Replace plt.show with our custom function
     plt.show = _custom_show
 except ImportError:
     pass
+except Exception as e:
+    print(f"Warning: Matplotlib setup failed: {{e}}", file=sys.stderr)
 
 """
         
@@ -156,8 +168,15 @@ except ImportError:
             env = os.environ.copy()
             env['PYTHONIOENCODING'] = 'utf-8'
             env['MPLCONFIGDIR'] = mpl_config_dir  # Set matplotlib config directory
+            env['MPLBACKEND'] = 'Agg'  # Force Agg backend
             env['PYTHONDONTWRITEBYTECODE'] = '1'  # Prevent .pyc files
-            # Don't override HOME as it may cause other issues
+            # Set XDG directories to temp to avoid permission issues
+            env['XDG_CACHE_HOME'] = os.path.join(temp_dir, '.cache')
+            env['XDG_CONFIG_HOME'] = os.path.join(temp_dir, '.config')
+            
+            # Create XDG directories
+            os.makedirs(env['XDG_CACHE_HOME'], exist_ok=True)
+            os.makedirs(env['XDG_CONFIG_HOME'], exist_ok=True)
             
             process = subprocess.Popen(
                 [self.python_executable, temp_script_path],
@@ -205,32 +224,31 @@ except ImportError:
         finally:
             # Clean up temporary files
             try:
+                import shutil
+                
                 if os.path.exists(temp_script_path):
                     os.unlink(temp_script_path)
+                
                 # Clean up plot directory
                 if os.path.exists(plot_dir):
-                    for plot_file in os.listdir(plot_dir):
-                        try:
-                            os.unlink(os.path.join(plot_dir, plot_file))
-                        except:
-                            pass
-                    try:
-                        os.rmdir(plot_dir)
-                    except:
-                        pass
+                    shutil.rmtree(plot_dir, ignore_errors=True)
+                
                 # Clean up matplotlib config directory
                 if os.path.exists(mpl_config_dir):
-                    try:
-                        import shutil
-                        shutil.rmtree(mpl_config_dir, ignore_errors=True)
-                    except:
-                        pass
+                    shutil.rmtree(mpl_config_dir, ignore_errors=True)
+                
+                # Clean up XDG directories
+                cache_dir = os.path.join(temp_dir, '.cache')
+                config_dir = os.path.join(temp_dir, '.config')
+                if os.path.exists(cache_dir):
+                    shutil.rmtree(cache_dir, ignore_errors=True)
+                if os.path.exists(config_dir):
+                    shutil.rmtree(config_dir, ignore_errors=True)
+                
                 # Clean up temp directory
                 if os.path.exists(temp_dir):
-                    try:
-                        os.rmdir(temp_dir)
-                    except:
-                        pass
+                    shutil.rmtree(temp_dir, ignore_errors=True)
+                    
             except Exception as cleanup_error:
                 # Log cleanup errors but don't fail the execution
                 pass
