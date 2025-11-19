@@ -10,6 +10,7 @@ import sys
 import time
 import base64
 import re
+from django.conf import settings
 
 
 class PythonExecutor:
@@ -25,6 +26,39 @@ class PythonExecutor:
         self.timeout = timeout
         # Use the same Python interpreter that's running Django
         self.python_executable = sys.executable
+        
+        # Set temp directory - use project's media folder for PythonAnywhere compatibility
+        if hasattr(settings, 'MEDIA_ROOT') and settings.MEDIA_ROOT:
+            self.temp_base_dir = os.path.join(settings.MEDIA_ROOT, 'temp_exec')
+            os.makedirs(self.temp_base_dir, exist_ok=True)
+            # Clean up old temp directories (older than 1 hour)
+            self._cleanup_old_temp_dirs()
+        else:
+            self.temp_base_dir = None  # Use system temp
+    
+    def _cleanup_old_temp_dirs(self):
+        """Clean up temporary execution directories older than 1 hour"""
+        try:
+            if not self.temp_base_dir or not os.path.exists(self.temp_base_dir):
+                return
+            
+            current_time = time.time()
+            max_age = 3600  # 1 hour in seconds
+            
+            for item in os.listdir(self.temp_base_dir):
+                item_path = os.path.join(self.temp_base_dir, item)
+                if os.path.isdir(item_path) and item.startswith('exec_'):
+                    try:
+                        # Check directory age
+                        dir_age = current_time - os.path.getmtime(item_path)
+                        if dir_age > max_age:
+                            # Remove old directory and its contents
+                            import shutil
+                            shutil.rmtree(item_path, ignore_errors=True)
+                    except Exception:
+                        pass
+        except Exception:
+            pass
     
     def execute(self, code):
         """
@@ -56,7 +90,13 @@ class PythonExecutor:
             return result
         
         # Create temporary directory for plots
-        temp_dir = tempfile.mkdtemp()
+        # Use custom temp directory if available (for PythonAnywhere compatibility)
+        if self.temp_base_dir:
+            temp_dir = os.path.join(self.temp_base_dir, f'exec_{int(time.time() * 1000)}')
+            os.makedirs(temp_dir, exist_ok=True)
+        else:
+            temp_dir = tempfile.mkdtemp()
+            
         plot_dir = os.path.join(temp_dir, 'plots')
         os.makedirs(plot_dir, exist_ok=True)
         
@@ -92,20 +132,30 @@ except ImportError:
         modified_code = plot_setup + "\n" + code
         
         # Create a temporary file for the Python code
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, dir=temp_dir) as tmp_file:
-            tmp_file.write(modified_code)
-            tmp_file_path = tmp_file.name
+        # Use a safe filename with proper extension
+        temp_script_path = os.path.join(temp_dir, f'script_{int(time.time() * 1000)}.py')
+        
+        try:
+            with open(temp_script_path, 'w', encoding='utf-8') as tmp_file:
+                tmp_file.write(modified_code)
+        except Exception as e:
+            result['stderr'] = f"Error writing temporary file: {str(e)}"
+            return result
         
         try:
             start_time = time.time()
             
-            # Execute the Python code
+            # Execute the Python code with proper environment
+            env = os.environ.copy()
+            env['PYTHONIOENCODING'] = 'utf-8'
+            
             process = subprocess.Popen(
-                [self.python_executable, tmp_file_path],
+                [self.python_executable, temp_script_path],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                cwd=temp_dir
+                cwd=temp_dir,
+                env=env
             )
             
             try:
@@ -145,14 +195,27 @@ except ImportError:
         finally:
             # Clean up temporary files
             try:
-                os.unlink(tmp_file_path)
+                if os.path.exists(temp_script_path):
+                    os.unlink(temp_script_path)
                 # Clean up plot directory
                 if os.path.exists(plot_dir):
                     for plot_file in os.listdir(plot_dir):
-                        os.unlink(os.path.join(plot_dir, plot_file))
-                    os.rmdir(plot_dir)
-                os.rmdir(temp_dir)
-            except:
+                        try:
+                            os.unlink(os.path.join(plot_dir, plot_file))
+                        except:
+                            pass
+                    try:
+                        os.rmdir(plot_dir)
+                    except:
+                        pass
+                # Clean up temp directory
+                if os.path.exists(temp_dir):
+                    try:
+                        os.rmdir(temp_dir)
+                    except:
+                        pass
+            except Exception as cleanup_error:
+                # Log cleanup errors but don't fail the execution
                 pass
         
         return result

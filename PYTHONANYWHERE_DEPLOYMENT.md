@@ -25,7 +25,17 @@ cd acl_codeside
 - Upload via PythonAnywhere Files tab
 - Extract in your home directory
 
-### 2. Create a Virtual Environment
+### 2. Create Required Directories
+
+```bash
+# Create media directory for file uploads and temp execution
+cd ~/acl_codeside
+mkdir -p media/temp_exec
+chmod 755 media
+chmod 755 media/temp_exec
+```
+
+### 3. Create a Virtual Environment
 
 In a PythonAnywhere Bash console:
 ```bash
@@ -150,6 +160,14 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 2. **Static Files Not Loading**: Check static files mapping and run `collectstatic`
 3. **Database Errors**: Ensure migrations are run and database file permissions are correct
 4. **Secret Key Errors**: Make sure `DJANGO_SECRET_KEY` environment variable is set
+5. **Python Executor Error** (`unable to load configuration from /tmp/...`): 
+   - This is fixed in the latest version by using media/temp_exec instead of /tmp
+   - Make sure the `media/temp_exec` directory exists and has proper permissions:
+     ```bash
+     cd ~/acl_codeside
+     mkdir -p media/temp_exec
+     chmod 755 media/temp_exec
+     ```
 
 ### Debug Steps:
 
@@ -160,6 +178,28 @@ python -c "from django.core.management.utils import get_random_secret_key; print
    cd ~/acl_codeside
    python manage.py check --deploy
    ```
+3. Test Python code execution:
+   ```bash
+   workon acl_codeside
+   cd ~/acl_codeside
+   python manage.py shell
+   ```
+   Then run:
+   ```python
+   from debugger.services.python_executor import PythonExecutor
+   executor = PythonExecutor()
+   result = executor.execute("print('Hello World')")
+   print(result)
+   ```
+
+### File Permissions on PythonAnywhere:
+
+Make sure these directories have proper permissions:
+```bash
+chmod 755 ~/acl_codeside/media
+chmod 755 ~/acl_codeside/media/temp_exec
+chmod 644 ~/acl_codeside/db.sqlite3  # If using SQLite
+```
 
 ### Performance Tips:
 

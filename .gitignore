@@ -59,6 +59,9 @@ static_collected/
 # Media files
 media/
 
+# Temporary execution files (for debugger)
+media/temp_exec/
+
 # Secret keys and environment variables
 .env
 .env.local
