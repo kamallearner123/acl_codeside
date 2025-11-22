@@ -122,14 +122,20 @@ try:
     os.environ['MPLBACKEND'] = 'Agg'
     os.environ['MATPLOTLIBRC'] = r'{mpl_config_dir}'
     
+    # Disable all matplotlib configuration loading
+    os.environ['MATPLOTLIBDATA'] = r'{mpl_config_dir}'
+    os.environ['HOME'] = r'{temp_dir}'  # Prevent loading from home directory
+    
     # Create a minimal matplotlibrc file to prevent loading defaults
     matplotlibrc_path = os.path.join(r'{mpl_config_dir}', 'matplotlibrc')
     with open(matplotlibrc_path, 'w') as f:
         f.write('backend: Agg\\n')
         f.write('interactive: False\\n')
+        f.write('figure.figsize: 8, 6\\n')
+        f.write('font.size: 10\\n')
     
+    # Import matplotlib with forced backend
     import matplotlib
-    # Force Agg backend before any other matplotlib imports
     matplotlib.use('Agg', force=True)
     
     # Set matplotlib to use our custom config directory
@@ -138,6 +144,9 @@ try:
     # Disable interactive mode and any configuration loading
     plt.ioff()
     plt.rcParams['backend'] = 'Agg'
+    
+    # Disable any further configuration loading
+    plt.rcParams['savefig.directory'] = r'{plot_dir}'
     
     # Store original show function
     _original_show = plt.show
@@ -184,7 +193,9 @@ except Exception as e:
             env['MPLCONFIGDIR'] = mpl_config_dir  # Set matplotlib config directory
             env['MPLBACKEND'] = 'Agg'  # Force Agg backend
             env['MATPLOTLIBRC'] = mpl_config_dir  # Point to our custom matplotlibrc
+            env['MATPLOTLIBDATA'] = mpl_config_dir  # Prevent loading matplotlib data
             env['PYTHONDONTWRITEBYTECODE'] = '1'  # Prevent .pyc files
+            env['HOME'] = temp_dir  # Set HOME to temp directory to avoid config issues
             # Set XDG directories to temp to avoid permission issues
             env['XDG_CACHE_HOME'] = os.path.join(temp_dir, '.cache')
             env['XDG_CONFIG_HOME'] = os.path.join(temp_dir, '.config')
