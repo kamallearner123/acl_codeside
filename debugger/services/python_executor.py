@@ -82,6 +82,12 @@ class PythonExecutor:
             'execution_time': 0.0,
             'plots': []
         }
+        # Debug mode: set environment variable PY_EXEC_DEBUG=1 or Django setting PY_EXEC_DEBUG=True
+        debug_mode = False
+        try:
+            debug_mode = os.environ.get('PY_EXEC_DEBUG', '0') == '1' or bool(getattr(settings, 'PY_EXEC_DEBUG', False))
+        except Exception:
+            debug_mode = False
         
         # Validate code first
         validation = self.validate_syntax(code)
@@ -251,29 +257,57 @@ except Exception as e:
             # Clean up temporary files
             try:
                 import shutil
-                
-                if os.path.exists(temp_script_path):
-                    os.unlink(temp_script_path)
-                
-                # Clean up plot directory
-                if os.path.exists(plot_dir):
-                    shutil.rmtree(plot_dir, ignore_errors=True)
-                
-                # Clean up matplotlib config directory
-                if os.path.exists(mpl_config_dir):
-                    shutil.rmtree(mpl_config_dir, ignore_errors=True)
-                
-                # Clean up XDG directories
-                cache_dir = os.path.join(temp_dir, '.cache')
-                config_dir = os.path.join(temp_dir, '.config')
-                if os.path.exists(cache_dir):
-                    shutil.rmtree(cache_dir, ignore_errors=True)
-                if os.path.exists(config_dir):
-                    shutil.rmtree(config_dir, ignore_errors=True)
-                
-                # Clean up temp directory
-                if os.path.exists(temp_dir):
-                    shutil.rmtree(temp_dir, ignore_errors=True)
+                # If debug_mode is enabled, preserve the temp_dir and write debug info
+                if debug_mode:
+                    try:
+                        debug_info_path = os.path.join(temp_dir, 'debug_info.txt')
+                        with open(debug_info_path, 'w', encoding='utf-8') as dbg:
+                            dbg.write(f"temp_dir: {temp_dir}\n")
+                            dbg.write(f"temp_script: {temp_script_path}\n")
+                            dbg.write(f"plot_dir: {plot_dir}\n")
+                            dbg.write(f"mpl_config_dir: {mpl_config_dir}\n")
+                            dbg.write('\n--- ENVIRONMENT ---\n')
+                            for k in sorted(env.keys()):
+                                dbg.write(f"{k}={env[k]}\n")
+                        # Also write a small listing of the temp directory
+                        try:
+                            with open(os.path.join(temp_dir, 'ls_temp_dir.txt'), 'w', encoding='utf-8') as lsout:
+                                for root, dirs, files in os.walk(temp_dir):
+                                    lsout.write(f"ROOT: {root}\n")
+                                    for d in dirs:
+                                        lsout.write(f"DIR: {os.path.join(root,d)}\n")
+                                    for f in files:
+                                        lsout.write(f"FILE: {os.path.join(root,f)}\n")
+                        except Exception:
+                            pass
+                        # Expose debug path in result for quick inspection
+                        result['debug_dir'] = temp_dir
+                    except Exception:
+                        pass
+                    # Do not remove anything when debugging
+                else:
+                    if os.path.exists(temp_script_path):
+                        os.unlink(temp_script_path)
+
+                    # Clean up plot directory
+                    if os.path.exists(plot_dir):
+                        shutil.rmtree(plot_dir, ignore_errors=True)
+
+                    # Clean up matplotlib config directory
+                    if os.path.exists(mpl_config_dir):
+                        shutil.rmtree(mpl_config_dir, ignore_errors=True)
+
+                    # Clean up XDG directories
+                    cache_dir = os.path.join(temp_dir, '.cache')
+                    config_dir = os.path.join(temp_dir, '.config')
+                    if os.path.exists(cache_dir):
+                        shutil.rmtree(cache_dir, ignore_errors=True)
+                    if os.path.exists(config_dir):
+                        shutil.rmtree(config_dir, ignore_errors=True)
+
+                    # Clean up temp directory
+                    if os.path.exists(temp_dir):
+                        shutil.rmtree(temp_dir, ignore_errors=True)
                     
             except Exception as cleanup_error:
                 # Log cleanup errors but don't fail the execution
