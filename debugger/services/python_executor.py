@@ -129,7 +129,7 @@ try:
     os.environ['MATPLOTLIBRC'] = r'{mpl_config_dir}'
     
     # Disable all matplotlib configuration loading
-    os.environ['MATPLOTLIBDATA'] = r'{mpl_config_dir}'
+    # Disable all matplotlib configuration loading
     os.environ['HOME'] = r'{temp_dir}'  # Prevent loading from home directory
     
     # Create a minimal matplotlibrc file to prevent loading defaults
@@ -199,7 +199,7 @@ except Exception as e:
             env['MPLCONFIGDIR'] = mpl_config_dir  # Set matplotlib config directory
             env['MPLBACKEND'] = 'Agg'  # Force Agg backend
             env['MATPLOTLIBRC'] = mpl_config_dir  # Point to our custom matplotlibrc
-            env['MATPLOTLIBDATA'] = mpl_config_dir  # Prevent loading matplotlib data
+            env['MATPLOTLIBRC'] = mpl_config_dir  # Point to our custom matplotlibrc
             env['PYTHONDONTWRITEBYTECODE'] = '1'  # Prevent .pyc files
             env['HOME'] = temp_dir  # Set HOME to temp directory to avoid config issues
             # Set XDG directories to temp to avoid permission issues
