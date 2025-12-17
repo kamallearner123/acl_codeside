@@ -184,13 +184,21 @@ except Exception as e:
         temp_script_path = os.path.join(temp_dir, f'script_{int(time.time() * 1000)}.py')
 
         # Ensure the parent directory exists before writing the script file
-        os.makedirs(os.path.dirname(temp_script_path), exist_ok=True)
+        script_dir = os.path.dirname(temp_script_path)
+        try:
+            os.makedirs(script_dir, exist_ok=True)
+        except Exception as e:
+            result['stderr'] = f"Error creating script directory {script_dir}: {str(e)}"
+            print(f"[DEBUG] Error creating script directory {script_dir}: {e}")
+            return result
 
         try:
             with open(temp_script_path, 'w', encoding='utf-8') as tmp_file:
                 tmp_file.write(modified_code)
+            print(f"[DEBUG] Successfully wrote script file: {temp_script_path}")
         except Exception as e:
-            result['stderr'] = f"Error writing temporary file: {str(e)}"
+            result['stderr'] = f"Error writing temporary file {temp_script_path}: {str(e)}"
+            print(f"[DEBUG] Error writing script file {temp_script_path}: {e}")
             return result
         
         try:
