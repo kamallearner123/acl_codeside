@@ -183,22 +183,28 @@ except Exception as e:
         # Use a safe filename with proper extension
         temp_script_path = os.path.join(temp_dir, f'script_{int(time.time() * 1000)}.py')
 
+        import traceback
         # Ensure the parent directory exists before writing the script file
         script_dir = os.path.dirname(temp_script_path)
+        print(f"[DEBUG] Attempting to create script directory: {script_dir}")
         try:
             os.makedirs(script_dir, exist_ok=True)
+            print(f"[DEBUG] Script directory exists or created: {script_dir}")
         except Exception as e:
-            result['stderr'] = f"Error creating script directory {script_dir}: {str(e)}"
-            print(f"[DEBUG] Error creating script directory {script_dir}: {e}")
+            tb = traceback.format_exc()
+            result['stderr'] = f"Error creating script directory {script_dir}: {str(e)}\n{tb}"
+            print(f"[DEBUG] Error creating script directory {script_dir}: {e}\n{tb}")
             return result
 
+        print(f"[DEBUG] Attempting to write script file: {temp_script_path}")
         try:
             with open(temp_script_path, 'w', encoding='utf-8') as tmp_file:
                 tmp_file.write(modified_code)
             print(f"[DEBUG] Successfully wrote script file: {temp_script_path}")
         except Exception as e:
-            result['stderr'] = f"Error writing temporary file {temp_script_path}: {str(e)}"
-            print(f"[DEBUG] Error writing script file {temp_script_path}: {e}")
+            tb = traceback.format_exc()
+            result['stderr'] = f"Error writing temporary file {temp_script_path}: {str(e)}\n{tb}"
+            print(f"[DEBUG] Error writing script file {temp_script_path}: {e}\n{tb}")
             return result
         
         try:
