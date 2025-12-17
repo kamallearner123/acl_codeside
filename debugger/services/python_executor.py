@@ -182,7 +182,10 @@ except Exception as e:
         # Create a temporary file for the Python code
         # Use a safe filename with proper extension
         temp_script_path = os.path.join(temp_dir, f'script_{int(time.time() * 1000)}.py')
-        
+
+        # Ensure the parent directory exists before writing the script file
+        os.makedirs(os.path.dirname(temp_script_path), exist_ok=True)
+
         try:
             with open(temp_script_path, 'w', encoding='utf-8') as tmp_file:
                 tmp_file.write(modified_code)

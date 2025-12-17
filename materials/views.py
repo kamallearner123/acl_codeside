@@ -24,3 +24,7 @@ class RustMaterialsView(LoginRequiredMixin, TemplateView):
 
 class CProgrammingMaterialsView(LoginRequiredMixin, TemplateView):
     template_name = "materials/c_programming.html"
+
+
+class DSAMaterialsView(LoginRequiredMixin, TemplateView):
+    template_name = "materials/dsa_concepts.html"

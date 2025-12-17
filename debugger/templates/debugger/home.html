@@ -19,6 +19,7 @@
             --accent-primary: #007acc;
             --rust-color: #CE422B;
             --python-color: #3776ab;
+            --dsa-color: #10b981;
         }
 
         body {
@@ -100,6 +101,15 @@
 
         .choice-card.python .choice-icon {
             color: var(--python-color);
+        }
+
+        .choice-card.dsa .choice-icon {
+            color: var(--dsa-color);
+        }
+
+        .choice-card.dsa:hover {
+            background: linear-gradient(135deg, var(--dsa-color) 0%, #7dd3c7 100%);
+            color: white;
         }
 
         .choice-card:hover .choice-icon {
@@ -226,6 +236,8 @@
             </ul>
             <div class="btn">Start with Python</div>
         </a>
+        
+        <!-- DSA Practice card removed per request -->
     </div>
 </div>
 {% endblock %}

@@ -4464,7 +4464,20 @@ for order in orders:
     console.log('Key:', key);
     console.log('Found:', code !== '# Example not found');
     console.log('Code length:', code.length, 'characters');
-    setEditorCode(code);
+
+    // Try calling setEditorCode in several ways to support different editor loaders
+    if (typeof setEditorCode === 'function') {
+        console.log('Using setEditorCode()');
+        try { setEditorCode(code); showToast('Example loaded into editor', 'success'); } catch (e) { console.error('Error calling setEditorCode', e); }
+    } else if (typeof window.setEditorCode === 'function') {
+        console.log('Using window.setEditorCode()');
+        try { window.setEditorCode(code); showToast('Example loaded into editor', 'success'); } catch (e) { console.error('Error calling window.setEditorCode', e); }
+    } else if (typeof window.loadExample === 'function') {
+        console.log('Falling back to window.loadExample()');
+        try { window.loadExample(key); showToast('Example loaded into editor', 'success'); } catch (e) { console.error('Error calling window.loadExample', e); }
+    } else {
+        console.warn('No editor API found to load example');
+    }
 }
 
 async function runPythonCode() {
@@ -4920,18 +4933,79 @@ function populatePythonExamples(category) {
 function loadSelectedPythonExample() {
     console.log('📥 [LOAD] Loading selected Python example');
     
-    if (selectedPythonExample && window.editor) {
-        console.log('Loading example:', selectedPythonExample.key);
+    if (!selectedPythonExample) {
+        console.warn('No Python example selected');
+        return;
+    }
+
+    // Prefer using setEditorCode if available (python editor), otherwise fall back
+    if (typeof setEditorCode === 'function') {
+        console.log('Loading example via setEditorCode:', selectedPythonExample.key);
         loadPythonExample(selectedPythonExample.key);
-        
-        // Close modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('pythonExamplesModal'));
-        if (modal) {
-            modal.hide();
-        }
-        
-        // Reset selection
-        selectedPythonExample = null;
-        document.getElementById('loadSelectedPythonExample').disabled = true;
+    } else if (typeof window.setEditorCode === 'function') {
+        console.log('Loading example via window.setEditorCode:', selectedPythonExample.key);
+        loadPythonExample(selectedPythonExample.key);
+    } else {
+        // As a last resort, attempt to call loadPythonExample directly
+        console.log('Loading example (no editor API detection):', selectedPythonExample.key);
+        loadPythonExample(selectedPythonExample.key);
+    }
+
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('pythonExamplesModal'));
+    if (modal) {
+        modal.hide();
+    }
+
+    // Reset selection
+    selectedPythonExample = null;
+    const lb = document.getElementById('loadSelectedPythonExample');
+    if (lb) lb.disabled = true;
+
+    // UI feedback: show toast confirmation
+    try {
+        showToast('Example loaded into editor', 'success');
+    } catch (err) {
+        console.warn('showToast not available:', err);
+    }
+}
+
+
+// Small helper to show Bootstrap toasts for quick UI feedback
+function showToast(message, type = 'info', delay = 3000) {
+    const containerId = 'toastContainer';
+    let container = document.getElementById(containerId);
+    if (!container) {
+        container = document.createElement('div');
+        container.id = containerId;
+        container.className = 'position-fixed bottom-0 end-0 p-3';
+        container.style.zIndex = 11000;
+        container.setAttribute('aria-live', 'polite');
+        container.setAttribute('aria-atomic', 'true');
+        document.body.appendChild(container);
+    }
+
+    const toastEl = document.createElement('div');
+    toastEl.className = 'toast align-items-center text-bg-' + (type === 'error' ? 'danger' : (type === 'success' ? 'success' : 'primary')) + ' border-0';
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+
+    toastEl.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${escapeHtml(message)}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    `;
+
+    container.appendChild(toastEl);
+
+    // Initialize and show using Bootstrap's JS API
+    try {
+        const toast = new bootstrap.Toast(toastEl, { delay: delay });
+        toast.show();
+    } catch (e) {
+        // Fallback: remove after delay
+        setTimeout(() => { try { toastEl.remove(); } catch(_){} }, delay + 200);
     }
 }

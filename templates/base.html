@@ -26,25 +26,28 @@
         }
         /* Navbar Styling */
         .navbar {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            padding: 20px 0;
+            background: linear-gradient(90deg, #1f2937 0%, #3b82f6 100%);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            padding: 24px 0 12px;
         }
         .navbar-brand {
             display: flex;
+            flex-direction: row;
             align-items: center;
+            text-align: left;
             padding: 0;
-            margin-right: 2rem;
+            margin: 0;
         }
         .navbar-logo {
-            width: 120px;
-            height: 120px;
-            margin-right: 25px;
+            width: 70px;
+            height: auto;
+            margin-right: 18px;
+            margin-bottom: 0;
             filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.3));
             transition: all 0.4s ease;
             border-radius: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
         }
         .navbar-brand:hover .navbar-logo {
             transform: scale(1.08) rotate(2deg);
@@ -52,7 +55,7 @@
         }
         .brand-title {
             font-weight: 900;
-            font-size: 3rem;
+            font-size: 2.5rem;
             background: linear-gradient(45deg, #ffffff, #feca57);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -67,6 +70,15 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.4));
+        }
+        .navbar-nav.main-nav {
+            width: 100%;
+            justify-content: center;
+            gap: 6px;
+        }
+        .navbar-nav.user-nav {
+            margin-left: auto;
+            gap: 10px;
         }
         .navbar-nav .nav-link {
             color: #ffffff;
@@ -158,23 +170,6 @@
             margin: 12px 8px;
         }
         /* Login Prompt Modal Styles */
-        .practice-features .feature-item {
-            transition: all 0.3s ease;
-            border: 1px solid #e9ecef;
-        }
-        .practice-features .feature-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-color: #007bff;
-        }
-        .practice-features .feature-item i {
-            font-size: 1.5rem;
-        }
-        .practice-features .feature-item h6 {
-            margin: 8px 0 4px 0;
-            font-weight: 600;
-            color: #2d3748;
-        }
         .dropdown-menu {
             background: linear-gradient(135deg, #ffffff, #f8f9fa);
             border: 2px solid #ffc107;
@@ -231,12 +226,20 @@
         }
         @media (max-width: 991px) {
             .navbar-logo {
-                width: 80px;
-                height: 80px;
-                margin-right: 15px;
+                width: 110px;
+                height: 110px;
+                margin-bottom: 10px;
             }
             .brand-title {
                 font-size: 1.8rem;
+            }
+            .navbar-nav.main-nav {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .navbar-nav.user-nav {
+                width: 100%;
+                justify-content: center;
             }
             .navbar-nav .nav-link {
                 padding: 12px 16px;
@@ -270,9 +273,9 @@
         
         @media (max-width: 576px) {
             .navbar-logo {
-                width: 60px;
-                height: 60px;
-                margin-right: 10px;
+                width: 80px;
+                height: 80px;
+                margin-bottom: 8px;
             }
             .brand-title {
                 font-size: 1.5rem;
@@ -296,21 +299,22 @@
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <!-- Brand Section - Simplified for mobile -->
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <img src="{% static 'img/apt.png' %}" alt="APT COMPUTING LABS" class="navbar-logo">
-                <span class="brand-title ms-2">APT COMPUTING LABS</span>
+        <div class="container-fluid d-flex flex-column align-items-center">
+            <!-- Brand Section -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'img/APT_Black_01.jpg' %}" alt="APT COMPUTING LABS" class="navbar-logo">
+                <span class="brand-title">APT COMPUTING LABS</span>
             </a>
 
             <!-- Mobile Toggle Button -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler mt-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <!-- Navigation Menu -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+            <div class="collapse navbar-collapse mt-3 mt-lg-4 w-100" id="navbarNav">
+                <div class="d-flex flex-column flex-lg-row align-items-center w-100 gap-3">
+                <ul class="navbar-nav main-nav flex-wrap justify-content-center">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">
                             <i class="fas fa-home me-1"></i>Home
@@ -398,7 +402,6 @@
                         </ul>
                     </li>
 
-                    {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-code me-1"></i>Practice
@@ -407,6 +410,7 @@
                             <li><a class="dropdown-item" href="{% url 'debugger:home' %}">
                                 <i class="fas fa-laptop-code"></i> Coding Practices
                             </a></li>
+                            <!-- DSA Practice menu removed -->
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'questions:list' %}">
                                 <i class="fas fa-question-circle"></i> Coding Problems
@@ -423,13 +427,6 @@
                             </a></li>
                         </ul>
                     </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginPromptModal">
-                            <i class="fas fa-code me-1"></i>Practice
-                        </a>
-                    </li>
-                    {% endif %}
 
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'events' %}">
@@ -445,7 +442,7 @@
                 </ul>
 
                 <!-- User Menu / Auth Buttons -->
-                <ul class="navbar-nav">
+                <ul class="navbar-nav user-nav flex-wrap align-items-center">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
@@ -477,6 +474,7 @@
                         </li>
                     {% endif %}
                 </ul>
+                </div>
             </div>
         </div>
     </nav>
@@ -514,73 +512,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/rust/rust.min.js"></script>
-    <!-- Login Prompt Modal for Practice -->
-    <div class="modal fade" id="loginPromptModal" tabindex="-1" aria-labelledby="loginPromptModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="loginPromptModalLabel">
-                        <i class="fas fa-lock me-2"></i>Login Required
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-code fa-4x text-primary mb-3"></i>
-                        <h4 class="text-primary">Access Practice Features</h4>
-                        <p class="text-muted">To access coding problems, submissions, and live coding features, please log in to your account.</p>
-                    </div>
-                    
-                    <div class="practice-features mb-4">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="feature-item p-3 bg-light rounded">
-                                    <i class="fas fa-question-circle text-info mb-2"></i>
-                                    <h6>Coding Problems</h6>
-                                    <small class="text-muted">Solve algorithmic challenges</small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="feature-item p-3 bg-light rounded">
-                                    <i class="fas fa-code-branch text-success mb-2"></i>
-                                    <h6>My Submissions</h6>
-                                    <small class="text-muted">Track your progress</small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="feature-item p-3 bg-light rounded">
-                                    <i class="fas fa-play-circle text-warning mb-2"></i>
-                                    <h6>Live Coding</h6>
-                                    <small class="text-muted">Interactive code editor</small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="feature-item p-3 bg-light rounded">
-                                    <i class="fas fa-tools text-danger mb-2"></i>
-                                    <h6>Developer Tools</h6>
-                                    <small class="text-muted">Useful utilities</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg me-3">
-                        <i class="fas fa-sign-in-alt me-2"></i>Login Now
-                    </a>
-                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary btn-lg">
-                        <i class="fas fa-user-plus me-2"></i>Create Account
-                    </a>
-                </div>
-                <div class="modal-footer border-0 pt-0">
-                    <small class="text-muted text-center w-100">
-                        Don't have an account? <a href="{% url 'accounts:register' %}" class="text-primary">Sign up for free</a>
-                    </small>
-                </div>
-            </div>
-        </div>
-    </div>
-
     {% load static %}
     <script src="{% static 'js/main.js' %}"></script>
     

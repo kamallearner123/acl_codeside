@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}DSA Practice{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dsa-container { display: flex; gap: 20px; padding: 20px; }
+    .dsa-sidebar { width: 280px; background: #fff; border-radius: 8px; padding: 12px; height: 80vh; overflow:auto; }
+    .dsa-main { flex: 1; background: #fff; border-radius: 8px; padding: 16px; height: 80vh; overflow:auto; }
+    .topic-item { padding: 10px; border-radius:6px; cursor: pointer; margin-bottom:6px; color:#333; }
+    .topic-item.active { background: #f3f4f6; font-weight:600; }
+    .code-area { width: 100%; height: 300px; font-family: monospace; font-size: 13px; }
+    .lang-tabs { margin-bottom: 8px; }
+    .run-output { white-space: pre-wrap; background: #111827; color: #e5e7eb; padding:10px; border-radius:6px; min-height: 80px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-3">DSA Practice</h1>
+    <div class="dsa-container">
+        <div class="dsa-sidebar">
+            <h5>Topics</h5>
+            <div id="topics"></div>
+        </div>
+        <div class="dsa-main">
+            <div id="topic-title"><h3>Select a topic</h3></div>
+            <div id="topic-desc" class="mb-3 text-muted"></div>
+
+            <div class="lang-tabs">
+                <button id="tab-py" class="btn btn-sm btn-outline-secondary">Python</button>
+                <button id="tab-cpp" class="btn btn-sm btn-outline-secondary">C++</button>
+                <button id="tab-rust" class="btn btn-sm btn-outline-secondary">Rust</button>
+            </div>
+
+            <textarea id="code" class="code-area"></textarea>
+
+            <div class="mt-2">
+                <label for="stdin" class="form-label">stdin (optional)</label>
+                <input id="stdin" class="form-control" placeholder="Input for program (optional)">
+            </div>
+
+            <div class="mt-3">
+                <button id="run-btn" class="btn btn-primary">Run</button>
+                <button id="copy-btn" class="btn btn-outline-secondary ms-2">Copy</button>
+                <button id="download-btn" class="btn btn-outline-secondary ms-2">Download</button>
+                <button id="details-btn" class="btn btn-outline-secondary ms-2">Details</button>
+                <span id="run-lang" class="ms-3 text-muted"></span>
+            </div>
+
+            <div class="mt-3">
+                <h6>Output</h6>
+                <div id="output" class="run-output"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+<script id="problems-data" type="application/json">{{ problems|safe|escapejs }}</script>
+</div>
+
+<script>
+    const problems = JSON.parse(document.getElementById('problems-data').textContent || '[]');
+    const topicsEl = document.getElementById('topics');
+    const titleEl = document.getElementById('topic-title');
+    const descEl = document.getElementById('topic-desc');
+    const codeEl = document.getElementById('code');
+    const outputEl = document.getElementById('output');
+    const stdinEl = document.getElementById('stdin');
+    const runBtn = document.getElementById('run-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const detailsBtn = document.getElementById('details-btn');
+    const tabPy = document.getElementById('tab-py');
+    const tabCpp = document.getElementById('tab-cpp');
+    const tabRust = document.getElementById('tab-rust');
+    const runLangLabel = document.getElementById('run-lang');
+
+    let activeIndex = 0;
+    let activeLang = 'python';
+    // Initialize CodeMirror editor from textarea
+    let editor = CodeMirror.fromTextArea(codeEl, {
+        lineNumbers: true,
+        mode: 'python',
+        theme: 'monokai',
+        indentUnit: 4,
+        viewportMargin: Infinity
+    });
+
+    function detectLanguageSnippet(snippet){
+        if(!snippet) return 'python';
+        if(snippet.includes('std::') || snippet.includes('vector') || snippet.includes('int main')) return 'cpp';
+        if(snippet.includes('fn ') || snippet.includes('println!') || snippet.includes('let ')) return 'rust';
+        if(snippet.includes('def ') || snippet.includes('print(') || snippet.includes('yield')) return 'python';
+        return 'python';
+    }
+
+    function createTopicList(){
+        problems.forEach((p, idx) => {
+            const el = document.createElement('div');
+            el.className = 'topic-item';
+            el.textContent = (idx+1)+'. '+p.title;
+            el.addEventListener('click', ()=>{ selectTopic(idx); });
+            topicsEl.appendChild(el);
+        });
+    }
+
+    function selectTopic(idx){
+        activeIndex = idx;
+        document.querySelectorAll('.topic-item').forEach((el,i)=> el.classList.toggle('active', i===idx));
+        const p = problems[idx];
+        titleEl.innerHTML = '<h3>'+p.title+'</h3>';
+        descEl.textContent = p.description || '';
+
+        // prefer python snippet if available
+        let snippet = p.snippet || '';
+        activeLang = detectLanguageSnippet(snippet);
+        setActiveLang(activeLang);
+
+        editor.setValue(mapSnippetToLang(p, activeLang) || snippet || '');
+        outputEl.textContent = '';
+        stdinEl.value = '';
+    }
+
+    function mapSnippetToLang(p, lang){
+        // If the problem already provides multiple language fields, prefer them
+        if(p.codes && p.codes[lang]) return p.codes[lang];
+        // Heuristic: if snippet appears to be the requested lang, return it
+        if(lang === detectLanguageSnippet(p.snippet)) return p.snippet;
+        // Otherwise provide simple python example for some known titles
+        if(lang==='python'){
+            // provide simple python implementations for a few common problems
+            if(p.title.toLowerCase().includes('reverse a linked list')){
+                return `class Node:\n    def __init__(self,val,next=None):\n        self.val=val\n        self.next=next\n\ndef reverse(head):\n    prev=None\n    cur=head\n    while cur:\n        nxt=cur.next\n        cur.next=prev\n        prev=cur\n        cur=nxt\n    return prev\n`;
+            }
+            if(p.title.toLowerCase().includes('kadane')){
+                return `def kadane(a):\n    max_ending=0\n    max_so_far=float('-inf')\n    for x in a:\n        max_ending = max(x, max_ending + x)\n        max_so_far = max(max_so_far, max_ending)\n    return max_so_far\n\nprint(kadane([1,-2,3,4,-1,2]))`;
+            }
+            if(p.title.toLowerCase().includes('binary search')){
+                return `def binary_search(a, x):\n    l, r = 0, len(a)-1\n    while l<=r:\n        m=(l+r)//2\n        if a[m]==x:\n            return m\n        if a[m]<x:\n            l=m+1\n        else:\n            r=m-1\n    return -1\n\nprint(binary_search([1,2,3,4,5], 4))`;
+            }
+        }
+        // fallback: return original snippet
+        return p.snippet || '';
+    }
+
+    function setActiveLang(lang){
+        activeLang = lang;
+        tabPy.classList.toggle('active', lang==='python');
+        tabCpp.classList.toggle('active', lang==='cpp');
+        tabRust.classList.toggle('active', lang==='rust');
+        runLangLabel.textContent = `Language: ${lang.toUpperCase()}`;
+    }
+
+    tabPy.addEventListener('click', ()=>{ setActiveLang('python'); editor.setValue(mapSnippetToLang(problems[activeIndex],'python')); });
+    tabCpp.addEventListener('click', ()=>{ setActiveLang('cpp'); editor.setValue(mapSnippetToLang(problems[activeIndex],'cpp')); });
+    tabRust.addEventListener('click', ()=>{ setActiveLang('rust'); editor.setValue(mapSnippetToLang(problems[activeIndex],'rust')); });
+
+    runBtn.addEventListener('click', async ()=>{
+        const code = editor.getValue();
+        const stdin = stdinEl.value || null;
+        outputEl.textContent = 'Running...';
+
+        try{
+            let resp = null;
+            if(activeLang==='python'){
+                resp = await fetch('{% url "debugger:execute_python_code" %}', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({code})
+                });
+                const j = await resp.json();
+                if(j.error) outputEl.textContent = j.error;
+                else outputEl.textContent = (j.stdout||'') + (j.stderr?('\nERR:\n'+j.stderr):'');
+            } else if(activeLang==='cpp'){
+                resp = await fetch('{% url "debugger:execute_cpp" %}', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({code, stdin})
+                });
+                const j = await resp.json();
+                if(j.error) outputEl.textContent = j.error;
+                else outputEl.textContent = (j.stdout||'') + (j.stderr?('\nERR:\n'+j.stderr):'');
+            } else if(activeLang==='rust'){
+                resp = await fetch('{% url "debugger:execute_code" %}', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({code, use_miri:false})
+                });
+                const j = await resp.json();
+                if(j.error) outputEl.textContent = j.error;
+                else outputEl.textContent = (j.stdout||'') + (j.stderr?('\nERR:\n'+j.stderr):'');
+            }
+        } catch(e){
+            outputEl.textContent = 'Execution failed: '+e;
+        }
+    });
+
+    // Copy button
+    copyBtn.addEventListener('click', ()=>{
+        const text = editor.getValue();
+        navigator.clipboard.writeText(text).then(()=>{
+            copyBtn.textContent = 'Copied';
+            setTimeout(()=> copyBtn.textContent = 'Copy', 1200);
+        }).catch(()=> alert('Copy failed'));
+    });
+
+    // Download button
+    downloadBtn.addEventListener('click', ()=>{
+        const code = editor.getValue();
+        const ext = activeLang==='python'? 'py': (activeLang==='cpp'? 'cpp': 'rs');
+        const filename = problems[activeIndex].title.replace(/[^a-z0-9]+/gi,'_').toLowerCase() + '.' + ext;
+        const blob = new Blob([code], {type: 'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // Details button
+    detailsBtn.addEventListener('click', ()=>{
+        // navigate to per-problem detail page (relative path)
+        const base = window.location.pathname.replace(/\/$/, '');
+        window.location.href = base + '/' + activeIndex + '/';
+    });
+
+    // Initialize
+    if(problems.length>0){ createTopicList(); selectTopic(0); }
+</script>

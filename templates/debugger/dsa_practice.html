@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}DSA Practice - Coding Practices{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'debugger_css/style.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h1 class="display-5 fw-bold mb-3">DSA Practice</h1>
+    <p class="lead text-muted">Collection of practical DSA & system problems with explanations and runnable snippets where applicable.</p>
+
+    <div class="mb-4" id="contents">
+        <h4>Contents</h4>
+        <ol>
+            {% for problem in problems %}
+            <li><a href="#p{{ forloop.counter }}">{{ forloop.counter }}. {{ problem.title }}</a></li>
+            {% endfor %}
+        </ol>
+    </div>
+
+    <hr/>
+
+    {% comment %} Problem sections {% endcomment %}
+    {% for problem in problems %}
+    <section id="p{{ forloop.counter }}" class="mb-5">
+        <h3>{{ forloop.counter }}. {{ problem.title }}</h3>
+        <p>{{ problem.description }}</p>
+        <div class="card mb-2">
+            <div class="card-body bg-light">
+                <pre><code>{{ problem.snippet }}</code></pre>
+            </div>
+        </div>
+        <p><strong>Real-time example:</strong> {{ problem.example }}</p>
+        <p><a href="#contents">Back to contents</a></p>
+    </section>
+    {% endfor %}
+</div>
+{% endblock %}
