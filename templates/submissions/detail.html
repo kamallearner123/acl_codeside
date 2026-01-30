@@ -12,7 +12,7 @@
                     <i class="fas fa-arrow-left"></i> Back to Submissions
                 </a>
             </div>
-            
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="card">
@@ -34,7 +34,8 @@
                                 <tr>
                                     <td><strong>Status:</strong></td>
                                     <td>
-                                        <span class="badge bg-{% if submission.status == 'accepted' %}success{% elif submission.status == 'wrong_answer' %}danger{% else %}warning{% endif %} fs-6">
+                                        <span
+                                            class="badge bg-{% if submission.status == 'accepted' %}success{% elif submission.status == 'wrong_answer' %}danger{% else %}warning{% endif %} fs-6">
                                             {{ submission.get_status_display }}
                                         </span>
                                     </td>
@@ -51,45 +52,69 @@
                                     <td><strong>Test Cases:</strong></td>
                                     <td>
                                         {% if submission.total_test_cases > 0 %}
-                                            <span class="text-{% if submission.test_cases_passed == submission.total_test_cases %}success{% else %}danger{% endif %}">
-                                                {{ submission.test_cases_passed }}/{{ submission.total_test_cases }} passed
-                                            </span>
-                                            ({{ submission.success_percentage }}%)
+                                        <span
+                                            class="text-{% if submission.test_cases_passed == submission.total_test_cases %}success{% else %}danger{% endif %}">
+                                            {{ submission.test_cases_passed }}/{{ submission.total_test_cases }} passed
+                                        </span>
+                                        ({{ submission.success_percentage }}%)
                                         {% else %}
-                                            <span class="text-muted">No test cases</span>
+                                        <span class="text-muted">No test cases</span>
                                         {% endif %}
                                     </td>
                                 </tr>
                                 {% if submission.runtime %}
-                                    <tr>
-                                        <td><strong>Runtime:</strong></td>
-                                        <td>{{ submission.runtime }}s</td>
-                                    </tr>
+                                <tr>
+                                    <td><strong>Runtime:</strong></td>
+                                    <td>
+                                        {{ submission.runtime }}s
+                                        {% if percentile %}
+                                        <span class="text-success ms-2">
+                                            (Beats {{ percentile }}% of users)
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
                                 {% endif %}
                                 {% if submission.memory_usage %}
-                                    <tr>
-                                        <td><strong>Memory:</strong></td>
-                                        <td>{{ submission.memory_usage }} KB</td>
-                                    </tr>
+                                <tr>
+                                    <td><strong>Memory:</strong></td>
+                                    <td>{{ submission.memory_usage }} KB</td>
+                                </tr>
                                 {% endif %}
                             </table>
                         </div>
                     </div>
-                    
+
                     {% if submission.error_message %}
-                        <div class="card mt-4">
-                            <div class="card-header bg-danger text-white">
-                                <h5 class="mb-0">
-                                    <i class="fas fa-exclamation-triangle"></i> Error Message
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <pre class="text-danger mb-0">{{ submission.error_message }}</pre>
-                            </div>
+                    <div class="card mt-4">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-exclamation-triangle"></i> Error Message
+                            </h5>
                         </div>
+                        <div class="card-body">
+                            <pre class="text-danger mb-0">{{ submission.error_message }}</pre>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if all_runtimes %}
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-bar"></i> Runtime Distribution
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="runtimeChart" style="height: 200px;"></canvas>
+                            <p class="text-muted small mt-2">
+                                Your runtime: <strong>{{ submission.runtime }}s</strong>
+                            </p>
+                        </div>
+                    </div>
                     {% endif %}
                 </div>
-                
+
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-header">
@@ -98,12 +123,13 @@
                             </h5>
                         </div>
                         <div class="card-body p-0">
-                            <pre class="bg-dark text-light p-3 mb-0" style="max-height: 500px; overflow-y: auto;"><code>{{ submission.code }}</code></pre>
+                            <pre class="bg-dark text-light p-3 mb-0"
+                                style="max-height: 500px; overflow-y: auto;"><code>{{ submission.code }}</code></pre>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="card mt-4">
                 <div class="card-header">
                     <h5 class="mb-0">
@@ -116,9 +142,9 @@
                             <i class="fas fa-redo"></i> Try Again
                         </a>
                         {% if submission.status != 'accepted' %}
-                            <a href="{% url 'questions:detail' submission.question.slug %}" class="btn btn-outline-success">
-                                <i class="fas fa-lightbulb"></i> View Hints
-                            </a>
+                        <a href="{% url 'questions:detail' submission.question.slug %}" class="btn btn-outline-success">
+                            <i class="fas fa-lightbulb"></i> View Hints
+                        </a>
                         {% endif %}
                         <a href="{% url 'questions:list' %}" class="btn btn-outline-primary">
                             <i class="fas fa-list"></i> Browse More Problems
@@ -129,4 +155,80 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const runtimes = {{ all_runtimes| safe
+    }};
+    const currentRuntime = {{ submission.runtime|default: 0 }};
+
+    if (runtimes.length > 0) {
+        // Create bins for runtime distribution
+        const minValue = Math.min(...runtimes);
+        const maxValue = Math.max(...runtimes);
+        const binCount = 10;
+        const binSize = (maxValue - minValue) / binCount || 0.01;
+
+        const labels = [];
+        const data = [];
+        const backgroundColors = [];
+
+        for (let i = 0; i < binCount; i++) {
+            const start = minValue + i * binSize;
+            const end = start + binSize;
+            labels.push(`${start.toFixed(2)}-${end.toFixed(2)}s`);
+
+            const count = runtimes.filter(r => r >= start && r < end).length;
+            data.push(count);
+
+            // Highlight the bin where the current submission falls
+            if (currentRuntime >= start && currentRuntime < end) {
+                backgroundColors.push('rgba(40, 167, 69, 0.7)'); // Success green
+            } else {
+                backgroundColors.push('rgba(0, 123, 255, 0.5)'); // Primary blue
+            }
+        }
+
+        const ctx = document.getElementById('runtimeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Number of Submissions',
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderColor: backgroundColors.map(c => c.replace('0.5', '1').replace('0.7', '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        title: {
+                            display: true,
+                            text: 'Frequency'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Runtime (seconds)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Question, Tag
+from .models import Question, Tag, Editorial, DailyChallenge, Company, Comment
 
 
 @admin.register(Question)
@@ -31,3 +31,23 @@ class QuestionAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     list_display = ['name']
     search_fields = ['name']
+
+
+@admin.register(DailyChallenge)
+class DailyChallengeAdmin(admin.ModelAdmin):
+    list_display = ['date', 'question', 'bonus_points']
+    list_filter = ['date']
+    date_hierarchy = 'date'
+
+
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug']
+    prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['user', 'question', 'created_at']
+    list_filter = ['created_at', 'user']
+    search_fields = ['content']

@@ -3,16 +3,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView
 from django.contrib import messages
-from django.http import JsonResponse
-from .models import Question
-from .forms import SubmissionForm
+from django.http import JsonResponse, HttpResponseForbidden
+from .models import Question, Comment
+from .forms import SubmissionForm, CommentForm
 from submissions.models import Submission
 import json
 import sys
 import io
 import contextlib
 from django.db.models import Count, Q, Min
-from django.http import HttpResponseForbidden
 
 
 class QuestionListView(LoginRequiredMixin, ListView):
@@ -22,15 +21,63 @@ class QuestionListView(LoginRequiredMixin, ListView):
     paginate_by = 20
     
     def get_queryset(self):
-        queryset = Question.objects.filter(is_active=True)
+        queryset = Question.objects.filter(is_active=True).prefetch_related('tags')
+        
+        # Search filter
+        search_query = self.request.GET.get('search')
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) | 
+                Q(description__icontains=search_query)
+            )
+            
+        # Difficulty filter
         difficulty = self.request.GET.get('difficulty')
         if difficulty and difficulty in ['easy', 'medium', 'hard']:
             queryset = queryset.filter(difficulty=difficulty)
-        return queryset
+            
+        # Tag filter
+        tag_slug = self.request.GET.get('tag')
+        if tag_slug:
+            queryset = queryset.filter(tags__slug=tag_slug)
+            
+        # Company filter
+        company_slug = self.request.GET.get('company')
+        if company_slug:
+            queryset = queryset.filter(companies__slug=company_slug)
+            
+        # Status filter (Solved/Unsolved)
+        status = self.request.GET.get('status')
+        if status:
+            solved_questions = Submission.objects.filter(
+                user=self.request.user, 
+                status='accepted'
+            ).values_list('question_id', flat=True)
+            
+            if status == 'solved':
+                queryset = queryset.filter(id__in=solved_questions)
+            elif status == 'unsolved':
+                queryset = queryset.exclude(id__in=solved_questions)
+                
+        return queryset.distinct()
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['current_difficulty'] = self.request.GET.get('difficulty', '')
+        context['current_search'] = self.request.GET.get('search', '')
+        context['current_tag'] = self.request.GET.get('tag', '')
+        context['current_company'] = self.request.GET.get('company', '')
+        context['current_status'] = self.request.GET.get('status', '')
+        from .models import Tag, Company
+        context['all_tags'] = Tag.objects.all()
+        context['all_companies'] = Company.objects.all()
+        
+        if self.request.user.is_authenticated:
+            context['user_solved_ids'] = Submission.objects.filter(
+                user=self.request.user, 
+                status='accepted'
+            ).values_list('question_id', flat=True)
+            
         return context
 
 
@@ -42,11 +89,30 @@ class QuestionDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = SubmissionForm()
+        context['comment_form'] = CommentForm()
+        context['comments'] = self.object.comments.filter(parent=None).prefetch_related('replies')
         context['user_submissions'] = Submission.objects.filter(
             user=self.request.user, 
             question=self.object
         ).order_by('-submitted_at')[:5]
         return context
+
+
+@login_required
+def post_comment(request, slug):
+    question = get_object_or_404(Question, slug=slug)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = request.user
+            comment.question = question
+            parent_id = request.POST.get('parent_id')
+            if parent_id:
+                comment.parent = get_object_or_404(Comment, id=parent_id)
+            comment.save()
+            messages.success(request, 'Your comment has been posted.')
+    return redirect('questions:detail', slug=slug)
 
 
 @login_required
@@ -81,7 +147,21 @@ def submit_solution(request, slug):
             user_profile = request.user.profile
             user_profile.total_submissions += 1
             if submission.status == 'accepted':
-                user_profile.problems_solved += 1
+                # Check if this problem was already solved by the user to avoid double points
+                already_solved = Submission.objects.filter(
+                    user=request.user,
+                    question=question,
+                    status='accepted'
+                ).exclude(id=submission.id).exists()
+                
+                if not already_solved:
+                    user_profile.problems_solved += 1
+                    # Award points based on difficulty
+                    points_map = {'easy': 10, 'medium': 30, 'hard': 50}
+                    user_profile.points += points_map.get(question.difficulty, 10)
+                    
+                    # Simple level calculation: 100 points per level
+                    user_profile.level = (user_profile.points // 100) + 1
             user_profile.save()
             
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

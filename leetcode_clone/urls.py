@@ -34,6 +34,7 @@ urlpatterns = [
     path('contact/', include('contact.urls')),
     path('materials/', include('materials.urls')),
     path('coding-practices/', include('debugger.urls')),
+    path('python-tutor/', include('tutor.urls')),
 ]
 
 if settings.DEBUG:

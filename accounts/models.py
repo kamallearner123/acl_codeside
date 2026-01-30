@@ -15,6 +15,8 @@ class UserProfile(models.Model):
     # Stats
     problems_solved = models.PositiveIntegerField(default=0)
     total_submissions = models.PositiveIntegerField(default=0)
+    points = models.PositiveIntegerField(default=0)
+    level = models.PositiveIntegerField(default=1)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

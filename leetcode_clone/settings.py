@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "contact",
     "materials",
     "debugger",
+    "tutor",
 ]
 
 MIDDLEWARE = [

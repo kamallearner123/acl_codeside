@@ -10,7 +10,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <!-- CodeMirror for code editor -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
@@ -190,6 +191,27 @@
         }
 
         /* Login Prompt Modal Styles */
+        .practice-features .feature-item {
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .practice-features .feature-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: #007bff;
+        }
+
+        .practice-features .feature-item i {
+            font-size: 1.5rem;
+        }
+
+        .practice-features .feature-item h6 {
+            margin: 8px 0 4px 0;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
         .dropdown-menu {
             background: linear-gradient(135deg, #ffffff, #f8f9fa);
             border: 2px solid #ffc107;
@@ -376,6 +398,9 @@
                             <li><a class="dropdown-item" href="{% url 'courses:list' %}">
                                     <i class="fas fa-list"></i> All Courses
                                 </a></li>
+                            <li><a class="dropdown-item" href="{% url 'tutor:index' %}">
+                                    <i class="fas fa-chalkboard-teacher text-primary"></i> Python Tutor
+                                </a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -468,25 +493,31 @@
                             <li><a class="dropdown-item" href="{% url 'debugger:home' %}">
                                     <i class="fas fa-laptop-code"></i> Coding Practices
                                 </a></li>
-                            <!-- DSA Practice menu removed -->
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'questions:list' %}">
-                                    <i class="fas fa-question-circle"></i> Coding Problems
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'submissions:my_submissions' %}">
-                                    <i class="fas fa-code-branch"></i> My Submissions
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'home' %}#livecoding">
-                                    <i class="fas fa-play-circle"></i> Live Coding
-                                </a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'devtools:list' %}">
-                                    <i class="fas fa-tools"></i> Developer Tools
-                                </a></li>
+                            <<<<<<< HEAD <!-- DSA Practice menu removed -->
+                                =======
+                                >>>>>>> 6ff9cef (Update project structure, add Python Tutor module, and refine
+                                accounts/questions apps)
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="{% url 'questions:list' %}">
+                                        <i class="fas fa-question-circle"></i> Coding Problems
+                                    </a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:leaderboard' %}">
+                                        <i class="fas fa-trophy text-warning"></i> Global Leaderboard
+                                    </a></li>
+                                <li><a class="dropdown-item" href="{% url 'submissions:my_submissions' %}">
+                                        <i class="fas fa-code-branch"></i> My Submissions
+                                    </a></li>
+                                <li><a class="dropdown-item" href="{% url 'home' %}#livecoding">
+                                        <i class="fas fa-play-circle"></i> Live Coding
+                                    </a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="{% url 'devtools:list' %}">
+                                        <i class="fas fa-tools"></i> Developer Tools
+                                    </a></li>
                         </ul>
                     </li>
 
@@ -577,6 +608,76 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/rust/rust.min.js"></script>
+    <!-- Login Prompt Modal for Practice -->
+    <div class="modal fade" id="loginPromptModal" tabindex="-1" aria-labelledby="loginPromptModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="loginPromptModalLabel">
+                        <i class="fas fa-lock me-2"></i>Login Required
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-code fa-4x text-primary mb-3"></i>
+                        <h4 class="text-primary">Access Practice Features</h4>
+                        <p class="text-muted">To access coding problems, submissions, and live coding features, please
+                            log in to your account.</p>
+                    </div>
+
+                    <div class="practice-features mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="feature-item p-3 bg-light rounded">
+                                    <i class="fas fa-question-circle text-info mb-2"></i>
+                                    <h6>Coding Problems</h6>
+                                    <small class="text-muted">Solve algorithmic challenges</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-item p-3 bg-light rounded">
+                                    <i class="fas fa-code-branch text-success mb-2"></i>
+                                    <h6>My Submissions</h6>
+                                    <small class="text-muted">Track your progress</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-item p-3 bg-light rounded">
+                                    <i class="fas fa-play-circle text-warning mb-2"></i>
+                                    <h6>Live Coding</h6>
+                                    <small class="text-muted">Interactive code editor</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-item p-3 bg-light rounded">
+                                    <i class="fas fa-tools text-danger mb-2"></i>
+                                    <h6>Developer Tools</h6>
+                                    <small class="text-muted">Useful utilities</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login Now
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </a>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <small class="text-muted text-center w-100">
+                        Don't have an account? <a href="{% url 'accounts:register' %}" class="text-primary">Sign up for
+                            free</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
     {% load static %}
     <script src="{% static 'js/main.js' %}"></script>
 

@@ -3,280 +3,351 @@
 {% block title %}ML Using Python - Learning Materials{% endblock %}
 {% block content %}
 <style>
-/* Floating Sidebar Styles */
-.floating-sidebar {
-    position: fixed;
-    left: 0;
-    top: 180px;
-    width: 300px;
-    max-height: calc(100vh - 200px);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 0 15px 15px 0;
-    box-shadow: 5px 5px 25px rgba(0, 0, 0, 0.3);
-    transition: left 0.4s ease;
-    z-index: 1000;
-    overflow-y: auto;
-}
+    /* Global Typography Override for Material Content */
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        color: #2d3748;
+        line-height: 1.6;
+    }
 
-.floating-sidebar.closed {
-    left: -300px;
-}
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        letter-spacing: -0.02em;
+    }
 
-.sidebar-toggle {
-    position: fixed;
-    left: 300px;
-    top: 200px;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    border-radius: 0 10px 10px 0;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-    z-index: 1001;
-}
+    p {
+        font-size: 1.05rem;
+        color: #4a5568;
+        margin-bottom: 1.2rem;
+    }
 
-.floating-sidebar.closed ~ .sidebar-toggle {
-    left: 0;
-}
+    /* Floating Sidebar Styles */
+    .floating-sidebar {
+        position: fixed;
+        left: 0;
+        top: 180px;
+        width: 300px;
+        max-height: calc(100vh - 200px);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 0 15px 15px 0;
+        box-shadow: 5px 5px 25px rgba(0, 0, 0, 0.3);
+        transition: left 0.4s ease;
+        z-index: 1000;
+        overflow-y: auto;
+    }
 
-.sidebar-toggle:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    transform: translateX(5px);
-}
+    .floating-sidebar.closed {
+        left: -300px;
+    }
 
-.sidebar-content {
-    padding: 25px 20px;
-}
+    .sidebar-toggle {
+        position: fixed;
+        left: 300px;
+        top: 200px;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 0 10px 10px 0;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        z-index: 1001;
+    }
 
-.sidebar-title {
-    color: white;
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-align: center;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-    padding-bottom: 15px;
-}
+    .floating-sidebar.closed~.sidebar-toggle {
+        left: 0;
+    }
 
-.sidebar-chapters {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+    .sidebar-toggle:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateX(5px);
+    }
 
-.sidebar-chapters li {
-    margin-bottom: 8px;
-}
+    .sidebar-content {
+        padding: 25px 20px;
+    }
 
-.sidebar-chapters a {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    font-size: 14px;
-    background: rgba(255, 255, 255, 0.1);
-}
+    .sidebar-title {
+        color: white;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        padding-bottom: 15px;
+        letter-spacing: 0.5px;
+    }
 
-.sidebar-chapters a:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateX(5px);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-}
+    .sidebar-chapters {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
-.sidebar-chapters a.active {
-    background: rgba(255, 255, 255, 0.3);
-    font-weight: 600;
-}
+    .sidebar-chapters li {
+        margin-bottom: 8px;
+    }
 
-.chapter-number-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.25);
-    border-radius: 50%;
-    margin-right: 12px;
-    font-weight: 700;
-    font-size: 13px;
-    flex-shrink: 0;
-}
+    .sidebar-chapters a {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.1);
+    }
 
-.sidebar-chapters a:hover .chapter-number-badge {
-    background: rgba(255, 255, 255, 0.4);
-}
+    .sidebar-chapters a:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateX(5px);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
 
-/* Scrollbar styles for sidebar */
-.floating-sidebar::-webkit-scrollbar {
-    width: 6px;
-}
+    .sidebar-chapters a.active {
+        background: rgba(255, 255, 255, 0.3);
+        font-weight: 700;
+    }
 
-.floating-sidebar::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-}
+    .chapter-number-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 50%;
+        margin-right: 12px;
+        font-weight: 700;
+        font-size: 13px;
+        flex-shrink: 0;
+        font-family: 'Fira Code', monospace;
+        /* Monospace for numbers looks cleaner */
+    }
 
-.floating-sidebar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-}
+    .sidebar-chapters a:hover .chapter-number-badge {
+        background: rgba(255, 255, 255, 0.4);
+    }
 
-.floating-sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
-}
+    /* Scrollbar styles for sidebar */
+    .floating-sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
 
-.chapter-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 30px;
-    margin-bottom: 40px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    border-left: 5px solid #6f42c1;
-    transition: all 0.3s ease;
-}
-.chapter-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-}
-.chapter-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #f0f0f0;
-}
-.chapter-number {
-    background: linear-gradient(135deg, #6f42c1, #e83e8c);
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.3rem;
-    margin-right: 20px;
-    flex-shrink: 0;
-}
-.chapter-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #2d3748;
-    margin: 0;
-}
-.section-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #6f42c1;
-    margin-top: 25px;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.code-block {
-    background: #1e1e1e;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 15px 0;
-    overflow-x: auto;
-}
-.code-block pre {
-    margin: 0;
-    color: #d4d4d4;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    line-height: 1.6;
-}
-.code-comment {
-    color: #6a9955;
-}
-.code-keyword {
-    color: #569cd6;
-}
-.code-string {
-    color: #ce9178;
-}
-.code-function {
-    color: #dcdcaa;
-}
-.code-number {
-    color: #b5cea8;
-}
-.explanation-box {
-    background: #f8f9fa;
-    border-left: 4px solid #6f42c1;
-    padding: 20px;
-    margin: 20px 0;
-    border-radius: 4px;
-}
-.key-points {
-    background: #e7f3ff;
-    border-left: 4px solid #0066cc;
-    padding: 15px 20px;
-    margin: 20px 0;
-    border-radius: 4px;
-}
-.key-points ul {
-    margin-bottom: 0;
-    padding-left: 20px;
-}
-.output-box {
-    background: #f0f0f0;
-    border: 1px solid #d0d0d0;
-    border-radius: 6px;
-    padding: 15px;
-    margin: 15px 0;
-    font-family: 'Courier New', monospace;
-}
-.badge-ml {
-    background: linear-gradient(135deg, #6f42c1, #e83e8c);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-.badge-hands-on {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-.image-placeholder {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px;
-    padding: 40px;
-    text-align: center;
-    color: white;
-    margin: 20px 0;
-    min-height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-.concept-diagram {
-    background: white;
-    border: 2px solid #6f42c1;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
-    text-align: center;
-}
+    .floating-sidebar::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+
+    .floating-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+    }
+
+    .floating-sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    .chapter-card {
+        background: #ffffff;
+        border-radius: 16px;
+        /* Slightly more rounded */
+        padding: 40px;
+        /* More padding */
+        margin-bottom: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        /* Softer shadow */
+        border-left: 5px solid #6f42c1;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .chapter-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .chapter-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .chapter-number {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+        color: white;
+        width: 60px;
+        /* Slightly larger */
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin-right: 25px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 10px rgba(111, 66, 193, 0.3);
+    }
+
+    .chapter-title {
+        font-size: 2rem;
+        /* Larger */
+        font-weight: 800;
+        color: #1a202c;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #553c9a;
+        margin-top: 35px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .code-block {
+        background: #282c34;
+        /* Darker more standard code bg */
+        border-radius: 10px;
+        padding: 25px;
+        margin: 20px 0;
+        overflow-x: auto;
+        position: relative;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .code-block pre {
+        margin: 0;
+        color: #abb2bf;
+        font-family: 'Fira Code', 'Consolas', 'Courier New', monospace;
+        /* Better font stack */
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .code-comment {
+        color: #5c6370;
+        font-style: italic;
+    }
+
+    .code-keyword {
+        color: #c678dd;
+        font-weight: bold;
+    }
+
+    .code-string {
+        color: #98c379;
+    }
+
+    .code-function {
+        color: #61afef;
+    }
+
+    .code-number {
+        color: #d19a66;
+    }
+
+    .explanation-box {
+        background: #f7fafc;
+        border-left: 4px solid #6f42c1;
+        padding: 25px;
+        margin: 25px 0;
+        border-radius: 0 8px 8px 0;
+        font-size: 1.05rem;
+    }
+
+    .key-points {
+        background: #ebf8ff;
+        border-left: 4px solid #3182ce;
+        padding: 25px;
+        margin: 25px 0;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .key-points ul {
+        margin-bottom: 0;
+        padding-left: 20px;
+    }
+
+    .key-points li {
+        margin-bottom: 8px;
+    }
+
+    .output-box {
+        background: #edf2f7;
+        border: 1px solid #cbd5e0;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 0.9rem;
+        color: #2d3748;
+    }
+
+    .badge-ml {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .badge-hands-on {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .image-placeholder {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        padding: 50px;
+        text-align: center;
+        color: white;
+        margin: 30px 0;
+        min-height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+    }
+
+    .concept-diagram {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 30px;
+        margin: 30px 0;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
 </style>
 
 <!-- Floating Sidebar Toggle Button -->
@@ -326,14 +397,15 @@
         </div>
 
         <div class="explanation-box">
-            <p><strong>What you'll learn:</strong> Set up your Python environment, write your first programs, and understand the fundamentals of artificial intelligence and machine learning.</p>
+            <p><strong>What you'll learn:</strong> Set up your Python environment, write your first programs, and
+                understand the fundamentals of artificial intelligence and machine learning.</p>
         </div>
 
         <div class="section-title">
             <i class="fas fa-download"></i> Installing Python and Setting Up Environment
         </div>
         <p>Python is available for all major operating systems. Let's get started:</p>
-        
+
         <div class="key-points">
             <strong>Key Steps:</strong>
             <ul>
@@ -344,7 +416,7 @@
         </div>
 
         <div class="code-block">
-<pre><code><span class="code-comment"># Check Python version</span>
+            <pre><code><span class="code-comment"># Check Python version</span>
 python --version
 
 <span class="code-comment"># Install Jupyter Notebook</span>
@@ -358,9 +430,9 @@ jupyter notebook
         <div class="section-title">
             <i class="fas fa-code"></i> Your First Python Program <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># hello_world.py - Your first Python program</span>
+            <pre><code><span class="code-comment"># hello_world.py - Your first Python program</span>
 <span class="code-keyword">print</span>(<span class="code-string">"Hello, World!"</span>)
 <span class="code-keyword">print</span>(<span class="code-string">"Welcome to ML using Python"</span>)
 
@@ -382,39 +454,43 @@ y = <span class="code-number">3</span>
         </div>
 
         <div class="output-box">
-<strong>Output:</strong>
-Hello, World!
-Welcome to ML using Python
-My name is Alice, I am 25 years old
-My height is 5.6 feet
-Sum: 13
-Product: 30
-Division: 3.3333333333333335
+            <strong>Output:</strong>
+            Hello, World!
+            Welcome to ML using Python
+            My name is Alice, I am 25 years old
+            My height is 5.6 feet
+            Sum: 13
+            Product: 30
+            Division: 3.3333333333333335
         </div>
 
         <div class="section-title">
             <i class="fas fa-robot"></i> Overview of AI, ML, and Deep Learning
         </div>
-        
+
         <div class="concept-diagram">
             <h4>AI Hierarchy</h4>
             <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 20px;">
                 <div style="text-align: center;">
-                    <div style="width: 150px; height: 150px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin: auto;">
+                    <div
+                        style="width: 150px; height: 150px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin: auto;">
                         <strong>AI</strong>
                     </div>
-                    <p style="margin-top: 10px;">Artificial Intelligence<br><small>Machines mimicking human intelligence</small></p>
+                    <p style="margin-top: 10px;">Artificial Intelligence<br><small>Machines mimicking human
+                            intelligence</small></p>
                 </div>
                 <div style="font-size: 2rem; color: #6f42c1;">⊃</div>
                 <div style="text-align: center;">
-                    <div style="width: 120px; height: 120px; background: #764ba2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin: auto;">
+                    <div
+                        style="width: 120px; height: 120px; background: #764ba2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin: auto;">
                         <strong>ML</strong>
                     </div>
                     <p style="margin-top: 10px;">Machine Learning<br><small>Learning from data</small></p>
                 </div>
                 <div style="font-size: 2rem; color: #6f42c1;">⊃</div>
                 <div style="text-align: center;">
-                    <div style="width: 90px; height: 90px; background: #e83e8c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin: auto;">
+                    <div
+                        style="width: 90px; height: 90px; background: #e83e8c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin: auto;">
                         <strong>DL</strong>
                     </div>
                     <p style="margin-top: 10px;">Deep Learning<br><small>Neural networks</small></p>
@@ -425,20 +501,24 @@ Division: 3.3333333333333335
         <div class="explanation-box">
             <strong>Understanding the Hierarchy:</strong>
             <ul>
-                <li><strong>Artificial Intelligence (AI):</strong> Machines performing tasks that typically require human intelligence (reasoning, learning, problem-solving)</li>
-                <li><strong>Machine Learning (ML):</strong> Subset of AI where systems learn from data without explicit programming</li>
-                <li><strong>Deep Learning (DL):</strong> Subset of ML using neural networks with multiple layers to learn complex patterns</li>
+                <li><strong>Artificial Intelligence (AI):</strong> Machines performing tasks that typically require
+                    human intelligence (reasoning, learning, problem-solving)</li>
+                <li><strong>Machine Learning (ML):</strong> Subset of AI where systems learn from data without explicit
+                    programming</li>
+                <li><strong>Deep Learning (DL):</strong> Subset of ML using neural networks with multiple layers to
+                    learn complex patterns</li>
             </ul>
         </div>
 
         <div class="section-title">
             <i class="fab fa-python"></i> Why Python for AI?
         </div>
-        
+
         <div class="key-points">
             <strong>Python's Advantages in AI/ML:</strong>
             <ul>
-                <li><strong>Simple Syntax:</strong> Easy to learn and read, allowing focus on algorithms rather than syntax</li>
+                <li><strong>Simple Syntax:</strong> Easy to learn and read, allowing focus on algorithms rather than
+                    syntax</li>
                 <li><strong>Rich Libraries:</strong> NumPy, Pandas, Scikit-learn, TensorFlow, PyTorch</li>
                 <li><strong>Community Support:</strong> Massive ecosystem and extensive documentation</li>
                 <li><strong>Versatility:</strong> From data processing to web deployment</li>
@@ -449,9 +529,9 @@ Division: 3.3333333333333335
         <div class="section-title">
             <i class="fas fa-book"></i> Key AI Libraries Introduction
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Installing essential AI/ML libraries</span>
+            <pre><code><span class="code-comment"># Installing essential AI/ML libraries</span>
 pip install numpy pandas scikit-learn matplotlib seaborn
 pip install tensorflow  <span class="code-comment"># For deep learning</span>
 pip install torch  <span class="code-comment"># Alternative: PyTorch</span>
@@ -478,9 +558,9 @@ pip install torch  <span class="code-comment"># Alternative: PyTorch</span>
         <div class="section-title">
             <i class="fas fa-database"></i> Variables and Basic Data Types
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Integer</span>
+            <pre><code><span class="code-comment"># Integer</span>
 age = <span class="code-number">25</span>
 year = <span class="code-number">2024</span>
 <span class="code-keyword">print</span>(<span class="code-keyword">type</span>(age))  <span class="code-comment"># &lt;class 'int'&gt;</span>
@@ -512,9 +592,9 @@ num_int = <span class="code-keyword">int</span>(num_str)
         <div class="section-title">
             <i class="fas fa-keyboard"></i> Input/Output Functions <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Getting user input</span>
+            <pre><code><span class="code-comment"># Getting user input</span>
 name = <span class="code-keyword">input</span>(<span class="code-string">"Enter your name: "</span>)
 age = <span class="code-keyword">int</span>(<span class="code-keyword">input</span>(<span class="code-string">"Enter your age: "</span>))
 
@@ -536,9 +616,9 @@ price = <span class="code-number">19.99</span>
         <div class="section-title">
             <i class="fas fa-calculator"></i> Operators
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Arithmetic operators</span>
+            <pre><code><span class="code-comment"># Arithmetic operators</span>
 a, b = <span class="code-number">10</span>, <span class="code-number">3</span>
 <span class="code-keyword">print</span>(<span class="code-string">f"Addition: {a + b}"</span>)        <span class="code-comment"># 13</span>
 <span class="code-keyword">print</span>(<span class="code-string">f"Subtraction: {a - b}"</span>)     <span class="code-comment"># 7</span>
@@ -566,9 +646,9 @@ p, q = <span class="code-keyword">True</span>, <span class="code-keyword">False<
         <div class="section-title">
             <i class="fas fa-code-branch"></i> Control Structures: if, elif, else
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Simple if statement</span>
+            <pre><code><span class="code-comment"># Simple if statement</span>
 temperature = <span class="code-number">25</span>
 
 <span class="code-keyword">if</span> temperature &gt; <span class="code-number">30</span>:
@@ -601,9 +681,9 @@ score = <span class="code-number">85</span>
         <div class="section-title">
             <i class="fas fa-redo"></i> Loops: for and while <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># For loop - iterate over a range</span>
+            <pre><code><span class="code-comment"># For loop - iterate over a range</span>
 <span class="code-keyword">print</span>(<span class="code-string">"Counting from 1 to 5:"</span>)
 <span class="code-keyword">for</span> i <span class="code-keyword">in</span> <span class="code-keyword">range</span>(<span class="code-number">1</span>, <span class="code-number">6</span>):
     <span class="code-keyword">print</span>(i, end=<span class="code-string">" "</span>)
@@ -641,9 +721,9 @@ count = <span class="code-number">1</span>
         <div class="section-title">
             <i class="fas fa-function"></i> Defining and Calling Functions
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Simple function</span>
+            <pre><code><span class="code-comment"># Simple function</span>
 <span class="code-keyword">def</span> <span class="code-function">greet</span>():
     <span class="code-keyword">print</span>(<span class="code-string">"Hello, World!"</span>)
 
@@ -673,11 +753,12 @@ sum_val, diff, prod, quot = <span class="code-function">calculate</span>(<span c
         </div>
 
         <div class="section-title">
-            <i class="fas fa-arrow-right"></i> Parameters, Arguments, and Default Values <span class="badge-hands-on">Hands-on</span>
+            <i class="fas fa-arrow-right"></i> Parameters, Arguments, and Default Values <span
+                class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Default parameters</span>
+            <pre><code><span class="code-comment"># Default parameters</span>
 <span class="code-keyword">def</span> <span class="code-function">power</span>(base, exponent=<span class="code-number">2</span>):
     <span class="code-keyword">return</span> base ** exponent
 
@@ -706,9 +787,9 @@ sum_val, diff, prod, quot = <span class="code-function">calculate</span>(<span c
         <div class="section-title">
             <i class="fas fa-globe"></i> Variable Scope (Local vs Global)
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Global variable</span>
+            <pre><code><span class="code-comment"># Global variable</span>
 global_var = <span class="code-number">100</span>
 
 <span class="code-keyword">def</span> <span class="code-function">test_scope</span>():
@@ -737,9 +818,9 @@ counter = <span class="code-number">0</span>
         <div class="section-title">
             <i class="fas fa-recycle"></i> Recursion Basics
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Factorial using recursion</span>
+            <pre><code><span class="code-comment"># Factorial using recursion</span>
 <span class="code-keyword">def</span> <span class="code-function">factorial</span>(n):
     <span class="code-keyword">if</span> n == <span class="code-number">0</span> <span class="code-keyword">or</span> n == <span class="code-number">1</span>:
         <span class="code-keyword">return</span> <span class="code-number">1</span>
@@ -764,9 +845,9 @@ counter = <span class="code-number">0</span>
         <div class="section-title">
             <i class="fas fa-bolt"></i> Lambda Functions
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Lambda function syntax: lambda arguments: expression</span>
+            <pre><code><span class="code-comment"># Lambda function syntax: lambda arguments: expression</span>
 
 <span class="code-comment"># Simple lambda function</span>
 square = <span class="code-keyword">lambda</span> x: x ** <span class="code-number">2</span>
@@ -796,11 +877,12 @@ even_numbers = <span class="code-keyword">list</span>(<span class="code-keyword"
         </div>
 
         <div class="section-title">
-            <i class="fas fa-list"></i> Lists - Creation, Access, Modification <span class="badge-hands-on">Hands-on</span>
+            <i class="fas fa-list"></i> Lists - Creation, Access, Modification <span
+                class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Creating lists</span>
+            <pre><code><span class="code-comment"># Creating lists</span>
 fruits = [<span class="code-string">"apple"</span>, <span class="code-string">"banana"</span>, <span class="code-string">"cherry"</span>]
 numbers = [<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>]
 mixed = [<span class="code-number">1</span>, <span class="code-string">"hello"</span>, <span class="code-number">3.14</span>, <span class="code-keyword">True</span>]
@@ -837,9 +919,9 @@ numbers.reverse()               <span class="code-comment"># Reverse in place</s
         <div class="section-title">
             <i class="fas fa-lock"></i> Tuples - Immutability and Use Cases
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Creating tuples (immutable - cannot be changed)</span>
+            <pre><code><span class="code-comment"># Creating tuples (immutable - cannot be changed)</span>
 coordinates = (<span class="code-number">10</span>, <span class="code-number">20</span>)
 rgb_color = (<span class="code-number">255</span>, <span class="code-number">128</span>, <span class="code-number">0</span>)
 person = (<span class="code-string">"Alice"</span>, <span class="code-number">25</span>, <span class="code-string">"Engineer"</span>)
@@ -863,9 +945,9 @@ min_val, max_val = <span class="code-function">get_min_max</span>([<span class="
         <div class="section-title">
             <i class="fas fa-object-group"></i> Sets - Operations and Unique Data
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Creating sets (unordered, unique elements)</span>
+            <pre><code><span class="code-comment"># Creating sets (unordered, unique elements)</span>
 fruits = {<span class="code-string">"apple"</span>, <span class="code-string">"banana"</span>, <span class="code-string">"cherry"</span>}
 numbers = {<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">4</span>, <span class="code-number">5</span>}  <span class="code-comment"># Duplicates removed</span>
 <span class="code-keyword">print</span>(numbers)  <span class="code-comment"># {1, 2, 3, 4, 5}</span>
@@ -888,9 +970,9 @@ set_b = {<span class="code-number">3</span>, <span class="code-number">4</span>,
         <div class="section-title">
             <i class="fas fa-book-open"></i> Dictionaries - Key-Value Pairs <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Creating dictionaries</span>
+            <pre><code><span class="code-comment"># Creating dictionaries</span>
 student = {
     <span class="code-string">"name"</span>: <span class="code-string">"Alice"</span>,
     <span class="code-string">"age"</span>: <span class="code-number">20</span>,
@@ -921,9 +1003,9 @@ student[<span class="code-string">"email"</span>] = <span class="code-string">"a
         <div class="section-title">
             <i class="fas fa-magic"></i> Comprehensions for Efficient Code
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># List comprehension</span>
+            <pre><code><span class="code-comment"># List comprehension</span>
 squares = [x**<span class="code-number">2</span> <span class="code-keyword">for</span> x <span class="code-keyword">in</span> <span class="code-keyword">range</span>(<span class="code-number">1</span>, <span class="code-number">11</span>)]
 <span class="code-keyword">print</span>(<span class="code-string">f"Squares: {squares}"</span>)
 
@@ -951,9 +1033,9 @@ unique_chars = {char <span class="code-keyword">for</span> char <span class="cod
         <div class="section-title">
             <i class="fas fa-file"></i> Reading and Writing Files <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Writing to a file</span>
+            <pre><code><span class="code-comment"># Writing to a file</span>
 <span class="code-keyword">with</span> <span class="code-keyword">open</span>(<span class="code-string">"sample.txt"</span>, <span class="code-string">"w"</span>) <span class="code-keyword">as</span> file:
     file.write(<span class="code-string">"Hello, World!\n"</span>)
     file.write(<span class="code-string">"Welcome to Python file handling.\n"</span>)
@@ -997,9 +1079,9 @@ data = [
         <div class="section-title">
             <i class="fas fa-exclamation-circle"></i> Exception Handling
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Basic try-except</span>
+            <pre><code><span class="code-comment"># Basic try-except</span>
 <span class="code-keyword">try</span>:
     result = <span class="code-number">10</span> / <span class="code-number">0</span>
 <span class="code-keyword">except</span> <span class="code-keyword">ZeroDivisionError</span>:
@@ -1039,9 +1121,9 @@ data = [
         <div class="section-title">
             <i class="fas fa-puzzle-piece"></i> Modules and Packages
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Importing standard library modules</span>
+            <pre><code><span class="code-comment"># Importing standard library modules</span>
 <span class="code-keyword">import</span> math
 <span class="code-keyword">print</span>(math.pi)
 <span class="code-keyword">print</span>(math.sqrt(<span class="code-number">16</span>))
@@ -1086,9 +1168,9 @@ now = dt.datetime.now()
         <div class="section-title">
             <i class="fas fa-cube"></i> Classes and Objects <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Defining a class</span>
+            <pre><code><span class="code-comment"># Defining a class</span>
 <span class="code-keyword">class</span> <span class="code-function">Dog</span>:
     <span class="code-comment"># Constructor</span>
     <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>, name, age):
@@ -1114,9 +1196,9 @@ dog2 = <span class="code-function">Dog</span>(<span class="code-string">"Max"</s
         <div class="section-title">
             <i class="fas fa-sitemap"></i> Inheritance
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Parent class</span>
+            <pre><code><span class="code-comment"># Parent class</span>
 <span class="code-keyword">class</span> <span class="code-function">Animal</span>:
     <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>, name):
         <span class="code-keyword">self</span>.name = name
@@ -1150,9 +1232,9 @@ dog = <span class="code-function">Dog</span>(<span class="code-string">"Buddy"</
         <div class="section-title">
             <i class="fas fa-shapes"></i> Polymorphism and Encapsulation
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># Polymorphism example</span>
+            <pre><code><span class="code-comment"># Polymorphism example</span>
 <span class="code-keyword">def</span> <span class="code-function">animal_sound</span>(animal):
     <span class="code-keyword">print</span>(animal.<span class="code-function">speak</span>())
 
@@ -1203,9 +1285,9 @@ account.<span class="code-function">withdraw</span>(<span class="code-number">20
         <div class="section-title">
             <i class="fas fa-th"></i> NumPy Arrays <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+            <pre><code><span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
 
 <span class="code-comment"># Creating arrays</span>
 arr1 = np.array([<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>])
@@ -1247,9 +1329,9 @@ reshaped = arr.reshape(<span class="code-number">3</span>, <span class="code-num
         <div class="section-title">
             <i class="fas fa-table"></i> Pandas DataFrames <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+            <pre><code><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
 
 <span class="code-comment"># Creating DataFrames</span>
 data = {
@@ -1292,9 +1374,9 @@ grouped = df.groupby(<span class="code-string">'Age_Group'</span>)[<span class="
         <div class="section-title">
             <i class="fas fa-broom"></i> Data Cleaning and Processing
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+            <pre><code><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
 <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
 
 <span class="code-comment"># Handling missing data</span>
@@ -1338,9 +1420,9 @@ merged = pd.merge(df1, df2, on=<span class="code-string">'ID'</span>, how=<span 
         <div class="section-title">
             <i class="fas fa-chart-line"></i> Matplotlib Basics <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
+            <pre><code><span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
 <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
 
 <span class="code-comment"># Line plot</span>
@@ -1395,9 +1477,9 @@ plt.show()
         <div class="section-title">
             <i class="fas fa-palette"></i> Seaborn for Statistical Plots
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns
+            <pre><code><span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns
 <span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
 <span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
 
@@ -1450,18 +1532,19 @@ plt.show()
         <div class="section-title">
             <i class="fas fa-brain"></i> ML Concepts and Workflow
         </div>
-        
+
         <div class="explanation-box">
             <h5>Types of Machine Learning:</h5>
             <ul>
                 <li><strong>Supervised Learning:</strong> Learning from labeled data (classification, regression)</li>
-                <li><strong>Unsupervised Learning:</strong> Finding patterns in unlabeled data (clustering, dimensionality reduction)</li>
+                <li><strong>Unsupervised Learning:</strong> Finding patterns in unlabeled data (clustering,
+                    dimensionality reduction)</li>
                 <li><strong>Reinforcement Learning:</strong> Learning through reward/penalty system</li>
             </ul>
         </div>
 
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+            <pre><code><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
 <span class="code-keyword">from</span> sklearn.preprocessing <span class="code-keyword">import</span> StandardScaler
 <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
 
@@ -1492,9 +1575,9 @@ X_test_scaled = scaler.transform(X_test)
         <div class="section-title">
             <i class="fas fa-check-double"></i> Model Evaluation Metrics <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> accuracy_score, precision_score, recall_score, f1_score
+            <pre><code><span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> accuracy_score, precision_score, recall_score, f1_score
 <span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> confusion_matrix, classification_report
 <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
 
@@ -1526,9 +1609,9 @@ cm = <span class="code-function">confusion_matrix</span>(y_true, y_pred)
         <div class="section-title">
             <i class="fas fa-sync"></i> Cross-Validation
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> cross_val_score
+            <pre><code><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> cross_val_score
 <span class="code-keyword">from</span> sklearn.linear_model <span class="code-keyword">import</span> LogisticRegression
 <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
 
@@ -1558,9 +1641,9 @@ scores = <span class="code-function">cross_val_score</span>(model, X, y, cv=<spa
         <div class="section-title">
             <i class="fas fa-chart-line"></i> Linear Regression <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.linear_model <span class="code-keyword">import</span> LinearRegression
+            <pre><code><span class="code-keyword">from</span> sklearn.linear_model <span class="code-keyword">import</span> LinearRegression
 <span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
 <span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> mean_squared_error, r2_score
 <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
@@ -1595,9 +1678,9 @@ r2 = <span class="code-function">r2_score</span>(y_test, y_pred)
         <div class="section-title">
             <i class="fas fa-project-diagram"></i> Logistic Regression for Classification
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.linear_model <span class="code-keyword">import</span> LogisticRegression
+            <pre><code><span class="code-keyword">from</span> sklearn.linear_model <span class="code-keyword">import</span> LogisticRegression
 <span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
 <span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
 <span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> accuracy_score, classification_report
@@ -1631,9 +1714,9 @@ accuracy = <span class="code-function">accuracy_score</span>(y_test, y_pred)
         <div class="section-title">
             <i class="fas fa-tree"></i> Decision Trees and Random Forests <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.tree <span class="code-keyword">import</span> DecisionTreeClassifier
+            <pre><code><span class="code-keyword">from</span> sklearn.tree <span class="code-keyword">import</span> DecisionTreeClassifier
 <span class="code-keyword">from</span> sklearn.ensemble <span class="code-keyword">import</span> RandomForestClassifier
 <span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
 <span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
@@ -1671,9 +1754,9 @@ importances = rf_model.feature_importances_
         <div class="section-title">
             <i class="fas fa-sliders-h"></i> Support Vector Machines (SVM)
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.svm <span class="code-keyword">import</span> SVC
+            <pre><code><span class="code-keyword">from</span> sklearn.svm <span class="code-keyword">import</span> SVC
 <span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> make_classification
 <span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
 <span class="code-keyword">from</span> sklearn.preprocessing <span class="code-keyword">import</span> StandardScaler
@@ -1704,9 +1787,9 @@ kernels = [<span class="code-string">'linear'</span>, <span class="code-string">
         <div class="section-title">
             <i class="fas fa-cogs"></i> Hyperparameter Tuning with GridSearchCV
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> GridSearchCV
+            <pre><code><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> GridSearchCV
 <span class="code-keyword">from</span> sklearn.ensemble <span class="code-keyword">import</span> RandomForestClassifier
 <span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
 
@@ -1743,9 +1826,9 @@ grid_search.fit(X, y)
         <div class="section-title">
             <i class="fas fa-sitemap"></i> K-Means Clustering <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.cluster <span class="code-keyword">import</span> KMeans
+            <pre><code><span class="code-keyword">from</span> sklearn.cluster <span class="code-keyword">import</span> KMeans
 <span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> make_blobs
 <span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
 <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
@@ -1792,9 +1875,9 @@ plt.show()
         <div class="section-title">
             <i class="fas fa-compress"></i> Principal Component Analysis (PCA)
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.decomposition <span class="code-keyword">import</span> PCA
+            <pre><code><span class="code-keyword">from</span> sklearn.decomposition <span class="code-keyword">import</span> PCA
 <span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
 <span class="code-keyword">from</span> sklearn.preprocessing <span class="code-keyword">import</span> StandardScaler
 <span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
@@ -1833,9 +1916,9 @@ plt.show()
         <div class="section-title">
             <i class="fas fa-exclamation-triangle"></i> Anomaly Detection
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.ensemble <span class="code-keyword">import</span> IsolationForest
+            <pre><code><span class="code-keyword">from</span> sklearn.ensemble <span class="code-keyword">import</span> IsolationForest
 <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
 <span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
 
@@ -1871,7 +1954,7 @@ plt.show()
         <div class="section-title">
             <i class="fas fa-network-wired"></i> Neural Network Basics <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="explanation-box">
             <h5>Neural Network Components:</h5>
             <ul>
@@ -1882,9 +1965,9 @@ plt.show()
                 <li><strong>Optimizers:</strong> SGD, Adam, RMSprop</li>
             </ul>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">import</span> tensorflow <span class="code-keyword">as</span> tf
+            <pre><code><span class="code-keyword">import</span> tensorflow <span class="code-keyword">as</span> tf
 <span class="code-keyword">from</span> tensorflow <span class="code-keyword">import</span> keras
 <span class="code-keyword">from</span> tensorflow.keras <span class="code-keyword">import</span> layers
 <span class="code-keyword">from</span> sklearn.datasets <span class="code-keyword">import</span> load_iris
@@ -1941,9 +2024,9 @@ predictions = model.predict(X_test[:<span class="code-number">5</span>])
         <div class="section-title">
             <i class="fas fa-image"></i> Convolutional Neural Networks (CNN)
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">import</span> tensorflow <span class="code-keyword">as</span> tf
+            <pre><code><span class="code-keyword">import</span> tensorflow <span class="code-keyword">as</span> tf
 <span class="code-keyword">from</span> tensorflow <span class="code-keyword">import</span> keras
 <span class="code-keyword">from</span> tensorflow.keras <span class="code-keyword">import</span> layers
 
@@ -1994,9 +2077,9 @@ test_loss, test_acc = model.evaluate(X_test)
         <div class="section-title">
             <i class="fas fa-save"></i> Model Saving and Loading
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">import</span> tensorflow <span class="code-keyword">as</span> tf
+            <pre><code><span class="code-keyword">import</span> tensorflow <span class="code-keyword">as</span> tf
 <span class="code-keyword">from</span> tensorflow <span class="code-keyword">import</span> keras
 
 <span class="code-comment"># Save entire model</span>
@@ -2030,9 +2113,9 @@ loaded_model = keras.models.load_model(<span class="code-string">'saved_model/'<
         <div class="section-title">
             <i class="fas fa-text-width"></i> Text Preprocessing <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">import</span> nltk
+            <pre><code><span class="code-keyword">import</span> nltk
 <span class="code-keyword">from</span> nltk.tokenize <span class="code-keyword">import</span> word_tokenize, sent_tokenize
 <span class="code-keyword">from</span> nltk.corpus <span class="code-keyword">import</span> stopwords
 <span class="code-keyword">from</span> nltk.stem <span class="code-keyword">import</span> PorterStemmer, WordNetLemmatizer
@@ -2077,9 +2160,9 @@ lemmatized = [lemmatizer.lemmatize(word) <span class="code-keyword">for</span> w
         <div class="section-title">
             <i class="fas fa-database"></i> Feature Extraction: Bag of Words & TF-IDF
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> CountVectorizer, TfidfVectorizer
+            <pre><code><span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> CountVectorizer, TfidfVectorizer
 
 <span class="code-comment"># Sample documents</span>
 documents = [
@@ -2108,9 +2191,9 @@ X_tfidf = tfidf_vectorizer.fit_transform(documents)
         <div class="section-title">
             <i class="fas fa-smile"></i> Sentiment Analysis <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> TfidfVectorizer
+            <pre><code><span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> TfidfVectorizer
 <span class="code-keyword">from</span> sklearn.naive_bayes <span class="code-keyword">import</span> MultinomialNB
 <span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
 <span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> accuracy_score, classification_report
@@ -2168,7 +2251,7 @@ predictions = classifier.predict(new_vec)
         <div class="section-title">
             <i class="fas fa-project-diagram"></i> Project Planning & Structure
         </div>
-        
+
         <div class="explanation-box">
             <h5>Project Components:</h5>
             <ol>
@@ -2186,9 +2269,9 @@ predictions = classifier.predict(new_vec)
         <div class="section-title">
             <i class="fas fa-code"></i> Complete ML Pipeline Example <span class="badge-hands-on">Hands-on</span>
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># ml_pipeline.py - Complete ML Project Structure</span>
+            <pre><code><span class="code-comment"># ml_pipeline.py - Complete ML Project Structure</span>
 
 <span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
 <span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
@@ -2289,9 +2372,9 @@ predictions = classifier.predict(new_vec)
         <div class="section-title">
             <i class="fas fa-desktop"></i> Streamlit Deployment Example
         </div>
-        
+
         <div class="code-block">
-<pre><code><span class="code-comment"># app.py - Streamlit web application</span>
+            <pre><code><span class="code-comment"># app.py - Streamlit web application</span>
 
 <span class="code-keyword">import</span> streamlit <span class="code-keyword">as</span> st
 <span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
@@ -2340,7 +2423,7 @@ st.info(<span class="code-string">"💡 Adjust the sliders in the sidebar and cl
         <div class="section-title">
             <i class="fas fa-clipboard-check"></i> Project Best Practices
         </div>
-        
+
         <div class="key-points">
             <ul>
                 <li><strong>Version Control:</strong> Use Git for code management</li>
@@ -2384,79 +2467,79 @@ st.info(<span class="code-string">"💡 Adjust the sliders in the sidebar and cl
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.getElementById('chapterSidebar');
-    const toggle = document.getElementById('sidebarToggle');
-    const chapterLinks = document.querySelectorAll('.sidebar-chapters a');
-    
-    // Toggle sidebar (open by default, toggle to close/open)
-    toggle.addEventListener('click', function(e) {
-        e.stopPropagation(); // Prevent document click handler from firing
-        sidebar.classList.toggle('closed');
-        const icon = toggle.querySelector('i');
-        if (sidebar.classList.contains('closed')) {
-            icon.className = 'fas fa-list';
-        } else {
-            icon.className = 'fas fa-times';
-        }
-    });
-    
-    // Close sidebar when clicking a chapter link
-    chapterLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-            
-            if (targetElement) {
-                // Smooth scroll to chapter
-                targetElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-                
-                // Update active state
-                chapterLinks.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Don't auto-close sidebar anymore - keep it open for easy navigation
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('chapterSidebar');
+        const toggle = document.getElementById('sidebarToggle');
+        const chapterLinks = document.querySelectorAll('.sidebar-chapters a');
+
+        // Toggle sidebar (open by default, toggle to close/open)
+        toggle.addEventListener('click', function (e) {
+            e.stopPropagation(); // Prevent document click handler from firing
+            sidebar.classList.toggle('closed');
+            const icon = toggle.querySelector('i');
+            if (sidebar.classList.contains('closed')) {
+                icon.className = 'fas fa-list';
+            } else {
+                icon.className = 'fas fa-times';
             }
         });
-    });
-    
-    // Highlight active chapter on scroll
-    const observerOptions = {
-        root: null,
-        rootMargin: '-20% 0px -70% 0px',
-        threshold: 0
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.id;
-                chapterLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${id}`) {
-                        link.classList.add('active');
-                    }
-                });
-            }
+
+        // Close sidebar when clicking a chapter link
+        chapterLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    // Smooth scroll to chapter
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+                    // Update active state
+                    chapterLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Don't auto-close sidebar anymore - keep it open for easy navigation
+                }
+            });
         });
-    }, observerOptions);
-    
-    // Observe all chapter cards
-    document.querySelectorAll('.chapter-card').forEach(card => {
-        observer.observe(card);
+
+        // Highlight active chapter on scroll
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -70% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    chapterLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        // Observe all chapter cards
+        document.querySelectorAll('.chapter-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Optional: Close sidebar when clicking outside (removed to keep it open by default)
+        // Users can manually close using the toggle button if needed
+
+        // Prevent closing when clicking inside sidebar
+        sidebar.addEventListener('click', function (event) {
+            event.stopPropagation();
+        });
     });
-    
-    // Optional: Close sidebar when clicking outside (removed to keep it open by default)
-    // Users can manually close using the toggle button if needed
-    
-    // Prevent closing when clicking inside sidebar
-    sidebar.addEventListener('click', function(event) {
-        event.stopPropagation();
-    });
-});
 </script>
 {% endblock %}

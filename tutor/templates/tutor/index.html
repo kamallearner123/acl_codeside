@@ -1,0 +1,483 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --sidebar-bg: rgba(255, 255, 255, 0.85);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+        --active-color: #667eea;
+        --code-bg: #282c34;
+        --primary-text: #2d3748;
+        --secondary-text: #4a5568;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        color: var(--primary-text);
+        line-height: 1.6;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        letter-spacing: -0.02em;
+    }
+
+    .tutor-container {
+        display: flex;
+        gap: 30px;
+        padding-top: 30px;
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+        position: sticky;
+        top: 30px;
+        height: calc(100vh - 60px);
+        overflow-y: auto;
+        background: var(--sidebar-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 16px;
+        border: var(--glass-border);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        padding: 25px;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-title {
+        font-weight: 800;
+        margin-bottom: 25px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        font-size: 1.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    .nav-pills .nav-link {
+        border-radius: 8px;
+        color: var(--secondary-text);
+        font-weight: 500;
+        margin-bottom: 8px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        font-size: 0.95rem;
+    }
+
+    .nav-pills .nav-link i {
+        margin-right: 12px;
+        font-size: 0.9em;
+        opacity: 0.8;
+    }
+
+    .nav-pills .nav-link:hover {
+        background: rgba(102, 126, 234, 0.08);
+        color: var(--active-color);
+        transform: translateX(4px);
+    }
+
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        font-weight: 600;
+    }
+
+    /* Content Area */
+    .content-area {
+        flex: 1;
+        padding-bottom: 60px;
+    }
+
+    .section-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        border: var(--glass-border);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        padding: 40px;
+        margin-bottom: 40px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .section-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-header {
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-weight: 800;
+        color: #1a202c;
+        display: flex;
+        align-items: center;
+        font-size: 2rem;
+        letter-spacing: -1px;
+    }
+
+    .section-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        color: #4a5568;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .topic-block {
+        margin-bottom: 40px;
+    }
+
+    .topic-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 15px;
+        border-left: 5px solid #667eea;
+        padding-left: 15px;
+    }
+
+    .topic-content {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: #4a5568;
+        margin-bottom: 20px;
+    }
+
+    .topic-content p {
+        margin-bottom: 1rem;
+    }
+
+    .topic-content strong {
+        color: #2d3748;
+        font-weight: 600;
+    }
+
+    /* Code Box Styling */
+    .code-wrapper {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        margin: 25px 0;
+        border: 1px solid #3e4451;
+        background: #21252b;
+    }
+
+    .code-header {
+        background: #21252b;
+        color: #9da5b4;
+        padding: 10px 20px;
+        font-size: 0.85rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #181a1f;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+    }
+
+    .circle-btns {
+        display: flex;
+        gap: 8px;
+    }
+
+    .circle-btn {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .red {
+        background: #ff5f56;
+    }
+
+    .yellow {
+        background: #ffbd2e;
+    }
+
+    .green {
+        background: #27c93f;
+    }
+
+    .CodeMirror {
+        height: auto;
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        /* Padding removed to prevent gutter overlap issues */
+    }
+
+    .CodeMirror-lines {
+        padding: 15px 0;
+        /* Add vertical padding safely */
+    }
+
+    /* Output Console Styling */
+    .output-console {
+        background-color: #1e1e1e;
+        color: #d4d4d4;
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 0.9rem;
+        padding: 20px;
+        border-top: 1px solid #333;
+        border-radius: 0 0 12px 12px;
+        margin-top: 0;
+        min-height: 60px;
+        white-space: pre-wrap;
+        display: none;
+        /* Hidden by default until run */
+    }
+
+    .run-btn {
+        position: absolute;
+        top: 8px;
+        right: 15px;
+        z-index: 10;
+        padding: 6px 16px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #27c93f, #2ecc71);
+        border: none;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        opacity: 0.9;
+        transition: all 0.2s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .run-btn:hover {
+        opacity: 1;
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(39, 201, 63, 0.4);
+    }
+
+    .run-btn i {
+        margin-right: 6px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 991px) {
+        .tutor-container {
+            flex-direction: column;
+            padding-top: 15px;
+        }
+
+        .sidebar {
+            position: relative;
+            height: auto;
+            margin-bottom: 25px;
+            max-height: 350px;
+            top: 0;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid tutor-container">
+
+    <!-- Sidebar Navigation -->
+    <div class="col-lg-3">
+        <div class="sidebar">
+            <h4 class="sidebar-title"><i class="fab fa-python me-2"></i>Python Tutor</h4>
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                {% for section in curriculum %}
+                <a class="nav-link {% if forloop.first %}active{% endif %}" id="v-pills-{{ section.id }}-tab"
+                    data-bs-toggle="pill" href="#v-pills-{{ section.id }}" role="tab"
+                    aria-controls="v-pills-{{ section.id }}"
+                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                    <i class="fas fa-book-open"></i>
+                    {{ section.title }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-9 content-area">
+        <div class="tab-content" id="v-pills-tabContent">
+            {% for section in curriculum %}
+            <div class="tab-pane fade show {% if forloop.first %}active{% endif %}" id="v-pills-{{ section.id }}"
+                role="tabpanel" aria-labelledby="v-pills-{{ section.id }}-tab">
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="section-icon"><i class="fas fa-graduation-cap"></i></span>
+                            {{ section.title }}
+                        </h2>
+                        <p class="text-muted mt-2">{{ section.description }}</p>
+                    </div>
+
+                    {% for topic in section.topics %}
+                    <div class="topic-block">
+                        <h3 class="topic-title">{{ topic.title }}</h3>
+                        <div class="topic-content">
+                            {{ topic.content|safe }}
+                        </div>
+
+                        {% if topic.code %}
+                        <div class="code-wrapper">
+                            <button class="run-btn run-code-btn" data-id="{{ section.id }}-{{ forloop.counter }}">
+                                <i class="fas fa-play"></i> Run Code
+                            </button>
+                            <div class="code-header">
+                                <span class="circle-btns">
+                                    <span class="circle-btn red"></span>
+                                    <span class="circle-btn yellow"></span>
+                                    <span class="circle-btn green"></span>
+                                </span>
+                                <span>Python</span>
+                            </div>
+                            <textarea id="code-{{ section.id }}-{{ forloop.counter }}"
+                                class="codemirror-editor">{{ topic.code }}</textarea>
+                            <div id="output-{{ section.id }}-{{ forloop.counter }}" class="output-console"></div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="text-end mt-4">
+                        {% if not forloop.last %}
+                        <!-- Next Button logic could go here, for now just a placeholder -->
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Initialize CodeMirror for all textareas with class 'codemirror-editor'
+        const textareas = document.querySelectorAll('.codemirror-editor');
+        const editors = {}; // Store editor instances
+
+        textareas.forEach(textarea => {
+            const editor = CodeMirror.fromTextArea(textarea, {
+                mode: "python",
+                theme: "monokai",
+                lineNumbers: true,
+                readOnly: false, // Make editable
+                viewportMargin: Infinity,
+                indentUnit: 4
+            });
+            // Store the editor instance using the textarea's ID
+            editors[textarea.id] = editor;
+        });
+
+        // Trigger refresh when a new tab is shown to fix CodeMirror rendering issues
+        const tabLinks = document.querySelectorAll('a[data-bs-toggle="pill"]');
+        tabLinks.forEach(link => {
+            link.addEventListener('shown.bs.tab', function (event) {
+                // Refresh all editors to ensure they render correctly in the new tab
+                for (const key in editors) {
+                    editors[key].refresh();
+                }
+            });
+        });
+
+        // Run Code Logic
+        const runButtons = document.querySelectorAll('.run-code-btn');
+        runButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const uniqueId = this.getAttribute('data-id');
+                const outputConsole = document.getElementById(`output-${uniqueId}`);
+                const editorId = `code-${uniqueId}`;
+                const editor = editors[editorId];
+
+                if (!editor) {
+                    console.error("Editor not found for", editorId);
+                    return;
+                }
+
+                const code = editor.getValue();
+
+                // Show loading state
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
+                this.disabled = true;
+                outputConsole.style.display = 'block';
+                outputConsole.textContent = 'Executing...';
+                outputConsole.style.color = '#ccc';
+
+                fetch("{% url 'tutor:run_code' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code: code })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            outputConsole.style.color = '#d4d4d4'; // Default text color
+                            outputConsole.textContent = data.output || "No output returned.";
+                        } else {
+                            outputConsole.style.color = '#ff6b6b'; // Error color
+                            outputConsole.textContent = data.output;
+                        }
+                    })
+                    .catch(error => {
+                        outputConsole.style.color = '#ff6b6b';
+                        outputConsole.textContent = "Network Error: " + error;
+                    })
+                    .finally(() => {
+                        // Reset button
+                        this.innerHTML = '<i class="fas fa-play"></i> Run Code';
+                        this.disabled = false;
+                    });
+            });
+        });
+
+        // Add smooth scrolling for navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                // Ensure target element is shown (for tabs)
+                const targetId = link.getAttribute('href');
+                if (targetId.startsWith('#')) {
+                    // Bootstrap handles the tab switching, we handle the scroll if needed
+                    setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 50);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

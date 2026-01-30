@@ -12,7 +12,8 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">{{ question.title }}</h4>
-                        <span class="badge bg-{% if question.difficulty == 'easy' %}success{% elif question.difficulty == 'medium' %}warning{% else %}danger{% endif %} fs-6">
+                        <span
+                            class="badge bg-{% if question.difficulty == 'easy' %}success{% elif question.difficulty == 'medium' %}warning{% else %}danger{% endif %} fs-6">
                             {{ question.get_difficulty_display }}
                         </span>
                     </div>
@@ -23,7 +24,7 @@
                         <div class="mb-4">
                             {{ question.description|linebreaks }}
                         </div>
-                        
+
                         <h6>Example:</h6>
                         <div class="mb-3">
                             <strong>Input:</strong>
@@ -31,62 +32,76 @@
                             <strong>Output:</strong>
                             <pre class="bg-light p-2 rounded"><code>{{ question.example_output }}</code></pre>
                         </div>
-                        
+
                         {% if question.constraints %}
-                            <h6>Constraints:</h6>
-                            <div class="mb-3">
-                                {{ question.constraints|linebreaks }}
-                            </div>
+                        <h6>Constraints:</h6>
+                        <div class="mb-3">
+                            {{ question.constraints|linebreaks }}
+                        </div>
                         {% endif %}
-                        
+
                         {% if question.hints %}
-                            <h6>Hints:</h6>
-                            <div class="mb-3">
-                                {{ question.hints|linebreaks }}
-                            </div>
+                        <h6>Hints:</h6>
+                        <div class="mb-3">
+                            {{ question.hints|linebreaks }}
+                        </div>
                         {% endif %}
-                        
+
                         <div class="row mt-4">
                             <div class="col-md-6">
                                 <small class="text-muted">
-                                    <i class="fas fa-chart-line"></i> 
+                                    <i class="fas fa-chart-line"></i>
                                     Acceptance: {{ question.success_rate }}%
                                 </small>
                             </div>
                             <div class="col-md-6">
                                 <small class="text-muted">
-                                    <i class="fas fa-users"></i> 
+                                    <i class="fas fa-users"></i>
                                     Total Submissions: {{ question.total_submissions }}
                                 </small>
                             </div>
                         </div>
-                        
+
                         {% if question.tags.all %}
-                            <div class="mt-3">
-                                <h6>Tags:</h6>
-                                {% for tag in question.tags.all %}
-                                    <span class="badge bg-secondary me-1">{{ tag.name }}</span>
-                                {% endfor %}
-                            </div>
+                        <div class="mt-3">
+                            <h6>Tags:</h6>
+                            {% for tag in question.tags.all %}
+                            <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- Code Editor and Submission -->
         <div class="col-lg-6">
             <div class="card h-100">
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs" id="codeTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="code-tab" data-bs-toggle="tab" data-bs-target="#code" type="button" role="tab">
+                            <button class="nav-link active" id="code-tab" data-bs-toggle="tab" data-bs-target="#code"
+                                type="button" role="tab">
                                 <i class="fas fa-code"></i> Code
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="submissions-tab" data-bs-toggle="tab" data-bs-target="#submissions" type="button" role="tab">
+                            <button class="nav-link" id="submissions-tab" data-bs-toggle="tab"
+                                data-bs-target="#submissions" type="button" role="tab">
                                 <i class="fas fa-history"></i> My Submissions
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="editorial-tab" data-bs-toggle="tab" data-bs-target="#editorial"
+                                type="button" role="tab">
+                                <i class="fas fa-book-open"></i> Editorial
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="discussion-tab" data-bs-toggle="tab"
+                                data-bs-target="#discussion" type="button" role="tab">
+                                <i class="fas fa-comments"></i> Discussion
                             </button>
                         </li>
                     </ul>
@@ -95,15 +110,37 @@
                     <div class="tab-content h-100">
                         <!-- Code Tab -->
                         <div class="tab-pane fade show active h-100" id="code" role="tabpanel">
-                            <form id="submission-form" method="post" action="{% url 'questions:submit' question.slug %}" class="h-100 d-flex flex-column">
+                            <form id="submission-form" method="post" action="{% url 'questions:submit' question.slug %}"
+                                class="h-100 d-flex flex-column">
                                 {% csrf_token %}
-                                <div class="flex-grow-1 p-3">
-                                    <div class="mb-3">
-                                        <label for="code-editor" class="form-label">
-                                            <i class="fas fa-code"></i> Python Solution:
-                                        </label>
-                                        <textarea name="code" id="code-editor" class="form-control" rows="20">{{ question.template_code }}</textarea>
+                                <div class="editor-settings p-2 bg-light border-bottom d-flex align-items-center gap-2">
+                                    <div class="input-group input-group-sm w-auto">
+                                        <label class="input-group-text"><i class="fas fa-palette"></i></label>
+                                        <select class="form-select" id="editor-theme">
+                                            <option value="monokai">Monokai</option>
+                                            <option value="solarized dark">Solarized Dark</option>
+                                            <option value="solarized light">Solarized Light</option>
+                                            <option value="material">Material</option>
+                                            <option value="default">Default</option>
+                                        </select>
                                     </div>
+                                    <div class="input-group input-group-sm w-auto">
+                                        <label class="input-group-text"><i class="fas fa-font"></i></label>
+                                        <select class="form-select" id="editor-font-size">
+                                            <option value="12px">12px</option>
+                                            <option value="14px" selected>14px</option>
+                                            <option value="16px">16px</option>
+                                            <option value="18px">18px</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-auto" id="reset-code"
+                                        title="Reset Code">
+                                        <i class="fas fa-sync-alt"></i> Reset
+                                    </button>
+                                </div>
+                                <div class="flex-grow-1 p-0">
+                                    <textarea name="code" id="code-editor"
+                                        class="form-control">{{ question.template_code }}</textarea>
                                 </div>
                                 <div class="p-3 border-top">
                                     <div class="d-flex justify-content-between">
@@ -114,51 +151,119 @@
                                             <i class="fas fa-paper-plane"></i> Submit Solution
                                         </button>
                                     </div>
-                                    
+
                                     <!-- Results -->
                                     <div id="test-results" class="mt-3" style="display: none;"></div>
                                 </div>
                             </form>
                         </div>
-                        
+
                         <!-- Submissions Tab -->
                         <div class="tab-pane fade" id="submissions" role="tabpanel">
                             <div class="p-3">
                                 <h6>Recent Submissions for this Problem</h6>
                                 {% if user_submissions %}
-                                    <div class="list-group">
-                                        {% for submission in user_submissions %}
-                                            <div class="list-group-item">
-                                                <div class="d-flex w-100 justify-content-between">
-                                                    <h6 class="mb-1">
-                                                        <span class="badge bg-{% if submission.status == 'accepted' %}success{% elif submission.status == 'wrong_answer' %}danger{% else %}warning{% endif %}">
-                                                            {{ submission.get_status_display }}
-                                                        </span>
-                                                    </h6>
-                                                    <small>{{ submission.submitted_at|timesince }} ago</small>
-                                                </div>
-                                                <p class="mb-1">
-                                                    {% if submission.test_cases_passed %}
-                                                        Tests passed: {{ submission.test_cases_passed }}/{{ submission.total_test_cases }}
-                                                    {% endif %}
-                                                    {% if submission.runtime %}
-                                                        | Runtime: {{ submission.runtime }}s
-                                                    {% endif %}
-                                                </p>
-                                                {% if submission.error_message %}
-                                                    <small class="text-danger">{{ submission.error_message|truncatechars:100 }}</small>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
+                                <div class="list-group">
+                                    {% for submission in user_submissions %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">
+                                                <span
+                                                    class="badge bg-{% if submission.status == 'accepted' %}success{% elif submission.status == 'wrong_answer' %}danger{% else %}warning{% endif %}">
+                                                    {{ submission.get_status_display }}
+                                                </span>
+                                            </h6>
+                                            <small>{{ submission.submitted_at|timesince }} ago</small>
+                                        </div>
+                                        <p class="mb-1">
+                                            {% if submission.test_cases_passed %}
+                                            Tests passed: {{ submission.test_cases_passed }}/{{
+                                            submission.total_test_cases }}
+                                            {% endif %}
+                                            {% if submission.runtime %}
+                                            | Runtime: {{ submission.runtime }}s
+                                            {% endif %}
+                                        </p>
+                                        {% if submission.error_message %}
+                                        <small class="text-danger">{{ submission.error_message|truncatechars:100
+                                            }}</small>
+                                        {% endif %}
                                     </div>
-                                    <div class="text-center mt-3">
-                                        <a href="{% url 'submissions:my_submissions' %}" class="btn btn-outline-primary btn-sm">
-                                            View All Submissions
-                                        </a>
-                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'submissions:my_submissions' %}"
+                                        class="btn btn-outline-primary btn-sm">
+                                        View All Submissions
+                                    </a>
+                                </div>
                                 {% else %}
-                                    <p class="text-muted">No submissions yet for this problem.</p>
+                                <p class="text-muted">No submissions yet for this problem.</p>
                                 {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Editorial Tab -->
+                        <div class="tab-pane fade" id="editorial" role="tabpanel">
+                            <div class="p-3">
+                                {% if question.editorial %}
+                                <div class="editorial-content">
+                                    {{ question.editorial.content|linebreaks }}
+
+                                    {% if question.editorial.solution_code %}
+                                    <h6 class="mt-4">Solution Code:</h6>
+                                    <pre
+                                        class="bg-light p-3 rounded"><code>{{ question.editorial.solution_code }}</code></pre>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                <p class="text-muted">No editorial available for this problem yet.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Discussion Tab -->
+                        <div class="tab-pane fade" id="discussion" role="tabpanel">
+                            <div class="p-3">
+                                <h5>Discussion</h5>
+                                <form method="post" action="{% url 'questions:post_comment' question.slug %}"
+                                    class="mb-4">
+                                    {% csrf_token %}
+                                    {{ comment_form|crispy }}
+                                    <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+                                </form>
+
+                                <div class="comments-list">
+                                    {% for comment in comments %}
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between">
+                                                <h6 class="card-title">{{ comment.user.username }}</h6>
+                                                <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                                            </div>
+                                            <p class="card-text">{{ comment.content }}</p>
+
+                                            <!-- Replies -->
+                                            {% for reply in comment.replies.all %}
+                                            <div class="ms-4 card mt-2 bg-light">
+                                                <div class="card-body py-2">
+                                                    <div class="d-flex justify-content-between">
+                                                        <small><strong>{{ reply.user.username }}</strong></small>
+                                                        <small class="text-muted">{{ reply.created_at|timesince }}
+                                                            ago</small>
+                                                    </div>
+                                                    <p class="card-text small mb-0">{{ reply.content }}</p>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+
+                                            <!-- Reply button/form would go here -->
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <p class="text-muted">No comments yet. Be the first to start the discussion!</p>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -169,84 +274,120 @@
 </div>
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/solarized.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/material.min.css">
+<style>
+    .CodeMirror {
+        height: 500px;
+        font-size: 14px;
+    }
+
+    .editor-settings {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+</style>
+{% endblock %}
+
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize CodeMirror
-    var editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
-        mode: 'python',
-        theme: 'monokai',
-        lineNumbers: true,
-        indentUnit: 4,
-        lineWrapping: true,
-        autoCloseBrackets: true,
-        matchBrackets: true
-    });
-    
-    // Handle form submission
-    document.getElementById('submission-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData();
-        formData.append('code', editor.getValue());
-        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
-        
-        const submitBtn = document.getElementById('submit-solution');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-        submitBtn.disabled = true;
-        
-        fetch(this.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            showResults(data);
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize CodeMirror
+        const editorTextarea = document.getElementById('code-editor');
+        var editor = CodeMirror.fromTextArea(editorTextarea, {
+            mode: 'python',
+            theme: 'monokai',
+            lineNumbers: true,
+            indentUnit: 4,
+            lineWrapping: true,
+            autoCloseBrackets: true,
+            matchBrackets: true
         });
-    });
-    
-    function showResults(data) {
-        const resultsDiv = document.getElementById('test-results');
-        let statusClass = 'success';
-        let statusIcon = 'check-circle';
-        
-        if (data.status !== 'accepted') {
-            statusClass = 'danger';
-            statusIcon = 'times-circle';
-        }
-        
-        let html = `
+
+        // Theme switching
+        document.getElementById('editor-theme').addEventListener('change', function () {
+            editor.setOption('theme', this.value);
+        });
+
+        // Font size switching
+        document.getElementById('editor-font-size').addEventListener('change', function () {
+            editor.getWrapperElement().style.fontSize = this.value;
+            editor.refresh();
+        });
+
+        // Reset code
+        document.getElementById('reset-code').addEventListener('click', function () {
+            if (confirm('Are you sure you want to reset the code to the initial template?')) {
+                editor.setValue(`{{ question.template_code|escapejs }}`);
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('submission-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('code', editor.getValue());
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+            const submitBtn = document.getElementById('submit-solution');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            submitBtn.disabled = true;
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    showResults(data);
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
+        });
+
+        function showResults(data) {
+            const resultsDiv = document.getElementById('test-results');
+            let statusClass = 'success';
+            let statusIcon = 'check-circle';
+
+            if (data.status !== 'accepted') {
+                statusClass = 'danger';
+                statusIcon = 'times-circle';
+            }
+
+            let html = `
             <div class="alert alert-${statusClass}">
                 <i class="fas fa-${statusIcon}"></i> 
                 <strong>${data.status.replace('_', ' ').toUpperCase()}</strong>
                 <br>
                 Tests passed: ${data.passed}/${data.total}
         `;
-        
-        if (data.runtime) {
-            html += `<br>Runtime: ${data.runtime}s`;
+
+            if (data.runtime) {
+                html += `<br>Runtime: ${data.runtime}s`;
+            }
+
+            if (data.error) {
+                html += `<br><small>Error: ${data.error}</small>`;
+            }
+
+            html += '</div>';
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
         }
-        
-        if (data.error) {
-            html += `<br><small>Error: ${data.error}</small>`;
-        }
-        
-        html += '</div>';
-        
-        resultsDiv.innerHTML = html;
-        resultsDiv.style.display = 'block';
-    }
-});
+    });
 </script>
 {% endblock %}

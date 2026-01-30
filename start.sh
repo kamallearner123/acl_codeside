@@ -29,15 +29,20 @@ else
     fi
 fi
 
-echo ""
+echo "Rust part is done"
 if [ ! -d "$PROJECT_ROOT/.venv" ]; then
     echo "Virtual environment '.venv' not found." >&2
     echo "Create it with: python -m venv .venv" >&2
     exit 1
+else
+    python -m venv .venv
+    echo "Python virtual env is created"
 fi
 
 # shellcheck source=/dev/null
 source "$PROJECT_ROOT/.venv/bin/activate"
+
+echo "activated python env"
 
 python -m pip install --upgrade pip >/dev/null
 python -m pip install -r requirements.txt
