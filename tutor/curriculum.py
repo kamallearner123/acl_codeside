@@ -15,18 +15,18 @@ CURRICULUM = [
         "topics": [
             {
                 "title": "1.1 Hello World & Print",
-                "content": "The print function is your first tool. It sends output to the console. You can print strings, numbers, and variables.",
-                "code": "# 1. Basic string\nprint(\"Hello world!\")\n\n# 2. Printing numbers\nprint(2025)\n\n# 3. Printing multiple items\nprint(\"Python\", \"is\", \"fun\")"
+                "content": "The `print()` function is your primary tool for displaying output to the console. It can handle strings, numbers, variables, and even complex objects. In modern Python, you can use f-strings to embed variables directly into strings, which is the preferred method for formatting.\n\n### Key Concepts:\n- **Strings**: Text enclosed in quotes.\n- **f-strings**: Strings prefixed with `f` allow `{variable}` interpolation.\n- **Multiple Arguments**: `print()` can take multiple items separated by commas.",
+                "code": "# 1. The classic greeting\nprint(\"Hello, World!\")\n\n# 2. Printing numbers and math\nprint(2025)\nprint(10 + 5)\n\n# 3. Multiple arguments are separated by spaces by default\nprint(\"Python\", \"is\", \"powerful\")\n\n# 4. Using f-strings (Modern Python)\nuser = \"Student\"\ncourse = \"Python 101\"\nprint(f\"Welcome, {user}! You are learning {course}.\")"
             },
             {
                 "title": "1.2 Separator & End Parameters",
-                "content": "Customize print behavior using `sep` (separator between items) and `end` (what to print at the end, default is newline).",
-                "code": "print(\"A\", \"B\", \"C\", sep=\"-\")\nprint(\"Line 1\", end=\" \")\nprint(\"Line 2 (same line)\")"
+                "content": "By default, `print()` separates items with a space and ends with a newline. You can customize this behavior using the `sep` and `end` parameters.\n\n- **sep**: The string inserted between multiple values (default `' '`).\n- **end**: The string appended after the last value (default `'\\n'`).",
+                "code": "# Using a custom separator\nprint(\"2025\", \"01\", \"30\", sep=\"-\")  # Dates: 2025-01-30\nprint(\"user\", \"domain\", \"com\", sep=\"@\") # Email style\n\n# Controlling the line ending\nprint(\"Loading\", end=\"...\")\nprint(\"Done!\")\n\n# Combining both\nprint(\"A\", \"B\", \"C\", sep=\", \", end=\";\")"
             },
             {
                 "title": "1.3 Variables & Assignment",
-                "content": "Variables store data. Python is dynamically typed, so you don't need to declare types.",
-                "code": "x = 10         # Integer\nname = \"Alice\" # String\npi = 3.14      # Float\nprint(f\"{name} likes {pi}\")"
+                "content": "Variables are containers for storing data values. Python is **dynamically typed**, meaning you don't need to declare whether a variable is an integer, string, or float—Python figures it out at runtime. Variable names should be descriptive and follow `snake_case` convention.\n\n### Best Practices:\n- Use descriptive names (`user_age` vs `a`).\n- Follow standard conventions (lowercase with underscores).",
+                "code": "name = \"Alice\"       # String\nage = 30             # Integer\nheight = 1.75        # Float\nis_student = True    # Boolean\n\n# Reassigning variables change their type dynamically\nx = 100\nprint(f\"x is {x}\")\nx = \"Now I'm a string\"\nprint(f\"x is {x}\")"
             },
             {
                 "title": "1.4 Multiple Assignment",
@@ -76,8 +76,8 @@ CURRICULUM = [
         "topics": [
             {
                 "title": "2.1 The 'if' Statement",
-                "content": "Execute code only if a condition is true.",
-                "code": "age = 20\nif age >= 18:\n    print(\"You can vote.\")"
+                "content": "Conditionals allow your program to make decisions. The `if` statement executes a block of code only if the condition evaluates to `True`. Indentation is **mandatory** in Python to define the block scope.\n\n### Comparison Operators:\n- `==` Equal to\n- `!=` Not equal to\n- `>` Greater than, `<` Less than\n- `>=` Greater/Equal, `<=` Less/Equal",
+                "code": "temperature = 28\n\nif temperature > 25:\n    print(\"It's a hot day!\")\n    print(\"Stay hydrated.\")\n\n# This line runs regardless of the checking\nprint(\"Check complete.\")"
             },
             {
                 "title": "2.2 'else' Statement",
@@ -86,8 +86,8 @@ CURRICULUM = [
             },
             {
                 "title": "2.3 'elif' Ladder",
-                "content": "Check multiple conditions in sequence.",
-                "code": "score = 75\nif score >= 90:\n    print(\"A\")\nelif score >= 70:\n    print(\"B\")\nelif score >= 50:\n    print(\"C\")\nelse:\n    print(\"F\")"
+                "content": "When you have more than two possible paths, use `elif` (else if). Python checks conditions from top to bottom. Once one condition is met, its block executes, and the rest of the chain is skipped.\n\nUseful for checking ranges, grades, or multiple status states.",
+                "code": "score = 85\n\nif score >= 90:\n    grade = \"A\"\n    comment = \"Outstanding!\"\nelif score >= 80:\n    grade = \"B\"\n    comment = \"Great job!\"\nelif score >= 70:\n    grade = \"C\"\n    comment = \"Good effort.\"\nelse:\n    grade = \"F\"\n    comment = \"Needs improvement.\"\n\nprint(f\"Score: {score}, Grade: {grade} -> {comment}\")"
             },
             {
                 "title": "2.4 Nested Conditionals",
@@ -137,13 +137,13 @@ CURRICULUM = [
         "topics": [
             {
                 "title": "3.1 Basic Definition",
-                "content": "Define with `def`. Indent the body.",
-                "code": "def say_hi():\n    print(\"Hi there!\")\n\nsay_hi()\nsay_hi()"
+                "content": "Functions are reusable blocks of code that perform a specific task. They help break down complex programs into smaller, manageable pieces (Modular Programming). You define a function using the `def` keyword.\n\n### Why use functions?\n- **Reusability**: Write once, use many times.\n- **Readability**: Give a name to a block of logic.\n- **Maintainability**: Fix bugs in one place.",
+                "code": "def welcome_user():\n    print(\"Welcome to the System!\")\n    print(\"Initializing settings...\")\n\n# Calling the function multiple times\nwelcome_user()\nprint(\"---\")\nwelcome_user()"
             },
             {
                 "title": "3.2 Parameters & Arguments",
-                "content": "Pass data into functions.",
-                "code": "def greet(name):\n    print(f\"Hello, {name}\")\n\ngreet(\"Alice\")\ngreet(\"Bob\")"
+                "content": "Functions can accept data, called parameters, to make them dynamic. Arguments are the actual values you pass when calling the function.\n\n- **Parameter**: Variable name in the function definition.\n- **Argument**: Real value sent to the function.",
+                "code": "def greet(name, time_of_day):\n    print(f\"Good {time_of_day}, {name}!\")\n\n# Passing arguments by position\ngreet(\"Alice\", \"morning\")\ngreet(\"Bob\", \"evening\")"
             },
             {
                 "title": "3.3 Return Values",
@@ -157,13 +157,13 @@ CURRICULUM = [
             },
             {
                 "title": "3.5 Keyword Arguments",
-                "content": "Pass arguments by name for clarity/order independence.",
-                "code": "def describe(name, role):\n    print(f\"{name} is a {role}\")\n\ndescribe(role=\"Developer\", name=\"Kamal\")"
+                "content": "You can pass arguments using the parameter name. This improves readability and allows you to ignore the order of arguments.",
+                "code": "def create_profile(username, email, active=True):\n    print(f\"User: {username} | Email: {email} | Active: {active}\")\n\n# Order doesn't matter with keywords\ncreate_profile(email=\"jane@example.com\", username=\"jane_doe\")\n\n# Mixing positional and keyword (positional must come first)\ncreate_profile(\"admin\", active=False, email=\"admin@sys.com\")"
             },
             {
                 "title": "3.6 Arbitrary Arguments (*args)",
-                "content": "Accept a variable number of positional arguments.",
-                "code": "def add_all(*args):\n    total = 0\n    for num in args:\n        total += num\n    return total\n\nprint(add_all(1, 2, 3, 4))"
+                "content": "Sometimes you don't know how many arguments will be passed. Use `*args` to collect extra positional arguments into a **tuple**.",
+                "code": "def sum_all(*numbers):\n    print(f\"Received type: {type(numbers)}\") # It's a tuple\n    total = 0\n    for n in numbers:\n        total += n\n    return total\n\nprint(f\"Sum: {sum_all(10, 20, 30, 40)}\")\nprint(f\"Sum: {sum_all(5)}\")"
             },
             {
                 "title": "3.7 Arbitrary Keywords (**kwargs)",
@@ -208,8 +208,8 @@ CURRICULUM = [
             },
             {
                 "title": "4.3 List Creation & Access",
-                "content": "Ordered mutable collection.",
-                "code": "lst = [1, \"apple\", 3.5]\nprint(lst[0])\nprint(lst[1])\nlst[1] = \"banana\"\nprint(lst)"
+                "content": "Lists are ordered, mutable collections that can hold items of different types. You access elements using their index (starting at 0). Lists are one of the most versatile data structures in Python.",
+                "code": "# A list of mixed types\nprofile = [1, \"Alice\", 3.5, True]\n\n# Accessing elements\nprint(f\"ID: {profile[0]}\")\nprint(f\"Name: {profile[1]}\")\n\n# Modifying lists (Mutable)\nprofile[1] = \"Alice Smith\"\nprint(f\"Updated Name: {profile[1]}\")\n\n# Nested lists\nmatrix = [[1, 2], [3, 4]]\nprint(f\"Row 2, Col 1: {matrix[1][0]}\")"
             },
             {
                 "title": "4.4 List Methods",
@@ -233,8 +233,8 @@ CURRICULUM = [
             },
             {
                 "title": "4.8 Dictionary Basics",
-                "content": "Key-Value pairs.",
-                "code": "person = {\"name\": \"John\", \"age\": 30}\nprint(person[\"name\"])\nperson[\"city\"] = \"New York\"\nprint(person)"
+                "content": "Dictionaries store data in `key: value` pairs. They are optimized for fast lookups. Keys must be unique and immutable (like strings or numbers), while values can be anything.",
+                "code": "# Creating a dictionary\nuser = {\n    \"id\": 101,\n    \"username\": \"coder123\",\n    \"is_admin\": False,\n    \"skills\": [\"Python\", \"Linux\"]\n}\n\n# Accessing values\nprint(f\"User: {user['username']}\")\n\n# Adding/Updating pairs\nuser[\"email\"] = \"coder@test.com\"  # New key\nuser[\"is_admin\"] = True          # Update existing\n\nprint(user)"
             },
             {
                 "title": "4.9 Dict Methods",
@@ -274,8 +274,8 @@ CURRICULUM = [
             },
             {
                 "title": "5.4 The 'with' Statement",
-                "content": "Best practice. Automatically closes file.",
-                "code": "with open(\"demo.txt\", \"r\") as f:\n    print(f.read())"
+                "content": "The `with` statement is a **Context Manager**—it handles opening and closing resources automatically, even if errors occur. This is the **best practice** for file handling in Python to prevent memory leaks or file lock issues.",
+                "code": "# The Pythonic way to open files\nfile_path = \"demo.txt\"\n\n# Writing safely\nwith open(file_path, \"w\") as file:\n    file.write(\"Safe and clean file handling.\\n\")\n    file.write(\"No need to call close() manually.\")\n\n# Reading safely\nwith open(file_path, \"r\") as file:\n    content = file.read()\n    print(content)"
             },
             {
                 "title": "5.5 Reading Lines",
@@ -320,13 +320,13 @@ CURRICULUM = [
         "topics": [
             {
                 "title": "6.1 Basic Try-Except",
-                "content": "Catch errors to prevent crash.",
-                "code": "try:\n    print(1/0)\nexcept ZeroDivisionError:\n    print(\"Divided by zero!\")"
+                "content": "Errors (Exceptions) can crash your program. Use `try-except` blocks to handle them gracefully. The code in `try` is executed, and if an error occurs, the code determines if it matches the `except` block.",
+                "code": "try:\n    numerator = 10\n    denominator = 0\n    result = numerator / denominator\n    print(result)\nexcept ZeroDivisionError:\n    print(\"Error: You cannot divide by zero.\")\n\nprint(\"Program continues safely...\")"
             },
             {
                 "title": "6.2 Catching Any Error",
-                "content": "Use `except Exception`.",
-                "code": "try:\n    lst = []\n    print(lst[1])\nexcept Exception as e:\n    print(f\"Caught error: {e}\")"
+                "content": "Sometimes you don't know exactly what error might happen. You can catch generic `Exception`, but it's good practice to log or print the specific error message for debugging.",
+                "code": "try:\n    unknown_var = crazy_function()\nexcept Exception as e:\n    # 'e' contains the error details\n    print(f\"An unexpected error occurred: {e}\")\n    print(f\"Type of error: {type(e).__name__}\")"
             },
             {
                 "title": "6.3 Multiple Except Blocks",
@@ -340,8 +340,8 @@ CURRICULUM = [
             },
             {
                 "title": "6.5 The 'finally' Block",
-                "content": "Runs no matter what.",
-                "code": "try:\n    print(\"Working...\")\nfinally:\n    print(\"Always runs (cleanup)\")"
+                "content": "The `finally` block executes **no matter what**—whether an error occurred or not. It is typically used for cleanup actions, like closing files or database connections.",
+                "code": "file = None\ntry:\n    # Trying to open a non-existent file\n    file = open(\"missing_config.txt\", \"r\")\n    data = file.read()\nexcept FileNotFoundError:\n    print(\"File not found. Using default config.\")\nfinally:\n    print(\"Cleaning up resources...\")\n    if file:\n        file.close()"
             },
             {
                 "title": "6.6 Raising Exceptions",
@@ -381,8 +381,8 @@ CURRICULUM = [
         "topics": [
             {
                 "title": "7.1 Standard Import",
-                "content": "Importing a whole module.",
-                "code": "import math\nprint(math.sqrt(25))"
+                "content": "Python comes with a clear standard library. You use `import` to bring these modules into your workspace. This gives you access to powerful tools without writing extra code.",
+                "code": "import math\nimport datetime\n\n# Accessing functions via the module name\nprint(f\"Square root of 16: {math.sqrt(16)}\")\nprint(f\"Pi constant: {math.pi:.2f}\")\n\ncurrent_time = datetime.datetime.now()\nprint(f\"Current time: {current_time}\")"
             },
             {
                 "title": "7.2 Import Specific Function",
@@ -406,8 +406,8 @@ CURRICULUM = [
             },
             {
                 "title": "7.6 Packages Structure",
-                "content": "Folders with `__init__.py`.",
-                "code": "# from mypackage import submodule\nprint(\"A package is a folder of modules\")"
+                "content": "A **package** is essentially a folder containing multiple python modules. For Python to recognize a folder as a package, it must contain a special file named `__init__.py` (though this is optional in Python 3.3+, it's still best practice).",
+                "code": "\"\"\"\nFolder Structure Example:\n\nmy_app/\n  __init__.py       # Marks directory as package\n  main.py\n  utils/\n    __init__.py\n    file_helper.py\n    math_helper.py\n\"\"\"\n\n# Importing would look like:\n# from my_app.utils import file_helper"
             },
             {
                 "title": "7.7 Installing Packages (pip)",
@@ -447,8 +447,8 @@ CURRICULUM = [
             },
             {
                 "title": "8.2 The __init__ Method",
-                "content": "Constructor to initialize attributes.",
-                "code": "class Person:\n    def __init__(self, name):\n        self.name = name\n\np = Person(\"Kamal\")\nprint(p.name)"
+                "content": "The `__init__` method is the **Constructor**. It runs automatically when you create a new instance of a class. It is used to initialize the object's attributes (state).\n\n- **self**: Represents the object being created. It allows the code to distinguish between \"this specific dog\" and \"all dogs\".",
+                "code": "class Car:\n    def __init__(self, brand, model, year):\n        self.brand = brand\n        self.model = model\n        self.year = year\n    \n    def display_info(self):\n        print(f\"{self.year} {self.brand} {self.model}\")\n\n# Creating instances with different data\nmy_car = Car(\"Tesla\", \"Model 3\", 2024)\nyour_car = Car(\"Ford\", \"Mustang\", 1969)\n\nmy_car.display_info()"
             },
             {
                 "title": "8.3 Instance Methods",
@@ -462,8 +462,8 @@ CURRICULUM = [
             },
             {
                 "title": "8.5 Inheritance",
-                "content": "Child class inherits Parent.",
-                "code": "class A:\n    def say(self): print(\"A\")\n    \nclass B(A):\n    pass\n\nobj = B()\nobj.say()"
+                "content": "Inheritance allows a class (Child) to derive attributes and methods from another class (Parent). This promotes code reuse and logical hierarchy.",
+                "code": "class Animal:\n    def speak(self):\n        print(\"Some generic sound\")\n\nclass Dog(Animal):\n    def speak(self):\n        print(\"Woof! Woof!\")\n\nclass Cat(Animal):\n    pass # Inherits speak() directly from Animal\n\nd = Dog()\nc = Cat()\n\nd.speak() # Overridden\nc.speak() # Inherited"
             },
             {
                 "title": "8.6 Overriding Methods",
@@ -503,8 +503,8 @@ CURRICULUM = [
         "topics": [
             {
                 "title": "9.1 What is an Iterator?",
-                "content": "Object with `__next__`.",
-                "code": "nums = [1, 2]\nit = iter(nums)\nprint(next(it))\nprint(next(it))"
+                "content": "An **iterator** is an object that contains a countable number of values. You can traverse through all the values. Technically, it's any object that implements the `__iter__()` and `__next__()` methods. Lists, tuples, dictionaries, and sets are all iterable objects.",
+                "code": "fruits = [\"apple\", \"banana\", \"cherry\"]\n\n# Getting an iterator from a list\nmyit = iter(fruits)\n\nprint(next(myit)) # apple\nprint(next(myit)) # banana\nprint(next(myit)) # cherry\n# print(next(myit)) # Raises StopIteration Error"
             },
             {
                 "title": "9.2 Creating Iterators",
@@ -513,8 +513,8 @@ CURRICULUM = [
             },
             {
                 "title": "9.3 Simple Generator",
-                "content": "Function with `yield`.",
-                "code": "def my_gen():\n    yield 1\n    yield 2\n\nfor x in my_gen():\n    print(x)"
+                "content": "Generators are a simple way to create iterators using functions. Instead of `return`, they use `yield`. `yield` pauses the function saving all its states and later continues from there on successive calls.",
+                "code": "def countdown(num):\n    print(\"Starting countdown...\")\n    while num > 0:\n        yield num\n        num -= 1\n\n# The function returns a generator object\ntimer = countdown(3)\n\nfor second in timer:\n    print(second)"
             },
             {
                 "title": "9.4 Generator State",
@@ -569,8 +569,8 @@ CURRICULUM = [
             },
             {
                 "title": "10.2 Map Function",
-                "content": "Apply func to list.",
-                "code": "nums = [1, 2, 3]\nsq = map(lambda x: x**2, nums)\nprint(list(sq))"
+                "content": "The `map(func, iterable)` function applies a specific function to every item in an iterable. It returns a map object (which is an iterator).",
+                "code": "prices = [10.00, 20.50, 30.00]\n\n# Applying a tax calculation to all items\ntaxed_prices = map(lambda x: x * 1.1, prices)\n\n# Converting map object to list to view it\nprint(list(taxed_prices))"
             },
             {
                 "title": "10.3 Filter Function",
@@ -584,8 +584,8 @@ CURRICULUM = [
             },
             {
                 "title": "10.5 List Comprehension",
-                "content": "Pythonic functional style.",
-                "code": "sq = [x**2 for x in range(5)]\nprint(sq)"
+                "content": "List comprehension provides a concise way to create lists. It consists of brackets containing an expression followed by a `for` clause, then zero or more `for` or `if` clauses. It's often more readable and faster than standard loops.",
+                "code": "# Syntax: [expression for item in iterable if condition]\nnumbers = range(10)\n\n# Create a list of squares for even numbers only\neven_squares = [x**2 for x in numbers if x % 2 == 0]\n\nprint(even_squares)"
             },
             {
                 "title": "10.6 Dict Comprehension",
@@ -625,8 +625,8 @@ CURRICULUM = [
         "topics": [
             {
                 "title": "11.1 Basic Match",
-                "content": "Start of string.",
-                "code": "import re\nif re.match(\"a\", \"apple\"):\n    print(\"Matches start\")"
+                "content": "Regular Expressions (Regex) are a powerful tool for matching patterns in text. `re.match()` checks for a match only at the somewhat beginning of the string.",
+                "code": "import re\n\n# Checking if string starts with 'Hello'\ntext = \"Hello, World!\"\nmatch = re.match(r\"Hello\", text)\n\nif match:\n    print(f\"Match found: {match.group()}\")\nelse:\n    print(\"No match found\")"
             },
             {
                 "title": "11.2 Search",
@@ -635,8 +635,8 @@ CURRICULUM = [
             },
             {
                 "title": "11.3 Find All",
-                "content": "Return list of matches.",
-                "code": "import re\ntext = \"10 apples, 20 pears\"\nnums = re.findall(r\"\\d+\", text)\nprint(nums)"
+                "content": "`re.findall()` returns a list containing all matches of the pattern in the string. It is excellent for extracting specific data types like email addresses, phone numbers, or hashtags.",
+                "code": "import re\ntext = \"Contact support@example.com or sales@example.org for help.\"\n\n# Pattern for email: [chars]@[chars].[chars]\nemails = re.findall(r\"[\\w.-]+@[\\w.-]+\", text)\n\nprint(f\"Found emails: {emails}\")"
             },
             {
                 "title": "11.4 Split",
@@ -974,10 +974,10 @@ CURRICULUM = [
                 "code": "def func():\n    \"\"\"This is docs\"\"\"\n    pass"
             },
             {
-                "title": "16.10 Final Project Idea",
-                "content": "Build a ToDo CLI.",
-                "code": "# Combine all skills: File IO, Classes, Argparse"
-            }
+                "title": "16.10 Final Project Idea: CLI Task Manager",
+                "content": "Now it's time to combine everything! Build a Command Line Interface (CLI) Task Manager. \n\n**Features:**\n- Add, List, and Delete tasks.\n- Save tasks to a file (JSON persistence).\n- Use Classes for Task and TaskManager.\n- specific Exception handling for file errors.",
+                "code": "import json\nimport sys\n\nclass TaskManager:\n    def __init__(self, filename=\"tasks.json\"):\n        self.filename = filename\n        self.tasks = self.load_tasks()\n\n    def load_tasks(self):\n        try:\n            with open(self.filename, 'r') as f:\n                return json.load(f)\n        except (FileNotFoundError, json.JSONDecodeError):\n            return []\n\n    def save_tasks(self):\n        with open(self.filename, 'w') as f:\n            json.dump(self.tasks, f, indent=4)\n\n    def add_task(self, title):\n        self.tasks.append({\"title\": title, \"completed\": False})\n        self.save_tasks()\n        print(f\"Task '{title}' added.\")\n\n    def list_tasks(self):\n        print(\"\\n--- To-Do List ---\")\n        for i, t in enumerate(self.tasks):\n            status = \"[x]\" if t['completed'] else \"[ ]\"\n            print(f\"{i}. {status} {t['title']}\")\n\n# Simulating usage\nmgr = TaskManager()\nmgr.add_task(\"Finish Python Course\")\nmgr.list_tasks()"
+            },
         ]
     }
 ]
