@@ -27,6 +27,15 @@ class PythonExecutor:
         # Use the same Python interpreter that's running Django
         self.python_executable = sys.executable
         
+        # PythonAnywhere Fix: sys.executable is uwsgi, which can't run scripts directly
+        if 'uwsgi' in self.python_executable.lower():
+            # Try to determine the real python path from the environment
+            venv_python = os.path.join(sys.prefix, 'bin', 'python')
+            if os.path.exists(venv_python):
+                self.python_executable = venv_python
+            else:
+                self.python_executable = 'python3'
+        
         # Set temp directory - use project's media folder for PythonAnywhere compatibility
         if hasattr(settings, 'MEDIA_ROOT') and settings.MEDIA_ROOT:
             self.temp_base_dir = os.path.join(settings.MEDIA_ROOT, 'temp_exec')
