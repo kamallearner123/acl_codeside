@@ -210,6 +210,8 @@ except Exception as e:
         try:
             with open(temp_script_path, 'w', encoding='utf-8') as tmp_file:
                 tmp_file.write(modified_code)
+                tmp_file.flush()
+                os.fsync(tmp_file.fileno())  # Ensure written to disk
             print(f"[DEBUG] Successfully wrote script file: {temp_script_path}")
             
             # Fix permissions for execution as requested
@@ -217,6 +219,13 @@ except Exception as e:
                 os.chmod(temp_script_path, 0o755)
             except Exception as perm_error:
                 print(f"[DEBUG] Warning: Could not change permissions: {perm_error}")
+                
+            # Wait for file to be ready (PythonAnywhere filesystem latency fix)
+            max_retries = 5
+            for i in range(max_retries):
+                if os.path.exists(temp_script_path) and os.path.getsize(temp_script_path) > 0:
+                    break
+                time.sleep(0.1)
                 
         except Exception as e:
             tb = traceback.format_exc()
