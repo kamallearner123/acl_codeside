@@ -117,6 +117,14 @@ class PythonExecutor:
         with open(matplotlibrc_path, 'w') as f:
             f.write('backend: Agg\n')
             f.write('interactive: False\n')
+            
+        # Fix permissions for directories and config files
+        try:
+            os.chmod(temp_dir, 0o755)
+            os.chmod(mpl_config_dir, 0o755)
+            os.chmod(matplotlibrc_path, 0o644)
+        except Exception as e:
+            print(f"[DEBUG] Warning: Failed to set permissions for config dirs: {e}")
         
         # Inject plot saving code with proper matplotlib configuration
         plot_setup = f"""
