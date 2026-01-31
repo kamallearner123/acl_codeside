@@ -201,6 +201,13 @@ except Exception as e:
             with open(temp_script_path, 'w', encoding='utf-8') as tmp_file:
                 tmp_file.write(modified_code)
             print(f"[DEBUG] Successfully wrote script file: {temp_script_path}")
+            
+            # Fix permissions for execution as requested
+            try:
+                os.chmod(temp_script_path, 0o755)
+            except Exception as perm_error:
+                print(f"[DEBUG] Warning: Could not change permissions: {perm_error}")
+                
         except Exception as e:
             tb = traceback.format_exc()
             result['stderr'] = f"Error writing temporary file {temp_script_path}: {str(e)}\n{tb}"
