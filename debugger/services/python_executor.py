@@ -85,9 +85,11 @@ class PythonExecutor:
         # Debug mode: set environment variable PY_EXEC_DEBUG=1 or Django setting PY_EXEC_DEBUG=True
         debug_mode = False
         try:
-            debug_mode = os.environ.get('PY_EXEC_DEBUG', '0') == '1' or bool(getattr(settings, 'PY_EXEC_DEBUG', False))
+            # FORCE DEBUG MODE True for troubleshooting
+            debug_mode = True 
+            # debug_mode = os.environ.get('PY_EXEC_DEBUG', '0') == '1' or bool(getattr(settings, 'PY_EXEC_DEBUG', False))
         except Exception:
-            debug_mode = False
+            debug_mode = True
         
         # Validate code first
         validation = self.validate_syntax(code)
