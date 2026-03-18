@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .yt-progress-header {
+        background: linear-gradient(135deg, #ff0000 0%, #aa0000 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.2);
+    }
+    
+    .domain-card {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+    
+    .domain-header {
+        background: #2d3748;
+        color: white;
+        padding: 15px 20px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    
+    .table-responsive {
+        background: white;
+    }
+    
+    .table th {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #4a5568;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 12px 15px;
+    }
+    
+    .table td {
+        padding: 12px 15px;
+        vertical-align: middle;
+    }
+    
+    .form-control-sm {
+        border-radius: 6px;
+        border: 1px solid #cbd5e0;
+        transition: all 0.2s;
+    }
+    
+    .form-control-sm:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+    
+    .badge-date {
+        background-color: #ebf4ff;
+        color: #3182ce;
+        border: 1px solid #bee3f8;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .btn-commit {
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 5px 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .btn-commit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(72, 187, 120, 0.3);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    
+    {% if request.method == "POST" %}
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        <strong>Success!</strong> Progress for "<strong>{{ request.POST.topic }}</strong>" has been committed.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <div class="yt-progress-header text-center">
+        <h1 class="display-5 fw-bold mb-2">
+            <i class="fab fa-youtube me-3"></i>YouTube Video Progress Tracker
+        </h1>
+        <p class="lead mb-0 text-white-50">Manage, track, and update the status of educational videos.</p>
+    </div>
+
+    {% regroup topics by domain as domain_list %}
+    
+    {% for domain in domain_list %}
+    <div class="domain-card">
+        <div class="domain-header">
+            <h4 class="mb-0"><i class="fas fa-folder-open me-2 text-warning"></i>{{ domain.grouper }}</h4>
+        </div>
+        <div class="domain-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th style="min-width: 200px;">Topic</th>
+                            <th style="min-width: 120px;">Target Date</th>
+                            <th style="min-width: 200px;">Description</th>
+                            <th style="min-width: 150px;">Youtube Link</th>
+                            <th style="min-width: 150px;">References</th>
+                            <th style="min-width: 150px;">PPT Link</th>
+                            <th style="min-width: 150px;">GitHub Link</th>
+                            <th style="min-width: 120px;" class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in domain.list %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">{{ item.topic }}</div>
+                            </td>
+                            <td>
+                                <span class="badge-date"><i class="far fa-calendar-alt me-1"></i>{{ item.date }}</span>
+                            </td>
+                            <td>
+                                <input form="form-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" type="text" name="description" class="form-control form-control-sm" placeholder="Topic description...">
+                            </td>
+                            <td>
+                                <input form="form-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" type="url" name="youtube_link" class="form-control form-control-sm" placeholder="https://youtu.be/...">
+                            </td>
+                            <td>
+                                <input form="form-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" type="text" name="references" class="form-control form-control-sm" placeholder="Doc links etc.">
+                            </td>
+                            <td>
+                                <input form="form-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" type="url" name="ppt_link" class="form-control form-control-sm" placeholder="Google Slides/Drive">
+                            </td>
+                            <td>
+                                <input form="form-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" type="url" name="github_link" class="form-control form-control-sm" placeholder="GitHub Repo">
+                            </td>
+                            <td class="text-center">
+                                <form id="form-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" method="POST" action="">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="domain" value="{{ item.domain }}">
+                                    <input type="hidden" name="topic" value="{{ item.topic }}">
+                                    <button type="submit" class="btn btn-commit btn-sm">
+                                        <i class="fas fa-paper-plane me-1"></i> Commit
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

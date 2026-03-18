@@ -428,35 +428,7 @@
                         </ul>
                     </li>
 
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="fas fa-book-reader me-1"></i>Materials
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'materials:dashboard' %}">
-                                    <i class="fas fa-list"></i> All Materials
-                                </a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'materials:ml_python' %}">
-                                    <i class="fas fa-brain"></i> ML Using Python
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'materials:ml_handson' %}">
-                                    <i class="fas fa-robot"></i> ML Hands-on
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'materials:python' %}">
-                                    <i class="fab fa-python"></i> Python Programming
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'materials:rust' %}">
-                                    <i class="fab fa-rust"></i> Rust Programming
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'materials:c_programming' %}">
-                                    <i class="fab fa-cuttlefish"></i> C/C++ Programming
-                                </a></li>
-                        </ul>
-                    </li>
+
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -493,31 +465,7 @@
                             <li><a class="dropdown-item" href="{% url 'debugger:home' %}">
                                     <i class="fas fa-laptop-code"></i> Coding Practices
                                 </a></li>
-                            <<<<<<< HEAD <!-- DSA Practice menu removed -->
-                                =======
-                                >>>>>>> 6ff9cef (Update project structure, add Python Tutor module, and refine
-                                accounts/questions apps)
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="{% url 'questions:list' %}">
-                                        <i class="fas fa-question-circle"></i> Coding Problems
-                                    </a></li>
-                                <li><a class="dropdown-item" href="{% url 'accounts:leaderboard' %}">
-                                        <i class="fas fa-trophy text-warning"></i> Global Leaderboard
-                                    </a></li>
-                                <li><a class="dropdown-item" href="{% url 'submissions:my_submissions' %}">
-                                        <i class="fas fa-code-branch"></i> My Submissions
-                                    </a></li>
-                                <li><a class="dropdown-item" href="{% url 'home' %}#livecoding">
-                                        <i class="fas fa-play-circle"></i> Live Coding
-                                    </a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="{% url 'devtools:list' %}">
-                                        <i class="fas fa-tools"></i> Developer Tools
-                                    </a></li>
+
                         </ul>
                     </li>
 
@@ -526,6 +474,14 @@
                             <i class="fas fa-calendar-alt me-1"></i>Events
                         </a>
                     </li>
+
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'youtube_progress' %}">
+                            <i class="fab fa-youtube text-danger me-1"></i>Youtube Progress
+                        </a>
+                    </li>
+                    {% endif %}
 
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'contact:contact' %}">
@@ -665,16 +621,9 @@
                     <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg me-3">
                         <i class="fas fa-sign-in-alt me-2"></i>Login Now
                     </a>
-                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary btn-lg">
-                        <i class="fas fa-user-plus me-2"></i>Create Account
-                    </a>
+
                 </div>
-                <div class="modal-footer border-0 pt-0">
-                    <small class="text-muted text-center w-100">
-                        Don't have an account? <a href="{% url 'accounts:register' %}" class="text-primary">Sign up for
-                            free</a>
-                    </small>
-                </div>
+
             </div>
         </div>
     </div>

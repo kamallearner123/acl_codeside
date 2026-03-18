@@ -21,20 +21,20 @@
                             <div class="col-md-2">
                                 <select name="status" class="form-select">
                                     <option value="">Status</option>
-                                    <option value="solved" {% if current_status=='solved' %}selected{% endif %}>Solved
+                                    <option value="solved" {% if current_status == 'solved' %}selected{% endif %}>Solved
                                     </option>
-                                    <option value="unsolved" {% if current_status=='unsolved' %}selected{% endif %}>
+                                    <option value="unsolved" {% if current_status == 'unsolved' %}selected{% endif %}>
                                         Unsolved</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
                                 <select name="difficulty" class="form-select">
                                     <option value="">Difficulty</option>
-                                    <option value="easy" {% if current_difficulty=='easy' %}selected{% endif %}>Easy
+                                    <option value="easy" {% if current_difficulty == 'easy' %}selected{% endif %}>Easy
                                     </option>
-                                    <option value="medium" {% if current_difficulty=='medium' %}selected{% endif %}>
+                                    <option value="medium" {% if current_difficulty == 'medium' %}selected{% endif %}>
                                         Medium</option>
-                                    <option value="hard" {% if current_difficulty=='hard' %}selected{% endif %}>Hard
+                                    <option value="hard" {% if current_difficulty == 'hard' %}selected{% endif %}>Hard
                                     </option>
                                 </select>
                             </div>
@@ -42,8 +42,7 @@
                                 <select name="tag" class="form-select">
                                     <option value="">Tags</option>
                                     {% for tag in all_tags %}
-                                    <option value="{{ tag.slug }}" {% if current_tag==tag.slug %}selected{% endif %}>{{
-                                        tag.name }}</option>
+                                    <option value="{{ tag.slug }}" {% if current_tag == tag.slug %}selected{% endif %}>{{ tag.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -51,8 +50,7 @@
                                 <select name="company" class="form-select">
                                     <option value="">Company</option>
                                     {% for company in all_companies %}
-                                    <option value="{{ company.slug }}" {% if current_company==company.slug %}selected{%
-                                        endif %}>{{ company.name }}</option>
+                                    <option value="{{ company.slug }}" {% if current_company == company.slug %}selected{% endif %}>{{ company.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
