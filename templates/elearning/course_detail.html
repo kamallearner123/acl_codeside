@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.title }} – APT Computing Labs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <style>
+        :root {
+            --bg: #0f0f23; --sidebar: #13132b; --card: rgba(255,255,255,0.05);
+            --border: rgba(255,255,255,0.09); --primary: #6366f1; --accent: #f59e0b;
+            --green: #10b981; --muted: rgba(255,255,255,0.5); --sidebar-w: 260px;
+            --text: #ffffff;
+            --text-heading: #ffffff;
+            --topic-bg: rgba(255,255,255,0.02);
+            --topic-border: rgba(255,255,255,0.04);
+            --topic-text: rgba(255,255,255,0.85);
+            --mod-outcome-bg: linear-gradient(135deg,rgba(99,102,241,0.25),rgba(245,158,11,0.15));
+            --mod-chevron-color: rgba(255,255,255,0.5);
+            --sticky-nav-bg: rgba(15, 15, 35, 0.85);
+            --shadow: rgba(0, 0, 0, 0.35);
+        }
+
+        body.light-theme {
+            --bg: #f8fafc;
+            --sidebar: #ffffff;
+            --card: #ffffff;
+            --border: rgba(0, 0, 0, 0.08);
+            --primary: #4f46e5;
+            --accent: #d97706;
+            --green: #059669;
+            --muted: #64748b;
+            --text: #334155;
+            --text-heading: #0f172a;
+            --topic-bg: #f1f5f9;
+            --topic-border: rgba(0, 0, 0, 0.05);
+            --topic-text: #1e293b;
+            --mod-outcome-bg: linear-gradient(135deg,rgba(99,102,241,0.1),rgba(245,158,11,0.08));
+            --mod-chevron-color: #64748b;
+            --sticky-nav-bg: rgba(248, 250, 252, 0.85);
+            --shadow: rgba(15, 23, 42, 0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; transition: background-color 0.3s ease, color 0.3s ease; }
+
+        /* ── Sidebar (same as dashboard) ── */
+        .sidebar {
+            width: var(--sidebar-w); background: var(--sidebar);
+            border-right: 1px solid var(--border); display: flex; flex-direction: column;
+            position: fixed; top: 0; left: 0; bottom: 0; z-index: 200; padding: 28px 0;
+        }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+        .sidebar-logo img { height: 36px; border-radius: 8px; }
+        .sidebar-logo-text { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--text-heading); }
+        .sidebar-badge { background: linear-gradient(135deg, var(--primary), var(--accent)); font-size: 0.65rem; padding: 2px 8px; border-radius: 50px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; display: block; margin-top: 2px; }
+        .sidebar-section-label { padding: 16px 20px 6px; font-size: 0.68rem; font-weight: 700; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+        .sidebar-nav { list-style: none; padding: 0 12px; }
+        .sidebar-nav li a { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 10px; color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+        .sidebar-nav li a:hover, .sidebar-nav li a.active { background: rgba(99,102,241,0.14); color: #fff; }
+        .sidebar-nav li a i { width: 18px; text-align: center; }
+        .sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border); }
+        .sidebar-user { display: flex; align-items: center; gap: 12px; }
+        .sidebar-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; object-fit: cover; }
+        .sidebar-username { font-size: 0.88rem; font-weight: 600; color: var(--text-heading); }
+        .sidebar-role { font-size: 0.72rem; color: var(--muted); }
+        .btn-logout { margin-left: auto; background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 6px 10px; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
+        .btn-logout:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #fca5a5; }
+
+        /* ── Main ── */
+        .main-content { margin-left: var(--sidebar-w); flex: 1; padding: 32px 36px; }
+
+        /* Back */
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.87rem; margin-bottom: 24px; transition: color 0.2s; }
+        .back-btn:hover { color: #fff; }
+
+        /* Hero card */
+        .course-hero {
+            background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(245,158,11,0.1));
+            border: 1px solid rgba(99,102,241,0.25); border-radius: 22px; padding: 36px;
+            margin-bottom: 28px; position: relative; overflow: hidden;
+        }
+        .course-hero::before {
+            content: '🤖'; position: absolute; right: 32px; top: 50%; transform: translateY(-50%);
+            font-size: 6rem; opacity: 0.12; pointer-events: none;
+        }
+        .course-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 50px; margin-bottom: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .course-title { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 10px; color: var(--text-heading); }
+        .course-desc { color: var(--muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 20px; max-width: 600px; }
+        .course-meta { display: flex; gap: 20px; flex-wrap: wrap; }
+        .meta-pill { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; font-size: 0.82rem; color: var(--muted); }
+        .meta-pill i { font-size: 0.9rem; }
+
+        /* Progress */
+        .progress-bar-bg { background: rgba(255,255,255,0.08); border-radius: 50px; height: 8px; overflow: hidden; margin-top: 20px; }
+        .progress-bar-fill { height: 100%; border-radius: 50px; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 1s ease; }
+
+        /* Resource Links */
+        .resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
+        .resource-card {
+            background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+            padding: 22px; text-align: center; text-decoration: none; color: var(--text);
+            transition: all 0.25s; display: flex; flex-direction: column; align-items: center; gap: 12px;
+        }
+        .resource-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.35); color: #fff; }
+        .resource-card.github:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); }
+        .resource-card.gdrive:hover { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.08); }
+        .resource-card.zoom:hover { border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.08); }
+        .resource-card.mcqs:hover { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.08); }
+        .resource-card.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        .resource-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        .resource-label { font-size: 0.88rem; font-weight: 600; }
+        .resource-status { font-size: 0.72rem; color: var(--muted); }
+
+        /* Section heading */
+        .section-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+        .section-heading h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text-heading); }
+
+        /* Calendar */
+        .calendar-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 24px; }
+        .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .cal-month { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text-heading); }
+        .cal-nav { background: rgba(255,255,255,0.07); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 6px 12px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .cal-nav:hover { background: rgba(99,102,241,0.2); border-color: rgba(99,102,241,0.4); }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .cal-day-name { text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--muted); padding: 6px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; position: relative; }
+        .cal-day:hover { background: rgba(255,255,255,0.07); }
+        .cal-day.today { background: rgba(99,102,241,0.2); color: #a5b4fc; font-weight: 700; border: 1px solid rgba(99,102,241,0.4); }
+        .cal-day.has-session { background: rgba(245,158,11,0.15); color: #fcd34d; font-weight: 700; border: 1px solid rgba(245,158,11,0.3); }
+        .cal-day.has-session:hover { background: rgba(245,158,11,0.25); }
+        .cal-day.empty { pointer-events: none; }
+        .cal-day.other-month { opacity: 0.3; }
+        .session-dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); }
+
+        /* Session List */
+        .session-list { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .session-item { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
+        .session-item.upcoming { border-color: rgba(99,102,241,0.25); }
+        .session-item.past { opacity: 0.55; }
+        .session-date-badge { min-width: 48px; text-align: center; background: rgba(99,102,241,0.15); border-radius: 10px; padding: 6px 8px; }
+        .session-date-badge .day { font-size: 1.2rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; line-height: 1; color: var(--text-heading); }
+        .session-date-badge .month { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .session-body { flex: 1; }
+        .session-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .session-tag { margin-left: auto; font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 50px; white-space: nowrap; }
+        .tag-upcoming { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+        .tag-past { background: rgba(255,255,255,0.06); color: var(--muted); }
+        .tag-today { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+
+        /* Action chips inside session row */
+        .action-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 50px; text-decoration: none; transition: all 0.2s; border: 1px solid transparent; cursor: pointer; }
+        .chip-zoom  { background: rgba(59,130,246,0.15); color: #93c5fd; border-color: rgba(59,130,246,0.3); }
+        .chip-zoom:hover  { background: rgba(59,130,246,0.3); color: #fff; }
+        .chip-assign { background: rgba(245,158,11,0.12); color: #fcd34d; border-color: rgba(245,158,11,0.25); }
+        .chip-assign:hover { background: rgba(245,158,11,0.3); color: #fff; }
+        .chip-mcq  { background: rgba(139,92,246,0.12); color: #c4b5fd; border-color: rgba(139,92,246,0.25); }
+        .chip-mcq:hover  { background: rgba(139,92,246,0.3); color: #fff; }
+        .chip-rec  { background: rgba(16,185,129,0.12); color: #6ee7b7; border-color: rgba(16,185,129,0.25); }
+        .chip-rec:hover  { background: rgba(16,185,129,0.3); color: #fff; }
+        .chip-ns   { background: rgba(255,255,255,0.05); color: var(--muted); border-color: var(--border); }
+
+        /* Curriculum accordion */
+        .curriculum-list { display: flex; flex-direction: column; gap: 10px; }
+        .mod-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color 0.2s; }
+        .mod-card:hover { border-color: rgba(99,102,241,0.3); }
+        .mod-header { display: flex; align-items: center; gap: 16px; padding: 18px 20px; cursor: pointer; user-select: none; }
+        .mod-num { min-width: 36px; height: 36px; border-radius: 10px; background: var(--mod-outcome-bg); display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk',sans-serif; font-weight: 800; font-size: 0.85rem; color: #a5b4fc; flex-shrink: 0; }
+        .mod-info { flex: 1; }
+        .mod-title { font-size: 0.95rem; font-weight: 700; line-height: 1.3; color: var(--text-heading); }
+        .mod-outcome { font-size: 0.77rem; color: var(--muted); margin-top: 3px; }
+        .mod-meta { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+        .mod-duration { font-size: 0.78rem; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+        .mod-chevron { color: var(--mod-chevron-color); font-size: 0.8rem; transition: transform 0.25s; }
+        .mod-chevron.open { transform: rotate(180deg); color: #a5b4fc; }
+        .mod-body { padding: 0 20px 20px 72px; border-top: 1px solid var(--border); padding-top: 16px; }
+        .mod-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+        /* Dynamic Topic Items Styling */
+        .topics-container { display: flex; flex-direction: column; gap: 10px; }
+        .topic-item {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--topic-bg); border: 1px solid var(--topic-border);
+            border-radius: 12px; padding: 12px 18px; transition: all 0.2s;
+        }
+        .topic-item:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+        .topic-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+        
+        /* Custom Checkbox */
+        .checkbox-container { display: block; position: relative; width: 20px; height: 20px; cursor: pointer; user-select: none; }
+        .checkbox-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .checkmark { position: absolute; top: 0; left: 0; height: 20px; width: 20px; background-color: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; transition: all 0.2s; }
+        .checkbox-container:hover input ~ .checkmark { background-color: rgba(255,255,255,0.15); border-color: var(--primary); }
+        .checkbox-container input:checked ~ .checkmark { background-color: var(--green); border-color: var(--green); }
+        .checkmark:after { content: ""; position: absolute; display: none; }
+        .checkbox-container input:checked ~ .checkmark:after { display: block; }
+        .checkbox-container .checkmark:after { left: 7px; top: 3px; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+        
+        .topic-text { font-size: 0.88rem; color: var(--topic-text); transition: all 0.2s; }
+        .topic-item.completed-row .topic-text { color: var(--muted); text-decoration: line-through; }
+        
+        .topic-right { display: flex; align-items: center; gap: 18px; }
+        
+        /* Assignment Button */
+        .btn-assignment { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: var(--muted); padding: 5px 12px; border-radius: 8px; font-size: 0.72rem; display: flex; align-items: center; gap: 5px; cursor: pointer; transition: all 0.2s; }
+        .btn-assignment:hover { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.3); color: #fff; }
+        .btn-assignment.active { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.4); color: #6ee7b7; font-weight: 600; }
+        
+        /* Star Rating */
+        .star-rating { display: flex; gap: 3px; }
+        .star { font-size: 0.82rem; color: rgba(255,255,255,0.2); cursor: pointer; transition: color 0.15s, transform 0.1s; }
+        .star:hover { transform: scale(1.25); }
+        .star.fas { color: var(--accent); }
+
+        /* Sticky Course Sub-Nav styling */
+        .course-nav-bar {
+            position: sticky;
+            top: 0;
+            z-index: 150;
+            background: var(--sticky-nav-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+            padding: 14px 36px;
+            margin: -32px -36px 36px -36px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .course-nav-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 50px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid transparent;
+        }
+        .course-nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .course-nav-link.active {
+            color: #fff;
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.35);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Offset blocks for header scroll jump */
+        .course-section-block {
+            scroll-margin-top: 100px;
+            margin-bottom: 48px;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img src="{% static 'img/APT_Black_01.jpg' %}" alt="ACL">
+        <div>
+            <div class="sidebar-logo-text">APT Computing</div>
+            <span class="sidebar-badge">eLearning</span>
+        </div>
+    </div>
+    <span class="sidebar-section-label">Menu</span>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'elearning:dashboard' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="{% url 'elearning:profile' %}"><i class="fas fa-user-cog"></i> My Profile</a></li>
+        <li><a href="{% url 'home' %}"><i class="fas fa-globe"></i> Main Website</a></li>
+        <li style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;">
+            <a href="#" id="themeToggleBtn" onclick="toggleTheme(event)" style="cursor: pointer;">
+                <i class="fas fa-moon" id="themeIcon"></i> <span id="themeLabel">Dark Mode</span>
+            </a>
+        </li>
+    </ul>
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            {% if profile.avatar_url %}
+                <img src="{{ profile.avatar_url }}" alt="Avatar" class="sidebar-avatar" style="object-fit: cover;">
+            {% else %}
+                <div class="sidebar-avatar">{{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}</div>
+            {% endif %}
+            <div>
+                <div class="sidebar-username">{{ request.user.get_full_name|default:request.user.username }}</div>
+                <div class="sidebar-role">Student</div>
+            </div>
+            <form method="POST" action="{% url 'elearning:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+            </form>
+        </div>
+    </div>
+</aside>
+
+<main class="main-content">
+    <a href="{% url 'elearning:dashboard' %}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <!-- Course Hero -->
+    <div class="course-hero">
+        <div class="course-badge"><i class="fas fa-robot"></i> Agentic AI</div>
+        <div class="course-title">{{ course.title }}</div>
+        <div class="course-desc">{{ course.description|default:"Build autonomous AI agents that reason, plan, and act using modern LLMs and agent frameworks." }}</div>
+        <div class="course-meta">
+            <div class="meta-pill"><i class="fas fa-clock" style="color:#a5b4fc;"></i> {% if total_hours %}{{ total_hours }} hrs{% elif course.duration_hours %}{{ course.duration_hours }} hrs{% else %}TBD{% endif %}</div>
+            <div class="meta-pill"><i class="fas fa-layer-group" style="color:#fcd34d;"></i> {{ curriculum|length|default:"10" }} Modules</div>
+            <div class="meta-pill"><i class="fas fa-signal" style="color:#6ee7b7;"></i> All Levels</div>
+            <div class="meta-pill">
+                <i class="fas fa-circle" id="heroStatusDot" style="color:{% if status == 'completed' %}#6ee7b7{% elif status == 'in_progress' %}#fcd34d{% else %}#94a3b8{% endif %};"></i>
+                <span id="heroStatusText">{{ status|title|cut:"_" }}</span>
+            </div>
+        </div>
+        {% if is_enrolled %}
+        <div class="progress-bar-bg" style="max-width:500px;">
+            <div class="progress-bar-fill" style="width:{{ progress }}%;"></div>
+        </div>
+        <div id="heroProgressLabel" style="font-size:0.78rem; color:var(--muted); margin-top:6px;">Progress: {{ progress }}%</div>
+        {% else %}
+        <a href="{% url 'elearning:enroll' course.id %}" style="display:inline-flex;align-items:center;gap:8px;margin-top:20px;background:linear-gradient(135deg,#6366f1,#f59e0b);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-size:0.92rem;font-weight:600;text-decoration:none;cursor:pointer;transition:all .3s;box-shadow:0 8px 24px rgba(99,102,241,0.35);">
+            <i class="fas fa-plus"></i> Enroll in this Course
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Sticky Course Sub-Nav Menu -->
+    <div class="course-nav-bar">
+        <a href="#resources-section" class="course-nav-link active" onclick="scrollToCourseSection(event, 'resources-section')">
+            <i class="fas fa-link"></i> Resources
+        </a>
+        <a href="#curriculum-section" class="course-nav-link" onclick="scrollToCourseSection(event, 'curriculum-section')">
+            <i class="fas fa-list-ol"></i> Curriculum
+        </a>
+        <a href="#calendar-section" class="course-nav-link" onclick="scrollToCourseSection(event, 'calendar-section')">
+            <i class="fas fa-calendar-alt"></i> Calendar
+        </a>
+    </div>
+
+    <!-- Resource Links -->
+    <div id="resources-section" class="course-section-block">
+        <div class="section-heading">
+            <h2><i class="fas fa-link" style="color:#a5b4fc;"></i> Course Resources</h2>
+        </div>
+    <div class="resources-grid" style="margin-bottom:32px;">
+        <a href="{{ github_link }}" target="_blank" class="resource-card github {% if not github_link %}disabled{% endif %}">
+            <div class="resource-icon" style="background:rgba(255,255,255,0.08);"><i class="fab fa-github" style="font-size:1.6rem;"></i></div>
+            <div class="resource-label">GitHub</div>
+            <div class="resource-status">{% if github_link %}Course Repository{% else %}Not configured{% endif %}</div>
+        </a>
+        <a href="{{ gdrive_link }}" target="_blank" class="resource-card gdrive {% if not gdrive_link %}disabled{% endif %}">
+            <div class="resource-icon" style="background:rgba(16,185,129,0.12);"><i class="fab fa-google-drive" style="font-size:1.6rem;color:#6ee7b7;"></i></div>
+            <div class="resource-label">Google Drive</div>
+            <div class="resource-status">{% if gdrive_link %}Course Materials{% else %}Not configured{% endif %}</div>
+        </a>
+        <a href="{{ zoom_link }}" target="_blank" class="resource-card zoom {% if not zoom_link %}disabled{% endif %}">
+            <div class="resource-icon" style="background:rgba(59,130,246,0.12);"><i class="fas fa-video" style="font-size:1.6rem;color:#93c5fd;"></i></div>
+            <div class="resource-label">Zoom</div>
+            <div class="resource-status">{% if zoom_link %}Join Live Session{% else %}Not configured{% endif %}</div>
+        </a>
+        <a href="{{ mcqs_link }}" target="_blank" class="resource-card mcqs {% if not mcqs_link %}disabled{% endif %}">
+            <div class="resource-icon" style="background:rgba(245,158,11,0.12);"><i class="fas fa-question-circle" style="font-size:1.6rem;color:#fcd34d;"></i></div>
+            <div class="resource-label">MCQ Quiz</div>
+            <div class="resource-status">{% if mcqs_link %}Take Assessment{% else %}Not configured{% endif %}</div>
+        </a>
+    </div>
+    </div> <!-- Close resources-section -->
+
+    <!-- Curriculum -->
+    {% if curriculum %}
+    <div id="curriculum-section" class="course-section-block">
+        <div class="section-heading">
+            <h2><i class="fas fa-list-ol" style="color:#a5b4fc;"></i> Curriculum</h2>
+        <span style="font-size:0.82rem;color:var(--muted);">{{ curriculum|length }} modules &nbsp;·&nbsp; {{ total_hours }} hrs total</span>
+    </div>
+    <div class="curriculum-list" style="margin-bottom:32px;">
+        {% for mod in curriculum %}
+        <div class="mod-card" id="mod-{{ mod.id }}">
+            <div class="mod-header" onclick="toggleMod('{{ mod.id }}')">
+                <div class="mod-num">{{ mod.id }}</div>
+                <div class="mod-info">
+                    <div class="mod-title">{{ mod.module }}</div>
+                    <div class="mod-outcome"><i class="fas fa-bullseye" style="color:#f59e0b;font-size:0.7rem;margin-right:4px;"></i>{{ mod.key_outcome }}</div>
+                </div>
+                <div class="mod-meta">
+                    <span class="mod-duration"><i class="fas fa-clock"></i> {{ mod.duration }}</span>
+                    <i class="fas fa-chevron-down mod-chevron" id="chev-{{ mod.id }}"></i>
+                </div>
+            </div>
+            <div class="mod-body" id="body-{{ mod.id }}" style="display:none;">
+                <p class="mod-desc">{{ mod.description }}</p>
+                {% if mod.topics %}
+                <div class="topics-container">
+                    {% for topic in mod.topics %}
+                    <div class="topic-item" id="topic-row-{{ mod.id }}_{{ forloop.counter0 }}">
+                        <div class="topic-left">
+                            <label class="checkbox-container">
+                                <input type="checkbox" class="topic-checkbox" id="chk-{{ mod.id }}_{{ forloop.counter0 }}" onchange="saveTopicState('{{ mod.id }}_{{ forloop.counter0 }}')">
+                                <span class="checkmark"></span>
+                            </label>
+                            <span class="topic-text">{{ topic }}</span>
+                        </div>
+                        <div class="topic-right">
+                            <!-- Assignment Tracker -->
+                            <div class="assignment-tracker">
+                                <button class="btn-assignment" id="assign-{{ mod.id }}_{{ forloop.counter0 }}" onclick="toggleAssignment('{{ mod.id }}_{{ forloop.counter0 }}')" title="Completed Assignment?">
+                                    <i class="fas fa-tasks"></i> <span>Assignment</span>
+                                </button>
+                            </div>
+                            <!-- Star rating -->
+                            <div class="star-rating" id="rating-{{ mod.id }}_{{ forloop.counter0 }}">
+                                <i class="far fa-star star" data-value="1" onclick="rateTopic('{{ mod.id }}_{{ forloop.counter0 }}', 1)"></i>
+                                <i class="far fa-star star" data-value="2" onclick="rateTopic('{{ mod.id }}_{{ forloop.counter0 }}', 2)"></i>
+                                <i class="far fa-star star" data-value="3" onclick="rateTopic('{{ mod.id }}_{{ forloop.counter0 }}', 3)"></i>
+                                <i class="far fa-star star" data-value="4" onclick="rateTopic('{{ mod.id }}_{{ forloop.counter0 }}', 4)"></i>
+                                <i class="far fa-star star" data-value="5" onclick="rateTopic('{{ mod.id }}_{{ forloop.counter0 }}', 5)"></i>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div> <!-- Close curriculum-section -->
+    {% endif %}
+
+    <!-- Calendar + Sessions -->
+    <div id="calendar-section" class="course-section-block">
+        <div class="section-heading">
+            <h2><i class="fas fa-calendar-alt" style="color:#fcd34d;"></i> Session Calendar</h2>
+        </div>
+        <div class="calendar-wrap">
+            <div class="cal-header">
+                <button class="cal-nav" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                <div class="cal-month" id="calMonthLabel"></div>
+                <button class="cal-nav" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+            <div class="session-list" id="sessionList"></div>
+        </div>
+    </div> <!-- Close calendar-section -->
+</main>
+
+<script>
+// ── Session data injected from Header.json via Django ──
+const SESSIONS = {{ calendar_sessions_json|safe }};
+const TOPIC_PROGRESS = {{ topic_progress_json|safe }};
+
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const SMONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+let current = new Date();
+let displayYear = current.getFullYear();
+let displayMonth = current.getMonth();
+
+function sessionMap() {
+    return SESSIONS.reduce((acc, s) => { if (s.iso_date) acc[s.iso_date] = s; return acc; }, {});
+}
+
+function toKey(y, m, d) {
+    return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function todayKey() {
+    return toKey(current.getFullYear(), current.getMonth(), current.getDate());
+}
+
+function renderCalendar() {
+    const smap = sessionMap();
+    document.getElementById('calMonthLabel').textContent = `${MONTHS[displayMonth]} ${displayYear}`;
+
+    const first = new Date(displayYear, displayMonth, 1).getDay();
+    const days = new Date(displayYear, displayMonth + 1, 0).getDate();
+    const tKey = todayKey();
+
+    let html = DAYS.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+    for (let i = 0; i < first; i++) html += `<div class="cal-day empty"></div>`;
+
+    for (let d = 1; d <= days; d++) {
+        const key = toKey(displayYear, displayMonth, d);
+        const isToday = key === tKey;
+        const sess = smap[key];
+        let cls = 'cal-day';
+        if (isToday) cls += ' today';
+        if (sess) cls += ' has-session';
+        html += `<div class="${cls}" data-date="${key}" onclick="scrollToSession('${key}')">
+            ${d}
+            ${sess ? '<span class="session-dot"></span>' : ''}
+        </div>`;
+    }
+    document.getElementById('calGrid').innerHTML = html;
+    renderSessions();
+}
+
+function renderSessions() {
+    const tKey = todayKey();
+    const monthSessions = SESSIONS.filter(s => {
+        if (!s.iso_date) return false;
+        const [y, m] = s.iso_date.split('-').map(Number);
+        return y === displayYear && (m - 1) === displayMonth;
+    });
+
+    if (monthSessions.length === 0) {
+        document.getElementById('sessionList').innerHTML = `
+            <div style="text-align:center;padding:20px;color:var(--muted);font-size:0.87rem;">
+                No sessions scheduled this month
+            </div>`;
+        return;
+    }
+
+    document.getElementById('sessionList').innerHTML = monthSessions.map(s => {
+        const [y, m, d] = s.iso_date.split('-').map(Number);
+        const isPast = s.iso_date < tKey;
+        const isToday = s.iso_date === tKey;
+
+        let statusTag = isPast
+            ? '<span class="session-tag tag-past">Past</span>'
+            : isToday
+            ? '<span class="session-tag tag-today">Today</span>'
+            : '<span class="session-tag tag-upcoming">Upcoming</span>';
+
+        // Recording badge
+        let recBadge = '';
+        if (s.recording && s.recording !== 'Not Started') {
+            recBadge = `<a href="${s.recording}" target="_blank" class="action-chip chip-rec"><i class="fas fa-play-circle"></i> Recording</a>`;
+        } else {
+            recBadge = `<span class="action-chip chip-ns"><i class="fas fa-clock"></i> ${s.recording || 'Not Started'}</span>`;
+        }
+
+        // Zoom button — always shown if available
+        const zoomBtn = s.zoom
+            ? `<a href="${s.zoom}" target="_blank" class="action-chip chip-zoom"><i class="fas fa-video"></i> Join Zoom</a>`
+            : '';
+
+        // Assignment & MCQ
+        const assignBtn = s.assignment
+            ? `<a href="${s.assignment}" target="_blank" class="action-chip chip-assign"><i class="fas fa-tasks"></i> Assignment</a>`
+            : '';
+        const mcqBtn = s.mcq_link
+            ? `<a href="${s.mcq_link}" target="_blank" class="action-chip chip-mcq"><i class="fas fa-question-circle"></i> MCQ</a>`
+            : '';
+
+        return `<div class="session-item ${isPast ? 'past' : 'upcoming'}" id="sess-${s.iso_date}">
+            <div class="session-date-badge">
+                <div class="day">${String(d).padStart(2,'0')}</div>
+                <div class="month">${SMONTHS[m-1]}</div>
+            </div>
+            <div class="session-body">
+                <div class="session-chips">
+                    ${zoomBtn}
+                    ${assignBtn}
+                    ${mcqBtn}
+                    ${recBadge}
+                </div>
+            </div>
+            ${statusTag}
+        </div>`;
+    }).join('');
+}
+
+function scrollToSession(date) {
+    const el = document.getElementById('sess-' + date);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+document.getElementById('prevMonth').onclick = () => {
+    displayMonth--; if (displayMonth < 0) { displayMonth = 11; displayYear--; } renderCalendar();
+};
+document.getElementById('nextMonth').onclick = () => {
+    displayMonth++; if (displayMonth > 11) { displayMonth = 0; displayYear++; } renderCalendar();
+};
+
+renderCalendar();
+
+// ── Topic Progress Interactive Logic ──
+
+function initTopicProgress() {
+    Object.keys(TOPIC_PROGRESS).forEach(key => {
+        const data = TOPIC_PROGRESS[key];
+        
+        // 1. Checkbox state
+        const chk = document.getElementById('chk-' + key);
+        if (chk) {
+            chk.checked = !!data.completed;
+            toggleRowStrike(key, data.completed);
+        }
+        
+        // 2. Assignment state
+        const assignBtn = document.getElementById('assign-' + key);
+        if (assignBtn && data.assignment) {
+            assignBtn.classList.add('active');
+        }
+        
+        // 3. Star rating state
+        if (data.rating) {
+            updateStarRatingUI(key, data.rating);
+        }
+    });
+}
+
+function toggleRowStrike(key, completed) {
+    const row = document.getElementById('topic-row-' + key);
+    if (row) {
+        row.classList.toggle('completed-row', completed);
+    }
+}
+
+function updateStarRatingUI(key, rating) {
+    const container = document.getElementById('rating-' + key);
+    if (container) {
+        const stars = container.querySelectorAll('.star');
+        stars.forEach(star => {
+            const val = parseInt(star.getAttribute('data-value'));
+            if (val <= rating) {
+                star.classList.remove('far');
+                star.classList.add('fas');
+            } else {
+                star.classList.remove('fas');
+                star.classList.add('far');
+            }
+        });
+    }
+}
+
+function saveTopicState(key) {
+    const chk = document.getElementById('chk-' + key);
+    const completed = chk ? chk.checked : false;
+    toggleRowStrike(key, completed);
+    
+    if (!TOPIC_PROGRESS[key]) TOPIC_PROGRESS[key] = {};
+    TOPIC_PROGRESS[key].completed = completed;
+    
+    sendProgressUpdate(key);
+}
+
+function toggleAssignment(key) {
+    const btn = document.getElementById('assign-' + key);
+    if (!btn) return;
+    
+    const active = btn.classList.toggle('active');
+    
+    if (!TOPIC_PROGRESS[key]) TOPIC_PROGRESS[key] = {};
+    TOPIC_PROGRESS[key].assignment = active;
+    
+    sendProgressUpdate(key);
+}
+
+function rateTopic(key, rating) {
+    if (TOPIC_PROGRESS[key] && TOPIC_PROGRESS[key].rating === rating) {
+        rating = 0;
+    }
+    
+    updateStarRatingUI(key, rating);
+    
+    if (!TOPIC_PROGRESS[key]) TOPIC_PROGRESS[key] = {};
+    TOPIC_PROGRESS[key].rating = rating;
+    
+    sendProgressUpdate(key);
+}
+
+function sendProgressUpdate(key) {
+    const data = TOPIC_PROGRESS[key] || { completed: false, rating: 0, assignment: false };
+    
+    fetch('/elearning/course/{{ course.id }}/update-topic/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            topic_key: key,
+            completed: !!data.completed,
+            rating: data.rating || 0,
+            assignment: !!data.assignment
+        })
+    })
+    .then(response => response.json())
+    .then(res => {
+        if (res.status === 'success') {
+            const fill = document.querySelector('.progress-bar-fill');
+            const label = document.getElementById('heroProgressLabel');
+            const statusDot = document.getElementById('heroStatusDot');
+            const statusText = document.getElementById('heroStatusText');
+
+            if (fill) fill.style.width = res.progress_pct + '%';
+            if (label) label.textContent = 'Progress: ' + res.progress_pct + '%';
+            
+            if (statusText) {
+                let text = res.course_status.replace('_', ' ');
+                statusText.textContent = text.charAt(0).toUpperCase() + text.slice(1);
+            }
+            if (statusDot) {
+                if (res.course_status === 'completed') statusDot.style.color = '#6ee7b7';
+                else if (res.course_status === 'in_progress') statusDot.style.color = '#fcd34d';
+                else statusDot.style.color = '#94a3b8';
+            }
+        }
+    })
+    .catch(err => console.error("Failed to update topic progress:", err));
+}
+
+// Call on startup
+initTopicProgress();
+
+// ── Smooth Scroll & Scrollspy for Sticky Course Navbar ──
+
+function scrollToCourseSection(event, id) {
+    event.preventDefault();
+    const target = document.getElementById(id);
+    if (target) {
+        // Adjust for sticky header height
+        const offset = 90;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const targetRect = target.getBoundingClientRect().top;
+        const targetPosition = targetRect - bodyRect;
+        const offsetPosition = targetPosition - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+
+        // Set active link immediately
+        const links = document.querySelectorAll('.course-nav-link');
+        links.forEach(l => l.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+}
+
+// Active link highlighting on scroll (Scrollspy)
+window.addEventListener('scroll', () => {
+    const blocks = document.querySelectorAll('.course-section-block');
+    const links = document.querySelectorAll('.course-nav-link');
+    let currentBlockId = '';
+
+    blocks.forEach(block => {
+        const top = block.offsetTop - 110;
+        if (window.scrollY >= top) {
+            currentBlockId = block.getAttribute('id');
+        }
+    });
+
+    if (currentBlockId) {
+        links.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === '#' + currentBlockId) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    }
+});
+
+function toggleMod(id) {
+    const body = document.getElementById('body-' + id);
+    const chev = document.getElementById('chev-' + id);
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    chev.classList.toggle('open', !isOpen);
+}
+
+// Theme Toggle Logic
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        updateThemeUI(true);
+    } else {
+        document.body.classList.remove('light-theme');
+        updateThemeUI(false);
+    }
+}
+
+function toggleTheme(event) {
+    if (event) event.preventDefault();
+    const isLight = document.body.classList.toggle('light-theme');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    updateThemeUI(isLight);
+}
+
+function updateThemeUI(isLight) {
+    const icon = document.getElementById('themeIcon');
+    const label = document.getElementById('themeLabel');
+    if (icon) {
+        icon.className = isLight ? 'fas fa-sun' : 'fas fa-moon';
+        icon.style.color = isLight ? '#f59e0b' : '';
+    }
+    if (label) {
+        label.textContent = isLight ? 'Light Mode' : 'Dark Mode';
+    }
+}
+
+initTheme();
+</script>
+</body>
+</html>

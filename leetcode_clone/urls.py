@@ -36,6 +36,7 @@ urlpatterns = [
     path('coding-practices/', include('debugger.urls')),
     path('python-tutor/', include('tutor.urls')),
     path('youtube-progress/', views.youtube_progress, name='youtube_progress'),
+    path('elearning/', include('elearning.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,5 +1,67 @@
 // Python Main application logic
 console.log('🟢 python-main.js loaded - Version 4 - ' + new Date().toISOString());
+// Custom modal implementation to completely bypass Bootstrap AMD loader conflicts
+function showCustomModal(modalId) {
+    console.log('🎬 [CUSTOM MODAL] Showing modal:', modalId);
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl) return;
+    
+    // Add backdrop
+    let backdrop = document.querySelector('.modal-backdrop');
+    if (!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop fade';
+        document.body.appendChild(backdrop);
+    }
+    
+    // Show modal
+    modalEl.style.display = 'block';
+    modalEl.setAttribute('aria-modal', 'true');
+    modalEl.removeAttribute('aria-hidden');
+    
+    // Force reflow and add classes
+    setTimeout(() => {
+        modalEl.classList.add('show');
+        backdrop.classList.add('show');
+        document.body.classList.add('modal-open');
+    }, 10);
+    
+    // Bind click to dismiss elements
+    const dismissEls = modalEl.querySelectorAll('[data-bs-dismiss="modal"]');
+    dismissEls.forEach(el => {
+        el.onclick = () => hideCustomModal(modalId);
+    });
+    
+    // Dismiss on clicking outside
+    modalEl.onclick = (e) => {
+        if (e.target === modalEl) {
+            hideCustomModal(modalId);
+        }
+    };
+}
+
+function hideCustomModal(modalId) {
+    console.log('🎬 [CUSTOM MODAL] Hiding modal:', modalId);
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl) return;
+    
+    modalEl.classList.remove('show');
+    
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+        backdrop.classList.remove('show');
+    }
+    document.body.classList.remove('modal-open');
+    
+    setTimeout(() => {
+        modalEl.style.display = 'none';
+        modalEl.setAttribute('aria-hidden', 'true');
+        modalEl.removeAttribute('aria-modal');
+        if (backdrop) {
+            backdrop.remove();
+        }
+    }, 150);
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // Set up event listeners
@@ -34,17 +96,14 @@ function setupEventListeners() {
         // Remove old event listener
         exampleBtn.removeAttribute('onclick');
         
-        // The button now triggers the modal via data-bs-toggle
-        console.log('🔘 [SETUP] Example button configured for modal');
-    }
-    
-    // Modal event listeners
-    const pythonExamplesModal = document.getElementById('pythonExamplesModal');
-    if (pythonExamplesModal) {
-        pythonExamplesModal.addEventListener('show.bs.modal', function() {
-            console.log('📋 [MODAL] Python examples modal opening');
+        // Explicitly trigger category population and modal show on click to guarantee rendering
+        exampleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('🔘 [CLICK] Example button clicked, populating categories and showing custom modal');
             populatePythonExampleCategories();
+            showCustomModal('pythonExamplesModal');
         });
+        console.log('🔘 [SETUP] Example button configured for modal');
     }
     
     // Load selected example button
@@ -4863,6 +4922,12 @@ function populatePythonExampleCategories() {
         });
         
         categoriesContainer.appendChild(categoryBtn);
+
+        // Auto-select the first category initially so that a list of samples is immediately shown!
+        if (index === 0) {
+            categoryBtn.classList.add('active');
+            populatePythonExamples(category);
+        }
     });
     
     console.log('✅ [MODAL] Categories populated successfully');
@@ -4952,10 +5017,7 @@ function loadSelectedPythonExample() {
     }
 
     // Close modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('pythonExamplesModal'));
-    if (modal) {
-        modal.hide();
-    }
+    hideCustomModal('pythonExamplesModal');
 
     // Reset selection
     selectedPythonExample = null;
@@ -5002,8 +5064,17 @@ function showToast(message, type = 'info', delay = 3000) {
 
     // Initialize and show using Bootstrap's JS API
     try {
-        const toast = new bootstrap.Toast(toastEl, { delay: delay });
-        toast.show();
+        if (typeof bootstrap !== 'undefined' && bootstrap.Toast) {
+            const toast = new bootstrap.Toast(toastEl, { delay: delay });
+            toast.show();
+        } else {
+            // Self-contained custom toast display
+            toastEl.classList.add('show');
+            setTimeout(() => {
+                toastEl.classList.remove('show');
+                setTimeout(() => { try { toastEl.remove(); } catch(_){} }, 150);
+            }, delay);
+        }
     } catch (e) {
         // Fallback: remove after delay
         setTimeout(() => { try { toastEl.remove(); } catch(_){} }, delay + 200);

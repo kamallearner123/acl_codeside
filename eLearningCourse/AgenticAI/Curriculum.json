@@ -1,0 +1,142 @@
+[
+    {
+        "id": "01",
+        "module": "AI Foundations for Developers",
+        "duration": "2 hrs",
+        "key_outcome": "Understand LLMs, tokens, transformers — no math",
+        "description": "Demystify how large language models actually work under the hood — without needing a PhD. You'll learn what tokens are, how transformers process language, the difference between base models and instruction-tuned models, and why context windows matter. By the end you'll have a solid mental model of what AI can and cannot do, setting you up to build confidently.",
+        "topics": [
+            "What are LLMs and how do they generate text?",
+            "Tokens, embeddings, and context windows explained",
+            "Transformer architecture — intuition only",
+            "Base models vs. instruction-tuned vs. fine-tuned",
+            "Comparing GPT-4, Claude, Gemini, Mistral, LLaMA"
+        ]
+    },
+    {
+        "id": "02",
+        "module": "Python for AI Builders",
+        "duration": "2 hrs",
+        "key_outcome": "Call APIs, handle JSON, build simple chatbot",
+        "description": "Get hands-on fast. This module focuses on exactly the Python skills you need to build AI applications — not general Python theory. You'll call the OpenAI API, parse JSON responses, manage conversation history, and ship your first working chatbot in under two hours. Prior Python basics assumed.",
+        "topics": [
+            "Using the OpenAI Python SDK",
+            "Understanding API requests, responses and rate limits",
+            "Parsing and manipulating JSON responses",
+            "Managing multi-turn conversation history",
+            "Building and running your first CLI chatbot"
+        ]
+    },
+    {
+        "id": "03",
+        "module": "Prompt Engineering Deep Dive",
+        "duration": "3 hrs",
+        "key_outcome": "Master prompting — zero-shot to chain-of-thought",
+        "description": "Prompting is the new programming. This module takes you from basic instructions all the way to advanced techniques like few-shot examples, chain-of-thought reasoning, role prompting, and output formatting. You'll learn how to make models reliable, structured, and safe — and how to avoid common failure modes that trip up beginners.",
+        "topics": [
+            "Zero-shot, one-shot, and few-shot prompting",
+            "Chain-of-thought and step-by-step reasoning",
+            "System prompts, personas, and role-playing",
+            "Structured output with JSON mode and function calling",
+            "Common prompt failure modes and how to fix them"
+        ]
+    },
+    {
+        "id": "04",
+        "module": "GenAI Ecosystem & Tools",
+        "duration": "2 hrs",
+        "key_outcome": "Navigate OpenAI, Ollama, LangChain, HuggingFace",
+        "description": "The GenAI landscape moves fast. This module gives you a map of the ecosystem so you always know which tool to reach for. You'll compare cloud APIs vs. local models, understand when to use LangChain vs. raw API calls, run a model locally with Ollama, and explore HuggingFace for open-source models and datasets.",
+        "topics": [
+            "OpenAI, Anthropic, Google, Cohere — API comparison",
+            "Running local models with Ollama",
+            "LangChain — when to use it and when not to",
+            "HuggingFace Hub — models, datasets, Spaces",
+            "Choosing the right model for your use case"
+        ]
+    },
+    {
+        "id": "05",
+        "module": "RAG — Retrieval Augmented Generation",
+        "duration": "3 hrs",
+        "key_outcome": "Build PDF chatbots and document search engines",
+        "description": "RAG is one of the most powerful patterns in AI engineering. Instead of fine-tuning expensive models, you retrieve relevant context at query time and inject it into the prompt. You'll build a real PDF chatbot that can answer questions over your own documents, understand vector databases, embeddings, and chunking strategies, and deploy a document search engine from scratch.",
+        "topics": [
+            "Why RAG? Fine-tuning vs. retrieval",
+            "Embeddings and vector similarity search",
+            "Chunking strategies for long documents",
+            "Vector databases: Chroma, FAISS, Pinecone",
+            "Building an end-to-end PDF Q&A chatbot"
+        ]
+    },
+    {
+        "id": "06",
+        "module": "Agentic AI Fundamentals",
+        "duration": "3 hrs",
+        "key_outcome": "Understand agents: brain, memory, tools, planning",
+        "description": "What makes an AI system an 'agent'? This module builds your conceptual foundation — the ReAct loop, tool use, short-term vs. long-term memory, planning strategies, and the difference between single-agent and multi-agent systems. You'll also study real-world agent architectures and understand their failure modes before writing a single line of code.",
+        "topics": [
+            "The ReAct loop: Reason → Act → Observe",
+            "Tool use: how agents call external functions",
+            "Short-term vs. long-term agent memory",
+            "Planning strategies: linear, tree, graph",
+            "Single-agent vs. multi-agent patterns"
+        ]
+    },
+    {
+        "id": "07",
+        "module": "Building AI Agents",
+        "duration": "4 hrs",
+        "key_outcome": "Build real agents with LangChain, CrewAI, LangGraph",
+        "description": "The hands-on core of the course. You'll build three real agents from scratch: a research agent using LangChain with web search tools, a multi-agent pipeline using CrewAI where specialized agents collaborate, and a stateful agent workflow using LangGraph with conditional branching and loops. Every project runs locally and can be deployed.",
+        "topics": [
+            "LangChain Agents: tools, memory, custom chains",
+            "CrewAI: roles, tasks, and multi-agent crews",
+            "LangGraph: stateful graphs, nodes, edges, conditions",
+            "Building a research + summarisation agent",
+            "Debugging agents: tracing, logging, LangSmith"
+        ]
+    },
+    {
+        "id": "08",
+        "module": "MCP & AI Tool Integration",
+        "duration": "1.5 hrs",
+        "key_outcome": "Connect AI to files, browser, APIs, databases",
+        "description": "Model Context Protocol (MCP) is Anthropic's open standard for connecting AI models to the real world. You'll learn how MCP servers expose tools and resources, connect Claude to local files, databases, and browser automation, and build your own custom MCP server. This unlocks a new class of powerful AI integrations.",
+        "topics": [
+            "What is MCP and why it matters",
+            "MCP servers, clients, and transport protocols",
+            "Connecting AI to file systems and databases",
+            "Browser automation via MCP (Playwright integration)",
+            "Building a custom MCP server in Python"
+        ]
+    },
+    {
+        "id": "09",
+        "module": "AI System Design & Production",
+        "duration": "2 hrs",
+        "key_outcome": "Build production-grade AI systems",
+        "description": "Moving from prototype to production is where most AI projects stall. This module covers the engineering patterns you need: streaming responses, rate limit handling, cost optimisation, observability, prompt versioning, guardrails, and evaluation. You'll also learn how to structure AI codebases for maintainability and how to test LLM-powered systems.",
+        "topics": [
+            "Streaming responses and async patterns",
+            "Cost optimisation: caching, model selection, batching",
+            "Observability: logging, tracing, LLM monitoring",
+            "Guardrails: content filtering and output validation",
+            "Evaluating LLM systems: metrics and test datasets"
+        ]
+    },
+    {
+        "id": "10",
+        "module": "Capstone Projects",
+        "duration": "1.5 hrs",
+        "key_outcome": "Showcase your final project",
+        "description": "Apply everything you've learned by building and presenting a complete AI-powered application of your choice. Past projects have included customer support agents, code review bots, internal knowledge assistants, automated research pipelines, and voice-enabled AI interfaces. You'll get structured feedback from instructors and peers, and leave with a polished project to add to your portfolio.",
+        "topics": [
+            "Capstone brief and project selection guidance",
+            "Architecture review and planning session",
+            "Build week with async instructor support",
+            "Project presentations and peer feedback",
+            "Portfolio packaging and next steps"
+        ]
+    }
+]

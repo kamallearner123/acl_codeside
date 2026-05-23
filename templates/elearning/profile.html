@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile – APT Computing Labs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <style>
+        :root {
+            --bg: #0f0f23;
+            --sidebar: #13132b;
+            --card: rgba(255,255,255,0.05);
+            --border: rgba(255,255,255,0.09);
+            --primary: #6366f1;
+            --accent: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --muted: rgba(255,255,255,0.5);
+            --sidebar-w: 260px;
+            --text: #ffffff;
+            --text-heading: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.35);
+        }
+
+        body.light-theme {
+            --bg: #f8fafc;
+            --sidebar: #ffffff;
+            --card: #ffffff;
+            --border: rgba(0, 0, 0, 0.08);
+            --primary: #4f46e5;
+            --accent: #d97706;
+            --green: #059669;
+            --red: #dc2626;
+            --muted: #64748b;
+            --text: #334155;
+            --text-heading: #0f172a;
+            --shadow: rgba(15, 23, 42, 0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; transition: background-color 0.3s ease, color 0.3s ease; }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 200;
+            padding: 28px 0;
+        }
+        .sidebar-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 0 20px 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+        .sidebar-logo img { height: 36px; border-radius: 8px; }
+        .sidebar-logo-text { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--text-heading); }
+        .sidebar-badge {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            font-size: 0.65rem; padding: 2px 8px; border-radius: 50px;
+            font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            display: block; margin-top: 2px;
+        }
+        .sidebar-section-label {
+            padding: 16px 20px 6px;
+            font-size: 0.68rem; font-weight: 700;
+            color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase;
+        }
+        .sidebar-nav { list-style: none; padding: 0 12px; }
+        .sidebar-nav li a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; border-radius: 10px;
+            color: var(--muted); text-decoration: none;
+            font-size: 0.9rem; font-weight: 500;
+            transition: all 0.2s;
+        }
+        .sidebar-nav li a:hover, .sidebar-nav li a.active {
+            background: rgba(99,102,241,0.14);
+            color: #fff;
+        }
+        .sidebar-nav li a.active { color: #a5b4fc; background: rgba(99,102,241,0.14); }
+        .sidebar-nav li a i { width: 18px; text-align: center; }
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+        }
+        .sidebar-user {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .sidebar-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1rem; color: #fff;
+        }
+        .sidebar-username { font-size: 0.88rem; font-weight: 600; color: var(--text-heading); }
+        .sidebar-role { font-size: 0.72rem; color: var(--muted); }
+        .btn-logout {
+            margin-left: auto;
+            background: none; border: 1px solid var(--border);
+            color: var(--muted); border-radius: 8px;
+            padding: 6px 10px; font-size: 0.78rem; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #fca5a5; }
+
+        /* Main */
+        .main-content {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            padding: 32px 36px;
+            min-height: 100vh;
+        }
+
+        /* Back */
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.87rem; margin-bottom: 24px; transition: color 0.2s; }
+        .back-btn:hover { color: var(--text-heading); }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+        .page-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--text-heading); }
+        .page-subtitle { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
+
+        /* Cards Layout */
+        .profile-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; }
+        .profile-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px; padding: 28px;
+            box-shadow: 0 10px 30px var(--shadow);
+            transition: border-color 0.2s;
+        }
+        .profile-card:hover { border-color: rgba(99,102,241,0.25); }
+        .card-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--text-heading); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+        /* Form styling */
+        .form-group { margin-bottom: 20px; }
+        .form-label { font-size: 0.82rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
+        .form-control {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        body.light-theme .form-control { background: #f1f5f9; color: #1e293b; }
+        .form-control:focus {
+            background: rgba(255,255,255,0.06);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+            color: var(--text);
+        }
+        body.light-theme .form-control:focus { background: #ffffff; color: #0f172a; }
+        .form-control::placeholder { color: rgba(255,255,255,0.35); }
+        body.light-theme .form-control::placeholder { color: #94a3b8; }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(99,102,241,0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(99,102,241,0.35); color: #fff; }
+
+        /* Alerts */
+        .alert-banner {
+            padding: 14px 20px; border-radius: 12px;
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 24px; font-size: 0.88rem;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        .alert-success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); color: #6ee7b7; }
+        .alert-error { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
+
+        @media (max-width: 992px) {
+            .profile-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <img src="{% static 'img/APT_Black_01.jpg' %}" alt="ACL">
+        <div>
+            <div class="sidebar-logo-text">APT Computing</div>
+            <span class="sidebar-badge">eLearning</span>
+        </div>
+    </div>
+
+    <span class="sidebar-section-label">Menu</span>
+    <ul class="sidebar-nav">
+        <li><a href="{% url 'elearning:dashboard' %}"><i class="fas fa-th-large"></i> Dashboard</a></li>
+        <li><a href="{% url 'elearning:profile' %}" class="active"><i class="fas fa-user-cog"></i> My Profile</a></li>
+        <li><a href="{% url 'home' %}"><i class="fas fa-globe"></i> Main Website</a></li>
+        <li style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;">
+            <a href="#" id="themeToggleBtn" onclick="toggleTheme(event)" style="cursor: pointer;">
+                <i class="fas fa-moon" id="themeIcon"></i> <span id="themeLabel">Dark Mode</span>
+            </a>
+        </li>
+    </ul>
+
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            {% if profile.avatar_url %}
+                <img src="{{ profile.avatar_url }}" alt="Avatar" class="sidebar-avatar">
+            {% else %}
+                <div class="sidebar-avatar">{{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}</div>
+            {% endif %}
+            <div>
+                <div class="sidebar-username">{{ request.user.get_full_name|default:request.user.username }}</div>
+                <div class="sidebar-role">Student</div>
+            </div>
+            <form method="POST" action="{% url 'elearning:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-logout" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+            </form>
+        </div>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+    <a href="{% url 'elearning:dashboard' %}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title">Profile Settings</div>
+        <div class="page-subtitle">Manage your personal credentials, profile fields, and secure login details</div>
+    </div>
+
+    <!-- Alerts -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert-banner {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Profile Grid -->
+    <div class="profile-grid">
+        <!-- Profile Details Card -->
+        <div class="profile-card">
+            <div class="card-title"><i class="fas fa-user-edit" style="color:var(--primary);"></i> Update Details</div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_profile">
+
+                <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded" style="background: rgba(255,255,255,0.02); border: 1px solid var(--border);">
+                    {% if profile.avatar_url %}
+                        <img src="{{ profile.avatar_url }}" alt="Profile Picture" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                    {% else %}
+                        <div style="width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 700; color: #fff; border: 2px solid var(--primary);">
+                            {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+                        </div>
+                    {% endif %}
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-heading);">Current Profile Picture</div>
+                        <div style="font-size: 0.78rem; color: var(--muted);">Click choose file below to change it</div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label class="form-label" for="first_name">First Name</label>
+                        <input type="text" class="form-control w-100" id="first_name" name="first_name" value="{{ request.user.first_name }}" placeholder="Your first name">
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="form-label" for="last_name">Last Name</label>
+                        <input type="text" class="form-control w-100" id="last_name" name="last_name" value="{{ request.user.last_name }}" placeholder="Your last name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" class="form-control w-100" id="email" name="email" value="{{ request.user.email }}" required placeholder="your.email@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="avatar">Upload Profile Picture</label>
+                    <input type="file" class="form-control w-100" id="avatar" name="avatar" accept="image/*">
+                    <div style="font-size: 0.72rem; color: var(--muted); margin-top: 4px;">JPG, PNG, GIF or WEBP. Max 2MB.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="bio">Student Bio</label>
+                    <textarea class="form-control w-100" id="bio" name="bio" rows="4" placeholder="Tell us a little bit about yourself and your tech interests...">{{ profile.bio }}</textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Save Profile Details
+                </button>
+            </form>
+        </div>
+
+        <!-- Password Change Card -->
+        <div class="profile-card">
+            <div class="card-title"><i class="fas fa-key" style="color:var(--accent);"></i> Change Password</div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_password">
+
+                <div class="form-group">
+                    <label class="form-label" for="old_password">Current Password</label>
+                    <input type="password" class="form-control w-100" id="old_password" name="old_password" required placeholder="Enter current password">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="new_password">New Password</label>
+                    <input type="password" class="form-control w-100" id="new_password" name="new_password" required placeholder="At least 6 characters">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirm_password">Confirm New Password</label>
+                    <input type="password" class="form-control w-100" id="confirm_password" name="confirm_password" required placeholder="Re-enter new password">
+                </div>
+
+                <button type="submit" class="btn-submit" style="background: linear-gradient(135deg, var(--accent), #d97706); box-shadow: 0 4px 12px rgba(245,158,11,0.2);">
+                    <i class="fas fa-lock"></i> Update Password
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script>
+    // Theme Toggle Logic
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+            updateThemeUI(true);
+        } else {
+            document.body.classList.remove('light-theme');
+            updateThemeUI(false);
+        }
+    }
+
+    function toggleTheme(event) {
+        if (event) event.preventDefault();
+        const isLight = document.body.classList.toggle('light-theme');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        updateThemeUI(isLight);
+    }
+
+    function updateThemeUI(isLight) {
+        const icon = document.getElementById('themeIcon');
+        const label = document.getElementById('themeLabel');
+        if (icon) {
+            icon.className = isLight ? 'fas fa-sun' : 'fas fa-moon';
+            icon.style.color = isLight ? '#f59e0b' : '';
+        }
+        if (label) {
+            label.textContent = isLight ? 'Light Mode' : 'Dark Mode';
+        }
+    }
+
+    initTheme();
+</script>
+</body>
+</html>

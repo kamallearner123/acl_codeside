@@ -30,13 +30,12 @@ else
 fi
 
 echo "Rust part is done"
+
 if [ ! -d "$PROJECT_ROOT/.venv" ]; then
-    echo "Virtual environment '.venv' not found." >&2
-    echo "Create it with: python -m venv .venv" >&2
-    exit 1
-else
-    python -m venv .venv
+    python3 -m venv .venv
     echo "Python virtual env is created"
+else
+    echo "Virtual environment '.venv' already exists, reusing it."
 fi
 
 # shellcheck source=/dev/null
@@ -44,8 +43,8 @@ source "$PROJECT_ROOT/.venv/bin/activate"
 
 echo "activated python env"
 
-python -m pip install --upgrade pip >/dev/null
-python -m pip install -r requirements.txt
+python3 -m pip install --upgrade pip >/dev/null
+python3 -m pip install -r requirements.txt
 
-python manage.py migrate
-python manage.py runserver 0.0.0.0:8000
+python3 manage.py migrate
+python3 manage.py runserver 0.0.0.0:8000

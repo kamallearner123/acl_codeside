@@ -34,3 +34,7 @@ class NetworkingSecurityView(TemplateView):
 
 class MLPythonView(TemplateView):
     template_name = 'courses/ml_python.html'
+
+
+class AgenticAIView(TemplateView):
+    template_name = 'courses/agentic_ai.html'

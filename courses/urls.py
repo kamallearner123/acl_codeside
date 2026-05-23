@@ -12,4 +12,5 @@ urlpatterns = [
     path('iot-devices/', views.IoTDevicesView.as_view(), name='iot_devices'),
     path('networking-security/', views.NetworkingSecurityView.as_view(), name='networking_security'),
     path('ml-python/', views.MLPythonView.as_view(), name='ml_python'),
+    path('agentic-ai/', views.AgenticAIView.as_view(), name='agentic_ai'),
 ]
