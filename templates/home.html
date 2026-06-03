@@ -1,1160 +1,708 @@
-{% extends 'base.html' %}
+{% extends 'tailwind_base.html' %}
 {% load static %}
 
-{% block title %}Portfolio - APT COMPUTING LABS{% endblock %}
+{% block extra_css %}
+    <style>
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
-<style>
-    /* Hero Section */
-    .hero {
-        background: linear-gradient(135deg, #156531 0%, #86efac 100%);
-        border-radius: 20px;
-        padding: 60px 40px;
-        color: #2d3436;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
 
-    .hero-overlay::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.25) 0, rgba(255, 255, 255, 0) 55%),
-            radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.2) 0, rgba(255, 255, 255, 0) 60%),
-            radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.18) 0, rgba(255, 255, 255, 0) 55%),
-            linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
-        opacity: 0.9;
-        z-index: 0;
-    }
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-brand-light">
+        <!-- Background decorative elements -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+            <div class="absolute -top-[10%] -right-[10%] w-[50%] h-[60%] rounded-full bg-gradient-to-br from-blue-100 to-transparent blur-3xl opacity-60"></div>
+            <div class="absolute top-[40%] -left-[10%] w-[40%] h-[50%] rounded-full bg-gradient-to-tr from-rose-50 to-transparent blur-3xl opacity-60"></div>
+            
+            <!-- Grid pattern -->
+            <svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                        <path d="M0 40L40 0H20L0 20M40 40V20L20 40" stroke="rgba(0,0,0,0.02)" stroke-width="1" fill="none"/>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid-pattern)"/>
+            </svg>
+        </div>
 
-    .hero>* {
-        position: relative;
-        z-index: 1;
-    }
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+                <!-- Left Content -->
+                <div class="animate-fade-in-up">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white shadow-sm border border-gray-100 mb-6">
+                        <span class="w-2 h-2 rounded-full bg-brand-success animate-pulse"></span>
+                        <span class="text-xs font-semibold text-brand-textSecondary uppercase tracking-wider">Enterprise Grade Engineering</span>
+                    </div>
+                    
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-brand-navy leading-tight mb-6 tracking-tight">
+                        Building Safer Software with <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-coral to-orange-400">Rust, AI</span> and Modern Engineering
+                    </h1>
+                    
+                    <p class="text-lg md:text-xl text-brand-textSecondary mb-8 max-w-2xl leading-relaxed">
+                        Helping organizations and developers master: <br/>
+                        <span class="font-medium text-brand-navy">Rust Programming, Modern C++, Linux System Programming, Automotive Software, Artificial Intelligence, and Embedded Systems.</span>
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#courses" class="inline-flex justify-center items-center px-8 py-3.5 border border-transparent text-base font-medium rounded-full text-white bg-brand-navy hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
+                            Explore Programs
+                        </a>
+                        <a href="#services" class="inline-flex justify-center items-center px-8 py-3.5 border-2 border-gray-200 text-base font-medium rounded-full text-brand-textPrimary bg-white hover:border-brand-navy hover:text-brand-navy transition-all shadow-sm hover:shadow-md hover:-translate-y-1">
+                            Corporate Training
+                        </a>
+                    </div>
+                </div>
 
-    .accent-pill {
-        background: linear-gradient(45deg, #ff6b6b, #ee5a52);
-        color: #ffffff;
-        padding: 8px 20px;
-        border-radius: 25px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-    }
-
-    .accent-heading {
-        font-weight: 800;
-        font-size: 3.2rem;
-        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-        color: #ffffff;
-        letter-spacing: 1px;
-    }
-
-    .cta .btn {
-        border-radius: 25px;
-        padding: 12px 30px;
-        font-weight: 600;
-        transition: all 0.3s;
-    }
-
-    .cta .btn-primary {
-        background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
-        border: none;
-        box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
-        transform: translateY(0);
-    }
-
-    .cta .btn-primary:hover {
-        background: linear-gradient(45deg, #00f2fe 0%, #4facfe 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 12px 30px rgba(79, 172, 254, 0.5);
-    }
-
-    .cta .btn-outline-light {
-        border-color: #ffffff;
-        color: #ffffff;
-        border-width: 2px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-    }
-
-    .cta .btn-outline-light:hover {
-        background: linear-gradient(45deg, #ff6b6b, #ee5a52);
-        color: #ffffff;
-        border-color: #ff6b6b;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-    }
-
-    /* Hero Stats */
-    .hero-stats {
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 20px;
-        padding: 2.5rem;
-        backdrop-filter: blur(20px);
-        border: 2px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .stat-item {
-        color: #ffffff;
-        margin-bottom: 1.5rem;
-    }
-
-    .stat-number {
-        font-size: 2.8rem;
-        font-weight: 800;
-        background: linear-gradient(45deg, #ff6b6b, #feca57);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        text-shadow: none;
-        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
-    }
-
-    .stat-label {
-        font-size: 1rem;
-        color: #ffffff;
-        font-weight: 600;
-        opacity: 0.9;
-    }
-
-    .service-highlights {
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 15px;
-        padding: 1.5rem;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        backdrop-filter: blur(10px);
-    }
-
-    .highlight-item {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        padding: 0.8rem;
-        margin-bottom: 0.8rem;
-        border-left: 4px solid #feca57;
-        transition: all 0.3s ease;
-    }
-
-    .highlight-item:hover {
-        background: rgba(255, 255, 255, 0.25);
-        transform: translateX(5px);
-    }
-
-    /* Service Cards */
-    .service-card {
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-
-    .service-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    .service-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        transition: all 0.3s ease;
-    }
-
-    .industry-card::before {
-        background: linear-gradient(90deg, #007bff, #0056b3);
-    }
-
-    .rust-card::before {
-        background: linear-gradient(90deg, #CE422B, #A0341E);
-    }
-
-    .academic-card::before {
-        background: linear-gradient(90deg, #28a745, #20c997);
-    }
-
-    .service-icon {
-        transition: transform 0.3s ease;
-    }
-
-    .service-card:hover .service-icon {
-        transform: scale(1.1);
-    }
-
-    /* Hide portfolio navigation */
-    .portfolio-nav-wrapper {
-        display: none !important;
-    }
-
-    .tab-pane {
-        display: block !important;
-        opacity: 1 !important;
-    }
-
-    .tab-pane.fade {
-        display: block !important;
-    }
-
-    /* Cards */
-    .card {
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-    }
-
-    .card-body {
-        padding: 20px;
-    }
-
-    .card-title {
-        color: #1a3c6d;
-        font-weight: 600;
-        font-size: 1.5rem;
-    }
-
-    .muted {
-        color: #6b7280;
-        font-size: 1rem;
-    }
-
-    .card img {
-        border-radius: 8px;
-    }
-
-    /* Live Coding Section */
-    .jumbotron {
-        background: linear-gradient(135deg, #007bff, #00d4ff);
-        border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .jumbotron .display-4 {
-        font-size: 2.5rem;
-        font-weight: 700;
-    }
-
-    .jumbotron .lead {
-        font-size: 1.2rem;
-        color: #e2e8f0;
-    }
-
-    .jumbotron hr {
-        border-color: #ffffff;
-        opacity: 0.5;
-    }
-
-    .form-select {
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        padding: 8px;
-    }
-
-    .btn-light,
-    .btn-outline-light {
-        border-radius: 25px;
-        padding: 10px 20px;
-        font-weight: 600;
-    }
-
-    /* Stats Cards */
-    .card .fa-3x {
-        color: #007bff;
-    }
-
-    .card h2 {
-        font-weight: 700;
-        color: #1a3c6d;
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-        .accent-heading {
-            font-size: 2rem;
-        }
-
-        .jumbotron {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .jumbotron .display-4 {
-            font-size: 2rem;
-        }
-
-        .portfolio-tabs .nav-link {
-            padding: 8px 15px;
-            font-size: 0.9rem;
-        }
-    }
-    @media (max-width: 768px) {
-    .accent-heading {
-        font-size: 2rem;
-    }
-
-    .jumbotron {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .jumbotron .display-4 {
-        font-size: 2rem;
-    }
-
-    .portfolio-tabs .nav-link {
-        padding: 8px 15px;
-        font-size: 0.9rem;
-    }
-}
-
-/* Engineering Solutions */
-
-.engineering-solutions {
-    padding: 60px 0;
-}
-
-.solution-card {
-    background: white;
-    border-radius: 15px;
-    padding: 30px;
-    height: 100%;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-.solution-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-}
-
-.solution-card h4 {
-    font-weight: 700;
-    margin-bottom: 15px;
-    color: #1a3c6d;
-}
-
-.solution-card p {
-    color: #6b7280;
-}
-
-</style>
-</style>
-
-<div class="container py-4">
-    <div class="mb-4">
-        <div class="hero mb-4 hero-overlay">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <span class="accent-pill">
-                            <i class="fas fa-shield-alt me-2"></i>Industry Training • MaaS • Academic Excellence
-                        </span>
-                        <h1 class="mt-3 accent-heading">APT COMPUTING LABS</h1>
-                        <p class="lead mb-4 text-white">Empowering developers and organizations with secure coding
-                            expertise, automotive/embedded solutions, and comprehensive technical mentorship across
-                            industries.</p>
-
-                        <div class="service-highlights mb-4">
-                            <div class="row g-2"></div>
-                                <div class="col-md-6">
-                                    <div class="highlight-item d-flex align-items-center">
-                                        <i class="fas fa-industry text-warning me-2"></i>
-                                        <small class="text-white fw-medium">Industry Training & MaaS Retainer</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="highlight-item d-flex align-items-center">
-                                        <i class="fab fa-rust text-warning me-2"></i>
-                                        <small class="text-white fw-medium">Rust for Automotive & Embedded</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="highlight-item d-flex align-items-center">
-                                        <i class="fas fa-graduation-cap text-warning me-2"></i>
-                                        <small class="text-white fw-medium">Academic Partnerships</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="highlight-item d-flex align-items-center">
-                                        <i class="fas fa-code text-warning me-2"></i>
-                                        <small class="text-white fw-medium">Expert Code Reviews</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                        <div class="cta">
-                            <a class="btn btn-lg btn-primary me-2" href="{% url 'courses:list' %}">
-                                <i class="fas fa-book-open me-2"></i>View Courses
-                            </a>
-                            <a class="btn btn-lg btn-outline-light me-2" data-bs-toggle="modal"
-                                data-bs-target="#contactModal">
-                                <i class="fas fa-handshake me-2"></i>Partner with Us
-                            </a>
-                            <a class="btn btn-lg" href="{% url 'elearning:landing' %}"
-                                style="background:linear-gradient(135deg,#6366f1,#f59e0b);color:#fff;border:none;box-shadow:0 8px 25px rgba(99,102,241,0.4);border-radius:25px;font-weight:600;transition:all .3s;"
-                                onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 30px rgba(99,102,241,0.55)';"
-                                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 25px rgba(99,102,241,0.4)';">
-                                <i class="fas fa-graduation-cap me-2"></i>Student Portal
-                            </a>
+                <!-- Right 3D Illustration -->
+                <div class="relative h-[500px] lg:h-[600px] hidden md:block">
+                    <!-- Central Hub -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white rounded-3xl shadow-2xl flex items-center justify-center z-20 border border-gray-100 animate-float">
+                        <div class="w-20 h-20 bg-gradient-to-br from-brand-navy to-blue-600 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-microchip text-4xl text-white"></i>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="hero-stats text-center">
-                            <div class="stat-item mb-3">
-                                <div class="stat-number">17+</div>
-                                <div class="stat-label">Years Experience</div>
+
+                    <!-- Orbiting Cards -->
+                    <!-- Card 1: Rust/Safety -->
+                    <div class="absolute top-[15%] right-[10%] w-48 bg-white p-4 rounded-2xl shadow-premium border border-gray-50 z-30 animate-float-delayed transform rotate-3">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                                <i class="fab fa-rust text-brand-coral"></i>
                             </div>
-                            <div class="stat-item mb-3">
-                                <div class="stat-number">6</div>
-                                <div class="stat-label">Core Technologies</div>
+                            <span class="font-semibold text-sm text-brand-navy">Memory Safety</span>
+                        </div>
+                        <div class="w-full bg-gray-100 h-1.5 rounded-full mb-1">
+                            <div class="bg-brand-coral h-1.5 rounded-full w-full"></div>
+                        </div>
+                        <p class="text-[10px] text-gray-400 text-right">0 Data Races</p>
+                    </div>
+
+                    <!-- Card 2: AI/ML -->
+                    <div class="absolute bottom-[20%] left-[5%] w-56 bg-white p-4 rounded-2xl shadow-premium border border-gray-50 z-30 animate-float transform -rotate-3">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                                <i class="fas fa-brain text-purple-600"></i>
                             </div>
-                            <div class="stat-item">
-                                <div class="stat-number">8 Weeks</div>
-                                <div class="stat-label">Rust Automotive Program</div>
-                            </div>
+                            <span class="font-semibold text-sm text-brand-navy">AI Engineering</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="text-[10px] px-2 py-1 bg-gray-50 rounded-md text-gray-500 font-medium">LLMs</span>
+                            <span class="text-[10px] px-2 py-1 bg-gray-50 rounded-md text-gray-500 font-medium">RAG</span>
+                            <span class="text-[10px] px-2 py-1 bg-gray-50 rounded-md text-gray-500 font-medium">Agents</span>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <section id="live-projects" class="mb-5">
 
-```
-<div class="card shadow-lg border-0">
-
-    <div class="card-body p-5">
-
-        <div class="text-center mb-5">
-
-            <h2 class="fw-bold text-primary">
-                Engineering Excellence
-            </h2>
-
-            <p class="lead">
-                Building Secure Systems, Embedded Solutions,
-                Automotive Software and AI Platforms
-            </p>
-
-        </div>
-
-        <div class="row text-center">
-
-            <div class="col-md-3 mb-4">
-
-                <i class="fab fa-rust fa-4x text-danger mb-3"></i>
-
-                <h5>Rust</h5>
-
-                <p>
-                    Memory-safe systems programming
-                    for Automotive and Embedded products.
-                </p>
-
-            </div>
-
-            <div class="col-md-3 mb-4">
-
-                <i class="fab fa-linux fa-4x text-dark mb-3"></i>
-
-                <h5>Linux</h5>
-
-                <p>
-                    Linux kernel, device drivers
-                    and embedded development.
-                </p>
-
-            </div>
-
-            <div class="col-md-3 mb-4">
-
-                <i class="fas fa-car fa-4x text-primary mb-3"></i>
-
-                <h5>Automotive</h5>
-
-                <p>
-                    Modern software engineering
-                    for next-generation vehicles.
-                </p>
-
-            </div>
-
-            <div class="col-md-3 mb-4">
-
-                <i class="fas fa-brain fa-4x text-success mb-3"></i>
-
-                <h5>AI/ML</h5>
-
-                <p>
-                    Machine Learning and
-                    Artificial Intelligence solutions.
-                </p>
-
-            </div>
-
-        </div>
-
-        <hr class="my-5">
-
-        <div class="text-center mb-4">
-
-            <h3 class="fw-bold">
-                Live Project Highlights
-            </h3>
-
-        </div>
-
-        <div class="row">
-
-            <div class="col-md-4 mb-3">
-
-                <div class="card h-100 border-success">
-
-                    <div class="card-body">
-
-                        <span class="badge bg-success mb-3">
-                            ACTIVE
-                        </span>
-
-                        <h5>
-                            Secure Diagnostics Platform
-                        </h5>
-
-                        <p>
-                            Rust-based secure automotive
-                            diagnostics solution.
-                        </p>
-
+                    <!-- Card 3: Automotive -->
+                    <div class="absolute bottom-[10%] right-[15%] w-40 bg-white p-4 rounded-2xl shadow-premium border border-gray-50 z-10 animate-float-delayed transform rotate-6">
+                        <div class="flex flex-col items-center justify-center text-center">
+                            <i class="fas fa-car-side text-3xl text-blue-500 mb-2"></i>
+                            <span class="font-semibold text-sm text-brand-navy">Automotive OS</span>
+                            <p class="text-[10px] text-gray-500 mt-1">ISO 26262 Compliant</p>
+                        </div>
                     </div>
-
+                    
+                    <!-- Decorative Lines connecting elements -->
+                    <svg class="absolute inset-0 w-full h-full z-0 opacity-20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 200 300 C 200 150, 400 150, 400 300" stroke="#1E3557" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                        <path d="M 200 300 C 200 450, 100 450, 100 300" stroke="#1E3557" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                    </svg>
                 </div>
-
             </div>
-
-            <div class="col-md-4 mb-3">
-
-                <div class="card h-100 border-primary">
-
-                    <div class="card-body">
-
-                        <span class="badge bg-primary mb-3">
-                            DEVELOPMENT
-                        </span>
-
-                        <h5>
-                            Embedded Linux Stack
-                        </h5>
-
-                        <p>
-                            Device drivers and Linux
-                            system programming projects.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-4 mb-3">
-
-                <div class="card h-100 border-warning">
-
-                    <div class="card-body">
-
-                        <span class="badge bg-warning text-dark mb-3">
-                            TRAINING LAB
-                        </span>
-
-                        <h5>
-                            AI Engineering Platform
-                        </h5>
-
-                        <p>
-                            Practical AI and Machine Learning
-                            product development.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
         </div>
+    </section>
 
-        <div class="text-center mt-5">
-
-            <a href="{% url 'courses:list' %}"
-               class="btn btn-primary btn-lg me-3">
-
-                Explore Programs
-
-            </a>
-
-            <button
-                class="btn btn-outline-primary btn-lg"
-                data-bs-toggle="modal"
-                data-bs-target="#contactModal">
-
-                Partner With Us
-
-            </button>
-
+    <!-- Trust Section -->
+    <section class="py-12 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-gray-100 text-center reveal">
+                <div class="px-4">
+                    <p class="text-4xl font-extrabold text-brand-navy mb-2">17+</p>
+                    <p class="text-sm font-medium text-brand-textSecondary uppercase tracking-wide">Years Experience</p>
+                </div>
+                <div class="px-4">
+                    <p class="text-4xl font-extrabold text-brand-navy mb-2">500+</p>
+                    <p class="text-sm font-medium text-brand-textSecondary uppercase tracking-wide">Engineers Trained</p>
+                </div>
+                <div class="px-4">
+                    <p class="text-4xl font-extrabold text-brand-navy mb-2">50+</p>
+                    <p class="text-sm font-medium text-brand-textSecondary uppercase tracking-wide">Corporate Programs</p>
+                </div>
+                <div class="px-4">
+                    <p class="text-4xl font-extrabold text-brand-navy mb-2">6+</p>
+                    <p class="text-sm font-medium text-brand-textSecondary uppercase tracking-wide">Core Technologies</p>
+                </div>
+            </div>
         </div>
+    </section>
 
-    </div>
+    <!-- Partners Section -->
+    <section class="py-16 bg-gray-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 text-center reveal">
+                <!-- Development Partners -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <h3 class="text-xs font-bold text-brand-navy uppercase tracking-widest mb-8 opacity-70">Development Partners</h3>
+                    <div class="flex flex-wrap justify-center items-center gap-12">
+                        <img src="{% static 'img/Caze_Logo.png' %}" alt="Case Labs" class="h-10 md:h-12 w-auto object-contain filter grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer" title="Case Labs">
+                        <img src="{% static 'img/zemicon_logo.webp' %}" alt="Zemicon" class="h-10 md:h-12 w-auto object-contain filter grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer" title="Zemicon">
+                    </div>
+                </div>
+                
+                <!-- Academic Partners -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <h3 class="text-xs font-bold text-brand-navy uppercase tracking-widest mb-8 opacity-70">Academic Partners</h3>
+                    <div class="flex flex-wrap justify-center items-center gap-12">
+                        <img src="{% static 'img/nmit-logo.svg' %}" alt="NMIT, Bangalore" class="h-14 md:h-16 w-auto object-contain filter grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer" title="NMIT, Bangalore">
+                        <img src="{% static 'img/presidency_logo.png' %}" alt="Presidency University, Bangalore" class="h-14 md:h-16 w-auto object-contain filter grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer" title="Presidency University, Bangalore">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-</div>
-```
+    <!-- Services Section -->
+    <section id="services" class="py-24 bg-brand-light relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-navy mb-4">Enterprise Engineering Solutions</h2>
+                <p class="text-lg text-brand-textSecondary">Comprehensive training, consulting, and development services across the most critical technology domains.</p>
+            </div>
 
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Service Card 1 -->
+                <div class="bg-white rounded-3xl p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-2 border border-gray-50 group reveal">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-navy transition-colors duration-300">
+                        <i class="fas fa-chalkboard-teacher text-2xl text-blue-600 group-hover:text-white transition-colors duration-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-navy mb-3">Corporate Training</h3>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Modern C++ & Rust</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Python & AI Engineering</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Linux & Embedded Systems</li>
+                    </ul>
+                </div>
 
+                <!-- Service Card 2 -->
+                <div class="bg-white rounded-3xl p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-2 border border-gray-50 group reveal">
+                    <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-coral transition-colors duration-300">
+                        <i class="fab fa-rust text-2xl text-brand-coral group-hover:text-white transition-colors duration-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-navy mb-3">Rust Consulting</h3>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Migration from C/C++</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Performance Optimization</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Safety Critical Systems</li>
+                    </ul>
+                </div>
 
+                <!-- Service Card 3 -->
+                <div class="bg-white rounded-3xl p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-2 border border-gray-50 group reveal">
+                    <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-colors duration-300">
+                        <i class="fas fa-car text-2xl text-indigo-600 group-hover:text-white transition-colors duration-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-navy mb-3">Automotive Software</h3>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> AUTOSAR Compliance</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Cybersecurity & V2X</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> ISO 26262 & Embedded Linux</li>
+                    </ul>
+                </div>
 
-        <!-- Daily Challenge Section -->
-        {% if daily_challenge %}
-        <div class="row mb-5">
-            <div class="col-12">
-                <div class="card bg-light border-primary shadow-sm">
-                    <div class="card-body d-flex align-items-center justify-content-between">
+                <!-- Service Card 4 -->
+                <div class="bg-white rounded-3xl p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-2 border border-gray-50 group reveal">
+                    <div class="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-600 transition-colors duration-300">
+                        <i class="fas fa-network-wired text-2xl text-purple-600 group-hover:text-white transition-colors duration-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-navy mb-3">AI Engineering</h3>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> RAG & Vector Databases</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> LLMs & Agentic AI</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Practical Machine Learning</li>
+                    </ul>
+                </div>
+
+                <!-- Service Card 5 -->
+                <div class="bg-white rounded-3xl p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-2 border border-gray-50 group reveal">
+                    <div class="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-gray-800 transition-colors duration-300">
+                        <i class="fab fa-linux text-2xl text-gray-800 group-hover:text-white transition-colors duration-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-navy mb-3">Linux Systems</h3>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Kernel Development</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Device Drivers</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> System Programming</li>
+                    </ul>
+                </div>
+
+                <!-- Service Card 6 -->
+                <div class="bg-white rounded-3xl p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-2 border border-gray-50 group reveal">
+                    <div class="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-teal-500 transition-colors duration-300">
+                        <i class="fas fa-user-tie text-2xl text-teal-600 group-hover:text-white transition-colors duration-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-brand-navy mb-3">Technical Mentoring</h3>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Architecture Reviews</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Deep Code Reviews</li>
+                        <li class="flex items-center text-brand-textSecondary text-sm"><i class="fas fa-check text-brand-success mr-2"></i> Career Mentorship & Hiring</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Programs Section -->
+    <section id="courses" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 reveal">
+                <div class="max-w-2xl">
+                    <h2 class="text-3xl md:text-4xl font-bold text-brand-navy mb-4">Featured Programs</h2>
+                    <p class="text-lg text-brand-textSecondary">Intensive, hands-on learning experiences designed for real-world engineering challenges.</p>
+                </div>
+                <div class="mt-6 md:mt-0">
+                    <a href="{% url 'courses:list' %}" class="text-brand-navy font-semibold hover:text-brand-coral transition-colors flex items-center gap-2">
+                        View All Programs <i class="fas fa-arrow-right text-sm"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Course 1 -->
+                <div class="flex flex-col sm:flex-row bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 reveal group">
+                    <div class="sm:w-1/3 bg-gray-50 p-6 flex flex-col justify-center items-center text-center border-r border-gray-100 group-hover:bg-orange-50 transition-colors">
+                        <i class="fab fa-rust text-5xl text-brand-coral mb-4"></i>
+                        <span class="inline-block px-3 py-1 bg-white rounded-full text-xs font-bold text-brand-navy shadow-sm mb-2">8 WEEKS</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Advanced</span>
+                    </div>
+                    <div class="sm:w-2/3 p-8 flex flex-col justify-between">
                         <div>
-                            <h4 class="text-primary mb-1">
-                                <i class="fas fa-calendar-star me-2"></i>Problem of the Day
-                            </h4>
-                            <h5 class="mb-0">{{ daily_challenge.question.title }}</h5>
-                            <span
-                                class="badge bg-{% if daily_challenge.question.difficulty == 'easy' %}success{% elif daily_challenge.question.difficulty == 'medium' %}warning{% else %}danger{% endif %} mt-2 text-capitalize">
-                                {{ daily_challenge.question.difficulty }}
-                            </span>
-                            <span class="ms-2 text-muted small">
-                                <i class="fas fa-coins text-warning"></i> +{{ daily_challenge.bonus_points }} Bonus
-                                Points
-                            </span>
+                            <h3 class="text-2xl font-bold text-brand-navy mb-2 group-hover:text-brand-coral transition-colors">Rust Programming Mastery</h3>
+                            <p class="text-brand-textSecondary text-sm mb-4">Master memory-safe systems programming. Covers ownership, borrowing, concurrency, and embedded application development.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">Rust</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">Memory Safety</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">Concurrency</span>
+                            </div>
                         </div>
+                        <a href="{% url 'courses:detail' 'rust-programming' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy hover:text-brand-coral transition-colors mt-auto">
+                            View Syllabus <i class="fas fa-chevron-right text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Course 2 -->
+                <div class="flex flex-col sm:flex-row bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 reveal group">
+                    <div class="sm:w-1/3 bg-gray-50 p-6 flex flex-col justify-center items-center text-center border-r border-gray-100 group-hover:bg-blue-50 transition-colors">
+                        <i class="fas fa-car-side text-5xl text-blue-600 mb-4"></i>
+                        <span class="inline-block px-3 py-1 bg-white rounded-full text-xs font-bold text-brand-navy shadow-sm mb-2">12 WEEKS</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Expert</span>
+                    </div>
+                    <div class="sm:w-2/3 p-8 flex flex-col justify-between">
                         <div>
-                            <a href="{% url 'questions:detail' daily_challenge.question.slug %}"
-                                class="btn btn-primary btn-lg">
-                                Solve Now <i class="fas fa-arrow-right ms-2"></i>
-                            </a>
+                            <h3 class="text-2xl font-bold text-brand-navy mb-2 group-hover:text-blue-600 transition-colors">Automotive Software Development</h3>
+                            <p class="text-brand-textSecondary text-sm mb-4">End-to-end modern automotive software engineering, focusing on AUTOSAR, diagnostics, and secure coding for modern vehicles.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">AUTOSAR</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">C++</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">ISO 26262</span>
+                            </div>
                         </div>
+                        <a href="{% url 'courses:detail' 'c-system-programming' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy hover:text-blue-600 transition-colors mt-auto">
+                            View Syllabus <i class="fas fa-chevron-right text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Course 3 -->
+                <div class="flex flex-col sm:flex-row bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 reveal group">
+                    <div class="sm:w-1/3 bg-gray-50 p-6 flex flex-col justify-center items-center text-center border-r border-gray-100 group-hover:bg-gray-200 transition-colors">
+                        <i class="fab fa-linux text-5xl text-gray-800 mb-4"></i>
+                        <span class="inline-block px-3 py-1 bg-white rounded-full text-xs font-bold text-brand-navy shadow-sm mb-2">6 WEEKS</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Intermediate</span>
+                    </div>
+                    <div class="sm:w-2/3 p-8 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-2xl font-bold text-brand-navy mb-2 group-hover:text-gray-800 transition-colors">Linux System Programming</h3>
+                            <p class="text-brand-textSecondary text-sm mb-4">Deep dive into Linux internals, system calls, IPC, multi-threading, and high-performance network programming in C.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">Linux</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">C/C++</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">Kernels</span>
+                            </div>
+                        </div>
+                        <a href="{% url 'courses:detail' 'linux-os-concepts' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy hover:text-gray-800 transition-colors mt-auto">
+                            View Syllabus <i class="fas fa-chevron-right text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Course 4 -->
+                <div class="flex flex-col sm:flex-row bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 reveal group">
+                    <div class="sm:w-1/3 bg-gray-50 p-6 flex flex-col justify-center items-center text-center border-r border-gray-100 group-hover:bg-purple-50 transition-colors">
+                        <i class="fas fa-robot text-5xl text-purple-600 mb-4"></i>
+                        <span class="inline-block px-3 py-1 bg-white rounded-full text-xs font-bold text-brand-navy shadow-sm mb-2">10 WEEKS</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">All Levels</span>
+                    </div>
+                    <div class="sm:w-2/3 p-8 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-2xl font-bold text-brand-navy mb-2 group-hover:text-purple-600 transition-colors">AI Engineering Bootcamp</h3>
+                            <p class="text-brand-textSecondary text-sm mb-4">Practical application of AI. Build production-ready RAG applications, deploy open-source models, and orchestrate AI agents.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">Python</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">LLMs</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">LangChain</span>
+                            </div>
+                        </div>
+                        <a href="{% url 'courses:detail' 'agentic-ai' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy hover:text-purple-600 transition-colors mt-auto">
+                            View Syllabus <i class="fas fa-chevron-right text-xs"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-        {% endif %}
+    </section>
 
-        <!-- Main Service Areas -->
-        <div class="row gx-4 mb-5">
-            <div class="col-lg-4">
-                <div class="card h-100 service-card industry-card">
-                    <div class="card-body text-center">
-                        <div class="service-icon mb-3">
-                            <i class="fas fa-industry fa-3x text-primary"></i>
-                        </div>
-                        <h5 class="card-title text-primary">Industry Training & MaaS</h5>
-                        <p class="text-muted mb-3">Comprehensive industry training with "Mentor-as-a-Service" retainer
-                            model</p>
-                        <ul class="list-unstyled text-start small">
-                            <li><i class="fas fa-check text-success me-2"></i>Weekly office hours</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Expert code reviews</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Hiring support & guidance</li>
-                            <li><i class="fas fa-check text-success me-2"></i>C/C++/Python/Automotive/Embedded/IoT/ML
-                            </li>
-                        </ul>
-                        <div class="mt-auto">
-                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#industryModal">
-                                Learn More
-                            </button>
-                        </div>
-                    </div>
+    <!-- Why Choose Us -->
+    <section class="py-24 bg-brand-navy text-white relative overflow-hidden">
+        <!-- Decoration -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-white opacity-5 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-brand-coral opacity-10 blur-3xl"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Why Choose Apt Computing Labs</h2>
+                <p class="text-lg text-gray-300">We don't just teach code; we architect engineering mindsets. Our curriculum is built on decades of production experience.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 text-center reveal">
+                <div class="p-6 bg-white bg-opacity-5 rounded-2xl backdrop-blur-sm border border-white border-opacity-10">
+                    <i class="fas fa-clock text-3xl text-brand-coral mb-4"></i>
+                    <h4 class="font-bold text-lg mb-2">17+ Years Experience</h4>
+                    <p class="text-sm text-gray-400">Founded by industry veterans with deep systems programming backgrounds.</p>
+                </div>
+                <div class="p-6 bg-white bg-opacity-5 rounded-2xl backdrop-blur-sm border border-white border-opacity-10">
+                    <i class="fas fa-users-cog text-3xl text-brand-coral mb-4"></i>
+                    <h4 class="font-bold text-lg mb-2">Industry Experts</h4>
+                    <p class="text-sm text-gray-400">Learn directly from engineers who build mission-critical systems daily.</p>
+                </div>
+                <div class="p-6 bg-white bg-opacity-5 rounded-2xl backdrop-blur-sm border border-white border-opacity-10">
+                    <i class="fas fa-laptop-code text-3xl text-brand-coral mb-4"></i>
+                    <h4 class="font-bold text-lg mb-2">Real Projects</h4>
+                    <p class="text-sm text-gray-400">100% hands-on curriculum focused on production-ready deployments.</p>
+                </div>
+                <div class="p-6 bg-white bg-opacity-5 rounded-2xl backdrop-blur-sm border border-white border-opacity-10">
+                    <i class="fas fa-building text-3xl text-brand-coral mb-4"></i>
+                    <h4 class="font-bold text-lg mb-2">Corporate Focused</h4>
+                    <p class="text-sm text-gray-400">Customized upskilling programs aligned with company technical roadmaps.</p>
+                </div>
+                <div class="p-6 bg-white bg-opacity-5 rounded-2xl backdrop-blur-sm border border-white border-opacity-10">
+                    <i class="fas fa-car text-3xl text-brand-coral mb-4"></i>
+                    <h4 class="font-bold text-lg mb-2">Automotive Expertise</h4>
+                    <p class="text-sm text-gray-400">Deep specialization in connected cars, telematics, and V2X infrastructure.</p>
+                </div>
+                <div class="p-6 bg-white bg-opacity-5 rounded-2xl backdrop-blur-sm border border-white border-opacity-10">
+                    <i class="fab fa-rust text-3xl text-brand-coral mb-4"></i>
+                    <h4 class="font-bold text-lg mb-2">Rust Specialists</h4>
+                    <p class="text-sm text-gray-400">Pioneers in adopting and teaching Rust for safe embedded development.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Blog Section -->
+    <section id="blog" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-end mb-12 reveal">
+                <div>
+                    <h2 class="text-3xl font-bold text-brand-navy mb-4">Latest Insights</h2>
+                    <p class="text-brand-textSecondary">Deep dives into software engineering, AI, and systems architecture.</p>
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="card h-100 service-card rust-card">
-                    <div class="card-body text-center">
-                        <div class="service-icon mb-3">
-                            <i class="fab fa-rust fa-3x" style="color: #CE422B;"></i>
-                        </div>
-                        <h5 class="card-title" style="color: #CE422B;">Rust for Automotive & Embedded</h5>
-                        <p class="text-muted mb-3">Specialized 8-week program with capstone project</p>
-                        <ul class="list-unstyled text-start small">
-                            <li><i class="fas fa-calendar text-warning me-2"></i>8 weeks intensive training</li>
-                            <li><i class="fas fa-project-diagram text-warning me-2"></i>Capstone: Secure diagnostics
-                            </li>
-                            <li><i class="fas fa-certificate text-warning me-2"></i>Professional certification</li>
-                            <li><i class="fas fa-code-branch text-warning me-2"></i>Personal repository access</li>
-                            <li><i class="fas fa-user-check text-warning me-2"></i>Ongoing code reviews</li>
-                        </ul>
-                        <div class="mt-auto">
-                            <button class="btn btn-sm" style="background-color: #CE422B; color: white;"
-                                data-bs-toggle="modal" data-bs-target="#rustModal">
-                                Enroll Now
-                            </button>
+            <div class="grid md:grid-cols-3 gap-8 reveal">
+                <!-- Blog Card 1 -->
+                <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-premium transition-shadow duration-300 group cursor-pointer">
+                    <div class="h-48 bg-gray-100 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center">
+                            <i class="fab fa-rust text-6xl text-brand-coral opacity-50 group-hover:scale-110 transition-transform duration-500"></i>
                         </div>
                     </div>
+                    <div class="p-6">
+                        <span class="text-xs font-bold text-brand-coral uppercase tracking-wider mb-2 block">Rust Programming</span>
+                        <h3 class="text-xl font-bold text-brand-navy mb-3 group-hover:text-brand-coral transition-colors">Safe Concurrency in Rust for Automotive Systems</h3>
+                        <p class="text-sm text-brand-textSecondary mb-4">Exploring how Rust's ownership model prevents data races in mission-critical embedded systems.</p>
+                        <span class="text-xs text-gray-400 font-medium">5 min read</span>
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-lg-4">
-                <div class="card h-100 service-card academic-card">
-                    <div class="card-body text-center">
-                        <div class="service-icon mb-3">
-                            <i class="fas fa-graduation-cap fa-3x text-success"></i>
+                <!-- Blog Card 2 -->
+                <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-premium transition-shadow duration-300 group cursor-pointer">
+                    <div class="h-48 bg-gray-100 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center">
+                            <i class="fas fa-network-wired text-6xl text-purple-600 opacity-50 group-hover:scale-110 transition-transform duration-500"></i>
                         </div>
-                        <h5 class="card-title text-success">Academic Partnerships</h5>
-                        <p class="text-muted mb-3">Comprehensive academic support and collaboration</p>
-                        <ul class="list-unstyled text-start small">
-                            <li><i class="fas fa-laptop text-info me-2"></i>Online & in-class courses</li>
-                            <li><i class="fas fa-user-graduate text-info me-2"></i>B.Tech / M.Tech mentorships</li>
-                            <li><i class="fas fa-chalkboard-teacher text-info me-2"></i>Workshops & guest lectures</li>
-                            <li><i class="fas fa-clipboard-check text-info me-2"></i>Project assessments</li>
-                        </ul>
-                        <div class="mt-auto">
-                            <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#academicModal">
-                                Partner With Us
-                            </button>
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-2 block">AI Engineering</span>
+                        <h3 class="text-xl font-bold text-brand-navy mb-3 group-hover:text-purple-600 transition-colors">Building Production-Ready RAG Pipelines</h3>
+                        <p class="text-sm text-brand-textSecondary mb-4">A practical guide to deploying robust Retrieval-Augmented Generation models in the enterprise.</p>
+                        <span class="text-xs text-gray-400 font-medium">8 min read</span>
+                    </div>
+                </div>
+
+                <!-- Blog Card 3 -->
+                <div class="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-premium transition-shadow duration-300 group cursor-pointer">
+                    <div class="h-48 bg-gray-100 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center">
+                            <i class="fab fa-linux text-6xl text-gray-800 opacity-50 group-hover:scale-110 transition-transform duration-500"></i>
                         </div>
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs font-bold text-gray-800 uppercase tracking-wider mb-2 block">Linux Systems</span>
+                        <h3 class="text-xl font-bold text-brand-navy mb-3 group-hover:text-gray-800 transition-colors">Advanced EBPF for System Observability</h3>
+                        <p class="text-sm text-brand-textSecondary mb-4">Harnessing the power of eBPF to monitor and trace Linux kernel performance safely.</p>
+                        <span class="text-xs text-gray-400 font-medium">6 min read</span>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <div class="row mt-4 gx-4">
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-body d-flex gap-3 align-items-start">
-                        <div style="width:140px;flex:0 0 140px;">
-                            <img src="{% static 'img/kamal.png' %}" alt="Kamal Kumar Mukiri" class="img-fluid rounded">
-                            <div class="mt-2 text-center"><small class="text-muted">Founder</small></div>
-                        </div>
-                        <div>
-                            <h5 class="mb-1">Kamal Kumar Mukiri — Founder</h5>
-                            <p class="mb-0">Software engineer with 17 years' experience in system programming, network
-                                security, and embedded systems. Trainer and consultant in secure engineering practices.
-                            </p>
-                            <div class="mt-2">
-                                <a href="mailto:info@aptcomputinglabs.com"
-                                    class="btn btn-sm btn-outline-primary">Contact</a>
-                                <a href="https://www.linkedin.com/groups/11816027/" target="_blank"
-                                    class="btn btn-sm btn-outline-secondary ms-2">LinkedIn</a>
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-brand-navy rounded-[40px] overflow-hidden shadow-2xl reveal relative">
+                <!-- Background decoration -->
+                <div class="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 rounded-full bg-brand-coral opacity-20 blur-3xl"></div>
+                
+                <div class="grid lg:grid-cols-2">
+                    <div class="p-12 lg:p-16 flex flex-col justify-center relative z-10">
+                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Ready to elevate your engineering team?</h2>
+                        <p class="text-gray-300 text-lg mb-10">Schedule a consultation to discuss corporate training, mentoring, or custom software development needs.</p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-center text-white">
+                                <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-envelope text-brand-coral text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Email Us</p>
+                                    <p class="font-medium text-lg">info@aptcomputinglabs.com</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-white">
+                                <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-phone text-brand-coral text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Call Us</p>
+                                    <p class="font-medium text-lg">+91 9739858111</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-white">
+                                <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-map-marker-alt text-brand-coral text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Location</p>
+                                    <p class="font-medium text-lg">Bengaluru, India</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h6>Contact</h6>
-                        <p class="mb-1"><strong>Email:</strong><br> info@aptcomputinglabs.com</p>
-                        <p class="mb-1"><strong>Phone:</strong><br> +91 9739858111</p>
-                        <a href="https://www.linkedin.com/groups/11816027/" target="_blank"
-                            class="btn btn-sm btn-outline-secondary mt-2">LinkedIn Group</a>
+                    
+                    <div class="bg-gray-50 p-12 lg:p-16">
+                        <form class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-textPrimary mb-2">Name</label>
+                                    <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="John Doe">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-textPrimary mb-2">Company</label>
+                                    <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="Tech Corp Inc.">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-textPrimary mb-2">Email</label>
+                                    <input type="email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="john@example.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-brand-textPrimary mb-2">Phone</label>
+                                    <input type="tel" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="+1 (555) 000-0000">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-brand-textPrimary mb-2">How can we help?</label>
+                                <textarea rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white resize-none" placeholder="Tell us about your requirements..."></textarea>
+                            </div>
+                            
+                            <button type="button" class="w-full py-4 px-6 rounded-xl bg-brand-navy hover:bg-opacity-90 text-white font-bold text-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                                Schedule a Consultation
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <!-- Brand -->
+                <div class="lg:col-span-1">
+                    <div class="flex items-center gap-4 mb-6">
+                        <img src="{% static 'img/APT_Black_01.jpg' %}" alt="Apt Computing Labs Logo" class="h-14 w-auto object-contain mix-blend-multiply">
+                        <div class="flex flex-col">
+                            <span class="font-black text-xl text-brand-navy leading-tight">Apt Computing Labs</span>
+                            <span class="text-[10px] font-semibold text-brand-coral tracking-widest uppercase mt-0.5">Where Knowledge meets innovation</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-brand-textSecondary mb-6 leading-relaxed">
+                        Building safer software and empowering engineers with deep expertise in Rust, C++, Linux, AI, and Automotive systems.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="https://www.linkedin.com/groups/11816027/" target="_blank" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-brand-textSecondary hover:text-brand-navy hover:border-brand-navy transition-colors">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-brand-textSecondary hover:text-brand-navy hover:border-brand-navy transition-colors">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-brand-textSecondary hover:text-brand-navy hover:border-brand-navy transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
 
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-bold text-brand-navy mb-6">Company</h4>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-sm text-brand-textSecondary hover:text-brand-coral transition-colors">About Us</a></li>
+                        <li><a href="#services" class="text-sm text-brand-textSecondary hover:text-brand-coral transition-colors">Services</a></li>
+                        <li><a href="#courses" class="text-sm text-brand-textSecondary hover:text-brand-coral transition-colors">Training Programs</a></li>
+                        <li><a href="#" class="text-sm text-brand-textSecondary hover:text-brand-coral transition-colors">Mentorship</a></li>
+                        <li><a href="#contact" class="text-sm text-brand-textSecondary hover:text-brand-coral transition-colors">Contact</a></li>
+                    </ul>
+                </div>
 
-    {% if user.is_authenticated %}
-    <div class="row mt-5">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
-                    <h5 class="card-title">Problems Solved</h5>
-                    <h2 class="text-primary">{{ user.profile.problems_solved }}</h2>
+                <!-- Technologies -->
+                <div>
+                    <h4 class="font-bold text-brand-navy mb-6">Technologies</h4>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-sm text-brand-textSecondary hover:text-brand-coral transition-colors">Rust Programming</a></li>
+                        <li><a href="#" class="text-sm text-brand-textSecondary hover:text-brand-coral transition-colors">Automotive Software (AUTOSAR)</a></li>
+                        <li><a href="#" class="text-sm text-brand-textSecondary hover:text-brand-coral transition-colors">AI Engineering (LLMs)</a></li>
+                        <li><a href="#" class="text-sm text-brand-textSecondary hover:text-brand-coral transition-colors">Linux System Programming</a></li>
+                        <li><a href="#" class="text-sm text-brand-textSecondary hover:text-brand-coral transition-colors">Modern C++</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal & Contact -->
+                <div>
+                    <h4 class="font-bold text-brand-navy mb-6">Contact</h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-brand-coral mt-1 mr-3"></i>
+                            <span class="text-sm text-brand-textSecondary">Bengaluru, Karnataka<br/>India</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-brand-coral mr-3"></i>
+                            <span class="text-sm text-brand-textSecondary">+91 9739858111</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-brand-coral mr-3"></i>
+                            <span class="text-sm text-brand-textSecondary">info@aptcomputinglabs.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-brand-textSecondary mb-4 md:mb-0">
+                    &copy; {% now "Y" %} Apt Computing Labs. All rights reserved.
+                </p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-sm text-brand-textSecondary hover:text-brand-navy transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-sm text-brand-textSecondary hover:text-brand-navy transition-colors">Terms of Service</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
-                    <h5 class="card-title">Total Submissions</h5>
-                    <h2 class="text-primary">{{ user.profile.total_submissions }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <i class="fas fa-percentage fa-3x text-info mb-3"></i>
-                    <h5 class="card-title">Acceptance Rate</h5>
-                    <h2 class="text-primary">{{ user.profile.acceptance_rate }}%</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-    <div class="mt-4">
-        <p>Developer tools: <a href="{% url 'devtools:list' %}" class="btn btn-sm btn-outline-primary">Browse Developer
-                Tools</a></p>
-    </div>
-</div>
+    </footer>
 
+{% endblock %}
 
-
-<div class="tab-pane fade" id="solutions" role="tabpanel" aria-labelledby="solutions-tab">
-    <div class="card mb-4">
-        <div class="card-body">
-            <h2 class="h5">Solutions</h2>
-            <p>Community-submitted solutions and editorial content will go here.</p>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-
-<!-- Contact Modal -->
-<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="contactModalLabel">Contact Us</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="contactForm" method="post" action="{% url 'contact:contact' %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="contactName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="contactName" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="contactEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="contactEmail" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="contactSubject" class="form-label">Subject</label>
-                        <input type="text" class="form-control" id="contactSubject" name="subject" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="contactMessage" class="form-label">Message</label>
-                        <textarea class="form-control" id="contactMessage" name="message" rows="4" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // Activate tab from URL hash (e.g., #livecoding)
-    document.addEventListener('DOMContentLoaded', function () {
-        try {
-            const hash = window.location.hash;
-            if (hash) {
-                const triggerEl = document.querySelector(`button[data-bs-target="${hash}"]`);
-                if (triggerEl) {
-                    var tab = new bootstrap.Tab(triggerEl);
-                    tab.show();
+{% block extra_js %}
+    <!-- Scripts -->
+    <script>
+        // Smooth Scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 }
-            }
-        } catch (e) {
-            // ignore if bootstrap not available or errors in older browsers
-        }
-
-        // Wire Start Coding button to include language selection
-        try {
-            const startBtn = document.getElementById('startCodingBtn');
-            const langSelect = document.getElementById('langSelect');
-            if (startBtn && langSelect) {
-                startBtn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const base = startBtn.getAttribute('data-base-url') || '/questions/';
-                    const lang = encodeURIComponent(langSelect.value || 'python');
-                    window.location.href = `${base}?lang=${lang}`;
-                });
-            }
-        } catch (e) { }
-
-        // Update URL hash when a tab is shown so deep-links reflect UI state
-        try {
-            const tabButtons = document.querySelectorAll('#portfolioTabs button[data-bs-toggle="tab"]');
-            tabButtons.forEach(btn => {
-                btn.addEventListener('shown.bs.tab', function (evt) {
-                    try {
-                        const target = btn.getAttribute('data-bs-target');
-                        if (history && history.replaceState) {
-                            history.replaceState(null, '', target);
-                        } else {
-                            window.location.hash = target;
-                        }
-                    } catch (e) { }
-                });
             });
-        } catch (e) { }
-    });
-</script>
+        });
 
-<!-- Service Modals -->
-<!-- Industry Training Modal -->
-<div class="modal fade" id="industryModal" tabindex="-1" aria-labelledby="industryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="industryModalLabel">
-                    <i class="fas fa-industry me-2"></i>Industry Training & MaaS
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <h6 class="text-primary mb-3">Mentor-as-a-Service (MaaS) Retainer Program</h6>
-                        <p>Our comprehensive industry training program offers ongoing mentorship and support for
-                            development teams across multiple technologies:</p>
+        // Intersection Observer for fade-in animations
+        const revealElements = document.querySelectorAll('.reveal');
+        
+        const revealCallback = function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        };
+        
+        const revealOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+        
+        const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
+        
+        revealElements.forEach(el => {
+            revealObserver.observe(el);
+        });
 
-                        <div class="mb-4">
-                            <h6 class="text-secondary">Technologies Covered:</h6>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge bg-secondary">C/C++</span>
-                                <span class="badge bg-secondary">Python</span>
-                                <span class="badge bg-secondary">Automotive</span>
-                                <span class="badge bg-secondary">Embedded Systems</span>
-                                <span class="badge bg-secondary">IoT</span>
-                                <span class="badge bg-secondary">Machine Learning</span>
-                            </div>
-                        </div>
 
-                        <div class="mb-4">
-                            <h6 class="text-secondary">MaaS Benefits:</h6>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex align-items-center">
-                                    <i class="fas fa-calendar-week text-primary me-3"></i>
-                                    <div>
-                                        <strong>Weekly Office Hours</strong>
-                                        <small class="d-block text-muted">Regular 1-on-1 and team sessions</small>
-                                    </div>
-                                </li>
-                                <li class="list-group-item d-flex align-items-center">
-                                    <i class="fas fa-code-branch text-primary me-3"></i>
-                                    <div>
-                                        <strong>Expert Code Reviews</strong>
-                                        <small class="d-block text-muted">Comprehensive code quality assessments</small>
-                                    </div>
-                                </li>
-                                <li class="list-group-item d-flex align-items-center">
-                                    <i class="fas fa-user-tie text-primary me-3"></i>
-                                    <div>
-                                        <strong>Hiring Support</strong>
-                                        <small class="d-block text-muted">Technical interview assistance and candidate
-                                            evaluation</small>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="bg-light rounded p-3">
-                            <h6 class="text-center mb-3">Ready to Transform Your Team?</h6>
-                            <div class="text-center">
-                                <p class="small text-muted mb-3">Contact us to discuss your specific training needs and
-                                    MaaS retainer options.</p>
-                                <a href="mailto:info@aptcomputinglabs.com" class="btn btn-primary btn-sm w-100 mb-2">
-                                    <i class="fas fa-envelope me-2"></i>Get Quote
-                                </a>
-                                <a href="tel:+919739858111" class="btn btn-outline-primary btn-sm w-100">
-                                    <i class="fas fa-phone me-2"></i>Call Now
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Rust Automotive Modal -->
-<div class="modal fade" id="rustModal" tabindex="-1" aria-labelledby="rustModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #CE422B; color: white;">
-                <h5 class="modal-title" id="rustModalLabel">
-                    <i class="fab fa-rust me-2"></i>Rust for Automotive & Embedded
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="program-highlight mb-4 p-3 rounded" style="background-color: #FFF3E0;">
-                            <h6 class="mb-2" style="color: #CE422B;">🚀 8-Week Intensive Program</h6>
-                            <p class="mb-0">Comprehensive Rust training specifically designed for automotive and
-                                embedded systems development with real-world applications.</p>
-                        </div>
-
-                        <div class="mb-4">
-                            <h6 class="text-secondary">Program Features:</h6>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex align-items-start">
-                                    <i class="fas fa-calendar-alt text-warning me-3 mt-1"></i>
-                                    <div>
-                                        <strong>8 Weeks Intensive Training</strong>
-                                        <small class="d-block text-muted">Structured learning path from basics to
-                                            advanced concepts</small>
-                                    </div>
-                                </li>
-                                <li class="list-group-item d-flex align-items-start">
-                                    <i class="fas fa-project-diagram text-warning me-3 mt-1"></i>
-                                    <div>
-                                        <strong>Capstone Project: Secure Diagnostics</strong>
-                                        <small class="d-block text-muted">Build real-world automotive diagnostic tools
-                                            with security focus</small>
-                                    </div>
-                                </li>
-                                <li class="list-group-item d-flex align-items-start">
-                                    <i class="fas fa-certificate text-warning me-3 mt-1"></i>
-                                    <div>
-                                        <strong>Professional Certification</strong>
-                                        <small class="d-block text-muted">Industry-recognized certificate upon
-                                            completion</small>
-                                    </div>
-                                </li>
-                                <li class="list-group-item d-flex align-items-start">
-                                    <i class="fas fa-code-branch text-warning me-3 mt-1"></i>
-                                    <div>
-                                        <strong>Personal Repository Access</strong>
-                                        <small class="d-block text-muted">Lifetime access to course materials and code
-                                            samples</small>
-                                    </div>
-                                </li>
-                                <li class="list-group-item d-flex align-items-start">
-                                    <i class="fas fa-user-check text-warning me-3 mt-1"></i>
-                                    <div>
-                                        <strong>Ongoing Code Reviews</strong>
-                                        <small class="d-block text-muted">Post-program support with expert code
-                                            reviews</small>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="rounded p-3" style="background-color: #FFF3E0;">
-                            <h6 class="text-center mb-3" style="color: #CE422B;">Ready to Master Rust?</h6>
-                            <div class="text-center">
-                                <p class="small text-muted mb-3">Join the next cohort and become a Rust expert in
-                                    automotive and embedded systems.</p>
-                                <a href="{% url 'courses:rust_programming' %}" class="btn btn-sm w-100 mb-2"
-                                    style="background-color: #CE422B; color: white;">
-                                    <i class="fas fa-info-circle me-2"></i>Course Details
-                                </a>
-                                <a href="mailto:info@aptcomputinglabs.com?subject=Rust Automotive Program Enrollment"
-                                    class="btn btn-outline-secondary btn-sm w-100">
-                                    <i class="fas fa-envelope me-2"></i>Enroll Now
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Academic Partnership Modal -->
-<div class="modal fade" id="academicModal" tabindex="-1" aria-labelledby="academicModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="academicModalLabel">
-                    <i class="fas fa-graduation-cap me-2"></i>Academic Partnerships
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <h6 class="text-success mb-3">Comprehensive Academic Support</h6>
-                        <p>We partner with educational institutions to provide world-class technical education and
-                            mentorship programs for students and faculty.</p>
-
-                        <div class="mb-4">
-                            <h6 class="text-secondary">Academic Services:</h6>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex align-items-start">
-                                    <i class="fas fa-laptop text-info me-3 mt-1"></i>
-                                    <div>
-                                        <strong>Online & In-Class Courses</strong>
-                                        <small class="d-block text-muted">Flexible delivery options for comprehensive
-                                            technical training</small>
-                                    </div>
-                                </li>
-                                <li class="list-group-item d-flex align-items-start">
-                                    <i class="fas fa-user-graduate text-info me-3 mt-1"></i>
-                                    <div>
-                                        <strong>B.Tech / M.Tech Mentorships</strong>
-                                        <small class="d-block text-muted">One-on-one guidance for undergraduate and
-                                            graduate students</small>
-                                    </div>
-                                </li>
-                                <li class="list-group-item d-flex align-items-start">
-                                    <i class="fas fa-chalkboard-teacher text-info me-3 mt-1"></i>
-                                    <div>
-                                        <strong>Workshops & Guest Lectures</strong>
-                                        <small class="d-block text-muted">Interactive sessions on cutting-edge
-                                            technologies</small>
-                                    </div>
-                                </li>
-                                <li class="list-group-item d-flex align-items-start">
-                                    <i class="fas fa-clipboard-check text-info me-3 mt-1"></i>
-                                    <div>
-                                        <strong>Project Assessments</strong>
-                                        <small class="d-block text-muted">Expert evaluation of student projects and
-                                            research work</small>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="alert alert-info">
-                            <i class="fas fa-lightbulb me-2"></i>
-                            <strong>Recent Success:</strong> Successfully conducted Rust Programming workshop at Vishnu
-                            Institute of Technology, Bhimavaram (Sept 2025)
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="bg-light rounded p-3">
-                            <h6 class="text-center mb-3">Partner With ACL</h6>
-                            <div class="text-center">
-                                <p class="small text-muted mb-3">Let's collaborate to enhance your students' technical
-                                    skills and industry readiness.</p>
-                                <a href="mailto:info@aptcomputinglabs.com?subject=Academic Partnership Inquiry"
-                                    class="btn btn-success btn-sm w-100 mb-2">
-                                    <i class="fas fa-handshake me-2"></i>Start Partnership
-                                </a>
-                                <a href="tel:+919739858111" class="btn btn-outline-success btn-sm w-100">
-                                    <i class="fas fa-phone me-2"></i>Discuss Details
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+    </script>
 {% endblock %}

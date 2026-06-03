@@ -402,160 +402,33 @@
                         </a>
                     </li>
 
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'courses:list' %}">
                             <i class="fas fa-book-open me-1"></i>Courses
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'courses:list' %}">
-                                    <i class="fas fa-list"></i> All Courses
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'tutor:index' %}">
-                                    <i class="fas fa-chalkboard-teacher text-primary"></i> Python Tutor
-                                </a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'courses:c_system_programming' %}">
-                                    <i class="fab fa-cuttlefish"></i> C System Programming
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'courses:python_programming' %}">
-                                    <i class="fab fa-python"></i> Python Programming
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'courses:rust_programming' %}">
-                                    <i class="fab fa-rust"></i> Rust Programming
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'courses:linux_os_concepts' %}">
-                                    <i class="fab fa-linux"></i> Linux OS Concepts
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'courses:iot_devices' %}">
-                                    <i class="fas fa-microchip"></i> IoT Devices
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'courses:networking_security' %}">
-                                    <i class="fas fa-shield-alt"></i> Networking & Security
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'courses:ml_python' %}">
-                                    <i class="fas fa-brain"></i> ML Using Python
-                                </a></li>
-                            <li><a class="dropdown-item" href="{% url 'courses:agentic_ai' %}">
-                                    <i class="fas fa-robot"></i> Agentic AI
-                                </a></li>
-                                
-                        </ul>
                     </li>
 
 
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="fas fa-industry me-1"></i>Services
-                        </a>
-                        <ul class="dropdown-menu">
-                            
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#industryModal">
-                                    <i class="fas fa-briefcase"></i> Industry Training & MaaS
-                                </a></li>
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#rustModal">
-                                    <i class="fab fa-rust"></i> Rust Automotive Program
-                                </a></li>
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#academicModal">
-                                    <i class="fas fa-graduation-cap"></i> Academic Partnerships
-                                </a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            
-
-    
-
-    <!-- New Services -->
-
-    <li>
-        <a class="dropdown-item" href="#">
-            <i class="fas fa-car"></i> Automotive IDS/IDPS
-        </a>
-    </li>
-
-    <li>
-        <a class="dropdown-item" href="#">
-            <i class="fas fa-broadcast-tower"></i> V2X Stack
-        </a>
-    </li>
-
-    <li>
-        <a class="dropdown-item" href="#">
-            <i class="fas fa-robot"></i> AI Agents
-        </a>
-    </li>
-
-    <li>
-        <a class="dropdown-item" href="#">
-            <i class="fab fa-rust"></i> Embedded Rust Frameworks
-        </a>
-    </li>
-
-    <li>
-        <a class="dropdown-item" href="#">
-            <i class="fas fa-shield-alt"></i> Secure Coding Solutions
-        </a>
-    </li>
-
-    <li>
-        <a class="dropdown-item" href="#">
-            <i class="fab fa-linux"></i> Linux Diagnostics Tools
-        </a>
-    </li>
-
-    <li>
-        <hr class="dropdown-divider">
-    </li>
-
-    
-                            <li><a class="dropdown-item" href="{% url 'home' %}#about">
-                                    <i class="fas fa-info-circle"></i> About ACL
-                                </a></li>
-                        </ul>
-                    </li>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            <i class="fas fa-code me-1"></i>Practice
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'debugger:home' %}">
-                                    <i class="fas fa-laptop-code"></i> Coding Practices
-                                </a></li>
-
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" role="button"
-        data-bs-toggle="dropdown">
-        <i class="fas fa-blog me-1"></i>Blogs
-    </a>
-
-    <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#"><i class="fab fa-rust"></i> Rust for Automotive</a></li>
-
-        <li><a class="dropdown-item" href="#"><i class="fab fa-linux"></i> Linux System Programming</a></li>
-
-        <li><a class="dropdown-item" href="#"><i class="fas fa-robot"></i> AI Agents in Rust</a></li>
-
-        <li><a class="dropdown-item" href="#"><i class="fas fa-broadcast-tower"></i> V2X Architecture</a></li>
-
-        <li><a class="dropdown-item" href="#"><i class="fas fa-shield-alt"></i> Secure Coding Practices</a></li>
-
-        <li><a class="dropdown-item" href="#"><i class="fas fa-car"></i> CAN Bus Security</a></li>
-    </ul>
-</li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'events' %}">
+                        <a class="nav-link" href="{% url 'services:list' %}">
+                            <i class="fas fa-industry me-1"></i>Services
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'debugger:home' %}">
+                            <i class="fas fa-code me-1"></i>Practice
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'blogs:list' %}">
+                            <i class="fas fa-blog me-1"></i>Blogs
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'events:list' %}">
                             <i class="fas fa-calendar-alt me-1"></i>Events
                         </a>
                     </li>

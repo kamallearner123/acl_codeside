@@ -1,31 +1,119 @@
-{% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% extends 'tailwind_base.html' %}
+{% load static %}
 
 {% block title %}Login - Apt Computing Labs{% endblock %}
 
-{% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center mb-0">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form|crispy }}
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </button>
-                    </form>
-                    
+{% block extra_css %}
+<style>
+    /* Form styling overrides to make crispy forms match our tailwind aesthetic */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
+        background-color: #f8fafc;
+        transition: all 0.2s ease-in-out;
+        color: #1D2939;
+        font-family: 'Inter', sans-serif;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+        outline: none;
+        border-color: #1E3557;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(30, 53, 87, 0.1);
+    }
+    label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #1E3557;
+        margin-bottom: 0.5rem;
+        margin-top: 1rem;
+    }
+    .help-block, .text-muted {
+        font-size: 0.75rem;
+        color: #475467;
+        margin-top: 0.25rem;
+    }
+    .alert-danger, .invalid-feedback {
+        color: #FF5B5B;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
 
+{% block content %}
+<div class="min-h-screen pt-32 pb-16 bg-brand-light flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        
+        <!-- Logo / Header -->
+        <div class="text-center mb-10">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-navy to-blue-700 flex items-center justify-center shadow-lg mx-auto mb-6 transform transition-transform hover:scale-105 duration-300">
+                <span class="text-white font-bold text-3xl">A</span>
+            </div>
+            <h1 class="text-3xl font-extrabold text-brand-navy tracking-tight">Welcome Back</h1>
+            <p class="text-brand-textSecondary mt-2">Sign in to your Apt Computing Labs account</p>
+        </div>
+        
+        <!-- Login Card -->
+        <div class="bg-white rounded-3xl p-8 sm:p-10 shadow-premium border border-gray-50 relative overflow-hidden">
+            <!-- Decorative accent -->
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-navy to-brand-coral"></div>
+            
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                
+                {{ form.non_field_errors }}
+                
+                {% for field in form %}
+                    <div class="mb-5">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="help-block">{{ field.help_text }}</p>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="invalid-feedback">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <div class="flex items-center justify-between mt-6 mb-8">
+                    <div class="flex items-center">
+                        <input id="remember_me" name="remember_me" type="checkbox" class="h-4 w-4 text-brand-navy border-gray-300 rounded focus:ring-brand-navy">
+                        <label for="remember_me" class="ml-2 block text-sm text-brand-textSecondary mt-0 font-medium">
+                            Remember me
+                        </label>
+                    </div>
+                    
+                    <div class="text-sm">
+                        <a href="#" class="font-semibold text-brand-coral hover:text-red-500 transition-colors">
+                            Forgot password?
+                        </a>
+                    </div>
                 </div>
+
+                <button type="submit" class="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-full shadow-md text-sm font-bold text-white bg-brand-navy hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-all hover:shadow-lg hover:-translate-y-0.5">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Sign In
+                </button>
+            </form>
+            
+            <div class="mt-8 pt-6 border-t border-gray-100 text-center">
+                <p class="text-sm text-brand-textSecondary">
+                    Don't have an account? 
+                    <a href="{% url 'accounts:register' %}" class="font-bold text-brand-navy hover:text-brand-coral transition-colors">Sign up now</a>
+                </p>
             </div>
         </div>
+        
     </div>
 </div>
 {% endblock %}

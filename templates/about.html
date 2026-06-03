@@ -1,0 +1,113 @@
+{% extends 'tailwind_base.html' %}
+{% load static %}
+
+{% block title %}About Us - Apt Computing Labs{% endblock %}
+
+{% block content %}
+    <!-- Hero Section -->
+    <div class="pt-32 pb-20 bg-brand-navy text-white relative overflow-hidden">
+        <!-- Background decorative elements -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-white opacity-5 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-brand-coral opacity-10 blur-3xl"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-white/10 text-brand-coral font-bold text-sm tracking-wider uppercase backdrop-blur-sm mb-6 border border-white/20">
+                Our Story
+            </span>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6">Architecting the Future of Engineering</h1>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                We are a deep-tech engineering lab driven by a singular mission: to bridge the gap between theoretical academia and production-grade industrial systems.
+            </p>
+        </div>
+    </div>
+
+    <!-- Our Mission & Vision -->
+    <section class="py-20 bg-brand-light">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Mission -->
+                <div class="bg-white p-10 rounded-3xl shadow-premium border border-gray-50 transform hover:-translate-y-2 transition-transform duration-300">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-3xl mb-6">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-brand-navy mb-4">Our Mission</h2>
+                    <p class="text-lg text-brand-textSecondary leading-relaxed">
+                        To empower software engineers, automotive developers, and corporate teams with the highest standard of technical knowledge—focusing on memory-safe architectures, high-performance computing, and resilient distributed systems.
+                    </p>
+                </div>
+                
+                <!-- Vision -->
+                <div class="bg-white p-10 rounded-3xl shadow-premium border border-gray-50 transform hover:-translate-y-2 transition-transform duration-300">
+                    <div class="w-16 h-16 bg-orange-50 text-brand-coral rounded-2xl flex items-center justify-center text-3xl mb-6">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-brand-navy mb-4">Our Vision</h2>
+                    <p class="text-lg text-brand-textSecondary leading-relaxed">
+                        To be the global benchmark in deep-tech capability building, where every line of code taught or written contributes to safer, faster, and more intelligent Software-Defined Vehicles and enterprise architectures.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leadership / Founder Section -->
+    <section class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <!-- Image/Graphic -->
+                <div class="w-full lg:w-1/2">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-brand-navy rounded-[3rem] transform translate-x-6 translate-y-6 opacity-10"></div>
+                        <img src="{% static 'img/Kamal_at_NITTE.jpeg' %}" alt="Kamal at NITTE" class="relative z-10 w-full h-[500px] object-cover rounded-[3rem] shadow-2xl border-4 border-white" onerror="this.src='https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        
+                        <!-- Floating Badge -->
+                        <div class="absolute -bottom-8 -left-8 bg-white p-6 rounded-2xl shadow-xl z-20 border border-gray-100 hidden md:block">
+                            <div class="flex items-center gap-4">
+                                <div class="text-brand-coral text-4xl">
+                                    <i class="fas fa-award"></i>
+                                </div>
+                                <div>
+                                    <p class="text-2xl font-black text-brand-navy">17+ Years</p>
+                                    <p class="text-sm font-semibold text-brand-textSecondary uppercase tracking-wide">Industry Experience</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="w-full lg:w-1/2">
+                    <h2 class="text-3xl md:text-4xl font-bold text-brand-navy mb-6">Built by Engineers, for Engineers</h2>
+                    <p class="text-lg text-brand-textSecondary mb-6 leading-relaxed">
+                        Apt Computing Labs was born out of a realization that traditional academic curricula were failing to keep pace with the hyper-accelerated demands of modern software engineering.
+                    </p>
+                    <p class="text-lg text-brand-textSecondary mb-8 leading-relaxed">
+                        With over 17 years of hands-on experience spanning deep embedded systems, Linux kernels, high-frequency telematics, and cutting-edge memory-safe languages like Rust, our leadership understands exactly what it takes to build zero-defect software. We've scaled teams, architected Software-Defined Vehicles, and now, we're dedicated to passing that immense knowledge onto the next generation of engineers.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-6 pt-6 border-t border-gray-100">
+                        <div>
+                            <p class="text-4xl font-black text-brand-navy mb-1">500+</p>
+                            <p class="text-sm font-medium text-brand-textSecondary uppercase tracking-wide">Engineers Mentored</p>
+                        </div>
+                        <div>
+                            <p class="text-4xl font-black text-brand-navy mb-1">50+</p>
+                            <p class="text-sm font-medium text-brand-textSecondary uppercase tracking-wide">Corporate Bootcamps</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-20 bg-brand-navy">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Join the Engineering Elite</h2>
+            <p class="text-xl text-gray-300 mb-10">Whether you're a student looking to break into core systems programming, or a corporation aiming to upskill your automotive team in Rust, we are ready to partner with you.</p>
+            <a href="{% url 'contact:contact' %}" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-full text-brand-navy bg-white hover:bg-gray-50 transition-all shadow-xl hover:-translate-y-1">
+                Get In Touch
+            </a>
+        </div>
+    </section>
+{% endblock %}

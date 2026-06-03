@@ -129,73 +129,6 @@ function showPythonExampleMenu() {
     console.log('📋 [MENU] Opening example menu');
     const exampleCategories = [
         {
-            name: 'Machine Learning Basics',
-            examples: [
-                { name: 'Linear Regression', key: 'ml_linear_regression' },
-                { name: 'Logistic Regression', key: 'ml_logistic_regression' },
-                { name: 'Decision Trees', key: 'ml_decision_trees' },
-                { name: 'Random Forest', key: 'ml_random_forest' },
-                { name: 'K-Means Clustering', key: 'ml_kmeans' },
-                { name: 'SVM Classification', key: 'ml_svm' },
-                { name: 'Naive Bayes', key: 'ml_naive_bayes' },
-                { name: 'K-Nearest Neighbors', key: 'ml_knn' },
-                { name: 'Gradient Boosting', key: 'ml_gradient_boosting' },
-                { name: 'AdaBoost', key: 'ml_adaboost' },
-                { name: 'Principal Component Analysis', key: 'ml_pca' },
-                { name: 'DBSCAN Clustering', key: 'ml_dbscan' }
-            ]
-        },
-        {
-            name: 'Advanced Machine Learning',
-            examples: [
-                { name: 'Cross-Validation', key: 'ml_cross_validation' },
-                { name: 'Grid Search Hyperparameters', key: 'ml_grid_search' },
-                { name: 'Feature Selection', key: 'ml_feature_selection' },
-                { name: 'Ensemble Methods', key: 'ml_ensemble' },
-                { name: 'Pipeline Creation', key: 'ml_pipeline' },
-                { name: 'Model Evaluation Metrics', key: 'ml_metrics' },
-                { name: 'Imbalanced Data Handling', key: 'ml_imbalanced' },
-                { name: 'Anomaly Detection', key: 'ml_anomaly' }
-            ]
-        },
-        {
-            name: 'Regression Models',
-            examples: [
-                { name: 'Ridge Regression', key: 'ml_ridge' },
-                { name: 'Lasso Regression', key: 'ml_lasso' },
-                { name: 'Polynomial Regression', key: 'ml_polynomial' },
-                { name: 'ElasticNet Regression', key: 'ml_elasticnet' }
-            ]
-        },
-        {
-            name: 'Deep Learning',
-            examples: [
-                { name: 'Neural Network (Basic)', key: 'dl_neural_network' },
-                { name: 'CNN - Image Classification', key: 'dl_cnn' },
-                { name: 'RNN - Time Series', key: 'dl_rnn' },
-                { name: 'Transfer Learning', key: 'dl_transfer_learning' }
-            ]
-        },
-        {
-            name: 'Data Science',
-            examples: [
-                { name: 'Pandas DataFrame Basics', key: 'ds_pandas_basics' },
-                { name: 'Data Cleaning', key: 'ds_data_cleaning' },
-                { name: 'Data Visualization', key: 'ds_visualization' },
-                { name: 'Statistical Analysis', key: 'ds_statistics' },
-                { name: 'Feature Engineering', key: 'ds_feature_engineering' }
-            ]
-        },
-        {
-            name: 'NumPy & Arrays',
-            examples: [
-                { name: 'Array Operations', key: 'np_array_ops' },
-                { name: 'Matrix Operations', key: 'np_matrix_ops' },
-                { name: 'Broadcasting', key: 'np_broadcasting' },
-                { name: 'Linear Algebra', key: 'np_linear_algebra' }
-            ]
-        },
-        {
             name: 'Python Basics',
             examples: [
                 { name: 'Variables & Types', key: 'py_basics' },
@@ -237,24 +170,6 @@ function showPythonExampleMenu() {
             ]
         },
         {
-            name: 'Time Series & Finance',
-            examples: [
-                { name: 'Time Series Analysis', key: 'ts_analysis' },
-                { name: 'Moving Averages', key: 'ts_moving_avg' },
-                { name: 'Stock Price Analysis', key: 'finance_stocks' },
-                { name: 'Portfolio Optimization', key: 'finance_portfolio' }
-            ]
-        },
-        {
-            name: 'Text Processing & NLP',
-            examples: [
-                { name: 'Text Preprocessing', key: 'nlp_preprocess' },
-                { name: 'Word Frequency', key: 'nlp_word_freq' },
-                { name: 'Sentiment Analysis', key: 'nlp_sentiment' },
-                { name: 'TF-IDF Vectorization', key: 'nlp_tfidf' }
-            ]
-        },
-        {
             name: 'Web Scraping & Automation',
             examples: [
                 { name: 'Web Scraping Basics', key: 'web_scraping' },
@@ -269,7 +184,7 @@ function showPythonExampleMenu() {
     menu.className = 'example-menu';
     
     const header = document.createElement('h4');
-    header.innerHTML = '<i class="fas fa-brain"></i> Python & Machine Learning Examples';
+    header.innerHTML = '<i class="fas fa-code"></i> Python Examples';
     menu.appendChild(header);
     
     const categoriesContainer = document.createElement('div');

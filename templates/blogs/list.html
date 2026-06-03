@@ -1,0 +1,65 @@
+{% extends 'tailwind_base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Dashboard Header -->
+    <div class="pt-32 pb-12 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-extrabold text-brand-navy mb-4">Engineering Blog</h1>
+            <p class="text-lg text-brand-textSecondary">Insights, tutorials, and deep dives into Rust, Linux, AI, and automotive systems.</p>
+        </div>
+    </div>
+
+    <!-- Blogs Grid -->
+    <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for post in posts %}
+            <a href="{% url 'blogs:detail' post.slug %}" class="block group">
+                <div class="bg-white rounded-3xl overflow-hidden shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-2 border border-gray-50 h-full flex flex-col">
+                    {% if post.image_url %}
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="{{ post.image_url }}" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    {% else %}
+                    <div class="h-48 bg-gradient-to-br from-brand-navy to-blue-800 flex items-center justify-center">
+                        <i class="fas fa-code text-4xl text-white/50"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="p-8 flex flex-col flex-grow">
+                        <div class="flex items-center gap-2 mb-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                            <i class="fas fa-calendar-alt"></i> {{ post.published_date|date:"M d, Y" }}
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-brand-navy mb-3 group-hover:text-brand-coral transition-colors">{{ post.title }}</h3>
+                        
+                        <p class="text-sm text-brand-textSecondary mb-6 flex-grow">
+                            {{ post.excerpt|truncatewords:25 }}
+                        </p>
+                        
+                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy font-bold text-xs">
+                                    {{ post.author|make_list|first|upper }}
+                                </div>
+                                <span class="text-sm font-semibold text-brand-navy">{{ post.author }}</span>
+                            </div>
+                            <div class="text-brand-coral opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="col-span-3 text-center py-20">
+                <i class="fas fa-newspaper text-6xl text-gray-200 mb-4"></i>
+                <h3 class="text-2xl font-bold text-brand-navy">No articles yet</h3>
+                <p class="text-brand-textSecondary mt-2">Check back soon for insights from our engineering team.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+{% endblock %}

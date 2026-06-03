@@ -1,12 +1,19 @@
-{% extends "base.html" %}
+{% extends "tailwind_base.html" %}
 {% load static %}
-{% block title %}Python Programming - ML & Data Science{% endblock %}
+{% block title %}Python Programming{% endblock %}
 
 {% block extra_css %}
+<!-- Bootstrap CSS for legacy editor layout -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'debugger_css/python-style.css' %}">
+<style>
+    /* Prevent tailwind preflight conflicts */
+    .btn { @apply border-none; }
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="pt-32 pb-12">
 <div class="container">
         <!-- Code Editor Panel -->
         <div class="panel editor-panel">
@@ -45,24 +52,9 @@
             </div>
         </div>
 
-        <!-- Plots Panel -->
-        <div class="panel plots-panel">
-            <div class="panel-header">
-                <h2><i class="fas fa-chart-line"></i> Plots & Visualizations</h2>
-                <div class="panel-actions">
-                    <button id="clearPlotsBtn" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-times"></i> Clear
-                    </button>
-                </div>
-            </div>
-            <div id="plots" class="plots-content">
-                <div class="plots-placeholder">
-                    <i class="fas fa-chart-bar"></i>
-                    <p>Plots will appear here when you use matplotlib</p>
-                </div>
-            </div>
-        </div>
+
     </div>
+</div>
 
     <!-- Python Examples Modal -->
     <div class="modal fade" id="pythonExamplesModal" tabindex="-1" aria-labelledby="pythonExamplesModalLabel" aria-hidden="true">
@@ -70,7 +62,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="pythonExamplesModalLabel">
-                        <i class="fas fa-brain me-2"></i>Python & Machine Learning Examples
+                        <i class="fas fa-code me-2"></i>Python Examples
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -116,4 +108,6 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Bootstrap JS for Modals -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

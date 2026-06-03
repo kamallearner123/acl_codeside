@@ -11,10 +11,4 @@ sqlparse==0.5.3
 
 # Debugger App Dependencies
 requests==2.32.5
-numpy==2.2.6        # last version supporting Python 3.10
-pandas==2.2.3       # last version supporting Python 3.10
-scikit-learn==1.5.2 # last version supporting Python 3.10
-scipy==1.13.1       # last version supporting Python 3.10
-matplotlib==3.9.4   # last version supporting Python 3.10
-seaborn==0.13.2
 markdown

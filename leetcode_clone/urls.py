@@ -25,7 +25,10 @@ from . import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('', views.home, name='home'),
-    path('events/', views.events, name='events'),
+    path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
+    path('events/', include('events.urls')),
+    path('services/', include('services.urls')),
+    path('blogs/', include('blogs.urls')),
     path('accounts/', include('accounts.urls')),
     path('courses/', include('courses.urls')),
     path('questions/', include('questions.urls')),

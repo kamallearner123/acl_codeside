@@ -1,0 +1,148 @@
+{% extends 'tailwind_base.html' %}
+{% load static course_tags %}
+
+{% block content %}
+<!-- Course Header -->
+    <div class="pt-32 pb-16 bg-brand-navy text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-white opacity-5 blur-3xl"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <a href="{% url 'courses:list' %}" class="inline-flex items-center text-gray-400 hover:text-white transition-colors mb-8 text-sm font-medium">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+            
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white uppercase tracking-wider backdrop-blur-sm">
+                            {% if course.duration_weeks %}{{ course.duration_weeks }} WEEKS{% else %}{{ course.duration_hours }} HOURS{% endif %}
+                        </span>
+                        {% if course.skill_level %}
+                        <span class="px-3 py-1 bg-brand-coral/20 text-brand-coral rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+                            {{ course.skill_level }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">{{ course.title }}</h1>
+                    <p class="text-lg text-gray-300 mb-8 max-w-xl">
+                        {{ course.short_description|default:course.description|truncatewords:40 }}
+                    </p>
+                    <button class="bg-brand-coral hover:bg-opacity-90 text-white px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center">
+                        <i class="fas fa-lock mr-2"></i> Enroll Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Content & Reviews -->
+    <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-3 gap-12">
+            <!-- Left Col: Details -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-3xl p-8 md:p-12 shadow-premium border border-gray-50 mb-12">
+                    <h2 class="text-2xl font-bold text-brand-navy mb-6">Course Description</h2>
+                    <div class="prose prose-lg text-brand-textSecondary max-w-none">
+                        <!-- Line breaks preserved or markdown rendered -->
+                        {{ course.description|safe }}
+                    </div>
+                    
+                    {% if course.technologies %}
+                    <h3 class="text-xl font-bold text-brand-navy mt-10 mb-4">Technologies Covered</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for tech in course.technologies|split_comma %}
+                        <span class="px-4 py-2 bg-brand-light text-brand-navy font-semibold text-sm rounded-lg border border-gray-200">
+                            {{ tech }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="bg-white rounded-3xl p-8 md:p-12 shadow-premium border border-gray-50" id="reviews">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-2xl font-bold text-brand-navy">Student Reviews</h2>
+                        <div class="text-brand-textSecondary text-sm">
+                            <span class="font-bold text-brand-navy text-xl">{{ course.reviews.count }}</span> Reviews
+                        </div>
+                    </div>
+
+                    <div class="space-y-8">
+                        {% for review in course.reviews.all %}
+                        <div class="border-b border-gray-100 last:border-0 pb-8 last:pb-0">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-brand-navy text-white flex items-center justify-center font-bold">
+                                        {{ review.reviewer_name|make_list|first|upper }}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-brand-navy">{{ review.reviewer_name }}</h4>
+                                        <p class="text-xs text-brand-textSecondary">{{ review.created_at|date:"F j, Y" }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex text-yellow-400 text-sm">
+                                    <!-- A simple way to loop rating times without custom tag -->
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <p class="text-brand-textSecondary italic">"{{ review.comment }}"</p>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-8">
+                            <i class="fas fa-comment-slash text-4xl text-gray-200 mb-3"></i>
+                            <p class="text-brand-textSecondary">No reviews yet for this course.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Col: Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-3xl p-6 shadow-premium border border-gray-50 sticky top-28">
+                    <h3 class="font-bold text-brand-navy mb-4 text-lg">Quick Facts</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-clock text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold">Duration</p>
+                                <p class="font-medium text-brand-navy">
+                                    {% if course.duration_weeks %}{{ course.duration_weeks }} Weeks{% else %}{{ course.duration_hours }} Hours{% endif %}
+                                </p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-signal text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold">Skill Level</p>
+                                <p class="font-medium text-brand-navy">{{ course.skill_level|default:"All Levels" }}</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-certificate text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold">Certificate</p>
+                                <p class="font-medium text-brand-navy">Included upon completion</p>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-100">
+                        <p class="text-sm text-brand-textSecondary text-center mb-4">Have questions before enrolling?</p>
+                        <a href="{% url 'home' %}#contact" class="block w-full text-center py-2.5 rounded-full border border-gray-200 text-brand-navy font-semibold hover:border-brand-navy transition-colors">
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+{% endblock %}

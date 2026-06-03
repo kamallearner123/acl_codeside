@@ -1,0 +1,115 @@
+{% extends 'tailwind_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .prose-custom h2 {
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: #1E3557;
+        margin-top: 2.5rem;
+        margin-bottom: 1.25rem;
+        line-height: 1.3;
+    }
+    .prose-custom h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1E3557;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    .prose-custom p {
+        margin-bottom: 1.25rem;
+        line-height: 1.8;
+    }
+    .prose-custom ul {
+        list-style-type: disc;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+        margin-top: 1rem;
+    }
+    .prose-custom li {
+        margin-bottom: 0.75rem;
+        line-height: 1.6;
+    }
+    .prose-custom strong {
+        font-weight: 600;
+        color: #1D2939;
+    }
+    .prose-custom code {
+        background-color: #f1f5f9;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: monospace;
+        font-size: 0.875em;
+        color: #FF5B5B;
+    }
+    .prose-custom blockquote {
+        border-left: 4px solid #FF5B5B;
+        padding-left: 1rem;
+        font-style: italic;
+        color: #475467;
+        margin-bottom: 1.5rem;
+        background-color: #F7F9FC;
+        padding: 1rem;
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Blog Header -->
+    <div class="pt-32 pb-16 bg-brand-light border-b border-gray-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <a href="{% url 'blogs:list' %}" class="inline-flex items-center text-brand-textSecondary hover:text-brand-navy transition-colors mb-8 text-sm font-medium">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Blog
+            </a>
+            
+            <div class="flex items-center gap-4 mb-6">
+                <span class="text-sm font-bold text-brand-coral uppercase tracking-wider">Engineering</span>
+                <span class="text-gray-300">•</span>
+                <span class="text-sm text-brand-textSecondary font-medium"><i class="far fa-clock mr-1"></i> {{ post.published_date|date:"F j, Y" }}</span>
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl font-extrabold text-brand-navy mb-6 leading-tight">{{ post.title }}</h1>
+            
+            <div class="flex items-center gap-4 mt-8">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center text-brand-navy font-bold text-lg border border-blue-200">
+                    {{ post.author|make_list|first|upper }}
+                </div>
+                <div>
+                    <p class="font-bold text-brand-navy">{{ post.author }}</p>
+                    <p class="text-xs text-brand-textSecondary">Author & Engineer</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blog Cover Image (Optional) -->
+    {% if post.image_url %}
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+        <img src="{{ post.image_url }}" alt="{{ post.title }}" class="w-full h-[400px] object-cover rounded-3xl shadow-xl">
+    </div>
+    {% endif %}
+
+    <!-- Blog Content -->
+    <div class="py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="prose-custom text-lg text-brand-textSecondary">
+            {{ post.content|safe }}
+        </div>
+        
+        <div class="mt-16 pt-8 border-t border-gray-100 flex justify-between items-center">
+            <p class="text-brand-navy font-bold">Share this article</p>
+            <div class="flex gap-4">
+                <a href="#" class="w-10 h-10 rounded-full bg-brand-light flex items-center justify-center text-brand-navy hover:bg-brand-navy hover:text-white transition-colors">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="w-10 h-10 rounded-full bg-brand-light flex items-center justify-center text-brand-navy hover:bg-brand-navy hover:text-white transition-colors">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+{% endblock %}

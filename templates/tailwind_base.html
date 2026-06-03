@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Apt Computing Labs{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#1E3557',
+                            coral: '#FF5B5B',
+                            success: '#22C55E',
+                            light: '#F7F9FC',
+                            textPrimary: '#1D2939',
+                            textSecondary: '#475467'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    },
+                    boxShadow: {
+                        'premium': '0 20px 40px -15px rgba(0,0,0,0.05)',
+                        'premium-hover': '0 30px 60px -15px rgba(0,0,0,0.1)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        /* Mobile menu toggle classes */
+        .mobile-menu { display: none; }
+        .mobile-menu.active { display: flex; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="font-sans text-brand-textPrimary bg-brand-light antialiased selection:bg-brand-coral selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300 shadow-sm" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="{% url 'home' %}" class="flex-shrink-0 flex items-center gap-3">
+                    <img src="{% static 'img/APT_Black_01.jpg' %}" alt="Apt Computing Labs Logo" class="h-16 w-auto object-contain mix-blend-multiply">
+                    <div class="hidden sm:flex flex-col justify-center">
+                        <span class="font-black text-2xl tracking-tight text-brand-navy leading-tight">Apt Computing Labs</span>
+                        <span class="text-[10px] font-semibold text-brand-coral tracking-widest uppercase mt-0.5">Where Knowledge meets innovation</span>
+                    </div>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex space-x-8 items-center">
+                    {% url 'home' as home_url %}
+                    {% url 'courses:list' as courses_url %}
+                    {% url 'services:list' as services_url %}
+                    {% url 'events:list' as events_url %}
+                    {% url 'debugger:home' as practice_url %}
+                    {% url 'blogs:list' as blogs_url %}
+                    
+                    <a href="{{ home_url }}" class="{% if request.path == home_url %}text-brand-navy font-bold border-b-2 border-brand-coral{% else %}text-brand-textSecondary hover:text-brand-navy font-medium{% endif %} transition-colors text-sm py-2">Home</a>
+                    {% url 'about' as about_url %}
+                    <a href="{{ about_url }}" class="{% if request.path == about_url %}text-brand-navy font-bold border-b-2 border-brand-coral{% else %}text-brand-textSecondary hover:text-brand-navy font-medium{% endif %} transition-colors text-sm py-2">About Us</a>
+                    <a href="{{ courses_url }}" class="{% if request.path == courses_url or '/courses/' in request.path %}text-brand-navy font-bold border-b-2 border-brand-coral{% else %}text-brand-textSecondary hover:text-brand-navy font-medium{% endif %} transition-colors text-sm py-2">Courses</a>
+                    <a href="{{ services_url }}" class="{% if request.path == services_url or '/services/' in request.path %}text-brand-navy font-bold border-b-2 border-brand-coral{% else %}text-brand-textSecondary hover:text-brand-navy font-medium{% endif %} transition-colors text-sm py-2">Services</a>
+                    <a href="{{ events_url }}" class="{% if request.path == events_url or '/events/' in request.path %}text-brand-navy font-bold border-b-2 border-brand-coral{% else %}text-brand-textSecondary hover:text-brand-navy font-medium{% endif %} transition-colors text-sm py-2">Events</a>
+                    {% url 'devtools:list' as tools_url %}
+                    <a href="{{ tools_url }}" class="{% if request.path == tools_url or '/devtools/' in request.path %}text-brand-navy font-bold border-b-2 border-brand-coral{% else %}text-brand-textSecondary hover:text-brand-navy font-medium{% endif %} transition-colors text-sm py-2">Tools</a>
+                    <a href="{{ practice_url }}" class="{% if request.path == practice_url or '/practice/' in request.path %}text-brand-navy font-bold border-b-2 border-brand-coral{% else %}text-brand-textSecondary hover:text-brand-navy font-medium{% endif %} transition-colors text-sm py-2">Practice</a>
+                    <a href="{{ blogs_url }}" class="{% if request.path == blogs_url or '/blogs/' in request.path %}text-brand-navy font-bold border-b-2 border-brand-coral{% else %}text-brand-textSecondary hover:text-brand-navy font-medium{% endif %} transition-colors text-sm py-2">Blogs</a>
+                </div>
+
+                <div class="hidden lg:flex items-center gap-4">
+                    <a href="{% url 'accounts:login' %}" class="text-brand-textSecondary hover:text-brand-navy font-medium transition-colors text-sm">Login</a>
+                    <a href="{% url 'contact:contact' %}" class="bg-brand-navy text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-opacity-90 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
+                        Contact
+                    </a>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <div class="lg:hidden flex items-center">
+                    <button id="mobile-menu-button" class="text-brand-navy focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="mobile-menu flex-col bg-white border-t border-gray-100 shadow-lg absolute w-full left-0">
+            <div class="px-4 pt-2 pb-6 space-y-1">
+                <a href="{{ home_url }}" class="block px-3 py-3 rounded-md text-base font-medium {% if request.path == home_url %}bg-blue-50 text-brand-navy{% else %}text-gray-700 hover:bg-gray-50{% endif %}">Home</a>
+                <a href="{{ about_url }}" class="block px-3 py-3 rounded-md text-base font-medium {% if request.path == about_url %}bg-blue-50 text-brand-navy{% else %}text-gray-700 hover:bg-gray-50{% endif %}">About Us</a>
+                <a href="{{ courses_url }}" class="block px-3 py-3 rounded-md text-base font-medium {% if request.path == courses_url or '/courses/' in request.path %}bg-blue-50 text-brand-navy{% else %}text-gray-700 hover:bg-gray-50{% endif %}">Courses</a>
+                <a href="{{ services_url }}" class="block px-3 py-3 rounded-md text-base font-medium {% if request.path == services_url or '/services/' in request.path %}bg-blue-50 text-brand-navy{% else %}text-gray-700 hover:bg-gray-50{% endif %}">Services</a>
+                <a href="{{ events_url }}" class="block px-3 py-3 rounded-md text-base font-medium {% if request.path == events_url or '/events/' in request.path %}bg-blue-50 text-brand-navy{% else %}text-gray-700 hover:bg-gray-50{% endif %}">Events</a>
+                <a href="{{ tools_url }}" class="block px-3 py-3 rounded-md text-base font-medium {% if request.path == tools_url or '/devtools/' in request.path %}bg-blue-50 text-brand-navy{% else %}text-gray-700 hover:bg-gray-50{% endif %}">Tools</a>
+                <a href="{{ practice_url }}" class="block px-3 py-3 rounded-md text-base font-medium {% if request.path == practice_url or '/practice/' in request.path %}bg-blue-50 text-brand-navy{% else %}text-gray-700 hover:bg-gray-50{% endif %}">Practice</a>
+                <a href="{{ blogs_url }}" class="block px-3 py-3 rounded-md text-base font-medium {% if request.path == blogs_url or '/blogs/' in request.path %}bg-blue-50 text-brand-navy{% else %}text-gray-700 hover:bg-gray-50{% endif %}">Blogs</a>
+                <div class="border-t border-gray-200 pt-4 mt-2">
+                    <a href="{% url 'accounts:login' %}" class="block px-3 py-3 text-base font-medium text-gray-700 hover:bg-gray-50">Login</a>
+                    <a href="{% url 'contact:contact' %}" class="block px-3 py-3 text-base font-medium text-brand-coral hover:bg-red-50">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm text-brand-textSecondary">
+                &copy; {% now "Y" %} Apt Computing Labs. All rights reserved.
+            </p>
+        </div>
+    </footer>
+    
+    <!-- Back to Top Button -->
+    <button id="backToTopBtn" class="fixed bottom-8 right-8 bg-brand-coral text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-xl transition-all duration-300 transform translate-y-20 opacity-0 z-50 hover:bg-opacity-90 hover:shadow-xl hover:-translate-y-1 focus:outline-none" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
+    <script>
+        // Back to Top Button Logic
+        const backToTopBtn = document.getElementById('backToTopBtn');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.remove('translate-y-20', 'opacity-0');
+                backToTopBtn.classList.add('translate-y-0', 'opacity-100');
+            } else {
+                backToTopBtn.classList.add('translate-y-20', 'opacity-0');
+                backToTopBtn.classList.remove('translate-y-0', 'opacity-100');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            var menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('active');
+            var icon = this.querySelector('i');
+            if (menu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

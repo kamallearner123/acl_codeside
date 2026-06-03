@@ -5,12 +5,5 @@ app_name = 'courses'
 
 urlpatterns = [
     path('', views.CourseListView.as_view(), name='list'),
-    path('c-system-programming/', views.CSystemProgrammingView.as_view(), name='c_system_programming'),
-    path('python-programming/', views.PythonProgrammingView.as_view(), name='python_programming'),
-    path('rust-programming/', views.RustProgrammingView.as_view(), name='rust_programming'),
-    path('linux-os-concepts/', views.LinuxOSConceptsView.as_view(), name='linux_os_concepts'),
-    path('iot-devices/', views.IoTDevicesView.as_view(), name='iot_devices'),
-    path('networking-security/', views.NetworkingSecurityView.as_view(), name='networking_security'),
-    path('ml-python/', views.MLPythonView.as_view(), name='ml_python'),
-    path('agentic-ai/', views.AgenticAIView.as_view(), name='agentic_ai'),
+    path('<slug:slug>/', views.CourseDetailView.as_view(), name='detail'),
 ]

@@ -1,0 +1,55 @@
+{% extends 'tailwind_base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Dashboard Header -->
+    <div class="pt-32 pb-12 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-extrabold text-brand-navy mb-4">Enterprise Services</h1>
+            <p class="text-lg text-brand-textSecondary">Premium engineering, consulting, and training solutions for modern technology organizations.</p>
+        </div>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for service in services %}
+            <a href="{% url 'services:detail' service.slug %}" class="block group">
+                <div class="bg-white rounded-3xl p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-2 border border-gray-50 h-full flex flex-col">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-16 h-16 bg-brand-light rounded-2xl flex items-center justify-center group-hover:bg-brand-navy transition-colors duration-300 shadow-sm">
+                            <i class="{{ service.icon_class|default:'fas fa-cogs' }} text-3xl text-brand-navy group-hover:text-white transition-colors duration-300"></i>
+                        </div>
+                        {% if service.is_featured %}
+                        <span class="inline-block px-3 py-1 bg-brand-coral/10 rounded-full text-xs font-bold text-brand-coral border border-brand-coral/20">
+                            FEATURED
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-brand-navy mb-3 group-hover:text-brand-coral transition-colors">{{ service.title }}</h3>
+                    
+                    <p class="text-sm text-brand-textSecondary mb-6 flex-grow">
+                        {{ service.short_description|truncatewords:20 }}
+                    </p>
+                    
+                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Explore Solution</span>
+                        <div class="text-brand-coral opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="col-span-3 text-center py-20">
+                <i class="fas fa-tools text-6xl text-gray-200 mb-4"></i>
+                <h3 class="text-2xl font-bold text-brand-navy">No services available yet</h3>
+                <p class="text-brand-textSecondary mt-2">Check back later for exciting new enterprise solutions.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+{% endblock %}

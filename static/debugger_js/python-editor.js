@@ -48,16 +48,16 @@ require.config({
 require(['vs/editor/editor.main'], function() {
     pythonEditor = monaco.editor.create(document.getElementById('editor'), {
         value: `# Welcome to Python Programming!
-# This editor supports Python 3 with popular libraries
+# This editor supports Python 3
 
-import numpy as np
-import pandas as pd
+# Example: Calculate factorials
+def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n - 1)
 
-# Example: Create a simple array
-data = np.array([1, 2, 3, 4, 5])
-print(f"Array: {data}")
-print(f"Mean: {data.mean()}")
-print(f"Sum: {data.sum()}")
+print("Factorial of 5:", factorial(5))
+print("Factorial of 7:", factorial(7))
 `,
         language: 'python',
         theme: 'vs-dark',

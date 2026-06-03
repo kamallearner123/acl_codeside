@@ -1,0 +1,128 @@
+{% extends 'tailwind_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .prose-custom h2 {
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: #1E3557;
+        margin-top: 2.5rem;
+        margin-bottom: 1.25rem;
+        line-height: 1.3;
+    }
+    .prose-custom h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1E3557;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    .prose-custom p {
+        margin-bottom: 1.25rem;
+        line-height: 1.8;
+    }
+    .prose-custom ul {
+        list-style-type: none;
+        padding-left: 0;
+        margin-bottom: 1.5rem;
+    }
+    .prose-custom li {
+        margin-bottom: 0.75rem;
+        line-height: 1.6;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+    .prose-custom li::before {
+        content: "•";
+        color: #FF5B5B;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+    }
+    .prose-custom strong {
+        font-weight: 600;
+        color: #1D2939;
+    }
+    .prose-custom blockquote {
+        border-left: 4px solid #FF5B5B;
+        padding-left: 1rem;
+        font-style: italic;
+        color: #475467;
+        margin-bottom: 1.5rem;
+        background-color: #F7F9FC;
+        padding: 1rem;
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+    .prose-custom .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        border-radius: 9999px;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .badge-primary { background-color: #1E3557; color: white; }
+    .badge-success { background-color: #22C55E; color: white; }
+    .badge-info { background-color: #3b82f6; color: white; }
+    .badge-warning { background-color: #f59e0b; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Event Header -->
+    <div class="pt-32 pb-16 bg-brand-navy text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-white opacity-5 blur-3xl"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <a href="{% url 'events:list' %}" class="inline-flex items-center text-gray-400 hover:text-white transition-colors mb-8 text-sm font-medium">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Events
+            </a>
+            
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">{{ event.title }}</h1>
+                    
+                    <div class="flex flex-col gap-3 mb-8">
+                        <div class="flex items-center text-gray-300">
+                            <i class="far fa-calendar-alt w-6 text-brand-coral"></i>
+                            <span>{{ event.date|date:"l, F j, Y" }}</span>
+                        </div>
+                        <div class="flex items-center text-gray-300">
+                            <i class="far fa-clock w-6 text-brand-coral"></i>
+                            <span>{{ event.date|date:"h:i A" }}</span>
+                        </div>
+                        <div class="flex items-center text-gray-300">
+                            <i class="fas fa-map-marker-alt w-6 text-brand-coral"></i>
+                            <span>{{ event.location }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if event.registration_link %}
+                    <a href="{{ event.registration_link }}" target="_blank" class="bg-brand-coral hover:bg-opacity-90 text-white px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center">
+                        <i class="fas fa-ticket-alt mr-2"></i> Register Now
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Content -->
+    <div class="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if event.image_url %}
+        <div class="mb-12">
+            <img src="{{ event.image_url }}" alt="{{ event.title }}" class="w-full h-auto max-h-[400px] object-cover rounded-3xl shadow-xl">
+        </div>
+        {% endif %}
+
+        <div class="bg-white rounded-3xl p-8 md:p-12 shadow-premium border border-gray-50 mb-12">
+            <h2 class="text-2xl font-bold text-brand-navy mb-6">About this event</h2>
+            <div class="prose-custom text-lg text-brand-textSecondary max-w-none">
+                {{ event.description|safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+{% endblock %}

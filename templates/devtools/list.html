@@ -1,27 +1,159 @@
-{% extends 'base.html' %}
+{% extends 'tailwind_base.html' %}
+{% load static %}
 
-{% block title %}Developer Tools — Apt Computing Labs{% endblock %}
+{% block title %}Developer Tools - Apt Computing Labs{% endblock %}
 
 {% block content %}
-<div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h4 mb-0">Developer Tools</h1>
-    <p class="text-muted mb-0">Handy links and utilities for developers</p>
-  </div>
-  <div class="row g-3">
-    {% for t in tools %}
-      <div class="col-md-4">
-        <div class="card card-soft h-100">
-          <div class="card-body">
-            <h5 class="card-title">{{ t.name }}</h5>
-            <p class="card-text text-muted">{{ t.description }}</p>
-            <a href="{{ t.link }}" target="_blank" class="stretched-link">Open</a>
-          </div>
+    <!-- Tools Header -->
+    <div class="pt-32 pb-12 bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-extrabold text-brand-navy mb-4">ACL Developer Tools</h1>
+            <p class="text-lg text-brand-textSecondary">Custom-built utilities, analyzers, and software to supercharge your engineering workflow.</p>
         </div>
-      </div>
-    {% empty %}
-      <div class="col-12"><div class="alert alert-info">No developer tools yet — add some in admin.</div></div>
-    {% endfor %}
-  </div>
-</div>
+    </div>
+
+    <!-- Tools Categories -->
+    <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
+        
+        <!-- Debugging Tools -->
+        <div class="mb-16">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-12 h-12 bg-red-50 text-red-500 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-bug"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-brand-navy">Debugging Tools</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for tool in tools %}
+                    {% if tool.category == 'debugging' %}
+                    <div class="bg-white rounded-2xl p-6 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 border border-gray-50 h-full flex flex-col">
+                        <h3 class="text-xl font-bold text-brand-navy mb-2">{{ tool.name }}</h3>
+                        <p class="text-brand-textSecondary text-sm flex-grow mb-6">{{ tool.description }}</p>
+                        
+                        <div class="mt-auto flex items-center gap-3">
+                            {% if tool.github_url %}
+                            <a href="{{ tool.github_url }}" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-brand-textPrimary font-medium text-sm rounded-lg border border-gray-200 transition-colors">
+                                <i class="fab fa-github"></i> Source
+                            </a>
+                            {% endif %}
+                            
+                            {% if tool.download_url %}
+                            <a href="{{ tool.download_url }}" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-brand-navy hover:bg-opacity-90 text-white font-medium text-sm rounded-lg transition-colors">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Security Tools -->
+        <div class="mb-16">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-12 h-12 bg-green-50 text-green-500 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-brand-navy">Security Tools</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for tool in tools %}
+                    {% if tool.category == 'security' %}
+                    <div class="bg-white rounded-2xl p-6 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 border border-gray-50 h-full flex flex-col">
+                        <h3 class="text-xl font-bold text-brand-navy mb-2">{{ tool.name }}</h3>
+                        <p class="text-brand-textSecondary text-sm flex-grow mb-6">{{ tool.description }}</p>
+                        
+                        <div class="mt-auto flex items-center gap-3">
+                            {% if tool.github_url %}
+                            <a href="{{ tool.github_url }}" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-brand-textPrimary font-medium text-sm rounded-lg border border-gray-200 transition-colors">
+                                <i class="fab fa-github"></i> Source
+                            </a>
+                            {% endif %}
+                            
+                            {% if tool.download_url %}
+                            <a href="{{ tool.download_url }}" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-brand-navy hover:bg-opacity-90 text-white font-medium text-sm rounded-lg transition-colors">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Observability Tools -->
+        <div class="mb-16">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-brand-navy">Observability Tools</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for tool in tools %}
+                    {% if tool.category == 'observability' %}
+                    <div class="bg-white rounded-2xl p-6 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 border border-gray-50 h-full flex flex-col">
+                        <h3 class="text-xl font-bold text-brand-navy mb-2">{{ tool.name }}</h3>
+                        <p class="text-brand-textSecondary text-sm flex-grow mb-6">{{ tool.description }}</p>
+                        
+                        <div class="mt-auto flex items-center gap-3">
+                            {% if tool.github_url %}
+                            <a href="{{ tool.github_url }}" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-brand-textPrimary font-medium text-sm rounded-lg border border-gray-200 transition-colors">
+                                <i class="fab fa-github"></i> Source
+                            </a>
+                            {% endif %}
+                            
+                            {% if tool.download_url %}
+                            <a href="{{ tool.download_url }}" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-brand-navy hover:bg-opacity-90 text-white font-medium text-sm rounded-lg transition-colors">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- General Tools -->
+        <div class="mb-16">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-brand-navy">General Tools</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for tool in tools %}
+                    {% if tool.category == 'general' %}
+                    <div class="bg-white rounded-2xl p-6 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 border border-gray-50 h-full flex flex-col">
+                        <h3 class="text-xl font-bold text-brand-navy mb-2">{{ tool.name }}</h3>
+                        <p class="text-brand-textSecondary text-sm flex-grow mb-6">{{ tool.description }}</p>
+                        
+                        <div class="mt-auto flex items-center gap-3">
+                            {% if tool.github_url %}
+                            <a href="{{ tool.github_url }}" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-brand-textPrimary font-medium text-sm rounded-lg border border-gray-200 transition-colors">
+                                <i class="fab fa-github"></i> Source
+                            </a>
+                            {% endif %}
+                            
+                            {% if tool.download_url %}
+                            <a href="{{ tool.download_url }}" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-brand-navy hover:bg-opacity-90 text-white font-medium text-sm rounded-lg transition-colors">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
 {% endblock %}

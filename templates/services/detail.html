@@ -1,0 +1,66 @@
+{% extends 'tailwind_base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Service Header -->
+    <div class="pt-32 pb-16 bg-brand-navy text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-white opacity-5 blur-3xl"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <a href="{% url 'services:list' %}" class="inline-flex items-center text-gray-400 hover:text-white transition-colors mb-8 text-sm font-medium">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Services
+            </a>
+            
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white uppercase tracking-wider backdrop-blur-sm">
+                            <i class="{{ service.icon_class }} mr-1"></i> Enterprise Solution
+                        </span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">{{ service.title }}</h1>
+                    <p class="text-lg text-gray-300 mb-8 max-w-xl">
+                        {{ service.short_description }}
+                    </p>
+                    <a href="{% url 'contact:contact' %}" class="bg-brand-coral hover:bg-opacity-90 text-white px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center">
+                        <i class="fas fa-envelope mr-2"></i> Discuss Your Project
+                    </a>
+                </div>
+                <div class="hidden lg:flex justify-end">
+                    <div class="w-64 h-64 bg-white/5 rounded-3xl backdrop-blur-sm border border-white/10 flex items-center justify-center transform rotate-3 hover:rotate-0 transition-transform duration-500 shadow-2xl">
+                        <i class="{{ service.icon_class }} text-9xl text-brand-coral opacity-80"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Content -->
+    <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-3 gap-12">
+            <!-- Left Col: Details -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-3xl p-8 md:p-12 shadow-premium border border-gray-50 mb-12">
+                    <h2 class="text-2xl font-bold text-brand-navy mb-6">Service Overview</h2>
+                    <div class="prose prose-lg text-brand-textSecondary max-w-none">
+                        {{ service.description|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Col: Sidebar CTA -->
+            <div class="lg:col-span-1">
+                <div class="bg-gradient-to-br from-brand-navy to-blue-900 rounded-3xl p-8 shadow-premium text-white sticky top-28 border border-blue-800">
+                    <h3 class="font-bold text-white mb-4 text-xl">Ready to get started?</h3>
+                    <p class="text-sm text-blue-100 mb-8">
+                        Our experts are ready to integrate {{ service.title }} into your organizational workflow. Schedule a free consultation today.
+                    </p>
+                    <a href="{% url 'contact:contact' %}" class="block w-full text-center py-3 rounded-full bg-white text-brand-navy font-bold shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
+                        Book Consultation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+{% endblock %}
