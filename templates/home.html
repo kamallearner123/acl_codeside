@@ -7,7 +7,7 @@
 <style>
     /* Hero Section */
     .hero {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        background: linear-gradient(135deg, #156531 0%, #86efac 100%);
         border-radius: 20px;
         padding: 60px 40px;
         color: #2d3436;
@@ -300,6 +300,58 @@
             font-size: 0.9rem;
         }
     }
+    @media (max-width: 768px) {
+    .accent-heading {
+        font-size: 2rem;
+    }
+
+    .jumbotron {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .jumbotron .display-4 {
+        font-size: 2rem;
+    }
+
+    .portfolio-tabs .nav-link {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Engineering Solutions */
+
+.engineering-solutions {
+    padding: 60px 0;
+}
+
+.solution-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    height: 100%;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.solution-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.solution-card h4 {
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #1a3c6d;
+}
+
+.solution-card p {
+    color: #6b7280;
+}
+
+</style>
 </style>
 
 <div class="container py-4">
@@ -317,7 +369,7 @@
                             industries.</p>
 
                         <div class="service-highlights mb-4">
-                            <div class="row g-2">
+                            <div class="row g-2"></div>
                                 <div class="col-md-6">
                                     <div class="highlight-item d-flex align-items-center">
                                         <i class="fas fa-industry text-warning me-2"></i>
@@ -379,6 +431,198 @@
                 </div>
             </div>
         </div>
+        <section id="live-projects" class="mb-5">
+
+```
+<div class="card shadow-lg border-0">
+
+    <div class="card-body p-5">
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold text-primary">
+                Engineering Excellence
+            </h2>
+
+            <p class="lead">
+                Building Secure Systems, Embedded Solutions,
+                Automotive Software and AI Platforms
+            </p>
+
+        </div>
+
+        <div class="row text-center">
+
+            <div class="col-md-3 mb-4">
+
+                <i class="fab fa-rust fa-4x text-danger mb-3"></i>
+
+                <h5>Rust</h5>
+
+                <p>
+                    Memory-safe systems programming
+                    for Automotive and Embedded products.
+                </p>
+
+            </div>
+
+            <div class="col-md-3 mb-4">
+
+                <i class="fab fa-linux fa-4x text-dark mb-3"></i>
+
+                <h5>Linux</h5>
+
+                <p>
+                    Linux kernel, device drivers
+                    and embedded development.
+                </p>
+
+            </div>
+
+            <div class="col-md-3 mb-4">
+
+                <i class="fas fa-car fa-4x text-primary mb-3"></i>
+
+                <h5>Automotive</h5>
+
+                <p>
+                    Modern software engineering
+                    for next-generation vehicles.
+                </p>
+
+            </div>
+
+            <div class="col-md-3 mb-4">
+
+                <i class="fas fa-brain fa-4x text-success mb-3"></i>
+
+                <h5>AI/ML</h5>
+
+                <p>
+                    Machine Learning and
+                    Artificial Intelligence solutions.
+                </p>
+
+            </div>
+
+        </div>
+
+        <hr class="my-5">
+
+        <div class="text-center mb-4">
+
+            <h3 class="fw-bold">
+                Live Project Highlights
+            </h3>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-4 mb-3">
+
+                <div class="card h-100 border-success">
+
+                    <div class="card-body">
+
+                        <span class="badge bg-success mb-3">
+                            ACTIVE
+                        </span>
+
+                        <h5>
+                            Secure Diagnostics Platform
+                        </h5>
+
+                        <p>
+                            Rust-based secure automotive
+                            diagnostics solution.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <div class="card h-100 border-primary">
+
+                    <div class="card-body">
+
+                        <span class="badge bg-primary mb-3">
+                            DEVELOPMENT
+                        </span>
+
+                        <h5>
+                            Embedded Linux Stack
+                        </h5>
+
+                        <p>
+                            Device drivers and Linux
+                            system programming projects.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-3">
+
+                <div class="card h-100 border-warning">
+
+                    <div class="card-body">
+
+                        <span class="badge bg-warning text-dark mb-3">
+                            TRAINING LAB
+                        </span>
+
+                        <h5>
+                            AI Engineering Platform
+                        </h5>
+
+                        <p>
+                            Practical AI and Machine Learning
+                            product development.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="text-center mt-5">
+
+            <a href="{% url 'courses:list' %}"
+               class="btn btn-primary btn-lg me-3">
+
+                Explore Programs
+
+            </a>
+
+            <button
+                class="btn btn-outline-primary btn-lg"
+                data-bs-toggle="modal"
+                data-bs-target="#contactModal">
+
+                Partner With Us
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+
+
 
         <!-- Daily Challenge Section -->
         {% if daily_challenge %}

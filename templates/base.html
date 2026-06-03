@@ -27,14 +27,21 @@
             color: #2d3748;
             margin: 0;
             padding: 0;
+            padding-top: 180px;
         }
 
         /* Navbar Styling */
         .navbar {
-            background: linear-gradient(90deg, #1f2937 0%, #3b82f6 100%);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-            padding: 24px 0 12px;
-        }
+    background: linear-gradient(90deg, #1f2937 0%, #2aca7d 100%);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    padding: 24px 0 12px;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+}
 
         .navbar-brand {
             display: flex;
@@ -46,16 +53,17 @@
         }
 
         .navbar-logo {
-            width: 70px;
-            height: auto;
-            margin-right: 18px;
-            margin-bottom: 0;
-            filter: drop-shadow(0 6px 15px rgba(0, 0, 0, 0.3));
-            transition: all 0.4s ease;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px;
-        }
+    width: 70px;
+    height: auto;
+    margin-right: 18px;
+    margin-bottom: 0;
+    filter: none;
+    transition: all 0.4s ease;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+}
+        
 
         .navbar-brand:hover .navbar-logo {
             transform: scale(1.08) rotate(2deg);
@@ -94,14 +102,17 @@
         }
 
         .navbar-nav .nav-link {
-            color: #ffffff;
-            font-weight: 600;
-            padding: 15px 20px;
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            margin: 0 5px;
-            position: relative;
-        }
+    color: #ffffff;
+    font-weight: 600;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    border-radius: 50px;
+    margin: 0 5px;
+    position: relative;
+
+    border-top: 2px solid #4ade80;
+    border-bottom: 2px solid #4ade80;
+}
 
         .navbar-nav .nav-link:hover {
             color: #ffffff;
@@ -170,15 +181,15 @@
         }
 
         .dropdown-menu .dropdown-item:hover {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #ffffff;
-            padding-left: 25px;
-            border-left: 4px solid #feca57;
-            transform: translateX(5px);
-            font-weight: 600;
-            border-radius: 8px;
-            margin: 0 8px;
-        }
+    background: linear-gradient(135deg, #34d399, #10b981);
+    color: #ffffff;
+    padding-left: 25px;
+    border-left: 4px solid #86efac;
+    transform: translateX(5px);
+    font-weight: 600;
+    border-radius: 8px;
+    margin: 0 8px;
+}
 
         .dropdown-menu .dropdown-item i {
             width: 20px;
@@ -248,9 +259,9 @@
 
         /* Main Content */
         main {
-            min-height: calc(100vh - 200px);
-            padding: 40px 20px;
-        }
+    min-height: calc(100vh - 200px);
+    padding: 220px 20px 40px 20px;
+}
 
         .alert {
             border-radius: 8px;
@@ -430,6 +441,7 @@
                             <li><a class="dropdown-item" href="{% url 'courses:agentic_ai' %}">
                                     <i class="fas fa-robot"></i> Agentic AI
                                 </a></li>
+                                
                         </ul>
                     </li>
 
@@ -441,6 +453,7 @@
                             <i class="fas fa-industry me-1"></i>Services
                         </a>
                         <ul class="dropdown-menu">
+                            
                             <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
                                     data-bs-target="#industryModal">
                                     <i class="fas fa-briefcase"></i> Industry Training & MaaS
@@ -455,6 +468,53 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
+                            
+
+    
+
+    <!-- New Services -->
+
+    <li>
+        <a class="dropdown-item" href="#">
+            <i class="fas fa-car"></i> Automotive IDS/IDPS
+        </a>
+    </li>
+
+    <li>
+        <a class="dropdown-item" href="#">
+            <i class="fas fa-broadcast-tower"></i> V2X Stack
+        </a>
+    </li>
+
+    <li>
+        <a class="dropdown-item" href="#">
+            <i class="fas fa-robot"></i> AI Agents
+        </a>
+    </li>
+
+    <li>
+        <a class="dropdown-item" href="#">
+            <i class="fab fa-rust"></i> Embedded Rust Frameworks
+        </a>
+    </li>
+
+    <li>
+        <a class="dropdown-item" href="#">
+            <i class="fas fa-shield-alt"></i> Secure Coding Solutions
+        </a>
+    </li>
+
+    <li>
+        <a class="dropdown-item" href="#">
+            <i class="fab fa-linux"></i> Linux Diagnostics Tools
+        </a>
+    </li>
+
+    <li>
+        <hr class="dropdown-divider">
+    </li>
+
+    
                             <li><a class="dropdown-item" href="{% url 'home' %}#about">
                                     <i class="fas fa-info-circle"></i> About ACL
                                 </a></li>
@@ -473,6 +533,26 @@
 
                         </ul>
                     </li>
+                    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" role="button"
+        data-bs-toggle="dropdown">
+        <i class="fas fa-blog me-1"></i>Blogs
+    </a>
+
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#"><i class="fab fa-rust"></i> Rust for Automotive</a></li>
+
+        <li><a class="dropdown-item" href="#"><i class="fab fa-linux"></i> Linux System Programming</a></li>
+
+        <li><a class="dropdown-item" href="#"><i class="fas fa-robot"></i> AI Agents in Rust</a></li>
+
+        <li><a class="dropdown-item" href="#"><i class="fas fa-broadcast-tower"></i> V2X Architecture</a></li>
+
+        <li><a class="dropdown-item" href="#"><i class="fas fa-shield-alt"></i> Secure Coding Practices</a></li>
+
+        <li><a class="dropdown-item" href="#"><i class="fas fa-car"></i> CAN Bus Security</a></li>
+    </ul>
+</li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'events' %}">
