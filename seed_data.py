@@ -17,6 +17,7 @@ services_data = [
     {"title": "Industry Training & MaaS", "slug": "industry-training", "icon_class": "fas fa-briefcase", "short_description": "Comprehensive corporate training and Model-as-a-Service solutions.", "description": "Full description of our industry training program.", "is_featured": True, "order": 1},
     {"title": "Rust Automotive Program", "slug": "rust-automotive", "icon_class": "fab fa-rust", "short_description": "Pioneering Rust in automotive software systems.", "description": "Full description of Rust Automotive.", "is_featured": True, "order": 2},
     {"title": "Automotive IDS/IDPS", "slug": "automotive-ids", "icon_class": "fas fa-shield-alt", "short_description": "Advanced intrusion detection and prevention systems.", "description": "Details about Automotive IDS.", "is_featured": False, "order": 3},
+    {"title": "Building AI Agents", "slug": "building-ai-agents", "icon_class": "fas fa-robot", "short_description": "Design and implement autonomous AI agents for real-world tasks.", "description": "Agent architectures, reinforcement learning basics, and safe deployment practices.", "is_featured": False, "order": 4},
 ]
 for data in services_data:
     Service.objects.get_or_create(slug=data['slug'], defaults=data)
@@ -39,3 +40,24 @@ for data in events_data:
     Event.objects.get_or_create(slug=data['slug'], defaults=data)
 
 print("Seeding Complete!")
+
+# --- Courses ---
+try:
+    from courses.models import Course
+    print("Seeding Courses...")
+    courses_data = [
+        {
+            'title': 'Agentic AI',
+            'slug': 'agentic-ai',
+            'short_description': 'Design and deploy autonomous agent systems.',
+            'description': 'Comprehensive course on agent architectures, RL, safety and deployment.',
+            'duration_weeks': 6,
+            'skill_level': 'Advanced',
+            'technologies': 'AI,Agents,Reinforcement Learning'
+        }
+    ]
+    for data in courses_data:
+        Course.objects.get_or_create(slug=data['slug'], defaults=data)
+except Exception:
+    # If courses app isn't available in this environment, skip silently
+    pass

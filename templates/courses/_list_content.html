@@ -79,6 +79,17 @@
         </div>
 
         <div class="course-card">
+            <h3 onclick="navigateToAgenticAI()">Agentic AI</h3>
+            <div class="duration">6 Weeks</div>
+            <ul>
+                <li>Agent architectures and design patterns</li>
+                <li>Reinforcement learning basics</li>
+            </ul>
+            <div class="highlight">Build autonomous agent systems with RL, planning, and safe deployment.</div>
+            <button class="course-btn" onclick="navigateToAgenticAI()">Get more details</button>
+        </div>
+
+        <div class="course-card">
             <h3 onclick="navigateToLinuxOSConcepts()">Linux OS Concepts</h3>
             <div class="duration">20 Hours</div>
             <ul>
@@ -167,6 +178,10 @@ function navigateToNetworkingSecurity() {
 
 function navigateToMLPython() {
     window.location.href = "{% url 'courses:ml_python' %}";
+}
+
+function navigateToAgenticAI() {
+    window.location.href = '/courses/agentic-ai/';
 }
 
 function getCourseDetails(courseId) {

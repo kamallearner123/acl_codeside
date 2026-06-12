@@ -1,4 +1,45 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Agentic AI - Apt Computing Labs{% endblock %}
+
+{% block content %}
+<div class="container py-8">
+    <div class="bg-white rounded-3xl p-8 shadow-md">
+        <div class="mb-6">
+            <h1 class="text-3xl font-extrabold">Agentic AI</h1>
+            <p class="text-muted mt-2">Learn to design, build and deploy autonomous agent systems that act intelligently in real environments.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <h2 class="text-xl font-bold mb-3">Course Overview</h2>
+                <p>This course covers agent architectures, reinforcement learning basics, planning, multi-agent coordination, safety and deployment patterns for building real-world agentic systems.</p>
+
+                <h3 class="mt-6 font-semibold">What you'll learn</h3>
+                <ul class="list-disc pl-5 mt-2">
+                    <li>Designing agent architectures</li>
+                    <li>Reinforcement learning and policy optimization</li>
+                    <li>Safety, verification and monitoring</li>
+                    <li>Integration with APIs and environment sensors</li>
+                    <li>Deploying agents and continuous evaluation</li>
+                </ul>
+            </div>
+
+            <aside class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm text-gray-600">Duration</p>
+                <p class="font-bold">6 Weeks</p>
+
+                <p class="text-sm text-gray-600 mt-4">Level</p>
+                <p class="font-bold">Advanced</p>
+
+                <a href="{% url 'courses:detail' 'agentic-ai' %}" class="inline-block mt-6 bg-blue-600 text-white px-4 py-2 rounded">View Course</a>
+            </aside>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% extends 'base.html' %}
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
