@@ -28,7 +28,11 @@
                 {% for tool in tools %}
                     {% if tool.category == 'debugging' %}
                     <div class="bg-white rounded-2xl p-6 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 border border-gray-50 h-full flex flex-col">
-                        <h3 class="text-xl font-bold text-brand-navy mb-2">{{ tool.name }}</h3>
+                        <h3 class="text-xl font-bold text-brand-navy mb-2">
+    <a href="{% url 'devtools:detail' tool.slug %}" class="hover:text-brand-coral">
+        {{ tool.name }}
+    </a>
+</h3>
                         <p class="text-brand-textSecondary text-sm flex-grow mb-6">{{ tool.description }}</p>
                         
                         <div class="mt-auto flex items-center gap-3">
