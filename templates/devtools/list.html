@@ -74,7 +74,11 @@
                 {% for tool in tools %}
                     {% if tool.category == 'security' %}
                     <div class="bg-white rounded-2xl p-6 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 border border-gray-50 h-full flex flex-col">
-                        <h3 class="text-xl font-bold text-brand-navy mb-2">{{ tool.name }}</h3>
+                        <h3 class="text-xl font-bold text-brand-navy mb-2">
+                            <a href="{% url 'devtools:detail' tool.slug %}" class="hover:text-brand-coral">
+                                {{ tool.name }}
+                            </a>
+                        </h3>
                         <p class="text-brand-textSecondary text-sm flex-grow mb-6">{{ tool.description }}</p>
                         
                         <div class="mt-auto flex items-center gap-3">
@@ -109,7 +113,11 @@
                 {% for tool in tools %}
                     {% if tool.category == 'observability' %}
                     <div class="bg-white rounded-2xl p-6 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 border border-gray-50 h-full flex flex-col">
-                        <h3 class="text-xl font-bold text-brand-navy mb-2">{{ tool.name }}</h3>
+                        <h3 class="text-xl font-bold text-brand-navy mb-2">
+                            <a href="{% url 'devtools:detail' tool.slug %}" class="hover:text-brand-coral">
+                                {{ tool.name }}
+                            </a>
+                        </h3>
                         <p class="text-brand-textSecondary text-sm flex-grow mb-6">{{ tool.description }}</p>
                         
                         <div class="mt-auto flex items-center gap-3">
@@ -151,7 +159,11 @@
                 {% for tool in tools %}
                     {% if tool.category == 'general' %}
                     <div class="bg-white rounded-2xl p-6 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 border border-gray-50 h-full flex flex-col">
-                        <h3 class="text-xl font-bold text-brand-navy mb-2">{{ tool.name }}</h3>
+                        <h3 class="text-xl font-bold text-brand-navy mb-2">
+                            <a href="{% url 'devtools:detail' tool.slug %}" class="hover:text-brand-coral">
+                                {{ tool.name }}
+                            </a>
+                        </h3>
                         <p class="text-brand-textSecondary text-sm flex-grow mb-6">{{ tool.description }}</p>
                         
                         <div class="mt-auto flex items-center gap-3">
@@ -179,6 +191,48 @@
                 {% endfor %}
             </div>
         </div>
+
+    <!-- AI Tools -->
+    <div class="mb-16">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-xl flex items-center justify-center text-xl">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-brand-navy">AI Tools</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for tool in tools %}
+                {% if tool.category == 'ai' %}
+                <div class="bg-white rounded-2xl p-6 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-1 border border-gray-50 h-full flex flex-col">
+                    <h3 class="text-xl font-bold text-brand-navy mb-2">
+                        <a href="{% url 'devtools:detail' tool.slug %}" class="hover:text-brand-coral">
+                            {{ tool.name }}
+                        </a>
+                    </h3>
+                    <p class="text-brand-textSecondary text-sm flex-grow mb-6">{{ tool.description }}</p>
+                    
+                    <div class="mt-auto flex items-center gap-3">
+                        {% if tool.github_url %}
+                        <a href="{{ tool.github_url }}" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-brand-textPrimary font-medium text-sm rounded-lg border border-gray-200 transition-colors">
+                            <i class="fab fa-github"></i> Source
+                        </a>
+                        {% endif %}
+                        
+                        {% if tool.download_url %}
+                        <a href="{{ tool.download_url }}" target="_blank" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-brand-navy hover:bg-opacity-90 text-white font-medium text-sm rounded-lg transition-colors">
+                            <div class="flex flex-col items-center leading-tight">
+                                <div><i class="fas fa-download"></i> Download</div>
+                                <div class="text-xs font-normal">Linux (x86-64)</div>
+                            </div>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
 
     </div>
 {% endblock %}

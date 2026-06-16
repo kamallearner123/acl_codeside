@@ -1,109 +1,504 @@
 {% extends 'tailwind_base.html' %}
+{% load static %}
+
+{% block title %}{{ tool.name }} - Developer Tools{% endblock %}
 
 {% block content %}
 
-<div class="pt-32 pb-16 bg-white">
-    <div class="max-w-6xl mx-auto px-4">
+{% if tool.slug == 'devinspect' %}
+<style>
+    /* Custom animations and styling for DevInspect */
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .text-gradient {
+        background: linear-gradient(135deg, #60A5FA, #A78BFA);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .terminal-bg {
+        background: #0D1117;
+        border: 1px solid #30363D;
+    }
+    .command-hover:hover {
+        background: #161B22;
+        transform: translateX(5px);
+    }
+</style>
 
-        <!-- Tool Header -->
-        <div class="mb-10">
-            <h1 class="text-5xl font-extrabold text-brand-navy mb-4">
-                {{ tool.name }}
+<div class="min-h-screen bg-[#0F172A] text-white pt-24 pb-16 selection:bg-indigo-500/30">
+    <!-- Hero Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+        <div class="text-center max-w-4xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-sm font-medium text-indigo-300 mb-8">
+                <span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>
+                v1.0 is now available
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
+                Meet <span class="text-gradient uppercase">{{ tool.name }}</span>
             </h1>
-
-            <p class="text-xl text-gray-600">
-                {{ tool.description }}
+            
+            <p class="text-xl md:text-2xl text-slate-300 mb-10 leading-relaxed font-light">
+                Modern offline-first system diagnostics, environment validation, and AI-ready tools for developers, embedded engineers, and autonomous agents.
             </p>
+            
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                {% if tool.download_url %}
+                <a href="{{ tool.download_url }}" class="w-full sm:w-auto px-8 py-4 bg-indigo-600 hover:bg-indigo-500 transition-all duration-300 rounded-xl font-bold text-lg shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2 group">
+                    <i class="fas fa-download group-hover:-translate-y-1 transition-transform"></i>
+                    Download Now
+                </a>
+                {% endif %}
+                
+                {% if tool.github_url %}
+                <a href="{{ tool.github_url }}" target="_blank" class="w-full sm:w-auto px-8 py-4 glass-panel hover:bg-white/10 transition-all duration-300 rounded-xl font-bold text-lg flex items-center justify-center gap-2">
+                    <i class="fab fa-github"></i>
+                    View Source
+                </a>
+                {% endif %}
+            </div>
         </div>
+    </div>
 
-        <!-- Buttons -->
-        <div class="flex gap-4 mb-12">
-            {% if tool.github_url %}
-            <a href="{{ tool.github_url }}" target="_blank"
-               class="px-6 py-3 bg-gray-100 rounded-xl font-medium">
-                Source Code
-            </a>
-            {% endif %}
-
-            {% if tool.download_url %}
-            <a href="{{ tool.download_url }}"
-               class="px-6 py-3 bg-brand-navy text-white rounded-xl font-medium">
-                Download
-            </a>
-            {% endif %}
+    <!-- The Problem & Solution -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+                <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                    <i class="fas fa-exclamation-triangle text-rose-400"></i>
+                    The Fragmentation Problem
+                </h2>
+                <p class="text-slate-400 leading-relaxed text-lg mb-6">
+                    Traditional systems debugging is plagued by tool fragmentation and memory overload. To get a complete view of a machine's health, a developer must parse the output of dozens of low-level tools with inconsistent flags.
+                </p>
+                <div class="flex flex-wrap gap-3 mb-8">
+                    <span class="px-3 py-1 bg-slate-800 rounded-md text-slate-300 font-mono text-sm">top</span>
+                    <span class="px-3 py-1 bg-slate-800 rounded-md text-slate-300 font-mono text-sm">vmstat</span>
+                    <span class="px-3 py-1 bg-slate-800 rounded-md text-slate-300 font-mono text-sm">lsof</span>
+                    <span class="px-3 py-1 bg-slate-800 rounded-md text-slate-300 font-mono text-sm">strace</span>
+                    <span class="px-3 py-1 bg-slate-800 rounded-md text-slate-300 font-mono text-sm">nvidia-smi</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-4 text-indigo-300">The Solution</h3>
+                <p class="text-slate-400 leading-relaxed text-lg">
+                    DevInspect unifies diagnostics. It collects, normalizes, and validates system environments, hardware capabilities, and modern development stacks in a single, secure binary.
+                </p>
+            </div>
+            
+            <div class="relative">
+                <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl blur opacity-30"></div>
+                <div class="relative terminal-bg rounded-2xl p-6 overflow-hidden shadow-2xl">
+                    <div class="flex items-center gap-2 mb-4 pb-4 border-b border-gray-800">
+                        <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                        <div class="ml-2 text-xs text-slate-500 font-mono">devinspect ~ diagnostics</div>
+                    </div>
+                    <div class="font-mono text-sm text-slate-300 space-y-2">
+                        <p><span class="text-emerald-400">kamal@ubuntu</span>:<span class="text-blue-400">~</span>$ devinspect doctor</p>
+                        <p class="text-yellow-300">[INFO] Running suite of sanity checks...</p>
+                        <p class="text-slate-400">✓ Kernel version matched: 6.8.0-generic</p>
+                        <p class="text-slate-400">✓ Rust toolchain found: 1.78.0</p>
+                        <p class="text-rose-400">! TensorRT not found</p>
+                        <p class="text-slate-400">✓ NVIDIA driver running: 535.129.03</p>
+                        <p class="text-emerald-400 font-bold mt-2">Validation complete: 1 warning</p>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <!-- About -->
-        <div class="bg-gray-50 rounded-2xl p-8 mb-8">
-            <h2 class="text-3xl font-bold mb-4">
-                What is {{ tool.name }}?
-            </h2>
+    <!-- Target Audience -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">Built For Modern Engineering</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1 -->
+            <div class="glass-panel p-8 rounded-2xl hover:-translate-y-2 transition-transform duration-300">
+                <div class="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400 text-2xl mb-6">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">AI & LLM Agents</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Autonomous coding agents or RAG pipelines validating if tools like CUDA or local LLMs are present.
+                </p>
+            </div>
+            <!-- Card 2 -->
+            <div class="glass-panel p-8 rounded-2xl hover:-translate-y-2 transition-transform duration-300">
+                <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-400 text-2xl mb-6">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Systems & Embedded</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Developers debugging hardware configs, USB interfaces, resource distribution, or traffic spikes.
+                </p>
+            </div>
+            <!-- Card 3 -->
+            <div class="glass-panel p-8 rounded-2xl hover:-translate-y-2 transition-transform duration-300">
+                <div class="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-400 text-2xl mb-6">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Automotive Engineers</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Teams working with SocketCAN, virtual CAN (vcan), or custom vehicle communication buses.
+                </p>
+            </div>
+            <!-- Card 4 -->
+            <div class="glass-panel p-8 rounded-2xl hover:-translate-y-2 transition-transform duration-300">
+                <div class="w-12 h-12 bg-rose-500/20 rounded-xl flex items-center justify-center text-rose-400 text-2xl mb-6">
+                    <i class="fas fa-server"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">DevOps & Platform</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Deterministic, offline-first diagnostics in server environments, CI/CD pipelines, and edge nodes.
+                </p>
+            </div>
+        </div>
+    </div>
 
-            <p class="text-gray-700 leading-8">
-                DevInspect is a source code inspection and debugging tool
-                designed to help developers understand, analyze, and troubleshoot
-                software projects more effectively.
+    <!-- Commands Features -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32">
+        <h2 class="text-3xl md:text-4xl font-bold mb-12">Core Commands</h2>
+        <div class="grid lg:grid-cols-2 gap-8">
+            <div class="terminal-bg rounded-2xl p-4 flex flex-col gap-2">
+                <div class="command-hover p-4 rounded-xl transition-all cursor-default">
+                    <div class="font-mono text-indigo-400 mb-1">devinspect summary</div>
+                    <div class="text-slate-400 text-sm">Unified high-level overview of OS, CPU, memory, GPU, and network.</div>
+                </div>
+                <div class="command-hover p-4 rounded-xl transition-all cursor-default">
+                    <div class="font-mono text-indigo-400 mb-1">devinspect hardware</div>
+                    <div class="text-slate-400 text-sm">Detailed physical hardware diagnostics including BIOS and sensors.</div>
+                </div>
+                <div class="command-hover p-4 rounded-xl transition-all cursor-default">
+                    <div class="font-mono text-indigo-400 mb-1">devinspect network</div>
+                    <div class="text-slate-400 text-sm">Comprehensive networking snapshot including MTU, open ports, and latency.</div>
+                </div>
+                <div class="command-hover p-4 rounded-xl transition-all cursor-default">
+                    <div class="font-mono text-indigo-400 mb-1">devinspect usb</div>
+                    <div class="text-slate-400 text-sm">Connected USB devices structured as a hierarchical bus tree.</div>
+                </div>
+            </div>
+            <div class="terminal-bg rounded-2xl p-4 flex flex-col gap-2">
+                <div class="command-hover p-4 rounded-xl transition-all cursor-default">
+                    <div class="font-mono text-indigo-400 mb-1">devinspect top -t 5</div>
+                    <div class="text-slate-400 text-sm">Monitors top CPU/memory consuming processes with continuous sampling.</div>
+                </div>
+                <div class="command-hover p-4 rounded-xl transition-all cursor-default">
+                    <div class="font-mono text-indigo-400 mb-1">devinspect pidstat -p &lt;PID&gt;</div>
+                    <div class="text-slate-400 text-sm">Surgical inspection of a running process (file descriptors, sockets).</div>
+                </div>
+                <div class="command-hover p-4 rounded-xl transition-all cursor-default">
+                    <div class="font-mono text-indigo-400 mb-1">devinspect ai</div>
+                    <div class="text-slate-400 text-sm">Validates PyTorch, TensorFlow, CUDA, TensorRT, and local LLM services.</div>
+                </div>
+                <div class="command-hover p-4 rounded-xl transition-all cursor-default">
+                    <div class="font-mono text-indigo-400 mb-1">devinspect doctor</div>
+                    <div class="text-slate-400 text-sm">Runs sanity checks across compilers and drivers with remediation steps.</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                It scans project files, examines source code structure,
-                identifies potential issues, and helps developers navigate
-                large codebases with ease.
+    <!-- AI Integration -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32 mb-16">
+        <div class="glass-panel rounded-3xl p-8 lg:p-12 border-indigo-500/30 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-32 bg-indigo-500/10 blur-3xl rounded-full"></div>
+            
+            <div class="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-6">
+                        <i class="fas fa-robot"></i> AI-First API
+                    </div>
+                    <h2 class="text-3xl font-bold mb-6">Structured for AI Agents</h2>
+                    <p class="text-slate-400 leading-relaxed mb-6">
+                        DevInspect is built with AI automation in mind. By bypassing raw console commands, agents can retrieve structured, clean, and normalized inputs in JSON or YAML formats directly inside their execution environments.
+                    </p>
+                    <ul class="space-y-4 text-slate-300">
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-indigo-400 mt-1"></i>
+                            <div>
+                                <span class="font-bold text-white block">LLM Context Bootstrapping</span>
+                                <span class="text-sm">Use <code class="text-indigo-300 bg-black/30 px-1 py-0.5 rounded">--llm</code> to generate high-density Markdown optimized for LLM token efficiency.</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-check-circle text-indigo-400 mt-1"></i>
+                            <div>
+                                <span class="font-bold text-white block">Deterministic Parsing</span>
+                                <span class="text-sm">Stop writing fragile regex parsers. Use <code class="text-indigo-300 bg-black/30 px-1 py-0.5 rounded">--json</code> for robust JSON API outputs.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="terminal-bg rounded-xl p-6 shadow-2xl">
+                    <div class="text-slate-500 font-mono text-xs mb-4">Output of `devinspect ai --json`</div>
+                    <pre class="font-mono text-xs text-indigo-200 overflow-x-auto"><code>{
+  "cuda": {
+    "installed": true,
+    "nvcc_version": "12.2",
+    "driver_version": "535.129.03"
+  },
+  "ollama": {
+    "installed": true,
+    "version": "0.1.32",
+    "service_running": true
+  },
+  "pytorch": {
+    "installed": true,
+    "version": "2.1.2+cu121",
+    "cuda_available": true
+  }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                Whether you are a beginner learning programming or an
-                experienced engineer maintaining large applications,
-                DevInspect provides useful insights that make debugging faster
-                and development more productive.
+</div>
+{% elif tool.slug == 'smart-label' %}
+<style>
+    /* Custom animations and styling for AptxLabel */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+    }
+    .mesh-bg {
+        background-color: #f8fafc;
+        background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+    }
+    .text-gradient-coral {
+        background: linear-gradient(135deg, #FF6B6B, #FEC8D8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .feature-icon-wrapper {
+        background: linear-gradient(135deg, #FFF0F0, #FFE3E3);
+        color: #FF6B6B;
+    }
+</style>
+
+<div class="min-h-screen mesh-bg pt-24 pb-16 text-slate-800 selection:bg-rose-200">
+    <!-- Hero Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+        <div class="text-center max-w-4xl mx-auto mb-20">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-sm font-bold text-slate-700 mb-8 uppercase tracking-widest">
+                <i class="fas fa-eye text-rose-500"></i> Computer Vision
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-white drop-shadow-lg">
+                Meet <span class="text-gradient-coral">{{ tool.name }}</span>
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-slate-200 mb-10 leading-relaxed font-medium drop-shadow">
+                A fast, cross-platform Data Annotation Tool built with Rust and <code class="bg-white/20 px-2 py-1 rounded">egui</code>.
             </p>
+            
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                {% if tool.download_url %}
+                <a href="{{ tool.download_url }}" class="w-full sm:w-auto px-8 py-4 bg-white text-rose-600 hover:bg-rose-50 transition-all duration-300 rounded-2xl font-bold text-lg shadow-xl flex items-center justify-center gap-2 group">
+                    <i class="fas fa-download group-hover:-translate-y-1 transition-transform"></i>
+                    Download Binary
+                </a>
+                {% endif %}
+                
+                {% if tool.github_url %}
+                <a href="{{ tool.github_url }}" target="_blank" class="w-full sm:w-auto px-8 py-4 glass-card hover:bg-white/90 transition-all duration-300 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 text-slate-800">
+                    <i class="fab fa-github"></i>
+                    View on GitHub
+                </a>
+                {% endif %}
+            </div>
         </div>
 
-        <!-- Why Use -->
-        <div class="bg-gray-50 rounded-2xl p-8 mb-8">
-            <h2 class="text-3xl font-bold mb-4">
-                Why Use DevInspect?
-            </h2>
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Features -->
+            <div class="lg:col-span-2 space-y-8">
+                <div class="glass-card rounded-3xl p-8 md:p-10">
+                    <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+                        <i class="fas fa-bolt text-amber-500"></i> Key Features
+                    </h2>
+                    
+                    <div class="grid sm:grid-cols-2 gap-6">
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-2xl feature-icon-wrapper flex items-center justify-center flex-shrink-0 text-xl">
+                                <i class="fab fa-rust"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg mb-1">High Performance</h3>
+                                <p class="text-slate-600 text-sm">Written in Rust for exceptional speed and strict memory safety guarantees.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-2xl feature-icon-wrapper flex items-center justify-center flex-shrink-0 text-xl">
+                                <i class="fas fa-desktop"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg mb-1">Clean GUI</h3>
+                                <p class="text-slate-600 text-sm">A highly responsive and minimal user interface powered by egui.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-2xl feature-icon-wrapper flex items-center justify-center flex-shrink-0 text-xl">
+                                <i class="far fa-images"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg mb-1">Broad Format Support</h3>
+                                <p class="text-slate-600 text-sm">Seamlessly handle common image formats including PNG, JPEG, and WEBP.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-2xl feature-icon-wrapper flex items-center justify-center flex-shrink-0 text-xl">
+                                <i class="fas fa-file-export"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg mb-1">Easy Exports</h3>
+                                <p class="text-slate-600 text-sm">Streamlined workflow to annotate images and export bounding boxes instantly.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tech Stack & Run -->
+            <div class="space-y-8">
+                <div class="glass-card rounded-3xl p-8">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                        <i class="fas fa-layer-group text-indigo-500"></i> Technologies
+                    </h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="font-semibold flex items-center gap-2"><i class="fab fa-rust text-slate-800"></i> Rust</span>
+                            <span class="text-xs font-bold px-2 py-1 bg-rose-100 text-rose-600 rounded-md">Core</span>
+                        </li>
+                        <li class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <span class="font-semibold flex items-center gap-2"><i class="fas fa-window-maximize text-slate-800"></i> egui</span>
+                            <span class="text-xs font-bold px-2 py-1 bg-indigo-100 text-indigo-600 rounded-md">GUI Framework</span>
+                        </li>
+                    </ul>
+                </div>
 
-            <ul class="list-disc pl-6 space-y-3 text-gray-700">
-                <li>Understand unfamiliar codebases quickly.</li>
-                <li>Locate bugs and issues faster.</li>
-                <li>Inspect project structure visually.</li>
-                <li>Improve development productivity.</li>
-                <li>Useful for students, developers, and teams.</li>
-            </ul>
+                <div class="glass-card rounded-3xl p-8 bg-slate-900 text-white border-none shadow-2xl">
+                    <h2 class="text-xl font-bold mb-4 text-rose-400">
+                        <i class="fas fa-terminal"></i> Build & Run
+                    </h2>
+                    <p class="text-sm text-slate-400 mb-4">Requires Rust and Cargo (<a href="https://rustup.rs/" class="underline text-indigo-300">rustup.rs</a>).</p>
+                    <div class="bg-black/50 p-4 rounded-xl font-mono text-sm border border-white/10">
+                        <span class="text-rose-400">cargo</span> <span class="text-emerald-300">run</span> <span class="text-slate-300">--release</span>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <!-- Beginner Section -->
-        <div class="bg-gray-50 rounded-2xl p-8 mb-8">
-            <h2 class="text-3xl font-bold mb-4">
-                For Beginners
-            </h2>
-
-            <p class="text-gray-700 leading-8">
-                If you are new to programming, DevInspect helps you
-                understand how projects are organized.
-
-                Instead of manually opening hundreds of files,
-                you can inspect project components, understand
-                relationships between modules, and learn software
-                architecture more easily.
-            </p>
-        </div>
-
-        <!-- Features -->
-        <div class="bg-gray-50 rounded-2xl p-8">
-            <h2 class="text-3xl font-bold mb-4">
-                Key Features
-            </h2>
-
-            <ul class="list-disc pl-6 space-y-3 text-gray-700">
-                <li>Source Code Analysis</li>
-                <li>Project Structure Inspection</li>
-                <li>Debugging Assistance</li>
-                <li>Developer-Friendly Interface</li>
-                <li>Fast Scanning Engine</li>
-                <li>Open Source Development</li>
-            </ul>
-        </div>
-
     </div>
 </div>
+{% elif tool.slug == 'roughnote' %}
+<style>
+    /* Custom styling for RoughNote */
+    .gnome-card {
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .note-bg {
+        background-color: #f1f5f9;
+        background-image: 
+            linear-gradient(90deg, rgba(200,200,200,0.15) 1px, transparent 1px),
+            linear-gradient(rgba(200,200,200,0.15) 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+    .text-gradient-purple {
+        background: linear-gradient(135deg, #8b5cf6, #d946ef);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+
+<div class="min-h-screen note-bg pt-24 pb-16 text-slate-800">
+    <!-- Hero Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
+        <div class="text-center max-w-4xl mx-auto mb-20">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-sm font-bold text-slate-700 mb-8 uppercase tracking-widest shadow-sm border border-slate-200">
+                <i class="fab fa-linux text-slate-800"></i> Native Linux Desktop
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-slate-900">
+                Meet <span class="text-gradient-purple">{{ tool.name }}</span>
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-slate-600 mb-10 leading-relaxed">
+                A native drawing and comprehensive note-taking application built with Rust and <code class="bg-slate-200 px-2 py-1 rounded text-slate-800">GTK4</code>.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                {% if tool.download_url %}
+                <a href="{{ tool.download_url }}" class="w-full sm:w-auto px-8 py-4 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300 rounded-2xl font-bold text-lg shadow-xl shadow-purple-500/20 flex items-center justify-center gap-2 group">
+                    <i class="fas fa-download group-hover:-translate-y-1 transition-transform"></i>
+                    Download for Linux
+                </a>
+                {% endif %}
+                
+                {% if tool.github_url %}
+                <a href="{{ tool.github_url }}" target="_blank" class="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 transition-all duration-300 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 text-slate-800 shadow-sm border border-slate-200">
+                    <i class="fab fa-github"></i>
+                    Source Code
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <!-- Feature Card 1 -->
+            <div class="gnome-card p-8 text-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 text-6xl text-white/5"><i class="fas fa-paint-brush"></i></div>
+                <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-2xl mb-6">
+                    <i class="fas fa-pen-nib"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3">Drawing & Note-Taking</h3>
+                <p class="text-slate-300 leading-relaxed">
+                    Unleash your creativity with a canvas built natively for the desktop. Perfect for handwritten notes, sketches, diagrams, and collaborative whiteboarding directly on Linux.
+                </p>
+            </div>
+            
+            <!-- Feature Card 2 -->
+            <div class="gnome-card p-8 text-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 text-6xl text-white/5"><i class="fab fa-rust"></i></div>
+                <div class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400 text-2xl mb-6">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-3">Built with GTK4 & Rust</h3>
+                <p class="text-slate-300 leading-relaxed">
+                    Designed to integrate seamlessly with the modern Linux desktop ecosystem using GTK4. Powered by Rust to ensure blazing fast performance, safety, and minimal memory footprint.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="pt-32 pb-16 bg-white min-h-screen">
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="mb-10">
+            <h1 class="text-5xl font-extrabold text-brand-navy mb-4">{{ tool.name }}</h1>
+            <p class="text-xl text-gray-600">{{ tool.description }}</p>
+        </div>
+        <div class="flex gap-4 mb-12">
+            {% if tool.github_url %}
+            <a href="{{ tool.github_url }}" target="_blank" class="px-6 py-3 bg-gray-100 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+                <i class="fab fa-github mr-2"></i>Source Code
+            </a>
+            {% endif %}
+            {% if tool.download_url %}
+            <a href="{{ tool.download_url }}" target="_blank" class="px-6 py-3 bg-brand-navy text-white rounded-xl font-medium hover:opacity-90 transition-opacity">
+                <i class="fas fa-download mr-2"></i>Download
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
 
 {% endblock %}
