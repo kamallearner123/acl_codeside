@@ -7,6 +7,7 @@ class DevTool(models.Model):
         ('security', 'Security Tools'),
         ('observability', 'Observability Tools'),
         ('general', 'General Tools'),
+         ('ai', 'AI Tools'),
     ]
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)

@@ -1,0 +1,109 @@
+{% extends 'tailwind_base.html' %}
+
+{% block content %}
+
+<div class="pt-32 pb-16 bg-white">
+    <div class="max-w-6xl mx-auto px-4">
+
+        <!-- Tool Header -->
+        <div class="mb-10">
+            <h1 class="text-5xl font-extrabold text-brand-navy mb-4">
+                {{ tool.name }}
+            </h1>
+
+            <p class="text-xl text-gray-600">
+                {{ tool.description }}
+            </p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-4 mb-12">
+            {% if tool.github_url %}
+            <a href="{{ tool.github_url }}" target="_blank"
+               class="px-6 py-3 bg-gray-100 rounded-xl font-medium">
+                Source Code
+            </a>
+            {% endif %}
+
+            {% if tool.download_url %}
+            <a href="{{ tool.download_url }}"
+               class="px-6 py-3 bg-brand-navy text-white rounded-xl font-medium">
+                Download
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- About -->
+        <div class="bg-gray-50 rounded-2xl p-8 mb-8">
+            <h2 class="text-3xl font-bold mb-4">
+                What is {{ tool.name }}?
+            </h2>
+
+            <p class="text-gray-700 leading-8">
+                DevInspect is a source code inspection and debugging tool
+                designed to help developers understand, analyze, and troubleshoot
+                software projects more effectively.
+
+                It scans project files, examines source code structure,
+                identifies potential issues, and helps developers navigate
+                large codebases with ease.
+
+                Whether you are a beginner learning programming or an
+                experienced engineer maintaining large applications,
+                DevInspect provides useful insights that make debugging faster
+                and development more productive.
+            </p>
+        </div>
+
+        <!-- Why Use -->
+        <div class="bg-gray-50 rounded-2xl p-8 mb-8">
+            <h2 class="text-3xl font-bold mb-4">
+                Why Use DevInspect?
+            </h2>
+
+            <ul class="list-disc pl-6 space-y-3 text-gray-700">
+                <li>Understand unfamiliar codebases quickly.</li>
+                <li>Locate bugs and issues faster.</li>
+                <li>Inspect project structure visually.</li>
+                <li>Improve development productivity.</li>
+                <li>Useful for students, developers, and teams.</li>
+            </ul>
+        </div>
+
+        <!-- Beginner Section -->
+        <div class="bg-gray-50 rounded-2xl p-8 mb-8">
+            <h2 class="text-3xl font-bold mb-4">
+                For Beginners
+            </h2>
+
+            <p class="text-gray-700 leading-8">
+                If you are new to programming, DevInspect helps you
+                understand how projects are organized.
+
+                Instead of manually opening hundreds of files,
+                you can inspect project components, understand
+                relationships between modules, and learn software
+                architecture more easily.
+            </p>
+        </div>
+
+        <!-- Features -->
+        <div class="bg-gray-50 rounded-2xl p-8">
+            <h2 class="text-3xl font-bold mb-4">
+                Key Features
+            </h2>
+
+            <ul class="list-disc pl-6 space-y-3 text-gray-700">
+                <li>Source Code Analysis</li>
+                <li>Project Structure Inspection</li>
+                <li>Debugging Assistance</li>
+                <li>Developer-Friendly Interface</li>
+                <li>Fast Scanning Engine</li>
+                <li>Open Source Development</li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
