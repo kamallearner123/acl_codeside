@@ -7,9 +7,9 @@
 
 {% if tool.slug == 'devinspect' %}
 <style>
-    /* Hide the main navbar logo on this page as requested */
-    #navbar img {
-        display: none !important;
+    /* Hide the main navbar logo (both image and text) on this page as requested */
+    #navbar a.flex-shrink-0 {
+        visibility: hidden !important;
     }
     
     /* Custom animations and styling for DevInspect */
