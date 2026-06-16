@@ -42,18 +42,29 @@
                             </a>
                             {% endif %}
                             
-                            {% if tool.download_url %}
-<a href="{{ tool.download_url }}" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-brand-navy hover:bg-opacity-90 text-white font-medium text-sm rounded-lg transition-colors">
-    <div class="flex flex-col items-center leading-tight">
-        <div>
-            <i class="fas fa-download"></i> Download
-        </div>
-        <div class="text-xs font-normal">
-            Linux (x86-64)
-        </div>
-    </div>
-</a>
-{% endif %}
+                            {% if tool.slug == 'devinspect' %}
+                            <a href="{% static 'binaries/devinspect' %}" download="devinspect" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-brand-navy hover:bg-opacity-90 text-white font-medium text-sm rounded-lg transition-colors">
+                                <div class="flex flex-col items-center leading-tight">
+                                    <div>
+                                        <i class="fas fa-download"></i> Download
+                                    </div>
+                                    <div class="text-xs font-normal">
+                                        Linux (x86-64)
+                                    </div>
+                                </div>
+                            </a>
+                            {% elif tool.download_url %}
+                            <a href="{{ tool.download_url }}" class="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-brand-navy hover:bg-opacity-90 text-white font-medium text-sm rounded-lg transition-colors">
+                                <div class="flex flex-col items-center leading-tight">
+                                    <div>
+                                        <i class="fas fa-download"></i> Download
+                                    </div>
+                                    <div class="text-xs font-normal">
+                                        Linux (x86-64)
+                                    </div>
+                                </div>
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
