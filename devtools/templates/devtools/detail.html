@@ -7,6 +7,11 @@
 
 {% if tool.slug == 'devinspect' %}
 <style>
+    /* Hide the main navbar logo on this page as requested */
+    #navbar img {
+        display: none !important;
+    }
+    
     /* Custom animations and styling for DevInspect */
     .glass-panel {
         background: rgba(255, 255, 255, 0.05);
