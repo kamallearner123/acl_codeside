@@ -6,4 +6,5 @@ app_name = 'devtools'
 urlpatterns = [
     path('', views.DevToolListView.as_view(), name='list'),
     path('<slug:slug>/', views.DevToolDetailView.as_view(), name='detail'),
+    path('<slug:slug>/rate/', views.rate_tool, name='rate_tool'),
 ]

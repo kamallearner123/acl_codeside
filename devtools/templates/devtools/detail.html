@@ -632,4 +632,101 @@
 </div>
 {% endif %}
 
+<!-- Feedback Section -->
+<div class="max-w-3xl mx-auto my-16 px-4">
+    <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">How would you rate {{ tool.name }}?</h3>
+        <p class="text-gray-500 mb-6">Your feedback helps us improve our tools.</p>
+        
+        <div class="flex items-center justify-center gap-2 text-4xl text-gray-300 mb-4" id="star-container" data-slug="{{ tool.slug }}">
+            <i class="fas fa-star cursor-pointer hover:text-yellow-400 transition-colors" data-value="1"></i>
+            <i class="fas fa-star cursor-pointer hover:text-yellow-400 transition-colors" data-value="2"></i>
+            <i class="fas fa-star cursor-pointer hover:text-yellow-400 transition-colors" data-value="3"></i>
+            <i class="fas fa-star cursor-pointer hover:text-yellow-400 transition-colors" data-value="4"></i>
+            <i class="fas fa-star cursor-pointer hover:text-yellow-400 transition-colors" data-value="5"></i>
+        </div>
+        
+        <div class="text-sm font-medium text-gray-600 mb-2">
+            Average Rating: <span id="avg-rating" class="text-gray-900 font-bold">{{ average_rating }}</span> / 5 
+            (<span id="rating-count">{{ rating_count }}</span> reviews)
+        </div>
+        
+        <div id="rating-feedback" class="text-sm font-bold text-green-600 hidden mt-2">
+            Thank you for your feedback!
+        </div>
+        {% csrf_token %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('#star-container i');
+        const container = document.getElementById('star-container');
+        const slug = container.getAttribute('data-slug');
+        const feedbackEl = document.getElementById('rating-feedback');
+        const avgRatingEl = document.getElementById('avg-rating');
+        const ratingCountEl = document.getElementById('rating-count');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        let selectedRating = 0;
+        
+        function updateStars(val) {
+            stars.forEach(star => {
+                const starVal = parseInt(star.getAttribute('data-value'));
+                if (starVal <= val) {
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-yellow-400');
+                } else {
+                    star.classList.remove('text-yellow-400');
+                    star.classList.add('text-gray-300');
+                }
+            });
+        }
+        
+        stars.forEach(star => {
+            star.addEventListener('mouseenter', () => {
+                if (selectedRating === 0) {
+                    updateStars(parseInt(star.getAttribute('data-value')));
+                }
+            });
+            
+            star.addEventListener('mouseleave', () => {
+                if (selectedRating === 0) {
+                    updateStars(0);
+                } else {
+                    updateStars(selectedRating);
+                }
+            });
+            
+            star.addEventListener('click', async () => {
+                if (selectedRating > 0) return; // Prevent multiple ratings
+                const val = parseInt(star.getAttribute('data-value'));
+                selectedRating = val;
+                updateStars(val);
+                
+                try {
+                    const response = await fetch(`/devtools/${slug}/rate/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: JSON.stringify({ stars: val })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.status === 'success') {
+                        feedbackEl.classList.remove('hidden');
+                        avgRatingEl.textContent = data.average_rating;
+                        ratingCountEl.textContent = data.rating_count;
+                        container.style.pointerEvents = 'none';
+                    }
+                } catch (err) {
+                    console.error('Error submitting rating:', err);
+                }
+            });
+        });
+    });
+</script>
+
 {% endblock %}
