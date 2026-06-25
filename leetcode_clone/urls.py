@@ -21,8 +21,17 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from . import views
+from django.views.generic import RedirectView
+from django.conf import settings
 
 urlpatterns = [
+    path(
+    "favicon.ico",
+    RedirectView.as_view(
+        url=settings.STATIC_URL + "favicon.ico",
+        permanent=True
+    ),
+),
     path("admin/", admin.site.urls),
     path('', views.home, name='home'),
     path('about/', TemplateView.as_view(template_name='about.html'), name='about'),
