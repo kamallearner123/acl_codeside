@@ -1,0 +1,276 @@
+{% extends 'tailwind_base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="pt-32 pb-20 bg-brand-navy text-white relative overflow-hidden">
+    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-brand-coral opacity-10 blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-brand-light opacity-10 blur-3xl"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <span class="px-4 py-1.5 bg-brand-coral/20 text-brand-coral rounded-full text-sm font-bold uppercase tracking-wider mb-6 inline-block backdrop-blur-sm border border-brand-coral/30">
+            Advanced Program
+        </span>
+        <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight tracking-tight text-white">
+            Agentic <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-coral to-yellow-400">AI</span>
+        </h1>
+        <p class="text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+            An intensive, hands-on engineering program focused on building, optimizing, and evaluating production-ready Retrieval-Augmented Generation (RAG) pipelines and LLM agents.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="#syllabus" class="bg-brand-coral hover:bg-opacity-90 text-white px-8 py-4 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center justify-center">
+                <i class="fas fa-book-open mr-2"></i> View Syllabus
+            </a>
+            <a href="https://www.aptcomputinglabs.com/courses/agentic-ai/" target="_blank" rel="noopener noreferrer" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-4 rounded-full font-bold transition-all inline-flex items-center justify-center backdrop-blur-sm">
+                <i class="fas fa-external-link-alt mr-2"></i> Official Page
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="bg-brand-light py-12 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="flex items-center justify-center space-x-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div class="w-14 h-14 rounded-full bg-brand-navy/5 flex items-center justify-center text-brand-coral text-2xl">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-brand-textSecondary uppercase font-bold tracking-wider">Duration</p>
+                    <p class="text-2xl font-black text-brand-navy">10 Days / 80 Hrs</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-center space-x-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div class="w-14 h-14 rounded-full bg-brand-navy/5 flex items-center justify-center text-brand-coral text-2xl">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-brand-textSecondary uppercase font-bold tracking-wider">Format</p>
+                    <p class="text-xl font-black text-brand-navy">Lecture & Hands-on</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-center space-x-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div class="w-14 h-14 rounded-full bg-brand-navy/5 flex items-center justify-center text-brand-coral text-2xl">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-brand-textSecondary uppercase font-bold tracking-wider">Outcome</p>
+                    <p class="text-xl font-black text-brand-navy">Production RAG</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Syllabus Section -->
+<div id="syllabus" class="py-20 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-extrabold text-brand-navy mb-4">Course Syllabus</h2>
+            <div class="w-24 h-1.5 bg-brand-coral mx-auto rounded-full"></div>
+        </div>
+
+        <!-- Week 1 -->
+        <div class="mb-16">
+            <div class="flex items-center mb-8">
+                <div class="w-12 h-12 rounded-full bg-brand-navy text-white flex items-center justify-center font-bold text-xl mr-4 shadow-lg">1</div>
+                <h3 class="text-3xl font-bold text-brand-navy border-b-2 border-brand-coral pb-2">Foundations of RAG Pipelines</h3>
+            </div>
+            
+            <div class="space-y-8">
+                <!-- Day 1 -->
+                <div class="relative pl-8 border-l-2 border-gray-200 before:content-[''] before:absolute before:left-[-9px] before:top-2 before:w-4 before:h-4 before:bg-brand-coral before:rounded-full before:border-4 before:border-white">
+                    <h4 class="text-xl font-bold text-brand-navy mb-3">Day 1: Environment Setup, Prompt Engineering & LangChain RAG Primitives</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-brand-textSecondary">
+                        <li><strong>Core Topics:</strong> Local Python environment synchronization, Git repository strategy, LLM API credentials orchestration, vector database ecosystem, and project directory design.</li>
+                        <li><strong>LangChain Ingestion Functions:</strong> Technical deep dive into LangChain document utility modules, including <code>PyPDFLoader</code>, <code>TextLoader</code>, and programmatic extraction utilities. Introduction to Runnable wrappers for data parsing.</li>
+                        <li><strong>Prompt Engineering:</strong> Prompt chains, deterministic structured outputs with Pydantic schemas, programmatic data extraction, classification, rewriting, and token-level hallucination detection patterns.</li>
+                    </ul>
+                    <div class="bg-brand-light p-5 rounded-xl border border-gray-200 shadow-sm mt-4">
+                        <strong class="text-brand-navy flex items-center"><i class="fas fa-laptop-code text-brand-coral mr-2"></i> Hands-on Lab:</strong> 
+                        <p class="mt-2 text-brand-textSecondary">Construct a modular prompt management workflow that enforces strict JSON output layouts with integrated Pydantic schema validation, and write a LangChain-based parsing routine to extract raw context from structured inputs.</p>
+                    </div>
+                </div>
+
+                <!-- Day 2 -->
+                <div class="relative pl-8 border-l-2 border-gray-200 before:content-[''] before:absolute before:left-[-9px] before:top-2 before:w-4 before:h-4 before:bg-brand-coral before:rounded-full before:border-4 before:border-white">
+                    <h4 class="text-xl font-bold text-brand-navy mb-3">Day 2: Document Parsing, Splitting & Chunking Architecture</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-brand-textSecondary">
+                        <li><strong>Core Topics:</strong> Document loaders and ingestion layers, semantic and syntactic text parsing pipelines, strategic text chunking (fixed-size vs. recursive character splitting), chunk overlapping heuristics, and optimized metadata schema design.</li>
+                        <li><strong>Engineering Impact:</strong> Mitigating semantic fragmentation, managing context boundaries, and optimizing target text block extraction for maximum downstream relevance.</li>
+                    </ul>
+                    <div class="bg-brand-light p-5 rounded-xl border border-gray-200 shadow-sm mt-4">
+                        <strong class="text-brand-navy flex items-center"><i class="fas fa-laptop-code text-brand-coral mr-2"></i> Hands-on Lab:</strong> 
+                        <p class="mt-2 text-brand-textSecondary">Ingest messy, real-world regulatory documentation into a clean, queryable document schema, spinning up automated comparative chunk size and chunk overlap experiments.</p>
+                    </div>
+                </div>
+
+                <!-- Day 3 -->
+                <div class="relative pl-8 border-l-2 border-gray-200 before:content-[''] before:absolute before:left-[-9px] before:top-2 before:w-4 before:h-4 before:bg-brand-coral before:rounded-full before:border-4 before:border-white">
+                    <h4 class="text-xl font-bold text-brand-navy mb-3">Day 3: Mathematical Foundations of Text Embeddings</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-brand-textSecondary">
+                        <li><strong>Core Topics:</strong> The mechanics of text embeddings, multi-dimensional vector space representations, cosine similarity vs. Euclidean distance metrics, token sequence constraints, and the absolute mathematical rationale behind semantic retrieval.</li>
+                        <li><strong>Engineering Impact:</strong> Vector alignment verification, identifying semantic drift in specialized domains, and measuring embedding distribution quality.</li>
+                    </ul>
+                    <div class="bg-brand-light p-5 rounded-xl border border-gray-200 shadow-sm mt-4">
+                        <strong class="text-brand-navy flex items-center"><i class="fas fa-laptop-code text-brand-coral mr-2"></i> Hands-on Lab:</strong> 
+                        <p class="mt-2 text-brand-textSecondary">Programmatically extract vector embeddings from the raw document chunks generated on Day 2, script manual matrix similarity operations to observe indexing performance, and inspect nearest-neighbor cluster anomalies.</p>
+                    </div>
+                </div>
+
+                <!-- Day 4 -->
+                <div class="relative pl-8 border-l-2 border-gray-200 before:content-[''] before:absolute before:left-[-9px] before:top-2 before:w-4 before:h-4 before:bg-brand-coral before:rounded-full before:border-4 before:border-white">
+                    <h4 class="text-xl font-bold text-brand-navy mb-3">Day 4: Deep Dive into Vector Databases</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-brand-textSecondary">
+                        <li><strong>Core Topics:</strong> Vector database internals (Chroma and FAISS architectures), HNSW vs. Flat indexing strategies, strict structural metadata filtering, storage persistence configurations, and identifying optimal stores based on workload constraints.</li>
+                    </ul>
+                    <div class="bg-brand-light p-5 rounded-xl border border-gray-200 shadow-sm mt-4">
+                        <strong class="text-brand-navy flex items-center"><i class="fas fa-laptop-code text-brand-coral mr-2"></i> Hands-on Lab:</strong> 
+                        <p class="mt-2 text-brand-textSecondary">Index identical document chunks into Chroma and FAISS, executing a suite of stress-tests to compare query latency, structural search quality, and data retrieval throughput.</p>
+                    </div>
+                </div>
+
+                <!-- Day 5 -->
+                <div class="relative pl-8 border-l-2 border-transparent before:content-[''] before:absolute before:left-[-9px] before:top-2 before:w-4 before:h-4 before:bg-brand-coral before:rounded-full before:border-4 before:border-white">
+                    <h4 class="text-xl font-bold text-brand-navy mb-3">Day 5: Synthesis – End-to-End Basic RAG Pipeline</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-brand-textSecondary">
+                        <li><strong>Core Topics:</strong> Connecting the pipeline links: Ingestion &rarr; Ingestion Loader Parsing &rarr; Chunking Mechanics &rarr; Embedding Generation &rarr; Indexing &rarr; Query-Time Retrieval &rarr; Context Augmentation &rarr; Token Generation.</li>
+                    </ul>
+                    <div class="bg-brand-light p-5 rounded-xl border border-gray-200 shadow-sm mt-4">
+                        <strong class="text-brand-navy flex items-center"><i class="fas fa-laptop-code text-brand-coral mr-2"></i> Hands-on Lab:</strong> 
+                        <p class="mt-2 text-brand-textSecondary">Architect an end-to-end Document-QA conversational chatbot capable of executing reliable queries across isolated document corpuses with verbatim inline citation mappings and interactive metadata tracking source boards.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Week 2 -->
+        <div class="mb-16">
+            <div class="flex items-center mb-8">
+                <div class="w-12 h-12 rounded-full bg-brand-navy text-white flex items-center justify-center font-bold text-xl mr-4 shadow-lg">2</div>
+                <h3 class="text-3xl font-bold text-brand-navy border-b-2 border-brand-coral pb-2">Advanced Optimization & Autonomous Agents</h3>
+            </div>
+            
+            <div class="space-y-8">
+                <!-- Day 6 -->
+                <div class="relative pl-8 border-l-2 border-gray-200 before:content-[''] before:absolute before:left-[-9px] before:top-2 before:w-4 before:h-4 before:bg-brand-coral before:rounded-full before:border-4 before:border-white">
+                    <h4 class="text-xl font-bold text-brand-navy mb-3">Day 6: Advanced Retrieval & Context Engineering</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-brand-textSecondary">
+                        <li><strong>Core Topics:</strong> Optimizing precision/recall, tuning dynamic Top-K values, cross-encoder reranking algorithms, query expansion/rewriting frameworks, and context window compression strategies.</li>
+                    </ul>
+                    <div class="bg-brand-light p-5 rounded-xl border border-gray-200 shadow-sm mt-4">
+                        <strong class="text-brand-navy flex items-center"><i class="fas fa-laptop-code text-brand-coral mr-2"></i> Hands-on Lab:</strong> 
+                        <p class="mt-2 text-brand-textSecondary">Set up an isolated testing loop to benchmark retrieval quality shifts across alternating algorithm configurations, logging metrics to track system optimizations.</p>
+                    </div>
+                </div>
+
+                <!-- Day 7 -->
+                <div class="relative pl-8 border-l-2 border-gray-200 before:content-[''] before:absolute before:left-[-9px] before:top-2 before:w-4 before:h-4 before:bg-brand-coral before:rounded-full before:border-4 before:border-white">
+                    <h4 class="text-xl font-bold text-brand-navy mb-3">Day 7: LangChain Expression Language (LCEL) & Infrastructure</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-brand-textSecondary">
+                        <li><strong>Core Topics:</strong> Composing complex logic with LCEL primitives, Custom Retrievers, dynamic prompt serialization, stateful memory tracking abstractions (Buffer, Window, Summary), and deep tracing/observability instrumentation.</li>
+                    </ul>
+                    <div class="bg-brand-light p-5 rounded-xl border border-gray-200 shadow-sm mt-4">
+                        <strong class="text-brand-navy flex items-center"><i class="fas fa-laptop-code text-brand-coral mr-2"></i> Hands-on Lab:</strong> 
+                        <p class="mt-2 text-brand-textSecondary">Refactor the monolithic Day 5 conversational backend into a highly composable, observable, and thread-safe chain with localized session logging and tracing hooks.</p>
+                    </div>
+                </div>
+
+                <!-- Day 8 -->
+                <div class="relative pl-8 border-l-2 border-gray-200 before:content-[''] before:absolute before:left-[-9px] before:top-2 before:w-4 before:h-4 before:bg-brand-coral before:rounded-full before:border-4 before:border-white">
+                    <h4 class="text-xl font-bold text-brand-navy mb-3">Day 8: Autonomous System Design – LLM Agents</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-brand-textSecondary">
+                        <li><strong>Core Topics:</strong> The core agentic control loops: Perceive, Plan, Act, and Reflect. Executing ReAct frameworks, functional tool-calling APIs, handling parsing edge cases, and runtime failure recovery patterns.</li>
+                    </ul>
+                    <div class="bg-brand-light p-5 rounded-xl border border-gray-200 shadow-sm mt-4">
+                        <strong class="text-brand-navy flex items-center"><i class="fas fa-laptop-code text-brand-coral mr-2"></i> Hands-on Lab:</strong> 
+                        <p class="mt-2 text-brand-textSecondary">Build an autonomous routing agent that evaluates user input to selectively pull knowledge-base documentation, execute auxiliary mathematical helper scripts, or respond immediately using generalized parametric knowledge.</p>
+                    </div>
+                </div>
+
+                <!-- Day 9 -->
+                <div class="relative pl-8 border-l-2 border-gray-200 before:content-[''] before:absolute before:left-[-9px] before:top-2 before:w-4 before:h-4 before:bg-brand-coral before:rounded-full before:border-4 before:border-white">
+                    <h4 class="text-xl font-bold text-brand-navy mb-3">Day 9: Evaluation Frameworks & Prompt Version Control</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-brand-textSecondary">
+                        <li><strong>Core Topics:</strong> Treating prompts as system source code, implementation of deterministic unit tests, Git-driven prompt history/rollback workflows, and structuring human-in-the-loop and LLM-as-a-judge A/B validation metrics.</li>
+                    </ul>
+                    <div class="bg-brand-light p-5 rounded-xl border border-gray-200 shadow-sm mt-4">
+                        <strong class="text-brand-navy flex items-center"><i class="fas fa-laptop-code text-brand-coral mr-2"></i> Hands-on Lab:</strong> 
+                        <p class="mt-2 text-brand-textSecondary">Develop a regression testing suite containing targeted validation cases, running competitive A/B tests between prompt versions to document safety metrics.</p>
+                    </div>
+                </div>
+
+                <!-- Day 10 -->
+                <div class="relative pl-8 border-l-2 border-transparent before:content-[''] before:absolute before:left-[-9px] before:top-2 before:w-4 before:h-4 before:bg-brand-coral before:rounded-full before:border-4 before:border-white">
+                    <h4 class="text-xl font-bold text-brand-navy mb-3">Day 10: Capstone Production Optimization & Deployment</h4>
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-brand-textSecondary">
+                        <li><strong>Core Topics:</strong> Code review patterns for large model deployments, continuous logging, robust parameter configuration, and compiling comprehensive technical developer documentation.</li>
+                    </ul>
+                    <div class="bg-brand-light p-5 rounded-xl border border-gray-200 shadow-sm mt-4">
+                        <strong class="text-brand-navy flex items-center"><i class="fas fa-laptop-code text-brand-coral mr-2"></i> Hands-on Lab:</strong> 
+                        <p class="mt-2 text-brand-textSecondary">Finalize, optimize, and push your end-to-end repository with comprehensive multi-tier testing data, architecture schematics, and an explicit dependency setup blueprint.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Capstone -->
+        <div class="bg-brand-navy text-white p-10 rounded-3xl shadow-2xl mt-12 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] relative overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 border border-brand-navy/80">
+            <div class="absolute inset-0 bg-gradient-to-br from-brand-navy to-brand-navy/80"></div>
+            <div class="absolute top-0 right-0 w-64 h-64 bg-brand-coral opacity-10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+            <div class="relative z-10">
+                <div class="flex items-center mb-6">
+                    <div class="w-14 h-14 bg-brand-coral rounded-xl flex items-center justify-center text-white text-2xl mr-5 shadow-lg transform rotate-3">
+                        <i class="fas fa-rocket -rotate-3"></i>
+                    </div>
+                    <h3 class="text-3xl font-extrabold text-white">Capstone Project Profile</h3>
+                </div>
+                
+                <div class="mb-8 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-md">
+                    <p class="text-xl leading-relaxed text-gray-100"><strong class="text-brand-coral uppercase tracking-widest text-xs block mb-2 font-black">Objective</strong> Build a comprehensive, production-grade RAG Conversational System running over a specialized, proprietary enterprise knowledge base.</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-lg font-bold mb-4 text-white border-b border-white/20 pb-2 uppercase tracking-wider text-sm">Requirements</h4>
+                        <ul class="list-none space-y-4">
+                            <li class="flex items-start text-gray-200">
+                                <i class="fas fa-check-circle text-brand-coral mt-1 mr-3 text-lg"></i> 
+                                <span>Fully tracked and cleanly segmented Git repository.</span>
+                            </li>
+                            <li class="flex items-start text-gray-200">
+                                <i class="fas fa-check-circle text-brand-coral mt-1 mr-3 text-lg"></i> 
+                                <span>At least one functional, autonomous Tool-Calling agent capability.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold mb-4 text-white border-b border-white/20 pb-2 uppercase tracking-wider text-sm">Core Deliverables</h4>
+                        <ul class="list-none space-y-4">
+                            <li class="flex items-start text-gray-200">
+                                <i class="fas fa-file-alt text-brand-coral mt-1 mr-3 text-lg"></i> 
+                                <span>Integrated prompt variation history log with an adjacent validation sheet.</span>
+                            </li>
+                            <li class="flex items-start text-gray-200">
+                                <i class="fas fa-book text-brand-coral mt-1 mr-3 text-lg"></i> 
+                                <span>Production-ready markdown documentation detailing onboarding instructions.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-16 text-center flex flex-col sm:flex-row justify-center gap-4 print:hidden">
+            <a href="https://www.aptcomputinglabs.com/courses/agentic-ai/" target="_blank" rel="noopener noreferrer" class="bg-brand-coral hover:bg-brand-coral/90 text-white px-10 py-4 rounded-full font-bold shadow-xl transition-all hover:-translate-y-1 inline-flex items-center justify-center text-lg group">
+                Go to full content
+                <i class="fas fa-arrow-right ml-3 transform group-hover:translate-x-1 transition-transform"></i>
+            </a>
+            <button type="button" onclick="window.print()" class="bg-gray-800 hover:bg-gray-700 text-white px-10 py-4 rounded-full font-bold shadow-xl transition-all hover:-translate-y-1 inline-flex items-center justify-center text-lg">
+                <i class="fas fa-file-pdf mr-3"></i> Download as PDF
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
