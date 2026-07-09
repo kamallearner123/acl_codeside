@@ -193,7 +193,7 @@ try:
   </div>
   
   <div class="mt-10 mb-4 text-center flex flex-col sm:flex-row justify-center gap-4 print:hidden">
-    <a href="https://www.aptcomputinglabs.com/courses/agentic-ai/" target="_blank" rel="noopener noreferrer" class="bg-brand-coral hover:bg-opacity-90 text-white px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center justify-center">
+    <a href="/agentic-ai/" target="_blank" rel="noopener noreferrer" class="bg-brand-coral hover:bg-opacity-90 text-white px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center justify-center">
       Go to full content <i class="fas fa-arrow-right ml-2"></i>
     </a>
     <button type="button" onclick="window.print()" class="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center justify-center">

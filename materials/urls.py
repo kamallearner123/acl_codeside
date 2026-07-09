@@ -11,4 +11,5 @@ urlpatterns = [
     path("rust-programming/", views.RustMaterialsView.as_view(), name="rust"),
     path("c-programming/", views.CProgrammingMaterialsView.as_view(), name="c_programming"),
     path("dsa-concepts/", views.DSAMaterialsView.as_view(), name="dsa_concepts"),
+    path("agentic-ai/", views.AgenticAIMaterialsView.as_view(), name="agentic_ai"),
 ]

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}Agentic AI Materials{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6 fw-bold">Agentic AI Track</h1>
+            <p class="text-muted mb-0">Structured chapters guiding mastery of RAG pipelines and autonomous LLM agents.</p>
+        </div>
+        <a class="btn btn-outline-primary" href="{% url 'materials:dashboard' %}">← Back to Materials</a>
+    </div>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-icon bg-primary text-white">1</div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Day 1 · Environment Setup & Prompt Engineering</h5>
+                <ul class="mb-0">
+                    <li>Local Python environment, Git strategy, API credentials</li>
+                    <li>LangChain Ingestion Functions: PyPDFLoader, TextLoader</li>
+                    <li>Prompt Engineering, chains, Pydantic schemas</li>
+                    <li>Workshop: Modular prompt management workflow</li>
+                </ul>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-icon bg-success text-white">2</div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Day 2 · Document Parsing, Splitting & Chunking</h5>
+                <ul class="mb-0">
+                    <li>Document loaders, semantic/syntactic text parsing</li>
+                    <li>Strategic chunking, chunk overlapping heuristics</li>
+                    <li>Optimized metadata schema design</li>
+                    <li>Workshop: Ingest regulatory docs, automated chunk experiments</li>
+                </ul>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-icon bg-danger text-white">3</div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Day 3 · Mathematical Foundations of Text Embeddings</h5>
+                <ul class="mb-0">
+                    <li>Vector space representations, cosine similarity vs Euclidean</li>
+                    <li>Token sequence constraints, semantic retrieval logic</li>
+                    <li>Vector alignment, measuring embedding quality</li>
+                    <li>Workshop: Extract vectors, manual matrix similarity ops</li>
+                </ul>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-icon bg-warning text-dark">4</div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Day 4 · Deep Dive into Vector Databases</h5>
+                <ul class="mb-0">
+                    <li>Vector database internals: Chroma and FAISS</li>
+                    <li>HNSW vs. Flat indexing strategies</li>
+                    <li>Structural metadata filtering, storage persistence configurations</li>
+                    <li>Workshop: Index chunks, execute stress tests on latency & throughput</li>
+                </ul>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-icon bg-info text-white">5</div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Day 5 · Synthesis: End-to-End Basic RAG Pipeline</h5>
+                <ul class="mb-0">
+                    <li>Connecting pipeline links: Ingestion &rarr; Parsing &rarr; Chunking &rarr; Embedding</li>
+                    <li>Indexing &rarr; Query-Time Retrieval &rarr; Context Augmentation &rarr; Token Generation</li>
+                    <li>Workshop: Architect end-to-end Document-QA conversational chatbot</li>
+                </ul>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-icon bg-primary text-white">6</div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Day 6 · Advanced Retrieval & Context Engineering</h5>
+                <ul class="mb-0">
+                    <li>Optimizing precision/recall, tuning dynamic Top-K</li>
+                    <li>Cross-encoder reranking algorithms</li>
+                    <li>Query expansion/rewriting, context window compression</li>
+                    <li>Workshop: Benchmark retrieval quality shifts</li>
+                </ul>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-icon bg-success text-white">7</div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Day 7 · LangChain Expression Language (LCEL) & Infrastructure</h5>
+                <ul class="mb-0">
+                    <li>Composing complex logic with LCEL primitives</li>
+                    <li>Stateful memory tracking (Buffer, Window, Summary)</li>
+                    <li>Deep tracing/observability instrumentation</li>
+                    <li>Workshop: Refactor backend into thread-safe chain with logging</li>
+                </ul>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-icon bg-danger text-white">8</div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Day 8 · Autonomous System Design – LLM Agents</h5>
+                <ul class="mb-0">
+                    <li>Agentic control loops: Perceive, Plan, Act, Reflect</li>
+                    <li>ReAct frameworks, functional tool-calling APIs</li>
+                    <li>Handling parsing edge cases, runtime failure recovery</li>
+                    <li>Workshop: Build autonomous routing agent to select knowledge base or tools</li>
+                </ul>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-icon bg-warning text-dark">9</div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Day 9 · Evaluation Frameworks & Prompt Version Control</h5>
+                <ul class="mb-0">
+                    <li>Treating prompts as system source code</li>
+                    <li>Deterministic unit tests, Git-driven prompt rollback</li>
+                    <li>Human-in-the-loop and LLM-as-a-judge A/B validation</li>
+                    <li>Workshop: Regression testing suite and A/B safety metrics</li>
+                </ul>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-icon bg-info text-white">10</div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Day 10 · Capstone Production Optimization</h5>
+                <ul class="mb-0">
+                    <li>Code review patterns for large model deployments</li>
+                    <li>Continuous logging, robust parameter configuration</li>
+                    <li>Comprehensive technical developer documentation</li>
+                    <li>Workshop: Push optimized repository with multi-tier tests</li>
+                </ul>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-icon bg-dark text-white"><i class="fas fa-rocket"></i></div>
+            <div class="timeline-content">
+                <h5 class="fw-bold">Capstone Project Profile</h5>
+                <ul class="mb-0">
+                    <li>Objective: Build a comprehensive, production-grade RAG Conversational System over enterprise data</li>
+                    <li>At least one functional, autonomous Tool-Calling agent capability</li>
+                    <li>Deliverable: Integrated prompt variation history log with validation sheet</li>
+                    <li>Deliverable: Production-ready markdown documentation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 40px;
+    border-left: 2px solid #e9ecef;
+}
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+    padding-left: 20px;
+}
+.timeline-icon {
+    position: absolute;
+    left: -50px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+.timeline-content {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %}

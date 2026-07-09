@@ -28,3 +28,7 @@ class CProgrammingMaterialsView(LoginRequiredMixin, TemplateView):
 
 class DSAMaterialsView(LoginRequiredMixin, TemplateView):
     template_name = "materials/dsa_concepts.html"
+
+
+class AgenticAIMaterialsView(LoginRequiredMixin, TemplateView):
+    template_name = "materials/agentic_ai.html"
