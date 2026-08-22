@@ -47,4 +47,4 @@ python3 -m pip install --upgrade pip >/dev/null
 python3 -m pip install -r requirements.txt
 
 python3 manage.py migrate
-python3 manage.py runserver 0.0.0.0:8000
+python3 manage.py runserver 0.0.0.0:8008

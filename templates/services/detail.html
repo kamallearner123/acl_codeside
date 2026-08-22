@@ -42,7 +42,7 @@
                 <div class="bg-white rounded-3xl p-8 md:p-12 shadow-premium border border-gray-50 mb-12">
                     <h2 class="text-2xl font-bold text-brand-navy mb-6">Service Overview</h2>
                     <div class="prose prose-lg text-brand-textSecondary max-w-none">
-                        {{ service.description|linebreaks }}
+                        {{ service.description|safe }}
                     </div>
                 </div>
             </div>

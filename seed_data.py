@@ -16,11 +16,112 @@ print("Seeding Services...")
 services_data = [
     {"title": "Industry Training & MaaS", "slug": "industry-training", "icon_class": "fas fa-briefcase", "short_description": "Comprehensive corporate training and Model-as-a-Service solutions.", "description": "Full description of our industry training program.", "is_featured": True, "order": 1},
     {"title": "Rust Automotive Program", "slug": "rust-automotive", "icon_class": "fab fa-rust", "short_description": "Pioneering Rust in automotive software systems.", "description": "Full description of Rust Automotive.", "is_featured": True, "order": 2},
-    {"title": "Automotive IDS/IDPS", "slug": "automotive-ids", "icon_class": "fas fa-shield-alt", "short_description": "Advanced intrusion detection and prevention systems.", "description": "Details about Automotive IDS.", "is_featured": False, "order": 3},
+    {
+    "title": "Automotive IDS/IDPS", 
+    "slug": "automotive-ids", 
+    "icon_class": "fas fa-shield-alt", 
+    "short_description": "Advanced intrusion detection and prevention systems.", 
+    "description": """
+<div class="space-y-12">
+    <!-- Introduction -->
+    <div class="bg-gray-50 p-8 rounded-xl border border-gray-100 shadow-sm">
+        <h3 class="text-2xl font-bold text-brand-navy mb-4">Automotive Intrusion Detection and Prevention Systems (IDPS)</h3>
+        <p class="mb-4 text-brand-textSecondary text-lg leading-relaxed">
+            As modern vehicles evolve into highly connected and autonomous machines, they have become complex networks of Electronic Control Units (ECUs) and sensors. While connectivity—such as Vehicle-to-Everything (V2X)—brings unparalleled convenience and safety features, it simultaneously exposes critical automotive infrastructure to severe cybersecurity threats.
+        </p>
+        <p class="text-brand-textSecondary text-lg leading-relaxed">
+            Our Automotive IDPS solution provides a comprehensive, multi-layered security framework designed to detect anomalies, prevent malicious intrusions, and ensure the operational integrity of your vehicle fleets.
+        </p>
+    </div>
+
+    <!-- The Need for IDPS -->
+    <div>
+        <h3 class="text-2xl font-bold text-brand-navy mb-6 border-b-2 border-brand-coral inline-block pb-2">The Need for IDPS</h3>
+        <div class="grid md:grid-cols-2 gap-8 items-center mb-8">
+            <div>
+                <p class="text-brand-textSecondary mb-4 text-lg">
+                    The modern automotive ecosystem requires strict adherence to cybersecurity and safety standards, such as <strong>ISO/SAE 21434</strong> for cybersecurity engineering and <strong>ISO 26262</strong> for functional safety. Furthermore, software architectures like <strong>AUTOSAR</strong> are integrating rigorous security modules to safeguard communication and processing within ECUs.
+                </p>
+                <p class="text-brand-textSecondary mb-4 text-lg">
+                    New-age vehicles collect vast amounts of driving data and rely heavily on Advanced Driver Assistance Systems (ADAS). Unauthorized access or tampering—as seen in recent real-world attacks on connected mobility solutions—can lead to catastrophic consequences, ranging from data breaches to the loss of physical control over safety-critical applications like braking and lane assist.
+                </p>
+            </div>
+            <div class="space-y-4">
+                <img src="/static/img/idps/imp.jpeg" alt="Cybersecurity Threat Landscape" class="rounded-xl shadow-md border border-gray-200 w-full hover:scale-105 transition-transform duration-300">
+                <p class="text-sm text-center text-gray-500 italic">Growing regulatory emphasis on automotive cybersecurity rules.</p>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 items-center flex-row-reverse">
+            <div class="order-2 md:order-1 space-y-4">
+                <img src="/static/img/idps/attack.jpeg" alt="Attack Vectors" class="rounded-xl shadow-md border border-gray-200 w-full hover:scale-105 transition-transform duration-300">
+                <p class="text-sm text-center text-gray-500 italic">Common Security Risks and Attack Vectors in Connected Vehicles.</p>
+            </div>
+            <div class="order-1 md:order-2">
+                <p class="text-brand-textSecondary mb-4 text-lg">
+                    The attack surface extends across multiple domains:
+                </p>
+                <ul class="list-none space-y-3">
+                    <li class="flex items-start"><i class="fas fa-shield-virus mt-1 text-brand-coral mr-3"></i> <span><strong>In-Vehicle Networks (IVN):</strong> Vulnerabilities in CAN, LIN, and Automotive Ethernet.</span></li>
+                    <li class="flex items-start"><i class="fas fa-wifi mt-1 text-brand-coral mr-3"></i> <span><strong>Wireless Interfaces:</strong> Wi-Fi, Bluetooth, Key Fobs, and Cellular networks.</span></li>
+                    <li class="flex items-start"><i class="fas fa-broadcast-tower mt-1 text-brand-coral mr-3"></i> <span><strong>V2X Communications:</strong> Risks in Vehicle-to-Vehicle (V2V) and Vehicle-to-Infrastructure (V2I) interactions.</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Architecture -->
+    <div class="bg-brand-light/30 p-8 rounded-2xl border border-brand-coral/20">
+        <h3 class="text-2xl font-bold text-brand-navy mb-6 border-b-2 border-brand-coral inline-block pb-2">Our IDPS Architecture</h3>
+        <p class="text-brand-textSecondary mb-6 text-lg">
+            Our system is built upon a distributed, tiered architecture that seamlessly integrates edge processing within the vehicle and centralized monitoring in the cloud. It ensures real-time detection and response while aligning with the stringent requirements of <strong>AUTOSAR</strong> architectures.
+        </p>
+        <div class="mb-8 overflow-hidden rounded-xl shadow-lg border border-gray-200 bg-white p-4">
+            <img src="/static/img/idps/Arch.jpeg" alt="IDPS Architecture" class="w-full h-auto">
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+                <h4 class="font-bold text-brand-navy mb-2 flex items-center"><i class="fas fa-microchip text-brand-coral mr-2"></i> Edge Sensors</h4>
+                <p class="text-sm text-gray-600">Distributed across CAN, Wi-Fi, and BLE zones to monitor raw traffic and detect signature-based anomalies instantaneously.</p>
+            </div>
+            <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+                <h4 class="font-bold text-brand-navy mb-2 flex items-center"><i class="fas fa-server text-brand-coral mr-2"></i> IDSM & Gateway</h4>
+                <p class="text-sm text-gray-600">The Intrusion Detection System Manager (IDSM) aggregates, filters, and formats security events before securely transmitting them to the Cloud.</p>
+            </div>
+            <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
+                <h4 class="font-bold text-brand-navy mb-2 flex items-center"><i class="fas fa-cloud text-brand-coral mr-2"></i> Cloud SOC</h4>
+                <p class="text-sm text-gray-600">A centralized Security Operations Center (SOC) leverages ML engines to analyze fleet-wide telemetry and identify sophisticated, zero-day attacks.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results & SOC Interface -->
+    <div>
+        <h3 class="text-2xl font-bold text-brand-navy mb-6 border-b-2 border-brand-coral inline-block pb-2">SOC Dashboard and Results</h3>
+        <p class="text-brand-textSecondary mb-6 text-lg">
+            The Vehicle Security Operations Center (vSOC) provides security analysts with a comprehensive, real-time interface to monitor the fleet's health, investigate incidents, and orchestrate mitigation strategies.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <img src="/static/img/idps/result1.jpeg" alt="SOC Incident Dashboard" class="rounded-xl shadow-md border border-gray-200 w-full hover:scale-[1.02] transition-transform duration-300">
+            </div>
+            <div>
+                <img src="/static/img/idps/result2.jpeg" alt="Event Deep-Dive Inspector" class="rounded-xl shadow-md border border-gray-200 w-full hover:scale-[1.02] transition-transform duration-300">
+            </div>
+        </div>
+        <p class="text-brand-textSecondary text-lg bg-gray-50 p-6 rounded-lg border-l-4 border-brand-navy">
+            Features include an <strong>Incident Operations Center</strong> for high-level metric tracking, and an <strong>Event Deep-Dive Inspector</strong> that allows engineers to examine raw payload binary hex dumps and pinpoint the exact source sensor and vehicle ID associated with an intrusion attempt. This enables rapid compliance reporting and forensic analysis required by <strong>ISO 21434</strong>.
+        </p>
+    </div>
+</div>
+""", 
+    "is_featured": False, 
+    "order": 3
+},
     {"title": "Building AI Agents", "slug": "building-ai-agents", "icon_class": "fas fa-robot", "short_description": "Design and implement autonomous AI agents for real-world tasks.", "description": "Agent architectures, reinforcement learning basics, and safe deployment practices.", "is_featured": False, "order": 4},
 ]
 for data in services_data:
-    Service.objects.get_or_create(slug=data['slug'], defaults=data)
+    Service.objects.update_or_create(slug=data['slug'], defaults=data)
 
 print("Seeding Blogs...")
 blogs_data = [
