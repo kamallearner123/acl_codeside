@@ -8,7 +8,7 @@ Your contact form now has a **two-stage email system**:
 1. User submits contact form
 2. ✅ Contact data is saved to database
 3. ✅ **Admin email sent immediately** to:
-   - `info@aptcomputinglabs.com`
+   - `kamal@aptcomputinglabs.com`
    - `kamal@aptcomputinglabs.com`
 4. ✅ Success message shown to user (without mentioning confirmation email yet)
 
@@ -69,7 +69,7 @@ On PythonAnywhere:
 - EMAIL_HOST: smtp.gmail.com
 - EMAIL_HOST_USER: aptcomputinglabs@gmail.com
 - EMAIL_HOST_PASSWORD: (app-specific password)
-- DEFAULT_FROM_EMAIL: info@aptcomputinglabs.com
+- DEFAULT_FROM_EMAIL: kamal@aptcomputinglabs.com
 
 ---
 

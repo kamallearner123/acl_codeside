@@ -32,7 +32,7 @@ def contact(request):
                 full_subject,
                 full_message,
                 settings.DEFAULT_FROM_EMAIL,
-                ['info@aptcomputinglabs.com', 'kamal@aptcomputinglabs.com'],
+                ['kamal@aptcomputinglabs.com', 'kamal@aptcomputinglabs.com'],
                 fail_silently=False,
             )
 

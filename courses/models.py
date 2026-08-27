@@ -11,6 +11,8 @@ class Course(models.Model):
     skill_level = models.CharField(max_length=50, blank=True)
     technologies = models.CharField(max_length=200, blank=True, help_text="Comma separated list, e.g., 'Rust, Linux'")
     image = models.URLField(blank=True, null=True)
+    fee = models.CharField(max_length=100, blank=True, help_text="e.g., '7000/- + GST'")
+    timing = models.CharField(max_length=200, blank=True, help_text="e.g., 'Weekend course, 4:00pm to 5:00pm'")
 
     def __str__(self):
         return self.title

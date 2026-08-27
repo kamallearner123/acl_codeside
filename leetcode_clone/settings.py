@@ -216,4 +216,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'aptcomputinglabs@gmail.com'
 EMAIL_HOST_PASSWORD = 'haxv mfty mvgt vkrq'
-DEFAULT_FROM_EMAIL = 'info@aptcomputinglabs.com'
+DEFAULT_FROM_EMAIL = 'kamal@aptcomputinglabs.com'

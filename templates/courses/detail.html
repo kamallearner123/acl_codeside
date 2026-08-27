@@ -131,6 +131,28 @@
                                 <p class="font-medium text-brand-navy">Included upon completion</p>
                             </div>
                         </li>
+                        {% if course.timing %}
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-calendar-alt text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold">Timing</p>
+                                <p class="font-medium text-brand-navy">{{ course.timing }}</p>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% if course.fee %}
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-money-bill-wave text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold">Fee</p>
+                                <p class="font-medium text-brand-navy">{{ course.fee }}</p>
+                            </div>
+                        </li>
+                        {% endif %}
                     </ul>
                     
                     <div class="mt-8 pt-6 border-t border-gray-100">

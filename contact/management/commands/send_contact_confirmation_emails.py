@@ -36,7 +36,7 @@ Message: {contact.message}
 
 Best regards,
 Apt Computing Labs Team
-info@aptcomputinglabs.com
+kamal@aptcomputinglabs.com
 +91 9739858111"""
                 
                 # Send confirmation email to user
