@@ -13,6 +13,12 @@ class Course(models.Model):
     image = models.URLField(blank=True, null=True)
     fee = models.CharField(max_length=100, blank=True, help_text="e.g., '7000/- + GST'")
     timing = models.CharField(max_length=200, blank=True, help_text="e.g., 'Weekend course, 4:00pm to 5:00pm'")
+    start_date = models.CharField(max_length=100, blank=True, help_text="e.g., '12th Sep 2026'")
+    trainers = models.CharField(max_length=200, blank=True, help_text="e.g., 'Kamal Kumar Mukiri'")
+    recordings_info = models.CharField(max_length=300, blank=True)
+    materials_info = models.CharField(max_length=300, blank=True)
+    prerequisites = models.CharField(max_length=300, blank=True)
+    training_mode = models.CharField(max_length=100, blank=True, help_text="e.g., 'Online'")
 
     def __str__(self):
         return self.title

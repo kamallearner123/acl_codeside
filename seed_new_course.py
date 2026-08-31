@@ -10,6 +10,17 @@ from courses.models import Course
 
 html_content = """
 <div class="space-y-8">
+  <div class="bg-brand-navy text-white p-6 rounded-xl shadow-lg border-l-4 border-brand-coral">
+    <h3 class="text-xl font-bold mb-3 flex items-center"><i class="fas fa-list-ul mr-2 text-brand-coral"></i> What to Expect from this Course</h3>
+    <ul class="space-y-2 text-gray-200">
+      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>24 problem-driven sessions</strong> blending Python, ML, and advanced Agentic AI engineering.</li>
+      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Hands-on weekend format</strong> (Sat &amp; Sun, 4:00pm - 5:30pm) designed for working professionals.</li>
+      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>4 dedicated project days</strong> including AI Problem Solvers and RAG knowledge agents.</li>
+      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Production-ready capstone</strong>: Build a complete Automotive Engineering Assistant.</li>
+      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Full access to materials</strong> and API access, with recordings maintained for 3 months.</li>
+    </ul>
+  </div>
+
   <div class="bg-gray-50 p-6 rounded-xl border border-gray-100 shadow-sm">
     <h3 class="text-xl font-bold text-brand-navy mb-4">Course Philosophy</h3>
     <p class="mb-2 text-brand-textSecondary text-lg"><strong>Traditional:</strong> Technology &rarr; Concept &rarr; Exercise</p>
@@ -18,78 +29,79 @@ html_content = """
   </div>
 
   <div>
-    <h3 class="text-2xl font-bold text-brand-navy mb-6 border-b-2 border-brand-coral inline-block pb-2">The Learning Journey (21-Day Curriculum)</h3>
+    <h3 class="text-2xl font-bold text-brand-navy mb-6 border-b-2 border-brand-coral inline-block pb-2">The Learning Journey (24-Day Curriculum)</h3>
 
-    <!-- Day 1 -->
+        <!-- Day 1 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 1:</span> Python Fundamentals for Agentic AI</h4>
-      <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> You need to interact with APIs and process structured data, but you don't know the core programming tools required for AI development.</p>
-      <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Python basics • Variables • Dictionaries • API requests (requests library) • JSON parsing</p>
-      <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Write a script to fetch data from a public API and parse the JSON response.</p>
-      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Build a solid Python foundation for AI integration.</p>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 1:</span> The AI Landscape: From Basic ML to LLMs</h4>
+      <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> You hear terms like Machine Learning, Deep Learning, and Large Language Models, but how do they connect, and why are LLMs so revolutionary?</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Traditional Programming vs. Machine Learning &bull; Neural Networks &bull; The Transformer Architecture &bull; What makes an LLM "Large".</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Compare a simple ML classification task with a generative LLM task conceptually.</p>
+      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Build a solid conceptual foundation of the AI landscape before diving into LLM internals.</p>
     </div>
 
     <!-- Day 2 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 2:</span> How do you get better answers from an LLM?</h4>
-      <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> You have a complex technical problem. Ask ChatGPT three different ways. Why are the answers different, and how can you systematically improve the result?</p>
-      <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Give ChatGPT an ambiguous problem • Add context and constraints • Add examples • Specify output format • Compare results</p>
-      <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Context • Tokens • System vs user instructions • Prompt structure • Zero-shot vs few-shot • Model limitations</p>
-      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Build a reusable problem-solving prompt template.</p>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 2:</span> Python Fundamentals for Agentic AI</h4>
+      <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> You need to interact with APIs and process structured data, but you don't know the core programming tools required for AI development.</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Python basics &bull; Variables &bull; Dictionaries &bull; API requests (requests library) &bull; JSON parsing</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Write a script to fetch data from a public API and parse the JSON response.</p>
+      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Build a solid Python foundation for AI integration.</p>
     </div>
 
     <!-- Day 3 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 3:</span> Why does ChatGPT confidently give wrong answers?</h4>
-      <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Ask an LLM questions where the answer is unavailable or ambiguous. Make it produce an incorrect answer. Then investigate why it answered instead of saying "I don't know."</p>
-      <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Hallucination • Knowledge cutoff • Probabilistic generation • Non-determinism • Context limitations • Grounding</p>
-      <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Design a prompt that distinguishes Known &rarr; Supported &rarr; Unknown.</p>
-      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Design a prompt that distinguishes known, supported and unknown information.</p>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 3:</span> What is an LLM actually doing under the hood?</h4>
+      <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> You ask an AI a question, but it gives a generic or slightly off-topic answer. Why isn't it "thinking" the way a human does, and how does it actually generate its response?</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Next-token prediction &bull; Context windows &bull; Tokens vs. Words &bull; Why embeddings (numbers) are used instead of text.</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Count tokens in a prompt, and observe how changing one word shifts the probability of the AI's next word.</p>
+      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Gain a mental model of an LLM to write better prompts and understand limitations.</p>
     </div>
 
     <!-- Day 4 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 4:</span> How do you make an LLM behave like a specialist?</h4>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 4:</span> Prompt Engineering &amp; Overcoming Hallucinations</h4>
+      <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> You need an LLM to give precise answers but it sometimes hallucinates or gives generic responses.</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Context &bull; System vs user instructions &bull; Prompt structure &bull; Few-shot prompting &bull; Grounding.</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Design a prompt that gives accurate results and distinguishes Known &rarr; Unknown.</p>
+      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Design a robust prompt template that distinguishes known and unknown information.</p>
+    </div>
+
+<!-- Day 5 -->
+    <div class="mb-6 pl-4 border-l border-gray-200">
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 5:</span> How do you make an LLM behave like a specialist?</h4>
       <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Take a generic ChatGPT and make it behave like a senior software architect.</p>
       <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Role • Domain context • Rules • Examples • Constraints • Expected output</p>
       <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Prompt engineering • Few-shot prompting • Structured output • JSON • Prompt evaluation</p>
       <p class="text-brand-textSecondary"><strong>Outcome:</strong> Create and test a specialist prompt.</p>
     </div>
 
-    <!-- Day 5 -->
-    <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 5:</span> Which AI should you use for a given problem?</h4>
-      <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Use ChatGPT, Claude and Perplexity for a research problem, coding problem and document-analysis problem. Determine which tool gives the best result and why.</p>
-      <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Quality • Cost • Latency • Context • Research capability • Coding capability</p>
-      <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Model selection • API vs UI • Capability/cost trade-offs</p>
-      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Create a decision matrix for selecting an AI tool.</p>
-    </div>
 
     <!-- Day 6 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 6:</span> How can Claude enhance Agentic AI development?</h4>
-      <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> You need an LLM that can handle massive contexts or perform complex reasoning with tool use, and you want to leverage Claude's unique capabilities.</p>
-      <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Claude API • Anthropic's specific prompting techniques • XML tags • Context window management</p>
-      <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Build a script that uses Claude to analyze a large document using XML tags for structure.</p>
-      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Master Claude's API and advanced prompting techniques.</p>
-    </div>
-
-    <!-- Day 7 -->
-    <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 7:</span> Can an LLM actually perform work?</h4>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 6:</span> Can an LLM actually perform work?</h4>
       <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Ask an LLM to calculate something, read data, search information and perform an operation. Determine what the LLM can and cannot do by itself.</p>
       <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Tools • Function calling • Tool schemas • Arguments • Tool results • LLM-tool loop</p>
       <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Build a calculator tool and trace the complete call cycle.</p>
       <p class="text-brand-textSecondary"><strong>Outcome:</strong> Build the first working tool-enabled LLM.</p>
     </div>
 
-    <!-- Day 8 -->
+    <!-- Day 7 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 8:</span> How do you make AI follow a repeatable process?</h4>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 7:</span> How do you make AI follow a repeatable process?</h4>
       <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Build a system that executes Understand &rarr; Analyze &rarr; Calculate &rarr; Verify &rarr; Respond. Identify why a single prompt becomes unreliable.</p>
       <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Prompt chaining • Structured outputs • Intermediate results • Validation • Deterministic workflows</p>
       <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Build an AI Problem Solver that classifies, decomposes, solves, validates and formats a problem.</p>
       <p class="text-brand-textSecondary"><strong>Outcome:</strong> Week 1 project: AI Problem Solver.</p>
+    </div>
+
+    
+    <!-- Day 8 -->
+    <div class="mb-6 pl-4 border-l border-gray-200 bg-brand-coral/5 p-4 rounded-r-lg">
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 8:</span> Project Session: AI Problem Solver</h4>
+      <p class="text-brand-textSecondary mb-1"><strong>Focus:</strong> Dedicated hands-on session to build the Week 1 project.</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Build:</strong> A Python application that accepts a problem, classifies it, breaks it into steps, uses an LLM, validates the output and produces structured results.</p>
+      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Complete a working AI Problem Solver.</p>
     </div>
 
     <!-- Day 9 -->
@@ -155,60 +167,86 @@ html_content = """
       <p class="text-brand-textSecondary"><strong>Outcome:</strong> Week 2 project: Company Knowledge Agent.</p>
     </div>
 
+    
     <!-- Day 16 -->
+    <div class="mb-6 pl-4 border-l border-gray-200 bg-brand-coral/5 p-4 rounded-r-lg">
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 16:</span> Project Session: Company Knowledge Agent</h4>
+      <p class="text-brand-textSecondary mb-1"><strong>Focus:</strong> Dedicated hands-on session to build the Week 2 project.</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Build:</strong> A RAG-powered agent that searches company documents, answers with evidence, selects tools when required and handles missing information.</p>
+      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Complete a working Company Knowledge Agent.</p>
+    </div>
+
+    <!-- Day 17 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 16:</span> Why isn't a simple agent enough?</h4>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 17:</span> Why isn't a simple agent enough?</h4>
       <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Design an agent that must classify, retrieve, analyze, verify, obtain approval and execute. Some paths branch, some repeat and some require humans.</p>
       <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Nodes • Edges • State • Conditional routing • Loops</p>
       <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Build the first LangGraph workflow.</p>
       <p class="text-brand-textSecondary"><strong>Outcome:</strong> Control complex agent workflows with LangGraph.</p>
     </div>
 
-    <!-- Day 17 -->
+    <!-- Day 18 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 17:</span> What happens when an agent fails halfway?</h4>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 18:</span> What happens when an agent fails halfway?</h4>
       <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Make an eight-step agent fail after step five. Determine how to resume without starting from the beginning.</p>
       <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> State • Checkpoints • Persistence • Threads • Resume • Streaming • Interrupt/resume</p>
       <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Pause, persist and resume an agent.</p>
       <p class="text-brand-textSecondary"><strong>Outcome:</strong> Build a recoverable agent workflow.</p>
     </div>
 
-    <!-- Day 18 -->
+    <!-- Day 19 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 18:</span> Why use multiple agents?</h4>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 19:</span> Why use multiple agents?</h4>
       <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Build one large agent responsible for research, coding, validation and reporting. Identify where specialization improves control and where it creates unnecessary complexity.</p>
       <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Supervisor/orchestrator • Specialized agents • Agent-to-agent communication • Architecture trade-offs</p>
       <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Design a supervisor with research, coding and reviewer agents.</p>
       <p class="text-brand-textSecondary"><strong>Outcome:</strong> Design a justified multi-agent architecture.</p>
     </div>
 
-    <!-- Day 19 -->
+    <!-- Day 20 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 19:</span> How can an agent become dangerous?</h4>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 20:</span> How can an agent become dangerous?</h4>
       <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Expose an agent to malicious retrieved content, prompt injection and dangerous tools. Determine what permissions and approval gates are required.</p>
       <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> Prompt injection • Indirect injection • Tool abuse • Excessive permissions • Data leakage • Guardrails • Human approval</p>
       <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Attack a deliberately vulnerable agent and harden it.</p>
       <p class="text-brand-textSecondary"><strong>Outcome:</strong> Build a guarded agent.</p>
     </div>
 
-    <!-- Day 20 -->
+    <!-- Day 21 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 20:</span> How do you turn your agent into a product?</h4>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 21:</span> How do you turn your agent into a product?</h4>
       <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Take a working terminal-based agent and turn it into a usable application.</p>
       <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> UI • API • Configuration • Logging • Tracing • Evaluation • Deployment • MCP awareness</p>
       <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Wrap the agent with Streamlit or Gradio.</p>
       <p class="text-brand-textSecondary"><strong>Outcome:</strong> Deploy a usable agent application.</p>
     </div>
 
-    <!-- Day 21 -->
+    <!-- Day 22 -->
     <div class="mb-6 pl-4 border-l border-gray-200">
-      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 21:</span> How do you build and ship a real agent?</h4>
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 22:</span> How do you build and ship a real agent?</h4>
       <p class="text-brand-textSecondary mb-1"><strong>Problem:</strong> Build an end-to-end engineering assistant combining RAG, tools, memory, routing, human approval and guardrails.</p>
       <p class="text-brand-textSecondary mb-1"><strong>Discover:</strong> RAG • Tools • Memory • LangGraph • Conditional routing • Human-in-the-loop • Guardrails • Deployment</p>
       <p class="text-brand-textSecondary mb-1"><strong>Practice:</strong> Integrate all components and demonstrate the complete workflow.</p>
       <p class="text-brand-textSecondary"><strong>Outcome:</strong> Week 3 project / Major capstone: production-style agentic system.</p>
     </div>
 
+
+
+    <!-- Day 23 -->
+    <div class="mb-6 pl-4 border-l border-gray-200 bg-brand-coral/5 p-4 rounded-r-lg">
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 23:</span> Project Session: Recoverable Agent Workflow</h4>
+      <p class="text-brand-textSecondary mb-1"><strong>Focus:</strong> Dedicated hands-on session to build the Week 3 project.</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Build:</strong> A multi-node LangGraph agent with conditional routing, persistence/checkpointing and human-in-the-loop approval, wrapped in a basic UI.</p>
+      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Complete a working Recoverable Agent Workflow.</p>
+    </div>
+
+    <!-- Day 24 -->
+    <div class="mb-6 pl-4 border-l border-gray-200 bg-brand-coral/5 p-4 rounded-r-lg border-l-4 border-brand-coral">
+      <h4 class="text-lg font-bold text-brand-navy mb-2"><span class="text-brand-coral">Day 24:</span> Major Capstone: Automotive Engineering Assistant</h4>
+      <p class="text-brand-textSecondary mb-1"><strong>Focus:</strong> Final hands-on session to build and present the major capstone.</p>
+      <p class="text-brand-textSecondary mb-1"><strong>Build:</strong> An end-to-end system that searches engineering documentation, retrieves specifications, calls diagnostic tools, and requests human approval.</p>
+      <p class="text-brand-textSecondary"><strong>Outcome:</strong> Graduate with a production-ready Automotive Engineering Assistant.</p>
+    </div>
   </div>
 
   <div class="bg-brand-navy text-white p-8 rounded-2xl shadow-xl mt-12 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] relative overflow-hidden">
@@ -249,13 +287,19 @@ Course.objects.update_or_create(
     slug="agentic-ai-learn-by-examples",
     defaults={
         "title": "Agentic AI - Learn by Examples",
-        "short_description": "A 21-Day Problem-Driven Curriculum for Working Professionals.",
+        "short_description": "A 24-Day Problem-Driven Curriculum for Working Professionals.",
         "description": html_content,
-        "duration_hours": 34,
+        "duration_hours": 36,
         "skill_level": "Beginner to Advanced",
         "technologies": "Python, LangChain, RAG, LangGraph, Agents, Claude, n8n",
         "fee": "7000/- + GST",
-        "timing": "Weekend course, 4:00pm to 5:00pm",
+        "timing": "Weekend course, 4:00pm to 5:30pm",
+        "start_date": "12th Sep 2026 - 29th Nov 2026",
+        "trainers": "Kamal Kumar Mukiri, Dhanush Boyapati",
+        "recordings_info": "Sessions are recorded and shared and maintained for 3 months.",
+        "materials_info": "Materials will be provided and hands on programs with APIs with limited access.",
+        "prerequisites": "Basic understanding of Python and programming concepts.",
+        "training_mode": "Online",
         "image": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=800"
     }
 )

@@ -58,6 +58,7 @@
                     {% endif %}
                 </div>
 
+
                 <!-- Reviews Section -->
                 <div class="bg-white rounded-3xl p-8 md:p-12 shadow-premium border border-gray-50" id="reviews">
                     <div class="flex justify-between items-center mb-8">
@@ -113,6 +114,17 @@
                                 </p>
                             </div>
                         </li>
+                        {% if course.training_mode %}
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-globe text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold">Mode</p>
+                                <p class="font-medium text-brand-navy">{{ course.training_mode }}</p>
+                            </div>
+                        </li>
+                        {% endif %}
                         <li class="flex items-start">
                             <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
                                 <i class="fas fa-signal text-sm"></i>
@@ -138,7 +150,7 @@
                             </div>
                             <div>
                                 <p class="text-xs text-brand-textSecondary uppercase font-semibold">Timing</p>
-                                <p class="font-medium text-brand-navy">{{ course.timing }}</p>
+                                <p class="font-bold text-brand-coral bg-brand-coral/10 px-2 py-1 rounded inline-block mt-1">{{ course.timing }}</p>
                             </div>
                         </li>
                         {% endif %}
@@ -150,6 +162,84 @@
                             <div>
                                 <p class="text-xs text-brand-textSecondary uppercase font-semibold">Fee</p>
                                 <p class="font-medium text-brand-navy">{{ course.fee }}</p>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% if course.start_date %}
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-flag-checkered text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold">Dates</p>
+                                <p class="font-bold text-brand-coral bg-brand-coral/10 px-2 py-1 rounded inline-block mt-1">{{ course.start_date }}</p>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% if course.trainers %}
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-users text-sm"></i>
+                            </div>
+                            <div class="w-full">
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold mb-2">Instructors</p>
+                                {% if "Kamal" in course.trainers or "Dhanush" in course.trainers %}
+                                <div class="space-y-3">
+                                    {% if "Kamal" in course.trainers %}
+                                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                        <img src="{% static 'img/kamal.png' %}" alt="Kamal Kumar Mukiri" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                        <div>
+                                            <p class="font-bold text-brand-navy text-sm leading-none">Kamal Kumar Mukiri</p>
+                                            <p class="text-[10px] text-brand-coral font-medium mt-1">Lead Instructor</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% if "Dhanush" in course.trainers %}
+                                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded-lg border border-gray-100">
+                                        <img src="{% static 'img/dhanush.png' %}" alt="Dhanush Boyapati" class="w-10 h-10 rounded-full object-cover shadow-sm">
+                                        <div>
+                                            <p class="font-bold text-brand-navy text-sm leading-none">Dhanush Boyapati</p>
+                                            <p class="text-[10px] text-brand-coral font-medium mt-1">Co-Instructor</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                <p class="font-medium text-brand-navy">{{ course.trainers }}</p>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% if course.prerequisites %}
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-clipboard-check text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold">Prerequisites</p>
+                                <p class="text-sm font-medium text-brand-navy">{{ course.prerequisites }}</p>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% if course.recordings_info %}
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-video text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold">Recordings</p>
+                                <p class="text-sm font-medium text-brand-navy">{{ course.recordings_info }}</p>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% if course.materials_info %}
+                        <li class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-brand-light flex items-center justify-center text-brand-navy mr-3 flex-shrink-0">
+                                <i class="fas fa-laptop-code text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-brand-textSecondary uppercase font-semibold">Materials & Access</p>
+                                <p class="text-sm font-medium text-brand-navy">{{ course.materials_info }}</p>
                             </div>
                         </li>
                         {% endif %}
