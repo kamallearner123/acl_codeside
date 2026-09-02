@@ -495,35 +495,37 @@
                     </div>
                     
                     <div class="bg-gray-50 p-12 lg:p-16">
-                        <form class="space-y-6">
+                        <form id="consultation-form" action="{% url 'contact:contact' %}" method="POST" class="space-y-6">
+                            {% csrf_token %}
+                            <input type="hidden" name="subject" value="Consultation Request">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-medium text-brand-textPrimary mb-2">Name</label>
-                                    <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="John Doe">
+                                    <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="John Doe">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-brand-textPrimary mb-2">Company</label>
-                                    <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="Tech Corp Inc.">
+                                    <input type="text" name="company" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="Tech Corp Inc.">
                                 </div>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-medium text-brand-textPrimary mb-2">Email</label>
-                                    <input type="email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="john@example.com">
+                                    <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="john@example.com">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-brand-textPrimary mb-2">Phone</label>
-                                    <input type="tel" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="+1 (555) 000-0000">
+                                    <input type="tel" name="phone" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white" placeholder="+1 (555) 000-0000">
                                 </div>
                             </div>
                             
                             <div>
                                 <label class="block text-sm font-medium text-brand-textPrimary mb-2">How can we help?</label>
-                                <textarea rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white resize-none" placeholder="Tell us about your requirements..."></textarea>
+                                <textarea name="message" required rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:border-transparent transition-all bg-white resize-none" placeholder="Tell us about your requirements..."></textarea>
                             </div>
                             
-                            <button type="button" class="w-full py-4 px-6 rounded-xl bg-brand-navy hover:bg-opacity-90 text-white font-bold text-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                            <button id="submit-btn" type="submit" class="w-full py-4 px-6 rounded-xl bg-brand-navy hover:bg-opacity-90 text-white font-bold text-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5">
                                 Schedule a Consultation
                             </button>
                         </form>
@@ -621,8 +623,37 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Scripts -->
     <script>
+        // Handle Django messages as SweetAlert Popups
+        {% if messages %}
+            {% for message in messages %}
+                Swal.fire({
+                    icon: '{{ message.tags }}' === 'success' ? 'success' : ('{{ message.tags }}' === 'error' ? 'error' : 'info'),
+                    title: '{{ message.tags|title }}',
+                    text: '{{ message }}',
+                    confirmButtonColor: '#1E3557',
+                    customClass: {
+                        confirmButton: 'px-6 py-2 rounded-lg text-white font-semibold'
+                    }
+                });
+            {% endfor %}
+        {% endif %}
+
+        // Form submission loading state
+        const consultationForm = document.getElementById('consultation-form');
+        if (consultationForm) {
+            consultationForm.addEventListener('submit', function() {
+                const btn = document.getElementById('submit-btn');
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending mail...';
+                    btn.disabled = true;
+                    btn.classList.add('opacity-75', 'cursor-not-allowed');
+                }
+            });
+        }
+
         // Smooth Scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {

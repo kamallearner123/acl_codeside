@@ -13,6 +13,8 @@ def contact(request):
         email = request.POST.get('email')
         subject = request.POST.get('subject')
         message = request.POST.get('message')
+        company = request.POST.get('company', 'Not provided')
+        phone = request.POST.get('phone', 'Not provided')
         
         # Save contact to database
         contact = Contact.objects.create(
@@ -24,7 +26,13 @@ def contact(request):
         
         # Compose email to admin
         full_subject = f"Contact Form: {subject}"
-        full_message = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
+        full_message = (
+            f"Name: {name}\n"
+            f"Email: {email}\n"
+            f"Company: {company}\n"
+            f"Phone: {phone}\n\n"
+            f"Message:\n{message}"
+        )
         
         try:
             # Send email to admin immediately
@@ -32,7 +40,7 @@ def contact(request):
                 full_subject,
                 full_message,
                 settings.DEFAULT_FROM_EMAIL,
-                ['kamal@aptcomputinglabs.com', 'kamal@aptcomputinglabs.com'],
+                ['kamal@aptcomputinglabs.com'],
                 fail_silently=False,
             )
 
