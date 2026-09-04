@@ -1,6 +1,21 @@
 {% extends 'tailwind_base.html' %}
 {% load static %}
 
+{% block title %}{{ post.title }} | Apt Computing Labs Blog{% endblock %}
+
+{% block meta %}
+<meta name="description" content="{{ post.excerpt }}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ post.title }}">
+<meta property="og:description" content="{{ post.excerpt }}">
+{% if post.image_url %}<meta property="og:image" content="{% if 'http' in post.image_url %}{{ post.image_url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{{ post.image_url }}{% endif %}">{% endif %}
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="article:author" content="{{ post.author }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ post.title }}">
+<meta name="twitter:description" content="{{ post.excerpt }}">
+{% endblock %}
+
 {% block extra_css %}
 <style>
     .prose-custom h2 {
@@ -53,6 +68,70 @@
         background-color: #F7F9FC;
         padding: 1rem;
         border-radius: 0 0.5rem 0.5rem 0;
+    }
+    .prose-custom figure {
+        margin: 2rem 0;
+    }
+    .prose-custom figure img {
+        margin: 0 auto;
+    }
+    .prose-custom img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 1rem;
+        box-shadow: 0 20px 40px -15px rgba(0,0,0,0.08);
+        display: block;
+        margin: 2rem auto;
+    }
+    .prose-custom figcaption {
+        text-align: center;
+        font-size: 0.875rem;
+        color: #475467;
+        margin-top: 0.75rem;
+        font-style: italic;
+    }
+    .prose-custom table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+        display: block;
+        overflow-x: auto;
+    }
+    .prose-custom th, .prose-custom td {
+        border: 1px solid #E4E7EC;
+        padding: 0.6rem 0.9rem;
+        text-align: left;
+    }
+    .prose-custom th {
+        background-color: #F7F9FC;
+        color: #1E3557;
+    }
+    .prose-custom ol {
+        list-style-type: decimal;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+        margin-top: 1rem;
+    }
+    .prose-custom ol li {
+        margin-bottom: 0.75rem;
+        line-height: 1.6;
+    }
+    .prose-custom hr {
+        border: none;
+        border-top: 1px solid #E4E7EC;
+        margin: 2.5rem 0;
+    }
+    .toc-box a {
+        color: #1E3557;
+        text-decoration: none;
+    }
+    .toc-box a:hover {
+        color: #FF5B5B;
+        text-decoration: underline;
+    }
+    @media (max-width: 640px) {
+        .prose-custom h2 { font-size: 1.5rem; }
+        .prose-custom h3 { font-size: 1.25rem; }
     }
 </style>
 {% endblock %}
