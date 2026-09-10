@@ -287,7 +287,7 @@ Course.objects.update_or_create(
     slug="agentic-ai-learn-by-examples",
     defaults={
         "title": "Agentic AI - Learn by Examples",
-        "short_description": "A 24-Day Problem-Driven Curriculum for Working Professionals.",
+        "short_description": "A 24-Day Week end Problem-Driven Curriculum for Working Professionals and students",
         "description": html_content,
         "duration_hours": 36,
         "skill_level": "Beginner to Advanced",

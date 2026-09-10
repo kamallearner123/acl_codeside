@@ -39,21 +39,46 @@
                     <button onclick="document.getElementById('enrollModal').classList.remove('hidden')" class="bg-brand-coral hover:bg-opacity-90 text-white px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center mb-6">
                         <i class="fas fa-lock mr-2"></i> Enroll Now
                     </button>
-                    
-                    <div class="bg-white/10 border border-white/20 rounded-xl p-5 max-w-xl backdrop-blur-sm">
-                        <div class="flex items-start">
-                            <div class="bg-brand-coral/20 p-2 rounded-lg text-brand-coral mr-4 mt-1">
-                                <i class="fas fa-video"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-white font-bold mb-1">Upcoming Info Session</h4>
-                                <p class="text-sm text-gray-300 mb-2">Sunday, September 6 | 6:00–7:00 PM IST</p>
-                                <a href="https://meet.google.com/ecn-rkai-bra" target="_blank" class="text-brand-coral hover:text-white transition-colors text-sm font-medium underline">
-                                    Join the Google Meet to know more about the course <i class="fas fa-external-link-alt ml-1 text-xs"></i>
-                                </a>
-                            </div>
+
+                    {% if course.slug == 'agentic-ai-learn-by-examples' %}
+                    <div class="bg-white/10 border border-white/20 rounded-xl p-5 max-w-xl backdrop-blur-sm" aria-live="polite">
+                        <p class="text-sm text-gray-300 mb-3">Course starts 12 September at 4:00 PM IST</p>
+                        <div id="course-countdown" class="grid grid-cols-4 gap-2 text-center" data-target="2026-09-12T16:00:00+05:30">
+                            <div class="bg-white/10 rounded-lg py-2"><span data-unit="days" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Days</span></div>
+                            <div class="bg-white/10 rounded-lg py-2"><span data-unit="hours" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Hours</span></div>
+                            <div class="bg-white/10 rounded-lg py-2"><span data-unit="minutes" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Minutes</span></div>
+                            <div class="bg-white/10 rounded-lg py-2"><span data-unit="seconds" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Seconds</span></div>
                         </div>
                     </div>
+                    <script>
+                        (() => {
+                            const countdown = document.getElementById('course-countdown');
+                            const target = new Date(countdown.dataset.target).getTime();
+
+                            const updateCountdown = () => {
+                                const remaining = target - Date.now();
+                                if (remaining <= 0) {
+                                    countdown.textContent = 'The course has started.';
+                                    return;
+                                }
+
+                                const values = {
+                                    days: Math.floor(remaining / 86400000),
+                                    hours: Math.floor((remaining / 3600000) % 24),
+                                    minutes: Math.floor((remaining / 60000) % 60),
+                                    seconds: Math.floor((remaining / 1000) % 60)
+                                };
+                                Object.entries(values).forEach(([unit, value]) => {
+                                    countdown.querySelector(`[data-unit="${unit}"]`).textContent = value;
+                                });
+                            };
+
+                            updateCountdown();
+                            setInterval(updateCountdown, 1000);
+                        })();
+                    </script>
+                    {% endif %}
+                    
                 </div>
             </div>
         </div>
