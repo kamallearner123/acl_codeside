@@ -1,5 +1,6 @@
 {% extends 'tailwind_base.html' %}
 {% load static %}
+{% load blog_extras %}
 
 {% block title %}{{ post.title }} | Apt Computing Labs Blog{% endblock %}
 
@@ -68,6 +69,33 @@
         background-color: #F7F9FC;
         padding: 1rem;
         border-radius: 0 0.5rem 0.5rem 0;
+    }
+    /* Blog cover/hero image. Deliberately plain CSS (not a Tailwind
+       utility) so it is correct on first paint, with no dependency on
+       the Tailwind CDN's runtime class generation. aspect-ratio keeps
+       the crop proportional at every breakpoint (a fixed pixel height
+       does not), and object-fit: contain guarantees the full image -
+       diagram, screenshot or photo - is always visible, never cropped. */
+    .blog-hero-frame {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background-color: #EEF2F7;
+        border-radius: 1.5rem;
+        box-shadow: 0 20px 40px -15px rgba(0,0,0,0.15);
+        overflow: hidden;
+    }
+    .blog-hero-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        display: block;
+    }
+    @media (max-width: 640px) {
+        .blog-hero-frame {
+            aspect-ratio: 4 / 3;
+            border-radius: 1rem;
+        }
     }
     .prose-custom figure {
         margin: 2rem 0;
@@ -167,14 +195,16 @@
     <!-- Blog Cover Image (Optional) -->
     {% if post.image_url %}
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
-        <img src="{{ post.image_url }}" alt="{{ post.title }}" class="w-full h-[400px] object-cover rounded-3xl shadow-xl">
+        <div class="blog-hero-frame">
+            <img src="{{ post.image_url }}" alt="{{ post.title }}" loading="eager" decoding="async">
+        </div>
     </div>
     {% endif %}
 
     <!-- Blog Content -->
     <div class="py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="prose-custom text-lg text-brand-textSecondary">
-            {{ post.content|safe }}
+            {{ post.content|render_blog_content }}
         </div>
         
         
