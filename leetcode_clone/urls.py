@@ -50,6 +50,10 @@ urlpatterns = [
     path('youtube-progress/', views.youtube_progress, name='youtube_progress'),
     path('agentic-ai/', TemplateView.as_view(template_name='agentic_ai_landing.html'), name='agentic_ai_landing'),
     path('elearning/', include('elearning.urls')),
+    path('zephyr-stm32/', include([
+        path('', RedirectView.as_view(url='/courses/exploring-zephyr-using-stm32/book/', permanent=False)),
+        path('<path:subpath>', RedirectView.as_view(url='/courses/exploring-zephyr-using-stm32/book/%(subpath)s', permanent=False)),
+    ])),
 ]
 
 if settings.DEBUG:

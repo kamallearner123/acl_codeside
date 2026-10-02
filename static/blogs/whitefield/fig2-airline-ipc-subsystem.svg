@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1d"/>
+      <stop offset="100%" stop-color="#0d1929"/>
+    </linearGradient>
+    <linearGradient id="cardGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#152238"/>
+      <stop offset="100%" stop-color="#1b2d4b"/>
+    </linearGradient>
+    <linearGradient id="accentCyan2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="accentAmber2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+    <linearGradient id="accentEmerald2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="shadow2" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="620" fill="url(#bg2)" rx="16"/>
+
+  <!-- Title Header -->
+  <text x="50" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="700" fill="#f8fafc">
+    Whitefield Airline IPC: Microsecond Synchronization &amp; Frame Intercept
+  </text>
+  <text x="50" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="400" fill="#94a3b8">
+    Deterministic Time-Barrier &amp; Zero-Copy Shared-Memory Bus between Firmware Processes &amp; ns-3 Discrete-Event Core
+  </text>
+
+  <!-- Top: Firmware Node Runtime Process -->
+  <g filter="url(#shadow2)">
+    <rect x="50" y="105" width="410" height="215" rx="12" fill="url(#cardGrad2)" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="50" y="105" width="410" height="34" rx="12" fill="#0369a1"/>
+    <text x="70" y="128" font-family="sans-serif" font-size="14" font-weight="700" fill="#ffffff">
+      NODE FIRMWARE RUNTIME (Linux Native Process)
+    </text>
+
+    <!-- Sub components -->
+    <rect x="70" y="152" width="370" height="36" rx="6" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+    <text x="85" y="175" font-family="sans-serif" font-size="12" font-weight="600" fill="#38bdf8">Application &amp; CoAP / MQTT / LwM2M Logic</text>
+
+    <rect x="70" y="196" width="370" height="36" rx="6" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+    <text x="85" y="219" font-family="sans-serif" font-size="12" font-weight="600" fill="#67e8f9">Network Stack: 6LoWPAN / IPv6 / RPL (RFC 6550)</text>
+
+    <rect x="70" y="240" width="370" height="60" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="85" y="262" font-family="sans-serif" font-size="12" font-weight="700" fill="#facc15">Whitefield Virtual Netdev Driver (airline_netdev.c)</text>
+    <text x="85" y="282" font-family="sans-serif" font-size="11" fill="#cbd5e1">• Intercepts Tx MAC frames</text>
+    <text x="245" y="282" font-family="sans-serif" font-size="11" fill="#cbd5e1">• Enqueues Rx frames via IRQ</text>
+  </g>
+
+  <!-- Top Right: Simulation Engine ns-3 NetDevice -->
+  <g filter="url(#shadow2)">
+    <rect x="540" y="105" width="410" height="215" rx="12" fill="url(#cardGrad2)" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="540" y="105" width="410" height="34" rx="12" fill="#7e22ce"/>
+    <text x="560" y="128" font-family="sans-serif" font-size="14" font-weight="700" fill="#ffffff">
+      NS-3 DISCRETE-EVENT ENGINE (ns3::AirlineDevice)
+    </text>
+
+    <rect x="560" y="152" width="370" height="36" rx="6" fill="#0f172a" stroke="#9333ea" stroke-width="1"/>
+    <text x="575" y="175" font-family="sans-serif" font-size="12" font-weight="600" fill="#d8b4fe">Simulation Event Queue (Time Virtualized Scheduler)</text>
+
+    <rect x="560" y="196" width="370" height="36" rx="6" fill="#0f172a" stroke="#9333ea" stroke-width="1"/>
+    <text x="575" y="219" font-family="sans-serif" font-size="12" font-weight="600" fill="#e9d5ff">Channel &amp; Propagation (Nakagami, Log-Distance, CSMA/CA)</text>
+
+    <rect x="560" y="240" width="370" height="60" rx="6" fill="#1e293b" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="575" y="262" font-family="sans-serif" font-size="12" font-weight="700" fill="#38bdf8">ns3::AirlineNetDevice Dispatcher</text>
+    <text x="575" y="282" font-family="sans-serif" font-size="11" fill="#cbd5e1">• Receives Tx packet from IPC</text>
+    <text x="755" y="282" font-family="sans-serif" font-size="11" fill="#cbd5e1">• Transmits onto spectrum</text>
+  </g>
+
+  <!-- Center Arrow Bridges: Airline IPC Bus -->
+  <g filter="url(#shadow2)">
+    <rect x="180" y="340" width="640" height="115" rx="12" fill="#091322" stroke="#f59e0b" stroke-width="2"/>
+    <rect x="180" y="340" width="640" height="28" rx="12" fill="#b45309"/>
+    <text x="350" y="359" font-family="sans-serif" font-size="13" font-weight="700" fill="#ffffff">
+      AIRLINE INTER-PROCESS COMMUNICATION (IPC) BUS
+    </text>
+
+    <!-- Protocol Frame Breakdown -->
+    <rect x="200" y="380" width="105" height="42" rx="6" fill="#1e293b" stroke="#64748b"/>
+    <text x="212" y="398" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">NodeID: 4B</text>
+    <text x="210" y="414" font-family="sans-serif" font-size="9" fill="#94a3b8">Source / Dest</text>
+
+    <rect x="315" y="380" width="115" height="42" rx="6" fill="#1e293b" stroke="#64748b"/>
+    <text x="325" y="398" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">Timestamp: 8B</text>
+    <text x="325" y="414" font-family="sans-serif" font-size="9" fill="#94a3b8">Simulated (ns)</text>
+
+    <rect x="440" y="380" width="95" height="42" rx="6" fill="#1e293b" stroke="#64748b"/>
+    <text x="448" y="398" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">MsgType: 2B</text>
+    <text x="448" y="414" font-family="sans-serif" font-size="9" fill="#94a3b8">TX, RX, SYNC, CTRL</text>
+
+    <rect x="545" y="380" width="95" height="42" rx="6" fill="#1e293b" stroke="#64748b"/>
+    <text x="555" y="398" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">Length: 2B</text>
+    <text x="555" y="414" font-family="sans-serif" font-size="9" fill="#94a3b8">Payload Octets</text>
+
+    <rect x="650" y="380" width="150" height="42" rx="6" fill="#1e293b" stroke="#10b981"/>
+    <text x="660" y="398" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">Payload: &lt;= 1280B</text>
+    <text x="660" y="414" font-family="sans-serif" font-size="9" fill="#94a3b8">Raw 802.15.4 / PLC Frame</text>
+  </g>
+
+  <!-- Connective Arrows -->
+  <!-- Left Down -->
+  <path d="M 255 320 L 255 340" stroke="#38bdf8" stroke-width="3" marker-end="url(#arrow)" stroke-dasharray="4,2"/>
+  <!-- Right Down -->
+  <path d="M 745 320 L 745 340" stroke="#a855f7" stroke-width="3" marker-end="url(#arrow)" stroke-dasharray="4,2"/>
+
+  <!-- Bottom: Time Barrier & Barrier Sync Mechanism -->
+  <g filter="url(#shadow2)">
+    <rect x="50" y="475" width="900" height="115" rx="12" fill="url(#cardGrad2)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="50" y="475" width="900" height="30" rx="12" fill="#047857"/>
+    <text x="70" y="496" font-family="sans-serif" font-size="13" font-weight="700" fill="#ffffff">
+      TIME-BARRIER SYNCHRONIZATION: ELIMINATING CAUSALITY DRIFT
+    </text>
+
+    <g transform="translate(70, 515)">
+      <circle cx="15" cy="15" r="14" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+      <text x="11" y="20" font-family="sans-serif" font-size="12" font-weight="700" fill="#34d399">1</text>
+      <text x="40" y="12" font-family="sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Simulation Tick Step</text>
+      <text x="40" y="28" font-family="sans-serif" font-size="11" fill="#94a3b8">ns-3 advances simulation clock by quantum Δt = 50µs</text>
+    </g>
+
+    <g transform="translate(360, 515)">
+      <circle cx="15" cy="15" r="14" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+      <text x="11" y="20" font-family="sans-serif" font-size="12" font-weight="700" fill="#34d399">2</text>
+      <text x="40" y="12" font-family="sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Barrier Hold &amp; Dispatch</text>
+      <text x="40" y="28" font-family="sans-serif" font-size="11" fill="#94a3b8">Airline blocks until all N firmware nodes complete quantum</text>
+    </g>
+
+    <g transform="translate(660, 515)">
+      <circle cx="15" cy="15" r="14" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+      <text x="11" y="20" font-family="sans-serif" font-size="12" font-weight="700" fill="#34d399">3</text>
+      <text x="40" y="12" font-family="sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Causality Preservation</text>
+      <text x="40" y="28" font-family="sans-serif" font-size="11" fill="#94a3b8">No node process can perceive events from future quantum</text>
+    </g>
+  </g>
+</svg>

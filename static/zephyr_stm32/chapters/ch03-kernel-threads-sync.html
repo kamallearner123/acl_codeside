@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 3: Zephyr Kernel Fundamentals - Multithreading, Priorities, Synchronization & Message Queues on STM32.">
+  <title>Module 3: Zephyr Kernel Fundamentals | Zephyr + STM32 Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch03">
+
+  <div id="reading-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Zephyr + STM32</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, DTS, peripherals, labs..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <select id="board-selector" class="board-select">
+          <option value="nucleo_f401re">Nucleo-F401RE (Cortex-M4)</option>
+          <option value="nucleo_g071rb">Nucleo-G071RB (Cortex-M0+)</option>
+          <option value="nucleo_l476rg">Nucleo-L476RG (Low-Power)</option>
+        </select>
+      </div>
+
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+
+      <a href="/courses/exploring-zephyr-using-stm32/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;border:1px solid var(--border-subtle);background:var(--bg-glass);backdrop-filter:blur(8px);transition:all 0.2s;" title="Return to Course Details on Apt Computing Labs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- App Layout -->
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">Ch 3 of 6</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview & Syllabus</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M1</span>
+              <span>Foundations & Setup</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-foundations-toolchain.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Architecture & West Toolchain</span>
+                <span class="chapter-read-time">25m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch01-foundations-toolchain.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 The Need for an OS</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 FreeRTOS Era & Limits</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Why Zephyr RTOS?</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 STM32 Architecture</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Toolchain with West</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 Lab 1: Blinky & VCP</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M2</span>
+              <span>DeviceTree & Kconfig</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-devicetree-kconfig.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 2: DTS Syntax & STM32 Overlays</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 DeviceTree vs Kconfig</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Anatomy of DTS Nodes</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 Board Overlays (.overlay)</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Lab 2: External IO & Overlays</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M3</span>
+              <span>Kernel Fundamentals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-kernel-threads-sync.html" class="chapter-nav-item active">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: Multithreading & Synchronization</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Scheduling & Priorities</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Static vs Dynamic Threads</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Semaphores vs Mutexes</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Lab 3: Message Queue Pipeline</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M4</span>
+              <span>STM32 Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-stm32-peripherals.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 4: Drivers, DMA UART & Sensors</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch04-stm32-peripherals.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 Device Driver Model</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Async DMA UART</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 I2C Sensor Subsystem</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Hardware PWM Timers</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 Lab 4: Weather Station</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M5</span>
+              <span>Subsystems & Protocols</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-shell-connectivity.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 5: Shell, CAN Bus & BLE</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch05-shell-connectivity.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Zephyr Shell Subsystem</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Deferred Logging</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 CAN Bus (bxCAN / FDCAN)</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Lab 5: Diagnostic Shell</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M6</span>
+              <span>Production & Capstone</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-production-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 6: MCUBoot, Twister & Capstone</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch06-production-capstone.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 MCUBoot Dual-Slot DFU</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 Twister Automated Testing</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 OpenOCD & GDB Debugging</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 Lab 6: Watchdog Supervisor</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Certification Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="gui-ai-studio.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">⚡</span>
+            <span class="chapter-title-text">GUI Studio & AI Generator</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Standards</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Reader -->
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs">
+          <a href="../index.html">Home</a>
+          <span>/</span>
+          <span>Module 3</span>
+          <span>/</span>
+          <span>Kernel & Multithreading</span>
+        </div>
+        <div class="chapter-actions">
+          <a href="ch02-devicetree-kconfig.html" class="btn-secondary">← Chapter 2</a>
+          <a href="ch04-stm32-peripherals.html" class="btn-primary">Chapter 4 →</a>
+        </div>
+      </div>
+
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Module 03 • Real-Time Core</span>
+          <h1 class="chapter-h1">Zephyr Kernel Architecture & Synchronization</h1>
+          <p class="chapter-lead">
+            Dive into the heart of Zephyr's real-time engine: cooperative vs preemptive thread scheduling, priority math, synchronization with Semaphores and Mutexes (priority inheritance), inter-thread data communication via Message Queues (<code>k_msgq</code>), and offloading interrupt routines to workqueues.
+          </p>
+
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 40 minutes</div>
+            <div class="meta-item">🛠️ Lab Project: <code>samples/03_kernel_threads_queues</code></div>
+            <div class="meta-item">🎯 Core APIs: <code>k_thread</code>, <code>k_sem</code>, <code>k_mutex</code>, <code>k_msgq</code></div>
+          </div>
+        </div>
+
+        <h2 id="sec-3-1">3.1 Thread Scheduling & Priority Hierarchy</h2>
+        <p>
+          Zephyr supports a dual-priority scheduling scheme. Priorities in Zephyr are signed integer values ranging from negative to positive numbers:
+        </p>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;">⚡ Cooperative Threads (Priority &lt; 0)</h3>
+          <p style="font-size:0.9rem;margin-bottom:0.75rem;">Values from <code>-CONFIG_NUM_COOP_PRIORITIES</code> up to <code>-1</code>.</p>
+          <p style="font-size:0.875rem;color:var(--text-secondary);">
+            Once a cooperative thread starts running, it <strong>cannot be preempted</strong> by any other thread (even another cooperative thread with higher priority!). It continues running until it voluntarily relinquishes the CPU by calling <code>k_yield()</code>, <code>k_sleep()</code>, or blocking on an IPC object. Used for time-critical, atomic driver routines.
+          </p>
+          <hr style="border:0;border-top:1px dashed var(--border-subtle);margin:1rem 0;">
+          <h3>⏳ Preemptive Threads (Priority &gt;= 0)</h3>
+          <p style="font-size:0.9rem;margin-bottom:0.75rem;">Values from <code>0</code> up to <code>CONFIG_NUM_PREEMPT_PRIORITIES - 1</code>.</p>
+          <p style="font-size:0.875rem;color:var(--text-secondary);">
+            Lower numerical values represent higher priority (e.g., priority <code>2</code> preempts priority <code>7</code>). If a higher-priority preemptive thread becomes ready, the Zephyr scheduler immediately context-switches and suspends the lower-priority thread.
+          </p>
+        </div>
+
+        <h2 id="sec-3-2">3.2 Defining Threads: Static vs Dynamic</h2>
+        <p>Zephyr provides both compile-time static definition macros and runtime dynamic creation:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Static Thread Definition (Zero Runtime Overhead)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;zephyr/kernel.h&gt;
+
+#define SENSOR_STACK_SIZE 2048
+#define SENSOR_PRIORITY   5
+
+/* Forward declaration of thread entry function */
+void sensor_thread_entry(void *arg1, void *arg2, void *arg3);
+
+/* Statically allocate stack and initialize thread control block */
+K_THREAD_DEFINE(sensor_tid, SENSOR_STACK_SIZE,
+                sensor_thread_entry, NULL, NULL, NULL,
+                SENSOR_PRIORITY, 0, 0);
+
+void sensor_thread_entry(void *arg1, void *arg2, void *arg3)
+{
+    while (1) {
+        /* Thread logic executed every 500 ms */
+        k_msleep(500);
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-3-3">3.3 Synchronization: Semaphores vs Mutexes</h2>
+        <p>A common pitfall is treating a binary semaphore as a mutex. In real-time embedded systems on STM32, they serve fundamentally different purposes:</p>
+
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+                <th style="padding:0.75rem;">Primitive</th>
+                <th style="padding:0.75rem;">Primary Purpose</th>
+                <th style="padding:0.75rem;">Priority Inheritance?</th>
+                <th style="padding:0.75rem;">Callable from ISR?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem;font-weight:600;color:var(--accent-primary);">k_sem (Semaphore)</td>
+                <td style="padding:0.75rem;">Signaling / Notification ("Event occurred")</td>
+                <td style="padding:0.75rem;">❌ No</td>
+                <td style="padding:0.75rem;color:#10b981;">✅ Yes (<code>k_sem_give</code>)</td>
+              </tr>
+              <tr>
+                <td style="padding:0.75rem;font-weight:600;color:#8b5cf6;">k_mutex (Mutex)</td>
+                <td style="padding:0.75rem;">Mutual Exclusion ("Protect shared resource")</td>
+                <td style="padding:0.75rem;color:#10b981;">✅ Yes (Prevents Inversion)</td>
+                <td style="padding:0.75rem;color:#ef4444;">❌ No (Cannot block in ISR)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-warning">
+          <div class="callout-header">⚠️ The Priority Inversion Disaster</div>
+          <div class="callout-body">
+            <p>If low-priority thread L holds a shared bus resource, and high-priority thread H needs it, H must wait for L. If medium-priority thread M preempts L, thread H is starved indefinitely by M! Zephyr's <code>k_mutex</code> implements <strong>Priority Inheritance</strong>: it temporarily elevates L's priority to H's priority until L releases the mutex, ensuring M cannot cause starvation.</p>
+          </div>
+        </div>
+
+        <h2 id="sec-3-4">3.4 Hands-On Lab 3: Multi-Threaded Sensor Pipeline</h2>
+        <p>
+          In this laboratory exercise (located in <code>samples/03_kernel_threads_queues/</code>), we implement a multi-threaded data pipeline with thread synchronization and safe data exchange.
+        </p>
+
+        <h3>3.4.1 Architecture Overview & Priority Matrix</h3>
+        <p>In this project, two threads communicate via a lock-free Zephyr Message Queue (<code>k_msgq</code>):</p>
+        <div style="overflow-x:auto;margin:1rem 0 1.5rem;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+                <th style="padding:0.6rem;">Thread</th>
+                <th style="padding:0.6rem;">Priority</th>
+                <th style="padding:0.6rem;">Stack Size</th>
+                <th style="padding:0.6rem;">Role in Pipeline</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.6rem;font-weight:600;color:var(--accent-primary);">Producer Thread</td>
+                <td style="padding:0.6rem;"><code>6</code> (Preemptive)</td>
+                <td style="padding:0.6rem;">2048 bytes</td>
+                <td style="padding:0.6rem;">Gathers telemetry every 1000ms and puts into <code>k_msgq</code></td>
+              </tr>
+              <tr>
+                <td style="padding:0.6rem;font-weight:600;color:var(--status-success);">Consumer Thread</td>
+                <td style="padding:0.6rem;"><code>4</code> (Higher Priority!)</td>
+                <td style="padding:0.6rem;">2048 bytes</td>
+                <td style="padding:0.6rem;">Blocks on <code>k_msgq_get</code>; preempts producer immediately when packet arrives</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>3.4.2 Project Configuration: <code>prj.conf</code></h3>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">KCONFIG</span>
+              <span>samples/03_kernel_threads_queues/prj.conf</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Enable Multithreading & Queues
+CONFIG_MULTITHREADING=y
+CONFIG_NUM_PREEMPT_PRIORITIES=15
+
+# Enable GPIO for LED telemetry feedback
+CONFIG_GPIO=y
+
+# Enable serial console
+CONFIG_SERIAL=y
+CONFIG_CONSOLE=y
+CONFIG_UART_CONSOLE=y
+CONFIG_PRINTK=y</code></pre>
+          </div>
+        </div>
+
+        <h3>3.4.3 Application Source Code: <code>src/main.c</code></h3>
+        <p>Complete source code featuring static thread definitions and message queues:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>samples/03_kernel_threads_queues/src/main.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/*
+ * Copyright (c) 2026 Apt Computing Labs
+ * "Where Knowledge Meets Innovation"
+ *
+ * Mastering Zephyr RTOS on STM32 - Lab 3: Kernel Multithreading
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include &lt;zephyr/kernel.h&gt;
+#include &lt;zephyr/drivers/gpio.h&gt;
+#include &lt;zephyr/sys/printk.h&gt;
+
+#define STACK_SIZE 2048
+#define PRODUCER_PRIORITY 6
+#define CONSUMER_PRIORITY 4
+
+/* Structured Telemetry Packet */
+struct sensor_data {
+    uint32_t timestamp_ms;
+    int32_t temperature_c_x10; /* e.g. 245 = 24.5 C */
+    int32_t humidity_pct;
+    uint32_t sequence_id;
+};
+
+/* Define Message Queue: 10 items deep, aligned to 4 bytes */
+K_MSGQ_DEFINE(sensor_msgq, sizeof(struct sensor_data), 10, 4);
+
+/* Onboard LED for status indication */
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
+
+/* Producer Thread Entry */
+void producer_thread_entry(void *arg1, void *arg2, void *arg3)
+{
+    ARG_UNUSED(arg1); ARG_UNUSED(arg2); ARG_UNUSED(arg3);
+    uint32_t seq = 0;
+    int32_t base_temp = 220; // 22.0 C
+
+    while (1) {
+        struct sensor_data reading;
+        reading.timestamp_ms = k_uptime_get_32();
+        reading.temperature_c_x10 = base_temp + (seq % 15);
+        reading.humidity_pct = 45 + (seq % 10);
+        reading.sequence_id = ++seq;
+
+        printk("[Producer] Publishing reading #%u (Temp: %d.%d C, Hum: %d%%)\n",
+               reading.sequence_id,
+               reading.temperature_c_x10 / 10,
+               reading.temperature_c_x10 % 10,
+               reading.humidity_pct);
+
+        /* Push to queue (wait up to 50ms if full) */
+        if (k_msgq_put(&sensor_msgq, &reading, K_MSEC(50)) != 0) {
+            printk("[Producer] Warning: Message queue full! Dropping packet.\n");
+        }
+
+        k_msleep(1000);
+    }
+}
+
+/* Consumer Thread Entry */
+void consumer_thread_entry(void *arg1, void *arg2, void *arg3)
+{
+    ARG_UNUSED(arg1); ARG_UNUSED(arg2); ARG_UNUSED(arg3);
+    struct sensor_data item;
+    int32_t temp_sum = 0;
+    uint32_t count = 0;
+
+    while (1) {
+        /* Wait forever until a new packet arrives */
+        if (k_msgq_get(&sensor_msgq, &item, K_FOREVER) == 0) {
+            count++;
+            temp_sum += item.temperature_c_x10;
+            int32_t avg = temp_sum / count;
+
+            printk("[Consumer] Processed #%u @ %u ms | Avg Temp: %d.%d C\n",
+                   item.sequence_id, item.timestamp_ms, avg / 10, avg % 10);
+
+            /* Flash LED to indicate successful consumption */
+            gpio_pin_set_dt(&led, 1);
+            k_busy_wait(15000); // 15 us pulse
+            gpio_pin_set_dt(&led, 0);
+        }
+    }
+}
+
+/* Statically define threads with zero runtime malloc overhead */
+K_THREAD_DEFINE(producer_tid, STACK_SIZE, producer_thread_entry,
+                NULL, NULL, NULL, PRODUCER_PRIORITY, 0, 0);
+
+K_THREAD_DEFINE(consumer_tid, STACK_SIZE, consumer_thread_entry,
+                NULL, NULL, NULL, CONSUMER_PRIORITY, 0, 0);
+
+int main(void)
+{
+    printk("\n=== Zephyr Kernel Lab 3: Multithreading & Message Queues ===\n");
+    gpio_is_ready_dt(&led);
+    gpio_pin_configure_dt(&led, GPIO_OUTPUT_INACTIVE);
+
+    /* Main thread can either perform work or exit into sleep */
+    while (1) {
+        k_sleep(K_FOREVER);
+    }
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+        <h3>3.4.4 Building & Flashing via ST-Link</h3>
+        <p>Compile and flash using these commands:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Build and Flash Commands</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># 1. Navigate to directory
+cd samples/03_kernel_threads_queues
+
+# 2. Build for target board:
+west build -b nucleo_f401re -p always
+
+# 3. Flash to STM32:
+west flash
+
+# 4. Open serial terminal monitor:
+minicom -D /dev/tty.usbmodem* -b 115200</code></pre>
+          </div>
+        </div>
+
+        <h3>3.4.5 Live Thread Pipeline & Message Queue Simulation Graphic</h3>
+        <p>Observe the preemptive scheduling handoff in real-time as the producer feeds the FIFO queue:</p>
+
+        <!-- Graphical Output Simulation Widget -->
+        <div class="hardware-sim-widget" data-sim="thread-pipeline">
+          <div class="sim-widget-header">
+            <div class="sim-widget-title">
+              <span>⚡ Live Kernel Thread Pipeline Simulator</span>
+              <span class="sim-status-badge"><span class="sim-status-dot"></span> <span>SCHEDULER RUNNING</span></span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">Queue: <strong id="sim-queue-count" style="color:var(--accent-primary);">0/10</strong> items | Preemption: <strong>Active</strong></div>
+          </div>
+          <div class="sim-body-layout">
+            <!-- Left: Graphic Thread State Diagram -->
+            <div class="sim-board-graphic" style="gap:0.75rem;padding:1rem;">
+              <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:0.75rem;width:100%;text-align:center;">
+                <div style="font-size:0.75rem;font-weight:700;color:var(--accent-primary);">PRODUCER THREAD (Pri 6)</div>
+                <div style="font-size:0.65rem;color:var(--text-muted);">Period: 1000ms | Generates sensor packet</div>
+              </div>
+              <div style="font-size:1rem;color:var(--accent-primary);font-weight:700;">↓ k_msgq_put()</div>
+              <div style="background:#064e3b;border:1px solid #059669;border-radius:8px;padding:0.75rem;width:100%;text-align:center;">
+                <div style="font-size:0.75rem;font-weight:700;color:#34d399;">ZEPHYR KERNEL FIFO (k_msgq)</div>
+                <div style="font-size:0.65rem;color:#a7f3d0;">Depth: 10 packets | Size: 16 bytes/slot</div>
+              </div>
+              <div style="font-size:1rem;color:var(--status-success);font-weight:700;">↓ k_msgq_get() [Preempts Producer!]</div>
+              <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:0.75rem;width:100%;text-align:center;">
+                <div style="font-size:0.75rem;font-weight:700;color:var(--status-success);">CONSUMER THREAD (Pri 4)</div>
+                <div style="font-size:0.65rem;color:var(--text-muted);">Statistical Analysis & UART Dispatch</div>
+              </div>
+            </div>
+            <!-- Right: Serial VCP Output -->
+            <div class="sim-terminal-screen">
+              <div class="sim-terminal-header">
+                <span>ST-Link Serial Terminal Monitor (115200 8N1)</span>
+                <span style="color:#10b981;">● CONNECTED</span>
+              </div>
+              <div class="sim-terminal-log" id="sim-thread-log"></div>
+            </div>
+          </div>
+          <div class="sim-controls-bar">
+            <span>💡 <em>Producer pushes every 3s. Click below to inject a high-rate sample immediately</em></span>
+            <button class="sim-action-btn" id="sim-thread-trigger-btn">🚀 Trigger Instant Sample</button>
+          </div>
+        </div>
+
+        <!-- Interactive Lab Checklist -->
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Hands-On Lab 3 Checklist</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step1">
+              <label for="l3-step1" class="checklist-text">Inspect <code>samples/03_kernel_threads_queues</code> project directory.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step2">
+              <label for="l3-step2" class="checklist-text">Review thread priorities: Consumer (4) vs Producer (6).</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step3">
+              <label for="l3-step3" class="checklist-text">Build and flash with <code>west build -b <span class="cmd-board-name">nucleo_f401re</span> -p always &amp;&amp; west flash</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step4">
+              <label for="l3-step4" class="checklist-text">Observe serial console: notice consumer preempts producer as soon as packet is queued.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step5">
+              <label for="l3-step5" class="checklist-text">Experiment: swap priorities so Producer is higher and observe queue filling behavior.</label>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Knowledge Check Quiz -->
+        <div class="quiz-container" id="sec-3-5">
+          <div class="quiz-header">
+            <span>🧠 Knowledge Check: Module 3</span>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">
+              1. What happens if a thread calls <code>k_mutex_lock()</code> from inside an Interrupt Service Routine (ISR)?
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="No, mutexes are forbidden in ISR context.">
+                A) The ISR suspends until the mutex becomes free.
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! Mutexes can cause a calling thread to sleep, which is strictly prohibited in an ISR and triggers a fatal kernel panic.">
+                B) The kernel raises a fatal assertion/panic because ISRs cannot block.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Mutex locks cannot fail silently in an ISR.">
+                C) The mutex is automatically granted with elevated priority.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) The interrupt is automatically rescheduled on the system workqueue.
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+        <!-- Chapter Bottom Navigation -->
+        <div class="chapter-bottom-nav">
+          <a href="ch02-devicetree-kconfig.html" class="nav-card">
+            <span class="nav-card-dir">← Previous Module</span>
+            <span class="nav-card-title">Module 2: DeviceTree & Kconfig Deep Dive</span>
+          </a>
+          <a href="ch04-stm32-peripherals.html" class="nav-card" style="text-align:right;">
+            <span class="nav-card-dir">Next Module →</span>
+            <span class="nav-card-title">Module 4: STM32 Peripherals & Drivers</span>
+          </a>
+        </div>
+      
+        <!-- Site Footer -->
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Mastering Zephyr RTOS on STM32 • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, DTS, peripherals, labs...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+
+  <script src="../js/book.js"></script>
+</body>
+</html>

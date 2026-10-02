@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 2: DeviceTree & Kconfig Deep Dive - Mastering Zephyr RTOS on STM32 Nucleo boards.">
+  <title>Module 2: DeviceTree & Kconfig | Zephyr + STM32 Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch02">
+
+  <div id="reading-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Zephyr + STM32</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, DTS, peripherals, labs..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <select id="board-selector" class="board-select">
+          <option value="nucleo_f401re">Nucleo-F401RE (Cortex-M4)</option>
+          <option value="nucleo_g071rb">Nucleo-G071RB (Cortex-M0+)</option>
+          <option value="nucleo_l476rg">Nucleo-L476RG (Low-Power)</option>
+        </select>
+      </div>
+
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+
+      <a href="/courses/exploring-zephyr-using-stm32/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;border:1px solid var(--border-subtle);background:var(--bg-glass);backdrop-filter:blur(8px);transition:all 0.2s;" title="Return to Course Details on Apt Computing Labs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">Ch 2 of 6</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview & Syllabus</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M1</span>
+              <span>Foundations & Setup</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-foundations-toolchain.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Architecture & West Toolchain</span>
+                <span class="chapter-read-time">25m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch01-foundations-toolchain.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 The Need for an OS</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 FreeRTOS Era & Limits</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Why Zephyr RTOS?</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 STM32 Architecture</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Toolchain with West</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 Lab 1: Blinky & VCP</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M2</span>
+              <span>DeviceTree & Kconfig</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-devicetree-kconfig.html" class="chapter-nav-item active">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: DTS Syntax & STM32 Overlays</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 DeviceTree vs Kconfig</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Anatomy of DTS Nodes</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 Board Overlays (.overlay)</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Lab 2: External IO & Overlays</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M3</span>
+              <span>Kernel Fundamentals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-kernel-threads-sync.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 3: Multithreading & Synchronization</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Scheduling & Priorities</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Static vs Dynamic Threads</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Semaphores vs Mutexes</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Lab 3: Message Queue Pipeline</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M4</span>
+              <span>STM32 Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-stm32-peripherals.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 4: Drivers, DMA UART & Sensors</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch04-stm32-peripherals.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 Device Driver Model</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Async DMA UART</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 I2C Sensor Subsystem</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Hardware PWM Timers</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 Lab 4: Weather Station</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M5</span>
+              <span>Subsystems & Protocols</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-shell-connectivity.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 5: Shell, CAN Bus & BLE</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch05-shell-connectivity.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Zephyr Shell Subsystem</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Deferred Logging</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 CAN Bus (bxCAN / FDCAN)</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Lab 5: Diagnostic Shell</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M6</span>
+              <span>Production & Capstone</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-production-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 6: MCUBoot, Twister & Capstone</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch06-production-capstone.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 MCUBoot Dual-Slot DFU</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 Twister Automated Testing</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 OpenOCD & GDB Debugging</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 Lab 6: Watchdog Supervisor</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Certification Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="gui-ai-studio.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">⚡</span>
+            <span class="chapter-title-text">GUI Studio & AI Generator</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Standards</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Reader -->
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs">
+          <a href="../index.html">Home</a>
+          <span>/</span>
+          <span>Module 2</span>
+          <span>/</span>
+          <span>DeviceTree & Kconfig</span>
+        </div>
+        <div class="chapter-actions">
+          <a href="ch01-foundations-toolchain.html" class="btn-secondary">← Chapter 1</a>
+          <a href="ch03-kernel-threads-sync.html" class="btn-primary">Chapter 3 →</a>
+        </div>
+      </div>
+
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Module 02 • Hardware Abstraction</span>
+          <h1 class="chapter-h1">DeviceTree (DTS) & Kconfig Deep Dive</h1>
+          <p class="chapter-lead">
+            Master the two most critical configuration pillars in Zephyr. Learn how the DeviceTree completely decouples hardware pin layouts and register offsets from application code, how to write non-destructive board overlays (<code>.overlay</code>), and how Kconfig selects drivers and kernel capabilities at build time.
+          </p>
+
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 35 minutes</div>
+            <div class="meta-item">🛠️ Lab Project: <code>samples/02_devicetree_overlay</code></div>
+            <div class="meta-item">🎯 Key Mastery: DTS Overlays, Aliases & Kconfig</div>
+          </div>
+        </div>
+
+        <h2 id="sec-2-1">2.1 The Two Pillars: DeviceTree vs Kconfig</h2>
+        <p>A frequent point of confusion for engineers starting with Zephyr is knowing whether a setting belongs in the <strong>DeviceTree</strong> or in <strong>Kconfig</strong>. Here is the definitive distinction:</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.25rem;">
+            <h3 style="margin-top:0;color:var(--accent-primary);">🌿 DeviceTree (DTS)</h3>
+            <p style="font-size:0.875rem;"><strong>Describes Hardware Topology</strong></p>
+            <ul style="font-size:0.85rem;padding-left:1.2rem;">
+              <li>What peripherals exist on the SoC (USART1, I2C1, GPIOA)?</li>
+              <li>What base memory addresses and IRQ numbers are they assigned?</li>
+              <li>Which physical pins are routed to external LEDs, buttons, or sensors?</li>
+              <li>What is the default I2C clock speed (100kHz, 400kHz)?</li>
+            </ul>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.25rem;">
+            <h3 style="margin-top:0;color:#10b981;">⚙️ Kconfig</h3>
+            <p style="font-size:0.875rem;"><strong>Selects Software Features</strong></p>
+            <ul style="font-size:0.85rem;padding-left:1.2rem;">
+              <li>Should the I2C driver be compiled into the binary?</li>
+              <li>What is the main thread stack size (<code>CONFIG_MAIN_STACK_SIZE</code>)?</li>
+              <li>Is the Shell subsystem enabled (<code>CONFIG_SHELL=y</code>)?</li>
+              <li>Should floating-point printing support be included?</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2 id="sec-2-2">2.2 Anatomy of a DeviceTree Source (DTS)</h2>
+        <p>
+          A DeviceTree is a hierarchical tree of nodes. Every node can have properties (key-value pairs) and child nodes. Let's look at the anatomical structure:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">DTS</span>
+              <span>Anatomy of a DeviceTree Node</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/dts-v1/;
+
+/ {
+    /* Root node properties */
+    #address-cells = &lt;1&gt;;
+    #size-cells = &lt;1&gt;;
+    model = "STMicroelectronics STM32 Nucleo Board";
+    compatible = "st,stm32f401re-nucleo";
+
+    /* Aliases provide stable, generic names for application C code */
+    aliases {
+        led0 = &green_user_led;
+        sw0 = &user_button;
+    };
+
+    /* Node label for convenient referencing: 'leds' */
+    leds {
+        compatible = "gpio-leds";
+        
+        green_user_led: led_0 {
+            gpios = &lt;&gpioa 5 GPIO_ACTIVE_HIGH&gt;;
+            label = "User LD2";
+        };
+    };
+
+    soc {
+        #address-cells = &lt;1&gt;;
+        #size-cells = &lt;1&gt;;
+        compatible = "simple-bus";
+
+        /* Label 'usart2' on unit-address 40004400 */
+        usart2: serial@40004400 {
+            compatible = "st,stm32-usart", "st,stm32-uart";
+            reg = &lt;0x40004400 0x400&gt;;
+            interrupts = &lt;38 0&gt;;
+            status = "okay";
+        };
+    };
+};</code></pre>
+          </div>
+        </div>
+
+        <h3>Key DeviceTree Elements Explained:</h3>
+        <ul>
+          <li><strong>Labels (e.g. <code>usart2:</code>, <code>&gpioa</code>):</strong> Shorthands used to refer to a node from elsewhere in the tree (called a <em>phandle</em>).</li>
+          <li><strong><code>compatible</code>:</strong> The most crucial property. It links the DeviceTree node to the exact C driver in Zephyr using YAML bindings (e.g. <code>"st,stm32-uart"</code> matches <code>dts/bindings/serial/st,stm32-uart.yaml</code>).</li>
+          <li><strong><code>reg = &lt;base_address length&gt;</code>:</strong> Defines the physical register memory block of the hardware peripheral on the Cortex-M bus.</li>
+          <li><strong><code>status = "okay" / "disabled"</code>:</strong> Enables or disables the device. If status is <code>"disabled"</code>, Zephyr does not generate driver instances for it, saving Flash and RAM.</li>
+        </ul>
+
+        <h2 id="sec-2-3">2.3 Working with Board Overlays (<code>.overlay</code>)</h2>
+        <p>
+          Never edit the core board files in the Zephyr installation tree! When you attach external hardware to your STM32 Nucleo board (such as an external LED on PB0, a relay on PC1, or a sensor on I2C1), you create an <strong>overlay file</strong> in your application repository.
+        </p>
+
+        <p>Zephyr automatically looks for overlay files in the following order during <code>west build</code>:</p>
+        <ol>
+          <li><code>app.overlay</code> (applied regardless of target board)</li>
+          <li><code>boards/&lt;board_name&gt;.overlay</code> (e.g. <code>boards/nucleo_f401re.overlay</code>)</li>
+        </ol>
+
+        <div class="callout callout-tip">
+          <div class="callout-header">💡 Non-Destructive Hardware Expansion</div>
+          <div class="callout-body">
+            <p>An overlay does not rewrite the entire tree; it simply patches or appends to existing nodes. By referencing a node label like <code>&i2c1 { status = "okay"; ... };</code>, you re-open that node and add new sensor child nodes or change pin alternate functions!</p>
+          </div>
+        </div>
+
+        <h2 id="sec-2-4">2.4 Hands-On Lab 2: External LED & Button with DTS Overlays</h2>
+        <p>
+          In this laboratory exercise (provided in <code>samples/02_devicetree_overlay/</code>), we define external peripherals on breadboard pins without hardcoding pin numbers in C code.
+        </p>
+
+        <h3>2.4.1 Hardware Wiring Diagram</h3>
+        <div data-board-target="nucleo_f401re,nucleo_l476rg,all">
+          <div class="callout callout-hardware">
+            <div class="callout-header">🔌 Pin Connections for Nucleo-F401RE / L476RG</div>
+            <div class="callout-body">
+              <ul style="margin:0;padding-left:1.2rem;">
+                <li><strong>External Warning LED:</strong> Connect Anode to <strong>PB0</strong> (via 330Ω resistor), Cathode to <strong>GND</strong>.</li>
+                <li><strong>External Emergency Button:</strong> Connect one terminal to <strong>PB1</strong>, other terminal to <strong>GND</strong> (internal pull-up enabled in DTS).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div data-board-target="nucleo_g071rb">
+          <div class="callout callout-hardware">
+            <div class="callout-header">🔌 Pin Connections for Nucleo-G071RB</div>
+            <div class="callout-body">
+              <ul style="margin:0;padding-left:1.2rem;">
+                <li><strong>External Warning LED:</strong> Connect Anode to <strong>PB0</strong> (via 330Ω resistor), Cathode to <strong>GND</strong>.</li>
+                <li><strong>External Emergency Button:</strong> Connect one terminal to <strong>PB1</strong>, other terminal to <strong>GND</strong> (internal pull-up enabled in DTS).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <h3>2.4.2 The Board Overlay: <code>boards/nucleo_f401re.overlay</code></h3>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">DTS</span>
+              <span>samples/02_devicetree_overlay/boards/nucleo_f401re.overlay</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/ {
+    aliases {
+        ext-led = &ext_led_node;
+        ext-button = &ext_btn_node;
+    };
+
+    external_io {
+        compatible = "gpio-leds";
+        
+        ext_led_node: ext_led_0 {
+            gpios = &lt;&gpiob 0 GPIO_ACTIVE_HIGH&gt;;
+            label = "External Warning LED";
+        };
+    };
+
+    external_keys {
+        compatible = "gpio-keys";
+        
+        ext_btn_node: ext_btn_0 {
+            /* Active low with internal pullup: pressed = 0V (logic 1) */
+            gpios = &lt;&gpiob 1 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)&gt;;
+            label = "External Push Button";
+        };
+    };
+};</code></pre>
+          </div>
+        </div>
+
+        <h3>2.4.3 Kernel Configuration: <code>prj.conf</code></h3>
+        <p>Enable GPIO controller support and standard serial console output:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">KCONFIG</span>
+              <span>samples/02_devicetree_overlay/prj.conf</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Enable GPIO driver subsystem
+CONFIG_GPIO=y
+
+# Enable serial console
+CONFIG_SERIAL=y
+CONFIG_CONSOLE=y
+CONFIG_UART_CONSOLE=y
+CONFIG_PRINTK=y</code></pre>
+          </div>
+        </div>
+
+        <h3>2.4.4 Application C Code: <code>src/main.c</code></h3>
+        <p>Complete source code with EXTI edge-triggered interrupt callback registration:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>samples/02_devicetree_overlay/src/main.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/*
+ * Copyright (c) 2026 Apt Computing Labs
+ * "Where Knowledge Meets Innovation"
+ *
+ * Mastering Zephyr RTOS on STM32 - Lab 2: DTS Overlays
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include &lt;zephyr/kernel.h&gt;
+#include &lt;zephyr/drivers/gpio.h&gt;
+#include &lt;zephyr/sys/printk.h&gt;
+
+/* Retrieve hardware specs from our DTS aliases */
+#define EXT_LED_NODE    DT_ALIAS(ext_led)
+#define EXT_BTN_NODE    DT_ALIAS(ext_button)
+
+static const struct gpio_dt_spec ext_led = GPIO_DT_SPEC_GET(EXT_LED_NODE, gpios);
+static const struct gpio_dt_spec ext_btn = GPIO_DT_SPEC_GET(EXT_BTN_NODE, gpios);
+
+/* Interrupt callback structure */
+static struct gpio_callback button_cb_data;
+
+/* Interrupt Service Routine executed when button is pressed */
+void button_pressed_handler(const struct device *dev, struct gpio_callback *cb,
+                            uint32_t pins)
+{
+    /* Toggle external LED on button event */
+    gpio_pin_toggle_dt(&ext_led);
+    printk("[ISR] Button pressed on pin %d! External LED toggled.\n", ext_btn.pin);
+}
+
+int main(void)
+{
+    int ret;
+
+    printk("\n=== Zephyr RTOS Lab 2: DTS Overlays & GPIO Interrupts ===\n");
+
+    /* Validate both GPIO controllers */
+    if (!gpio_is_ready_dt(&ext_led) || !gpio_is_ready_dt(&ext_btn)) {
+        printk("Error: One or more GPIO peripheral ports not ready!\n");
+        return 0;
+    }
+
+    /* Configure external LED */
+    ret = gpio_pin_configure_dt(&ext_led, GPIO_OUTPUT_INACTIVE);
+    if (ret &lt; 0) {
+        printk("Failed to configure ext LED: %d\n", ret);
+        return 0;
+    }
+
+    /* Configure external Button with pullup */
+    ret = gpio_pin_configure_dt(&ext_btn, GPIO_INPUT);
+    if (ret &lt; 0) {
+        printk("Failed to configure ext Button: %d\n", ret);
+        return 0;
+    }
+
+    /* Configure edge interrupt on falling edge (button pressed) */
+    ret = gpio_pin_interrupt_configure_dt(&ext_btn, GPIO_INT_EDGE_TO_ACTIVE);
+    if (ret &lt; 0) {
+        printk("Failed to configure button interrupt: %d\n", ret);
+        return 0;
+    }
+
+    /* Register the callback handler */
+    gpio_init_callback(&button_cb_data, button_pressed_handler, BIT(ext_btn.pin));
+    gpio_add_callback(ext_btn.port, &button_cb_data);
+
+    printk("DeviceTree Overlay configured successfully!\n");
+    printk("LED on Port: %s Pin: %d | Button on Port: %s Pin: %d\n",
+           ext_led.port->name, ext_led.pin, ext_btn.port->name, ext_btn.pin);
+    printk("Press external button to trigger interrupt...\n");
+
+    while (1) {
+        k_sleep(K_FOREVER);
+    }
+
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+        <h3>2.4.5 Building & Flashing via ST-Link</h3>
+        <p>Copy and run these terminal commands to compile with your overlay patched in automatically:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Build and Flash Commands</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># 1. Navigate to sample directory
+cd samples/02_devicetree_overlay
+
+# 2. Build (Zephyr automatically detects boards/nucleo_f401re.overlay):
+west build -b nucleo_f401re -p always
+
+# 3. Flash to STM32:
+west flash
+
+# 4. Open serial terminal monitor:
+minicom -D /dev/tty.usbmodem* -b 115200</code></pre>
+          </div>
+        </div>
+
+        <h3>2.4.6 Interactive Breadboard & EXTI Interrupt Output Graphic</h3>
+        <p>Test the hardware interrupt response virtually by clicking the physical tactile switch below:</p>
+
+        <!-- Graphical Output Simulation Widget -->
+        <div class="hardware-sim-widget" data-sim="gpio-interrupt">
+          <div class="sim-widget-header">
+            <div class="sim-widget-title">
+              <span>🔌 Live Breadboard & EXTI Interrupt Simulator</span>
+              <span class="sim-status-badge"><span class="sim-status-dot"></span> <span>ARM NVIC ACTIVE</span></span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">Pins: <strong>LED=PB0</strong> | <strong>BTN=PB1 (EXTI1)</strong></div>
+          </div>
+          <div class="sim-body-layout">
+            <!-- Left: Graphic Breadboard -->
+            <div class="sim-board-graphic">
+              <div class="sim-breadboard">
+                <div style="font-family:var(--font-mono);font-size:0.7rem;color:#475569;font-weight:700;">EXTERNAL HARDWARE BREADBOARD</div>
+                <div style="display:flex;align-items:center;justify-content:space-around;width:100%;margin-top:0.5rem;">
+                  <!-- External Blue LED -->
+                  <div class="sim-led-item">
+                    <div class="sim-led-bulb blue" id="sim-ext-led"></div>
+                    <span class="sim-led-label" style="color:#0f172a;">Ext LED (PB0)</span>
+                  </div>
+                  <!-- External Tactile Push Button -->
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:0.35rem;">
+                    <button class="sim-push-button" id="sim-ext-btn" title="Click to press hardware button!">PRESS</button>
+                    <span class="sim-led-label" style="color:#0f172a;">Button (PB1)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Right: Serial VCP Output -->
+            <div class="sim-terminal-screen">
+              <div class="sim-terminal-header">
+                <span>ST-Link Serial Terminal Monitor (115200 8N1)</span>
+                <span style="color:#10b981;">● CONNECTED</span>
+              </div>
+              <div class="sim-terminal-log" id="sim-ext-log"></div>
+            </div>
+          </div>
+          <div class="sim-controls-bar">
+            <span>💡 <em>Click the red button above or the button below to trigger the interrupt callback</em></span>
+            <button class="sim-action-btn" onclick="document.getElementById('sim-ext-btn').click();">🔘 Trigger PB1 EXTI Interrupt</button>
+          </div>
+        </div>
+
+        <!-- Interactive Lab Checklist -->
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Hands-On Lab 2 Checklist</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step1">
+              <label for="l2-step1" class="checklist-text">Create <code>boards/<span class="cmd-board-name">nucleo_f401re</span>.overlay</code> in the project directory.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step2">
+              <label for="l2-step2" class="checklist-text">Define <code>ext_led</code> and <code>ext_button</code> aliases with physical pin specifications.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step3">
+              <label for="l2-step3" class="checklist-text">Wire external LED to PB0 (with 330Ω resistor) and button to PB1.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step4">
+              <label for="l2-step4" class="checklist-text">Compile with <code>west build -b <span class="cmd-board-name">nucleo_f401re</span> -p always</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step5">
+              <label for="l2-step5" class="checklist-text">Flash to STM32 and press button; verify interrupt callback toggles LED instantly.</label>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Knowledge Check Quiz -->
+        <div class="quiz-container" id="sec-2-5">
+          <div class="quiz-header">
+            <span>🧠 Knowledge Check: Module 2</span>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">
+              1. Where does Zephyr generate the final merged DeviceTree header file during compilation?
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Core zephyr sources are never written to during an application build.">
+                A) Directly into <code>zephyr/include/zephyr/devicetree.h</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! Zephyr's python generator creates devicetree_generated.h inside your build artifacts directory.">
+                B) In <code>build/zephyr/include/generated/devicetree_generated.h</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. DTS is processed at compile time, not stored in flash.">
+                C) In Flash memory sector 0 as a binary blob.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Kconfig generates .config, not the DeviceTree macros.">
+                D) In <code>prj.conf</code> as macro definitions.
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+        <!-- Chapter Bottom Navigation -->
+        <div class="chapter-bottom-nav">
+          <a href="ch01-foundations-toolchain.html" class="nav-card">
+            <span class="nav-card-dir">← Previous Module</span>
+            <span class="nav-card-title">Module 1: Foundations & Toolchain Setup</span>
+          </a>
+          <a href="ch03-kernel-threads-sync.html" class="nav-card" style="text-align:right;">
+            <span class="nav-card-dir">Next Module →</span>
+            <span class="nav-card-title">Module 3: Zephyr Kernel Fundamentals</span>
+          </a>
+        </div>
+      
+        <!-- Site Footer -->
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Mastering Zephyr RTOS on STM32 • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, DTS, peripherals, labs...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+
+  <script src="../js/book.js"></script>
+</body>
+</html>

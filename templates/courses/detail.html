@@ -36,9 +36,16 @@
                     <p class="text-lg text-gray-300 mb-8 max-w-xl">
                         {{ course.short_description|default:course.description|truncatewords:40 }}
                     </p>
-                    <button onclick="document.getElementById('enrollModal').classList.remove('hidden')" class="bg-brand-coral hover:bg-opacity-90 text-white px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center mb-6">
-                        <i class="fas fa-lock mr-2"></i> Enroll Now
-                    </button>
+                    <div class="flex flex-wrap items-center gap-4 mb-6">
+                        <button onclick="document.getElementById('enrollModal').classList.remove('hidden')" class="bg-brand-coral hover:bg-opacity-90 text-white px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center">
+                            <i class="fas fa-lock mr-2"></i> Enroll Now
+                        </button>
+                        {% if course.slug == 'exploring-zephyr-using-stm32' %}
+                        <a href="{% url 'courses:zephyr_book_index' %}" target="_blank" rel="noopener noreferrer" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center backdrop-blur-sm group">
+                            <i class="fas fa-book-open mr-2 text-brand-coral"></i> Go to Course <i class="fas fa-arrow-right ml-2 text-xs transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                        {% endif %}
+                    </div>
 
                     {% if course.slug == 'agentic-ai-learn-by-examples' %}
                     <div class="bg-white/10 border border-white/20 rounded-xl p-5 max-w-xl backdrop-blur-sm" aria-live="polite">

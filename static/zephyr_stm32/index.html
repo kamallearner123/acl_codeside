@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mastering Zephyr RTOS on STM32 - The Comprehensive Hands-On Digital Book for Students and Embedded Professionals.">
+  <title>Mastering Zephyr RTOS on STM32 | Complete Digital Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-chapter-id="index">
+
+  <!-- Reading Progress Bar -->
+  <div id="reading-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="index.html" class="brand-badge">
+        <img src="assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Zephyr + STM32</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, DTS, peripherals, labs..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <select id="board-selector" class="board-select">
+          <option value="nucleo_f401re">Nucleo-F401RE (Cortex-M4)</option>
+          <option value="nucleo_g071rb">Nucleo-G071RB (Cortex-M0+)</option>
+          <option value="nucleo_l476rg">Nucleo-L476RG (Low-Power)</option>
+        </select>
+      </div>
+
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme">
+        <!-- Injected via book.js -->
+      </button>
+
+      <a href="/courses/exploring-zephyr-using-stm32/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;border:1px solid var(--border-subtle);background:var(--bg-glass);backdrop-filter:blur(8px);transition:all 0.2s;" title="Return to Course Details on Apt Computing Labs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- App Layout -->
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">6 Modules</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <!-- Overview -->
+        <div class="nav-module-group">
+          <a href="index.html" class="chapter-nav-item active">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview & Syllabus</span>
+          </a>
+        </div>
+
+        <!-- Module 1 -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M1</span>
+              <span>Foundations & Setup</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch01-foundations-toolchain.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 1: Architecture & West Toolchain</span>
+                <span class="chapter-read-time">25m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 The Need for an OS</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 FreeRTOS Era &amp; Limits</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Why Zephyr RTOS?</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 STM32 Architecture</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Toolchain with West</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 Lab 1: Blinky &amp; VCP</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Module 2 -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M2</span>
+              <span>DeviceTree & Kconfig</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch02-devicetree-kconfig.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 2: DTS Syntax & STM32 Overlays</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="chapters/ch02-devicetree-kconfig.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 DeviceTree vs Kconfig</a></li>
+                <li><a href="chapters/ch02-devicetree-kconfig.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Anatomy of DTS Nodes</a></li>
+                <li><a href="chapters/ch02-devicetree-kconfig.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 Board Overlays (.overlay)</a></li>
+                <li><a href="chapters/ch02-devicetree-kconfig.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Lab 2: External IO & Overlays</a></li>
+                <li><a href="chapters/ch02-devicetree-kconfig.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Module 2 Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Module 3 -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M3</span>
+              <span>Kernel Fundamentals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch03-kernel-threads-sync.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 3: Multithreading & Synchronization</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="chapters/ch03-kernel-threads-sync.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Scheduling & Priorities</a></li>
+                <li><a href="chapters/ch03-kernel-threads-sync.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Static vs Dynamic Threads</a></li>
+                <li><a href="chapters/ch03-kernel-threads-sync.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Semaphores vs Mutexes</a></li>
+                <li><a href="chapters/ch03-kernel-threads-sync.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Lab 3: Message Queue Pipeline</a></li>
+                <li><a href="chapters/ch03-kernel-threads-sync.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 Module 3 Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Module 4 -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M4</span>
+              <span>STM32 Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch04-stm32-peripherals.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 4: Drivers, DMA UART & Sensors</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 Device Driver Model</a></li>
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Async DMA UART</a></li>
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 I2C Sensor Subsystem</a></li>
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Hardware PWM Timers</a></li>
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 Lab 4: Weather Station</a></li>
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Module 4 Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Module 5 -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M5</span>
+              <span>Subsystems & Protocols</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch05-shell-connectivity.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 5: Shell, CAN Bus & BLE</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="chapters/ch05-shell-connectivity.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Zephyr Shell Subsystem</a></li>
+                <li><a href="chapters/ch05-shell-connectivity.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Deferred Logging</a></li>
+                <li><a href="chapters/ch05-shell-connectivity.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 CAN Bus (bxCAN / FDCAN)</a></li>
+                <li><a href="chapters/ch05-shell-connectivity.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Lab 5: Diagnostic Shell</a></li>
+                <li><a href="chapters/ch05-shell-connectivity.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 Module 5 Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Module 6 -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M6</span>
+              <span>Production & Capstone</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch06-production-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 6: MCUBoot, Twister & Capstone</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="chapters/ch06-production-capstone.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 MCUBoot Dual-Slot DFU</a></li>
+                <li><a href="chapters/ch06-production-capstone.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 Twister Automated Testing</a></li>
+                <li><a href="chapters/ch06-production-capstone.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 OpenOCD & GDB Debugging</a></li>
+                <li><a href="chapters/ch06-production-capstone.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 Lab 6: Watchdog Supervisor</a></li>
+                <li><a href="chapters/ch06-production-capstone.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Certification Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Interactive Tools -->
+        <div class="nav-module-group">
+          <a href="chapters/gui-ai-studio.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">⚡</span>
+            <span class="chapter-title-text">GUI Studio & AI Generator</span>
+          </a>
+        </div>
+
+        <!-- References -->
+        <div class="nav-module-group">
+          <a href="chapters/references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Standards</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Reader -->
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs">
+          <span>Home</span>
+          <span>/</span>
+          <span>Course Roadmap & Guide</span>
+        </div>
+        <div class="chapter-actions">
+          <a href="chapters/ch01-foundations-toolchain.html" class="btn-primary">
+            Start Chapter 1 →
+          </a>
+        </div>
+      </div>
+
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Digital Book & Laboratory Course</span>
+          <h1 class="chapter-h1">Mastering Zephyr RTOS on STM32</h1>
+          <p class="chapter-lead">
+            The definitive, practical engineering textbook for undergraduate students, hobbyists, and firmware professionals transitioning from bare-metal or FreeRTOS to the modern, Linux-foundation backed <strong>Zephyr RTOS</strong>.
+          </p>
+
+          <div class="chapter-meta-bar">
+            <div class="meta-item">
+              <span>🎯 Level: Beginner to Advanced Professional</span>
+            </div>
+            <div class="meta-item">
+              <span>⏱️ Total Duration: 6 Practical Modules</span>
+            </div>
+            <div class="meta-item">
+              <span>⚡ Supported Boards: Nucleo F401RE, G071RB, L476RG</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inspirational Quote -->
+        <div class="quote-card">
+          <div class="quote-mark">“</div>
+          <blockquote class="quote-text">
+            “There is no way around hard work. Embrace it. You have to put in the hours because there is always something which you can improve.”
+          </blockquote>
+          <div class="quote-author">Roger Federer</div>
+        </div>
+
+        <!-- Callout Welcome -->
+        <div class="callout callout-tip">
+          <div class="callout-header">💡 Why Zephyr RTOS in Modern Embedded Systems?</div>
+          <div class="callout-body">
+            <p>Traditional embedded development often binds your application tightly to vendor-specific HALs (STM32Cube, ESP-IDF, NRF SDK). <strong>Zephyr RTOS</strong> delivers true vendor-agnostic hardware abstraction powered by <strong>DeviceTree (DTS)</strong>, modern multi-threaded kernel primitives, POSIX compatibility, integrated testing harnesses (Twister), and built-in security features like MCUBoot secure DFU.</p>
+          </div>
+        </div>
+
+        <h2>Selected Target Hardware</h2>
+        <p>This book provides tested code, overlay files, and wiring guides configured for three of the most popular and affordable STM32 Nucleo boards:</p>
+
+        <div class="hardware-card-grid">
+          <div class="hardware-card">
+            <div class="hardware-card-title">
+              <span>Nucleo-F401RE</span>
+              <span class="hardware-card-badge">ARM Cortex-M4</span>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.75rem;">High performance mainstream MCU with DSP and hardware FPU.</p>
+            <ul class="hardware-spec-list">
+              <li><span>Clock Speed</span><span>84 MHz</span></li>
+              <li><span>Flash Memory</span><span>512 KB</span></li>
+              <li><span>SRAM</span><span>96 KB</span></li>
+              <li><span>User LED</span><span>LD2 (PA5)</span></li>
+              <li><span>User Button</span><span>B1 (PC13)</span></li>
+              <li><span>Default VCP</span><span>USART2 (PA2/PA3)</span></li>
+            </ul>
+          </div>
+
+          <div class="hardware-card">
+            <div class="hardware-card-title">
+              <span>Nucleo-G071RB</span>
+              <span class="hardware-card-badge">ARM Cortex-M0+</span>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.75rem;">Next-generation entry-level 32-bit MCU with USB-C and power efficiency.</p>
+            <ul class="hardware-spec-list">
+              <li><span>Clock Speed</span><span>64 MHz</span></li>
+              <li><span>Flash Memory</span><span>128 KB</span></li>
+              <li><span>SRAM</span><span>36 KB</span></li>
+              <li><span>User LED</span><span>LD4 (PA5)</span></li>
+              <li><span>User Button</span><span>B1 (PC13)</span></li>
+              <li><span>Default VCP</span><span>USART2 (PA2/PA3)</span></li>
+            </ul>
+          </div>
+
+          <div class="hardware-card">
+            <div class="hardware-card-title">
+              <span>Nucleo-L476RG</span>
+              <span class="hardware-card-badge">Ultra Low Power</span>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.75rem;">Optimized for battery-powered IoT nodes with low sleep currents.</p>
+            <ul class="hardware-spec-list">
+              <li><span>Clock Speed</span><span>80 MHz</span></li>
+              <li><span>Flash Memory</span><span>1024 KB (1 MB)</span></li>
+              <li><span>SRAM</span><span>128 KB</span></li>
+              <li><span>User LED</span><span>LD2 (PA5)</span></li>
+              <li><span>User Button</span><span>B1 (PC13)</span></li>
+              <li><span>Default VCP</span><span>USART2 (PA2/PA3)</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>Curriculum & Roadmap</h2>
+        <p>Each module is structured with in-depth engineering theory, side-by-side hardware pinouts, practical code listings, and a runnable laboratory exercise.</p>
+
+        <div style="display:flex;flex-direction:column;gap:1.25rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h3 style="margin:0 0 0.5rem;display:flex;align-items:center;justify-content:space-between;">
+              <a href="chapters/ch01-foundations-toolchain.html" style="text-decoration:none;color:var(--text-primary);">
+                Module 1: Foundations, Architecture & Toolchain
+              </a>
+              <span class="hardware-card-badge">Chapter 1</span>
+            </h3>
+            <p style="font-size:0.9rem;margin-bottom:0.75rem;">Zephyr vs FreeRTOS & Bare Metal; setting up <code>west</code>, Zephyr SDK, CMake/Ninja, and ST-Link drivers; building your first multi-board dual-LED blinky with ST-Link VCP serial console output.</p>
+            <div style="font-size:0.8rem;background:var(--bg-tertiary);padding:0.6rem 0.8rem;border-radius:var(--radius-sm);margin-bottom:0.75rem;">
+              <strong>Sub-topics covered:</strong>
+              <ul style="margin:0.3rem 0 0 1rem;padding:0;display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.3rem;">
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-1">1.1 The Need for an OS</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-2">1.2 FreeRTOS Era &amp; Limits</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-3">1.3 Why Zephyr RTOS?</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-4">1.4 STM32 Architecture &amp; VCP</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-5">1.5 Toolchain with West</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-6">1.6 Lab 1: Blinky &amp; VCP</a></li>
+                <li><a href="chapters/ch01-foundations-toolchain.html#sec-1-7">1.7 Knowledge Check Quiz</a></li>
+              </ul>
+            </div>
+            <a href="chapters/ch01-foundations-toolchain.html" style="font-size:0.75rem;color:var(--accent-primary);font-weight:600;text-decoration:none;">Open Module 1 & Hands-On Lab 1 →</a>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h3 style="margin:0 0 0.5rem;display:flex;align-items:center;justify-content:space-between;">
+              <a href="chapters/ch02-devicetree-kconfig.html" style="text-decoration:none;color:var(--text-primary);">
+                Module 2: DeviceTree (DTS) & Kconfig Deep Dive
+              </a>
+              <span class="hardware-card-badge">Chapter 2</span>
+            </h3>
+            <p style="font-size:0.9rem;margin-bottom:0.75rem;">The heart of Zephyr hardware description. Anatomy of nodes, compatible properties, aliases, bindings, and writing board overlay (<code>.overlay</code>) files to configure external GPIOs without changing C code.</p>
+            <div style="font-size:0.8rem;background:var(--bg-tertiary);padding:0.6rem 0.8rem;border-radius:var(--radius-sm);margin-bottom:0.75rem;">
+              <strong>Sub-topics covered:</strong>
+              <ul style="margin:0.3rem 0 0 1rem;padding:0;display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.3rem;">
+                <li><a href="chapters/ch02-devicetree-kconfig.html#sec-2-1">2.1 DeviceTree vs Kconfig</a></li>
+                <li><a href="chapters/ch02-devicetree-kconfig.html#sec-2-2">2.2 Anatomy of DTS Nodes</a></li>
+                <li><a href="chapters/ch02-devicetree-kconfig.html#sec-2-3">2.3 Board Overlays (.overlay)</a></li>
+                <li><a href="chapters/ch02-devicetree-kconfig.html#sec-2-4">2.4 Lab 2: External IO & Overlays</a></li>
+                <li><a href="chapters/ch02-devicetree-kconfig.html#sec-2-5">2.5 Knowledge Check Quiz</a></li>
+              </ul>
+            </div>
+            <a href="chapters/ch02-devicetree-kconfig.html" style="font-size:0.75rem;color:var(--accent-primary);font-weight:600;text-decoration:none;">Open Module 2 & Hands-On Lab 2 →</a>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h3 style="margin:0 0 0.5rem;display:flex;align-items:center;justify-content:space-between;">
+              <a href="chapters/ch03-kernel-threads-sync.html" style="text-decoration:none;color:var(--text-primary);">
+                Module 3: Zephyr Kernel Architecture & Synchronization
+              </a>
+              <span class="hardware-card-badge">Chapter 3</span>
+            </h3>
+            <p style="font-size:0.9rem;margin-bottom:0.75rem;">Threads, priority scheduling (preemptive vs cooperative), semaphores, mutexes, message queues (<code>k_msgq</code>), workqueues, and safe interrupt service routine (ISR) offloading on STM32 NVIC.</p>
+            <div style="font-size:0.8rem;background:var(--bg-tertiary);padding:0.6rem 0.8rem;border-radius:var(--radius-sm);margin-bottom:0.75rem;">
+              <strong>Sub-topics covered:</strong>
+              <ul style="margin:0.3rem 0 0 1rem;padding:0;display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.3rem;">
+                <li><a href="chapters/ch03-kernel-threads-sync.html#sec-3-1">3.1 Scheduling & Priorities</a></li>
+                <li><a href="chapters/ch03-kernel-threads-sync.html#sec-3-2">3.2 Static vs Dynamic Threads</a></li>
+                <li><a href="chapters/ch03-kernel-threads-sync.html#sec-3-3">3.3 Semaphores vs Mutexes</a></li>
+                <li><a href="chapters/ch03-kernel-threads-sync.html#sec-3-4">3.4 Lab 3: Message Queue Pipeline</a></li>
+                <li><a href="chapters/ch03-kernel-threads-sync.html#sec-3-5">3.5 Knowledge Check Quiz</a></li>
+              </ul>
+            </div>
+            <a href="chapters/ch03-kernel-threads-sync.html" style="font-size:0.75rem;color:var(--accent-primary);font-weight:600;text-decoration:none;">Open Module 3 & Hands-On Lab 3 →</a>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h3 style="margin:0 0 0.5rem;display:flex;align-items:center;justify-content:space-between;">
+              <a href="chapters/ch04-stm32-peripherals.html" style="text-decoration:none;color:var(--text-primary);">
+                Module 4: STM32 Peripherals & Drivers
+              </a>
+              <span class="hardware-card-badge">Chapter 4</span>
+            </h3>
+            <p style="font-size:0.9rem;margin-bottom:0.75rem;">Mastering Zephyr Driver APIs: GPIO interrupts, Asynchronous DMA UART, I2C temperature/pressure sensors (BMP280/SHT3x), PWM timers, ADC sampling, and low-power sleep state management.</p>
+            <div style="font-size:0.8rem;background:var(--bg-tertiary);padding:0.6rem 0.8rem;border-radius:var(--radius-sm);margin-bottom:0.75rem;">
+              <strong>Sub-topics covered:</strong>
+              <ul style="margin:0.3rem 0 0 1rem;padding:0;display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.3rem;">
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-1">4.1 Device Driver Model</a></li>
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-2">4.2 Async DMA UART</a></li>
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-3">4.3 I2C Sensor Subsystem</a></li>
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-4">4.4 Hardware PWM Timers</a></li>
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-5">4.5 Lab 4: Weather Station</a></li>
+                <li><a href="chapters/ch04-stm32-peripherals.html#sec-4-6">4.6 Knowledge Check Quiz</a></li>
+              </ul>
+            </div>
+            <a href="chapters/ch04-stm32-peripherals.html" style="font-size:0.75rem;color:var(--accent-primary);font-weight:600;text-decoration:none;">Open Module 4 & Hands-On Lab 4 →</a>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h3 style="margin:0 0 0.5rem;display:flex;align-items:center;justify-content:space-between;">
+              <a href="chapters/ch05-shell-connectivity.html" style="text-decoration:none;color:var(--text-primary);">
+                Module 5: Subsystems, Shell & Industrial Protocols
+              </a>
+              <span class="hardware-card-badge">Chapter 5</span>
+            </h3>
+            <p style="font-size:0.9rem;margin-bottom:0.75rem;">Zephyr Shell subsystem for dynamic runtime control, high-performance deferred Logging (<code>CONFIG_LOG</code>), CAN bus communication (bxCAN / FDCAN), and Bluetooth Low Energy (BLE) architecture.</p>
+            <div style="font-size:0.8rem;background:var(--bg-tertiary);padding:0.6rem 0.8rem;border-radius:var(--radius-sm);margin-bottom:0.75rem;">
+              <strong>Sub-topics covered:</strong>
+              <ul style="margin:0.3rem 0 0 1rem;padding:0;display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.3rem;">
+                <li><a href="chapters/ch05-shell-connectivity.html#sec-5-1">5.1 Zephyr Shell Subsystem</a></li>
+                <li><a href="chapters/ch05-shell-connectivity.html#sec-5-2">5.2 Deferred Logging</a></li>
+                <li><a href="chapters/ch05-shell-connectivity.html#sec-5-3">5.3 CAN Bus (bxCAN / FDCAN)</a></li>
+                <li><a href="chapters/ch05-shell-connectivity.html#sec-5-4">5.4 Lab 5: Diagnostic Shell</a></li>
+                <li><a href="chapters/ch05-shell-connectivity.html#sec-5-5">5.5 Knowledge Check Quiz</a></li>
+              </ul>
+            </div>
+            <a href="chapters/ch05-shell-connectivity.html" style="font-size:0.75rem;color:var(--accent-primary);font-weight:600;text-decoration:none;">Open Module 5 & Hands-On Lab 5 →</a>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h3 style="margin:0 0 0.5rem;display:flex;align-items:center;justify-content:space-between;">
+              <a href="chapters/ch06-production-capstone.html" style="text-decoration:none;color:var(--text-primary);">
+                Module 6: Production Engineering & Capstone Project
+              </a>
+              <span class="hardware-card-badge">Chapter 6</span>
+            </h3>
+            <p style="font-size:0.9rem;margin-bottom:0.75rem;">Secure bootloaders with MCUBoot, automated unit and integration testing via <code>twister</code> and Ztest, OpenOCD/GDB debugging, and building the production-grade industrial monitoring gateway.</p>
+            <div style="font-size:0.8rem;background:var(--bg-tertiary);padding:0.6rem 0.8rem;border-radius:var(--radius-sm);margin-bottom:0.75rem;">
+              <strong>Sub-topics covered:</strong>
+              <ul style="margin:0.3rem 0 0 1rem;padding:0;display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:0.3rem;">
+                <li><a href="chapters/ch06-production-capstone.html#sec-6-1">6.1 MCUBoot Dual-Slot DFU</a></li>
+                <li><a href="chapters/ch06-production-capstone.html#sec-6-2">6.2 Twister Automated Testing</a></li>
+                <li><a href="chapters/ch06-production-capstone.html#sec-6-3">6.3 OpenOCD & GDB Debugging</a></li>
+                <li><a href="chapters/ch06-production-capstone.html#sec-6-4">6.4 Lab 6: Watchdog Supervisor</a></li>
+                <li><a href="chapters/ch06-production-capstone.html#sec-6-5">6.5 Certification Quiz</a></li>
+              </ul>
+            </div>
+            <a href="chapters/ch06-production-capstone.html" style="font-size:0.75rem;color:var(--accent-primary);font-weight:600;text-decoration:none;">Open Module 6 & Capstone Lab →</a>
+          </div>
+        </div>
+
+        <h2>Comparison: Zephyr vs FreeRTOS vs Bare Metal</h2>
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+                <th style="padding:0.75rem;">Feature</th>
+                <th style="padding:0.75rem;color:var(--accent-primary);">Zephyr RTOS</th>
+                <th style="padding:0.75rem;">FreeRTOS</th>
+                <th style="padding:0.75rem;">Bare Metal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem;font-weight:600;">Hardware Description</td>
+                <td style="padding:0.75rem;">DeviceTree (Standardized, decoupled)</td>
+                <td style="padding:0.75rem;">Header files / Vendor HAL macros</td>
+                <td style="padding:0.75rem;">Direct register addresses / CMSIS</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem;font-weight:600;">Cross-MCU Portability</td>
+                <td style="padding:0.75rem;">Exceptional (Same C code across STM32, NXP, Nordic)</td>
+                <td style="padding:0.75rem;">Medium (Kernel is portable, drivers require rewrite)</td>
+                <td style="padding:0.75rem;">Zero (Vendor locked)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem;font-weight:600;">Build & Config System</td>
+                <td style="padding:0.75rem;">Kconfig + CMake + <code>west</code></td>
+                <td style="padding:0.75rem;">Manual FreeRTOSConfig.h + Make/IDE</td>
+                <td style="padding:0.75rem;">Custom Makefiles / IDE Projects</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem;font-weight:600;">Integrated Driver Stack</td>
+                <td style="padding:0.75rem;">Hundreds of built-in sensor, display & bus drivers</td>
+                <td style="padding:0.75rem;">Kernel only (bring your own drivers)</td>
+                <td style="padding:0.75rem;">Manual driver development</td>
+              </tr>
+              <tr>
+                <td style="padding:0.75rem;font-weight:600;">Testing & CI/CD</td>
+                <td style="padding:0.75rem;">Built-in <code>twister</code> runner + Renode/QEMU simulation</td>
+                <td style="padding:0.75rem;">Third-party unit test harnesses (Unity/CMock)</td>
+                <td style="padding:0.75rem;">Custom test frameworks</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Next Navigation -->
+        <div class="chapter-bottom-nav">
+          <div style="flex:1;"></div>
+          <a href="chapters/ch01-foundations-toolchain.html" class="nav-card" style="text-align:right;">
+            <span class="nav-card-dir">Next Module →</span>
+            <span class="nav-card-title">Module 1: Foundations &amp; Toolchain Setup</span>
+          </a>
+        </div>
+
+        <!-- Site Footer -->
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Mastering Zephyr RTOS on STM32 • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <!-- Search Modal Overlay -->
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, DTS, peripherals, labs...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+
+  <script src="js/book.js"></script>
+</body>
+</html>

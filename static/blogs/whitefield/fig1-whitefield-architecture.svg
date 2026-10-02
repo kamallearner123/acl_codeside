@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%" style="background:#0b0f19; font-family:'Inter',system-ui,sans-serif;">
+  <defs>
+    <linearGradient id="grad-card" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="grad-airline" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="50%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="grad-ns3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Title & Header -->
+  <text x="500" y="45" text-anchor="middle" fill="#38bdf8" font-size="20" font-weight="800" letter-spacing="1">WHITEFIELD HYBRID ARCHITECTURE (FIGURE 1)</text>
+  <text x="500" y="70" text-anchor="middle" fill="#94a3b8" font-size="12">Decoupling Native Embedded Stacks from ns-3 Physical RF Simulation</text>
+
+  <!-- Group 1: Native Firmware Nodes Layer -->
+  <rect x="50" y="95" width="900" height="200" rx="16" fill="rgba(30, 41, 59, 0.4)" stroke="#334155" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="75" y="125" fill="#e2e8f0" font-size="13" font-weight="700">LAYER 1: NATIVE FIRMWARE INSTANCES (Unmodified C/C++ Code compiled to POSIX Binaries)</text>
+
+  <!-- Node 1: Zephyr -->
+  <g transform="translate(70, 140)" filter="url(#shadow)">
+    <rect width="190" height="135" rx="10" fill="url(#grad-card)" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="0" y="0" width="190" height="28" rx="10" fill="#0284c7"/>
+    <text x="95" y="19" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Node 1: Zephyr RTOS</text>
+    <text x="95" y="52" text-anchor="middle" fill="#e2e8f0" font-size="11">App: CoAP / Sensor Telemetry</text>
+    <rect x="20" y="62" width="150" height="20" rx="4" fill="#334155"/>
+    <text x="95" y="76" text-anchor="middle" fill="#38bdf8" font-size="10" font-weight="600">IPv6 + 6LoWPAN Stack</text>
+    <rect x="20" y="88" width="150" height="20" rx="4" fill="#1e293b" stroke="#0ea5e9"/>
+    <text x="95" y="102" text-anchor="middle" fill="#a5f3fc" font-size="10" font-weight="600">RPL (RFC 6550) Mesh Core</text>
+    <rect x="20" y="112" width="150" height="15" rx="3" fill="#f43f5e" opacity="0.8"/>
+    <text x="95" y="123" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">Whitefield Net-Device Driver</text>
+  </g>
+
+  <!-- Node 2: Contiki-NG -->
+  <g transform="translate(290, 140)" filter="url(#shadow)">
+    <rect width="190" height="135" rx="10" fill="url(#grad-card)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="0" y="0" width="190" height="28" rx="10" fill="#059669"/>
+    <text x="95" y="19" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Node 2: Contiki-NG</text>
+    <text x="95" y="52" text-anchor="middle" fill="#e2e8f0" font-size="11">App: UDP Client Telemetry</text>
+    <rect x="20" y="62" width="150" height="20" rx="4" fill="#334155"/>
+    <text x="95" y="76" text-anchor="middle" fill="#34d399" font-size="10" font-weight="600">uIPv6 + 6LoWPAN Stack</text>
+    <rect x="20" y="88" width="150" height="20" rx="4" fill="#1e293b" stroke="#10b981"/>
+    <text x="95" y="102" text-anchor="middle" fill="#a7f3d0" font-size="10" font-weight="600">RPL Classic / Non-Storing</text>
+    <rect x="20" y="112" width="150" height="15" rx="3" fill="#f43f5e" opacity="0.8"/>
+    <text x="95" y="123" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">Whitefield Net-Device Driver</text>
+  </g>
+
+  <!-- Node 3: OpenThread -->
+  <g transform="translate(510, 140)" filter="url(#shadow)">
+    <rect width="190" height="135" rx="10" fill="url(#grad-card)" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="190" height="28" rx="10" fill="#d97706"/>
+    <text x="95" y="19" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Node 3: OpenThread (Google)</text>
+    <text x="95" y="52" text-anchor="middle" fill="#e2e8f0" font-size="11">App: Matter Smart Home</text>
+    <rect x="20" y="62" width="150" height="20" rx="4" fill="#334155"/>
+    <text x="95" y="76" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="600">IPv6 + Thread Mesh Link</text>
+    <rect x="20" y="88" width="150" height="20" rx="4" fill="#1e293b" stroke="#f59e0b"/>
+    <text x="95" y="102" text-anchor="middle" fill="#fef3c7" font-size="10" font-weight="600">MLE (Mesh Link Est.) Router</text>
+    <rect x="20" y="112" width="150" height="15" rx="3" fill="#f43f5e" opacity="0.8"/>
+    <text x="95" y="123" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">Whitefield Net-Device Driver</text>
+  </g>
+
+  <!-- Node N: Scalable Fleet -->
+  <g transform="translate(730, 140)" filter="url(#shadow)">
+    <rect width="190" height="135" rx="10" fill="url(#grad-card)" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="0" y="0" width="190" height="28" rx="10" fill="#7c3aed"/>
+    <text x="95" y="19" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Node 4 ... 10,000</text>
+    <text x="95" y="52" text-anchor="middle" fill="#e2e8f0" font-size="11">RIOT / FreeRTOS / Custom</text>
+    <rect x="20" y="62" width="150" height="20" rx="4" fill="#334155"/>
+    <text x="95" y="76" text-anchor="middle" fill="#c084fc" font-size="10" font-weight="600">6LoWPAN / Custom Mesh</text>
+    <rect x="20" y="88" width="150" height="20" rx="4" fill="#1e293b" stroke="#8b5cf6"/>
+    <text x="95" y="102" text-anchor="middle" fill="#ede9fe" font-size="10" font-weight="600">Dynamic Multi-Hop Routing</text>
+    <rect x="20" y="112" width="150" height="15" rx="3" fill="#f43f5e" opacity="0.8"/>
+    <text x="95" y="123" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">Whitefield Net-Device Driver</text>
+  </g>
+
+  <!-- Layer 2: Airline IPC Subsystem -->
+  <g transform="translate(50, 315)" filter="url(#shadow)">
+    <rect width="900" height="85" rx="14" fill="url(#grad-airline)"/>
+    <rect x="3" y="3" width="894" height="79" rx="12" fill="#111827" opacity="0.88"/>
+    <text x="450" y="28" text-anchor="middle" fill="#f43f5e" font-size="15" font-weight="800" letter-spacing="1">LAYER 2: THE AIRLINE INTER-PROCESS COMMUNICATION (IPC) BUS</text>
+    <text x="450" y="48" text-anchor="middle" fill="#f1f5f9" font-size="12">High-Throughput Shared Memory / ZeroMQ Messaging &amp; Nanosecond Time-Barrier Synchronization</text>
+    <rect x="60" y="57" width="180" height="18" rx="4" fill="#f43f5e" opacity="0.3"/>
+    <text x="150" y="70" text-anchor="middle" fill="#fda4af" font-size="10" font-weight="700">Frame Encap / Decap</text>
+    <rect x="260" y="57" width="200" height="18" rx="4" fill="#8b5cf6" opacity="0.3"/>
+    <text x="360" y="70" text-anchor="middle" fill="#ddd6fe" font-size="10" font-weight="700">Live Wireshark PCAP Tap</text>
+    <rect x="480" y="57" width="180" height="18" rx="4" fill="#0ea5e9" opacity="0.3"/>
+    <text x="570" y="70" text-anchor="middle" fill="#bae6fd" font-size="10" font-weight="700">Unified Distributed Log</text>
+    <rect x="680" y="57" width="160" height="18" rx="4" fill="#10b981" opacity="0.3"/>
+    <text x="760" y="70" text-anchor="middle" fill="#a7f3d0" font-size="10" font-weight="700">Interactive CLI Shell</text>
+  </g>
+
+  <!-- Connectors -->
+  <line x1="165" y1="275" x2="165" y2="315" stroke="#f43f5e" stroke-width="2.5" stroke-dasharray="4,3"/>
+  <line x1="385" y1="275" x2="385" y2="315" stroke="#f43f5e" stroke-width="2.5" stroke-dasharray="4,3"/>
+  <line x1="605" y1="275" x2="605" y2="315" stroke="#f43f5e" stroke-width="2.5" stroke-dasharray="4,3"/>
+  <line x1="825" y1="275" x2="825" y2="315" stroke="#f43f5e" stroke-width="2.5" stroke-dasharray="4,3"/>
+
+  <!-- Layer 3: ns-3 Simulation Engine -->
+  <g transform="translate(50, 420)" filter="url(#shadow)">
+    <rect width="900" height="165" rx="14" fill="url(#grad-ns3)" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="3" y="3" width="894" height="159" rx="12" fill="#0f172a" opacity="0.9"/>
+    
+    <text x="450" y="30" text-anchor="middle" fill="#38bdf8" font-size="15" font-weight="800" letter-spacing="1">LAYER 3: NS-3 DISCRETE-EVENT RF &amp; PHYSICAL SIMULATION ENGINE</text>
+    
+    <g transform="translate(30, 45)">
+      <rect width="260" height="95" rx="8" fill="#1e293b" stroke="#334155"/>
+      <text x="130" y="24" text-anchor="middle" fill="#67e8f9" font-size="11" font-weight="700">PHY / MAC Layer Models</text>
+      <text x="15" y="48" fill="#cbd5e1" font-size="10">&bull; IEEE 802.15.4 (lr-wpan 2.4GHz / Sub-GHz)</text>
+      <text x="15" y="68" fill="#cbd5e1" font-size="10">&bull; Power Line Communication (PLC G3/PRIME)</text>
+      <text x="15" y="88" fill="#cbd5e1" font-size="10">&bull; IEEE 802.11ah Wi-Fi HaLow &amp; 802.11p</text>
+    </g>
+
+    <g transform="translate(320, 45)">
+      <rect width="260" height="95" rx="8" fill="#1e293b" stroke="#334155"/>
+      <text x="130" y="24" text-anchor="middle" fill="#67e8f9" font-size="11" font-weight="700">RF Propagation &amp; Channel Physics</text>
+      <text x="15" y="48" fill="#cbd5e1" font-size="10">&bull; LogDistance &amp; Two-Ray Ground Reflection</text>
+      <text x="15" y="68" fill="#cbd5e1" font-size="10">&bull; Nakagami-m &amp; Rayleigh Fast Fading</text>
+      <text x="15" y="88" fill="#cbd5e1" font-size="10">&bull; Urban Obstacle Shadowing &amp; Foliage Loss</text>
+    </g>
+
+    <g transform="translate(610, 45)">
+      <rect width="260" height="95" rx="8" fill="#1e293b" stroke="#334155"/>
+      <text x="130" y="24" text-anchor="middle" fill="#67e8f9" font-size="11" font-weight="700">Interference &amp; Antenna Geometry</text>
+      <text x="15" y="48" fill="#cbd5e1" font-size="10">&bull; Carrier Sense &amp; CSMA/CA Backoff Collision</text>
+      <text x="15" y="68" fill="#cbd5e1" font-size="10">&bull; Energy Consumption &amp; Battery Depletion</text>
+      <text x="15" y="88" fill="#cbd5e1" font-size="10">&bull; 3D Coordinates &amp; Dynamic Mobility Models</text>
+    </g>
+  </g>
+
+  <!-- Connectors between Airline and ns-3 -->
+  <line x1="500" y1="400" x2="500" y2="420" stroke="#38bdf8" stroke-width="3" stroke-dasharray="4,2"/>
+</svg>

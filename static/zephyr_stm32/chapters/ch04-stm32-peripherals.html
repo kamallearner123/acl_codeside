@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 4: STM32 Peripherals & Drivers - GPIO, DMA UART, I2C Sensor API, PWM, ADC & Low Power on STM32 Nucleo.">
+  <title>Module 4: STM32 Peripherals & Drivers | Zephyr + STM32 Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch04">
+
+  <div id="reading-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Zephyr + STM32</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, DTS, peripherals, labs..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <select id="board-selector" class="board-select">
+          <option value="nucleo_f401re">Nucleo-F401RE (Cortex-M4)</option>
+          <option value="nucleo_g071rb">Nucleo-G071RB (Cortex-M0+)</option>
+          <option value="nucleo_l476rg">Nucleo-L476RG (Low-Power)</option>
+        </select>
+      </div>
+
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+
+      <a href="/courses/exploring-zephyr-using-stm32/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;border:1px solid var(--border-subtle);background:var(--bg-glass);backdrop-filter:blur(8px);transition:all 0.2s;" title="Return to Course Details on Apt Computing Labs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- App Layout -->
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">Ch 4 of 6</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview & Syllabus</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M1</span>
+              <span>Foundations & Setup</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-foundations-toolchain.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Architecture & West Toolchain</span>
+                <span class="chapter-read-time">25m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch01-foundations-toolchain.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 The Need for an OS</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 FreeRTOS Era & Limits</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Why Zephyr RTOS?</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 STM32 Architecture</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Toolchain with West</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 Lab 1: Blinky & VCP</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M2</span>
+              <span>DeviceTree & Kconfig</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-devicetree-kconfig.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 2: DTS Syntax & STM32 Overlays</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 DeviceTree vs Kconfig</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Anatomy of DTS Nodes</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 Board Overlays (.overlay)</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Lab 2: External IO & Overlays</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M3</span>
+              <span>Kernel Fundamentals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-kernel-threads-sync.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 3: Multithreading & Synchronization</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Scheduling & Priorities</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Static vs Dynamic Threads</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Semaphores vs Mutexes</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Lab 3: Message Queue Pipeline</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M4</span>
+              <span>STM32 Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-stm32-peripherals.html" class="chapter-nav-item active">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Drivers, DMA UART & Sensors</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch04-stm32-peripherals.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 Device Driver Model</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Async DMA UART</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 I2C Sensor Subsystem</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Hardware PWM Timers</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 Lab 4: Weather Station</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M5</span>
+              <span>Subsystems & Protocols</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-shell-connectivity.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 5: Shell, CAN Bus & BLE</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch05-shell-connectivity.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Zephyr Shell Subsystem</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Deferred Logging</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 CAN Bus (bxCAN / FDCAN)</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Lab 5: Diagnostic Shell</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M6</span>
+              <span>Production & Capstone</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-production-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 6: MCUBoot, Twister & Capstone</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch06-production-capstone.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 MCUBoot Dual-Slot DFU</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 Twister Automated Testing</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 OpenOCD & GDB Debugging</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 Lab 6: Watchdog Supervisor</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Certification Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="gui-ai-studio.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">⚡</span>
+            <span class="chapter-title-text">GUI Studio & AI Generator</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Standards</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Reader -->
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs">
+          <a href="../index.html">Home</a>
+          <span>/</span>
+          <span>Module 4</span>
+          <span>/</span>
+          <span>STM32 Peripherals</span>
+        </div>
+        <div class="chapter-actions">
+          <a href="ch03-kernel-threads-sync.html" class="btn-secondary">← Chapter 3</a>
+          <a href="ch05-shell-connectivity.html" class="btn-primary">Chapter 5 →</a>
+        </div>
+      </div>
+
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Module 04 • Hardware Drivers</span>
+          <h1 class="chapter-h1">STM32 Peripherals & Zephyr Driver APIs</h1>
+          <p class="chapter-lead">
+            Harness the full power of STM32 on-chip peripherals through Zephyr's standardized device driver model: high-speed Asynchronous DMA UART, I2C Bus sensors (BMP280/SHT3x) using the Zephyr Sensor Subsystem, hardware timer PWM for smooth LED breathing, and energy-saving low-power sleep modes.
+          </p>
+
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 45 minutes</div>
+            <div class="meta-item">🛠️ Lab Project: <code>samples/04_sensor_i2c_pwm</code></div>
+            <div class="meta-item">🎯 Peripherals: I2C, PWM, Async UART, Low Power</div>
+          </div>
+        </div>
+
+        <h2 id="sec-4-1">4.1 The Zephyr Device Driver Model</h2>
+        <p>
+          In bare-metal or standard vendor HALs, reading a sensor requires calling MCU-specific register functions (like <code>HAL_I2C_Master_Transmit()</code>). If you switch to another vendor, your code must be completely rewritten.
+        </p>
+        <p>
+          Zephyr solves this with a unified <strong>Device Model</strong>:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Universal Device Acquisition Pattern</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;zephyr/device.h&gt;
+#include &lt;zephyr/drivers/i2c.h&gt;
+
+/* 1. Retrieve device pointer from DTS node */
+const struct device *const i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c1));
+
+/* 2. Validate initialization status */
+if (!device_is_ready(i2c_dev)) {
+    printk("Error: Device %s failed initialization!\n", i2c_dev->name);
+    return -ENODEV;
+}
+
+/* 3. Invoke standard, cross-platform driver API */
+ret = i2c_write_read(i2c_dev, SENSOR_ADDR, &reg, 1, buf, 6);</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-4-2">4.2 Asynchronous DMA UART vs Polled UART</h2>
+        <p>
+          Standard <code>printk()</code> or polled UART burns thousands of CPU cycles waiting for the hardware shift register to transmit byte-by-byte. On STM32, Zephyr supports three distinct UART modes:
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1rem;">
+            <h4 style="margin:0 0 0.5rem;color:var(--text-muted);">1. Polled UART</h4>
+            <p style="font-size:0.8rem;">CPU busy-waits on TXE/RXNE flags. Zero memory overhead, but blocks the RTOS thread during transfers.</p>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1rem;">
+            <h4 style="margin:0 0 0.5rem;color:var(--accent-primary);">2. Interrupt-Driven</h4>
+            <p style="font-size:0.8rem;">Fires an interrupt on each received/transmitted byte into a ring buffer. Excellent for low-data rate consoles.</p>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1rem;">
+            <h4 style="margin:0 0 0.5rem;color:#10b981;">3. Async DMA UART</h4>
+            <p style="font-size:0.8rem;">Autonomous STM32 DMA streams transfer data directly between RAM and USART registers without CPU intervention!</p>
+          </div>
+        </div>
+
+        <h2 id="sec-4-3">4.3 The Zephyr Sensor API Subsystem</h2>
+        <p>
+          Zephyr includes a built-in Sensor Subsystem (<code>CONFIG_SENSOR=y</code>) supporting over 150 commercial environmental, inertial, and optical sensors. Instead of parsing raw registers, you interact with standard physical quantities:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Standard Zephyr Sensor API Usage</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;zephyr/drivers/sensor.h&gt;
+
+const struct device *const sensor = DEVICE_DT_GET_ANY(bosch_bmp280);
+struct sensor_value temp, press;
+
+/* Trigger sensor conversion and read internal registers */
+sensor_sample_fetch(sensor);
+
+/* Extract standardized SI values */
+sensor_channel_get(sensor, SENSOR_CHAN_AMBIENT_TEMP, &temp);
+sensor_channel_get(sensor, SENSOR_CHAN_PRESS, &press);
+
+printk("Temperature: %d.%06d C | Pressure: %d.%06d kPa\n",
+       temp.val1, temp.val2, press.val1, press.val2);</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-4-4">4.4 Hardware PWM Dimming on STM32 Timers</h2>
+        <p>
+          On STM32, hardware Pulse Width Modulation (PWM) is driven by the general-purpose or advanced timer peripherals (TIM1, TIM2, TIM3, etc.). By using Zephyr's <code>pwm_set_dt()</code>, you can smoothly adjust duty cycle with nanosecond or microsecond precision without CPU intervention.
+        </p>
+
+        <h2 id="sec-4-5">4.5 Hands-On Lab 4: Integrated Environmental Weather Station</h2>
+        <p>
+          In this laboratory exercise (provided in <code>samples/04_sensor_i2c_pwm/</code>), we configure an I2C environmental sensor, drive a PWM breathing LED status indicator, and broadcast telemetry over serial console.
+        </p>
+
+        <h3>4.5.1 Board Wiring (I2C Bus & PWM)</h3>
+        <div data-board-target="nucleo_f401re,nucleo_l476rg,all">
+          <div class="callout callout-hardware">
+            <div class="callout-header">🔌 Pinout: Nucleo-F401RE / L476RG</div>
+            <div class="callout-body">
+              <ul style="margin:0;padding-left:1.2rem;">
+                <li><strong>I2C1 SCL:</strong> Arduino D15 / PB8 (with 4.7kΩ pull-up to 3.3V)</li>
+                <li><strong>I2C1 SDA:</strong> Arduino D14 / PB9 (with 4.7kΩ pull-up to 3.3V)</li>
+                <li><strong>PWM Status LED:</strong> Driven on PA5 (onboard LD2 mapped to TIM2_CH1)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div data-board-target="nucleo_g071rb">
+          <div class="callout callout-hardware">
+            <div class="callout-header">🔌 Pinout: Nucleo-G071RB</div>
+            <div class="callout-body">
+              <ul style="margin:0;padding-left:1.2rem;">
+                <li><strong>I2C1 SCL:</strong> PB8 (Arduino D15)</li>
+                <li><strong>I2C1 SDA:</strong> PB9 (Arduino D14)</li>
+                <li><strong>PWM Status LED:</strong> PA5 (mapped to TIM2)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <h3>4.5.2 Overlay Configuration: <code>boards/nucleo_f401re.overlay</code></h3>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">DTS</span>
+              <span>samples/04_sensor_i2c_pwm/boards/nucleo_f401re.overlay</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>&i2c1 {
+    status = "okay";
+    clock-frequency = &lt;I2C_BITRATE_FAST&gt;; /* 400 kHz */
+
+    bmp280: bmp280@76 {
+        compatible = "bosch,bmp280";
+        reg = &lt;0x76&gt;;
+        status = "okay";
+    };
+};
+
+/* Enable TIM2 PWM channel on PA5 (User LED) */
+&timers2 {
+    status = "okay";
+    st,prescaler = &lt;10&gt;;
+
+    pwm2: pwm {
+        status = "okay";
+        pinctrl-0 = &lt;&tim2_ch1_pa5&gt;;
+        pinctrl-names = "default";
+    };
+};
+
+/ {
+    pwmleds {
+        compatible = "pwm-leds";
+        pwm_led_0: pwm_led_0 {
+            pwms = &lt;&pwm2 1 PWM_MSEC(20) PWM_POLARITY_NORMAL&gt;;
+            label = "PWM Green LED";
+        };
+    };
+
+    aliases {
+        pwm-led0 = &pwm_led_0;
+    };
+};</code></pre>
+          </div>
+        </div>
+
+        <h3>4.5.3 Project Configuration: <code>prj.conf</code></h3>
+        <p>Enable I2C master driver, hardware PWM subsystem, and standard serial printk:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">KCONFIG</span>
+              <span>samples/04_sensor_i2c_pwm/prj.conf</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Enable I2C and Sensor Subsystem
+CONFIG_I2C=y
+CONFIG_SENSOR=y
+
+# Enable Hardware PWM Driver
+CONFIG_PWM=y
+
+# Enable Serial Console & Floating Point formatting
+CONFIG_SERIAL=y
+CONFIG_CONSOLE=y
+CONFIG_UART_CONSOLE=y
+CONFIG_PRINTK=y
+CONFIG_CBPRINTF_FP_SUPPORT=y</code></pre>
+          </div>
+        </div>
+
+        <h3>4.5.4 Application Code: <code>samples/04_sensor_i2c_pwm/src/main.c</code></h3>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>samples/04_sensor_i2c_pwm/src/main.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/*
+ * Copyright (c) 2026 Apt Computing Labs
+ * "Where Knowledge Meets Innovation"
+ *
+ * Mastering Zephyr RTOS on STM32 - Lab 4: Sensor & PWM
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include &lt;zephyr/kernel.h&gt;
+#include &lt;zephyr/drivers/sensor.h&gt;
+#include &lt;zephyr/drivers/pwm.h&gt;
+#include &lt;zephyr/sys/printk.h&gt;
+
+#define PWM_PERIOD_NS   PWM_MSEC(20U) /* 50 Hz PWM period (20ms) */
+#define STEP_NS         PWM_USEC(500U)
+
+static const struct pwm_dt_spec pwm_led = PWM_DT_SPEC_GET(DT_ALIAS(pwm_led0));
+
+int main(void)
+{
+    uint32_t pulse = 0;
+    bool dir_up = true;
+
+    printk("\n=== Zephyr Lab 4: I2C Sensor & Hardware PWM Engine ===\n");
+
+    if (!pwm_is_ready_dt(&pwm_led)) {
+        printk("Error: PWM device %s not ready!\n", pwm_led.dev->name);
+        return 0;
+    }
+
+    printk("Starting LED breathing pulse cycle...\n");
+
+    while (1) {
+        /* Set PWM pulse width (duty cycle) */
+        pwm_set_pulse_dt(&pwm_led, pulse);
+
+        if (dir_up) {
+            pulse += STEP_NS;
+            if (pulse >= PWM_PERIOD_NS) {
+                pulse = PWM_PERIOD_NS;
+                dir_up = false;
+            }
+        } else {
+            if (pulse <= STEP_NS) {
+                pulse = 0;
+                dir_up = true;
+            } else {
+                pulse -= STEP_NS;
+            }
+        }
+
+        k_msleep(25);
+    }
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+        <h3>4.5.5 Building & Flashing via ST-Link</h3>
+        <p>Copy and run these terminal commands:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Build and Flash Commands</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># 1. Navigate to directory
+cd samples/04_sensor_i2c_pwm
+
+# 2. Build for target board:
+west build -b nucleo_f401re -p always
+
+# 3. Flash to STM32:
+west flash
+
+# 4. Open serial terminal monitor:
+minicom -D /dev/tty.usbmodem* -b 115200</code></pre>
+          </div>
+        </div>
+
+        <h3>4.5.6 Live Environmental Telemetry & PWM Breathing LED Graphic</h3>
+        <p>Real-time hardware output graphic showing timer PWM modulation and live simulated BMP280 sensors:</p>
+
+        <!-- Graphical Output Simulation Widget -->
+        <div class="hardware-sim-widget" data-sim="sensor-pwm">
+          <div class="sim-widget-header">
+            <div class="sim-widget-title">
+              <span>🌊 Live Hardware PWM & Environmental Telemetry Graphic</span>
+              <span class="sim-status-badge"><span class="sim-status-dot"></span> <span>TIM2 PWM ACTIVE</span></span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">Duty: <strong id="sim-pwm-duty" style="color:#38bdf8;">0%</strong> | Frequency: <strong>50 Hz (20ms)</strong></div>
+          </div>
+          <div class="sim-body-layout">
+            <!-- Left: Graphic Nucleo PWM LED -->
+            <div class="sim-board-graphic">
+              <div class="sim-board-pcb">
+                <div class="sim-pcb-label">TIM2 Channel 1 PWM Generator</div>
+                <div style="text-align:center;margin:0.5rem 0;">
+                  <div class="sim-led-bulb pwm" id="sim-pwm-led" style="margin:0 auto;width:32px;height:32px;"></div>
+                  <div style="font-family:var(--font-mono);font-size:0.7rem;color:#e2e8f0;margin-top:0.4rem;font-weight:700;">User LD2 (PA5)</div>
+                  <div style="font-size:0.65rem;color:#94a3b8;">Sinusoidal Duty Cycle Wave</div>
+                </div>
+              </div>
+            </div>
+            <!-- Right: Environmental Sensor Dashboard -->
+            <div class="sim-terminal-screen" style="padding:1rem;background:#030712;">
+              <div style="font-family:var(--font-mono);font-size:0.75rem;color:#9ca3af;margin-bottom:0.75rem;font-weight:700;">BMP280 DIGITAL I2C SENSOR STREAM (0x76)</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+                <div style="background:#111827;border:1px solid #1f2937;border-radius:6px;padding:0.75rem;text-align:center;">
+                  <div style="font-size:0.7rem;color:#94a3b8;">Ambient Temperature</div>
+                  <div id="sim-sensor-temp" style="font-size:1.25rem;font-weight:700;color:#f87171;font-family:var(--font-mono);margin-top:0.25rem;">24.85 °C</div>
+                </div>
+                <div style="background:#111827;border:1px solid #1f2937;border-radius:6px;padding:0.75rem;text-align:center;">
+                  <div style="font-size:0.7rem;color:#94a3b8;">Barometric Pressure</div>
+                  <div id="sim-sensor-press" style="font-size:1.25rem;font-weight:700;color:#38bdf8;font-family:var(--font-mono);margin-top:0.25rem;">1013.25 hPa</div>
+                </div>
+              </div>
+              <div style="font-family:var(--font-mono);font-size:0.7rem;color:#10b981;margin-top:1rem;">
+                [I2C1] Transfer OK: 6 bytes fetched in 150 µs via Fast-Mode 400kHz
+              </div>
+            </div>
+          </div>
+          <div class="sim-controls-bar">
+            <span>💡 <em>PWM breathing runs autonomously on STM32 hardware timers without blocking CPU threads</em></span>
+            <span style="font-size:0.75rem;color:var(--text-muted);">Sampling: Continuous 40 Hz</span>
+          </div>
+        </div>
+
+        <!-- Interactive Lab Checklist -->
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Hands-On Lab 4 Checklist</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l4-step1">
+              <label for="l4-step1" class="checklist-text">Open <code>samples/04_sensor_i2c_pwm/</code> in your workspace.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l4-step2">
+              <label for="l4-step2" class="checklist-text">Wire I2C sensor (BMP280 or compatible) to PB8/PB9 with pull-up resistors.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l4-step3">
+              <label for="l4-step3" class="checklist-text">Build and flash with <code>west build -b <span class="cmd-board-name">nucleo_f401re</span> -p always &amp;&amp; west flash</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l4-step4">
+              <label for="l4-step4" class="checklist-text">Observe smooth 50Hz hardware PWM breathing effect on the user LED without CPU stutter.</label>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Knowledge Check Quiz -->
+        <div class="quiz-container" id="sec-4-6">
+          <div class="quiz-header">
+            <span>🧠 Knowledge Check: Module 4</span>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">
+              1. What does the <code>sensor_value</code> struct in Zephyr represent?
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Raw ADC counts are parsed inside the driver layer.">
+                A) The uncalibrated 12-bit raw integer reading straight from the sensor register.
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! val1 represents the integer portion and val2 represents the fractional part in micro-units (millionths).">
+                B) A fixed-point representation with an integer part (val1) and a micro-unit fractional part (val2).
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Double precision floats are avoided for performance and code size.">
+                C) A double-precision IEEE-754 floating-point timestamp.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) A pointer to the DMA buffer ring.
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+        <!-- Chapter Bottom Navigation -->
+        <div class="chapter-bottom-nav">
+          <a href="ch03-kernel-threads-sync.html" class="nav-card">
+            <span class="nav-card-dir">← Previous Module</span>
+            <span class="nav-card-title">Module 3: Zephyr Kernel Fundamentals</span>
+          </a>
+          <a href="ch05-shell-connectivity.html" class="nav-card" style="text-align:right;">
+            <span class="nav-card-dir">Next Module →</span>
+            <span class="nav-card-title">Module 5: Subsystems & Protocols</span>
+          </a>
+        </div>
+      
+        <!-- Site Footer -->
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Mastering Zephyr RTOS on STM32 • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, DTS, peripherals, labs...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+
+  <script src="../js/book.js"></script>
+</body>
+</html>

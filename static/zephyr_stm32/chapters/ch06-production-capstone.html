@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 6: Production Engineering & Capstone Project - MCUBoot, Twister Testing, OpenOCD/GDB, Watchdog & Industrial Gateway.">
+  <title>Module 6: Production Engineering & Capstone | Zephyr + STM32 Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch06">
+
+  <div id="reading-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Zephyr + STM32</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, DTS, peripherals, labs..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <select id="board-selector" class="board-select">
+          <option value="nucleo_f401re">Nucleo-F401RE (Cortex-M4)</option>
+          <option value="nucleo_g071rb">Nucleo-G071RB (Cortex-M0+)</option>
+          <option value="nucleo_l476rg">Nucleo-L476RG (Low-Power)</option>
+        </select>
+      </div>
+
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+
+      <a href="/courses/exploring-zephyr-using-stm32/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;border:1px solid var(--border-subtle);background:var(--bg-glass);backdrop-filter:blur(8px);transition:all 0.2s;" title="Return to Course Details on Apt Computing Labs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- App Layout -->
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">Ch 6 of 6</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview & Syllabus</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M1</span>
+              <span>Foundations & Setup</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-foundations-toolchain.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Architecture & West Toolchain</span>
+                <span class="chapter-read-time">25m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch01-foundations-toolchain.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 The Need for an OS</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 FreeRTOS Era & Limits</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Why Zephyr RTOS?</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 STM32 Architecture</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Toolchain with West</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 Lab 1: Blinky & VCP</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M2</span>
+              <span>DeviceTree & Kconfig</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-devicetree-kconfig.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: DTS Syntax & STM32 Overlays</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 DeviceTree vs Kconfig</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Anatomy of DTS Nodes</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 Board Overlays (.overlay)</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Lab 2: External IO & Overlays</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M3</span>
+              <span>Kernel Fundamentals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-kernel-threads-sync.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: Multithreading & Synchronization</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Scheduling & Priorities</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Static vs Dynamic Threads</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Semaphores vs Mutexes</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Lab 3: Message Queue Pipeline</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M4</span>
+              <span>STM32 Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-stm32-peripherals.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Drivers, DMA UART & Sensors</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch04-stm32-peripherals.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 Device Driver Model</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Async DMA UART</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 I2C Sensor Subsystem</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Hardware PWM Timers</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 Lab 4: Weather Station</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M5</span>
+              <span>Subsystems & Protocols</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-shell-connectivity.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: Shell, CAN Bus & BLE</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch05-shell-connectivity.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Zephyr Shell Subsystem</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Deferred Logging</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 CAN Bus (bxCAN / FDCAN)</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Lab 5: Diagnostic Shell</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M6</span>
+              <span>Production & Capstone</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-production-capstone.html" class="chapter-nav-item active">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: MCUBoot, Twister & Capstone</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch06-production-capstone.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 MCUBoot Dual-Slot DFU</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 Twister Automated Testing</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 OpenOCD & GDB Debugging</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 Lab 6: Watchdog Supervisor</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Certification Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="gui-ai-studio.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">⚡</span>
+            <span class="chapter-title-text">GUI Studio & AI Generator</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Standards</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Reader -->
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs">
+          <a href="../index.html">Home</a>
+          <span>/</span>
+          <span>Module 6</span>
+          <span>/</span>
+          <span>Production & Capstone</span>
+        </div>
+        <div class="chapter-actions">
+          <a href="ch05-shell-connectivity.html" class="btn-secondary">← Chapter 5</a>
+          <a href="../index.html" class="btn-primary">Course Portal 🏠</a>
+        </div>
+      </div>
+
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Module 06 • Production Engineering</span>
+          <h1 class="chapter-h1">MCUBoot, Automated Testing & Capstone Project</h1>
+          <p class="chapter-lead">
+            Take your Zephyr skills to production-grade deployment: understand secure dual-slot firmware upgrades with MCUBoot, write automated integration tests using <code>twister</code> and Ztest, debug HardFaults with OpenOCD/GDB, and build the Industrial Watchdog Supervisor Capstone.
+          </p>
+
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 50 minutes</div>
+            <div class="meta-item">🛠️ Lab Project: <code>samples/06_capstone_industrial_monitor</code></div>
+            <div class="meta-item">🎯 Final Goal: Production-Ready Firmware Engineering</div>
+          </div>
+        </div>
+
+        <h2 id="sec-6-1">6.1 Secure Bootloaders & MCUBoot Dual-Slot DFU</h2>
+        <p>
+          In professional IoT and automotive products, a firmware update must never brick the device. <strong>MCUBoot</strong> is the industry-standard secure bootloader integrated natively into Zephyr.
+        </p>
+
+        <p>A dual-slot STM32 Flash partition layout in DeviceTree:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">DTS</span>
+              <span>Flash Partition Table for MCUBoot (512KB STM32 Flash)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>&flash0 {
+    partitions {
+        compatible = "fixed-partitions";
+        #address-cells = &lt;1&gt;;
+        #size-cells = &lt;1&gt;;
+
+        /* 0x00000 - 0x10000 (64 KB): MCUBoot Bootloader */
+        boot_partition: partition@0 {
+            label = "mcuboot";
+            reg = &lt;0x00000000 0x00010000&gt;;
+            read-only;
+        };
+
+        /* 0x10000 - 0x48000 (224 KB): Active Firmware (Slot 0) */
+        slot0_partition: partition@10000 {
+            label = "image-0";
+            reg = &lt;0x00010000 0x00038000&gt;;
+        };
+
+        /* 0x48000 - 0x80000 (224 KB): Download Secondary (Slot 1) */
+        slot1_partition: partition@48000 {
+            label = "image-1";
+            reg = &lt;0x00048000 0x00038000&gt;;
+        };
+    };
+};</code></pre>
+          </div>
+        </div>
+
+        <h3>The Safe Swap Protocol:</h3>
+        <ol>
+          <li>New encrypted and signed firmware is downloaded into <code>slot1_partition</code>.</li>
+          <li>On reboot, MCUBoot validates digital cryptographic signatures (RSA-2048 or ECDSA-P256).</li>
+          <li>MCUBoot swaps Slot 1 into Slot 0 and boots the new image in <em>test mode</em>.</li>
+          <li>If the application boots and calls <code>boot_write_img_confirmed()</code>, the update is permanent. If a Watchdog or HardFault triggers before confirmation, MCUBoot automatically rolls back to the previous firmware!</li>
+        </ol>
+
+        <h2 id="sec-6-2">6.2 Automated Testing with Twister &amp; Ztest</h2>
+        <p>
+          Zephyr provides <strong>Twister</strong>, an automated test runner that builds and executes hundreds of test suites across multiple architectures in parallel, either on physical boards or via simulation (QEMU/Renode).
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Running Twister Tests</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Run tests under QEMU emulation
+./scripts/twister -T tests/kernel/sched -p qemu_cortex_m3
+
+# Run tests on hardware connected via ST-Link
+./scripts/twister -T tests/drivers/gpio -p nucleo_f401re --device-testing</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-6-3">6.3 GDB &amp; OpenOCD In-Circuit Debugging</h2>
+        <p>When an embedded application crashes into a Cortex-M <code>HardFault</code>, Zephyr prints an automated fault dump register map (R0-R3, R12, LR, PC, xPSR):</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Connecting OpenOCD and GDB to Nucleo</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Terminal 1: Launch OpenOCD server connected to ST-Link
+openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
+
+# Terminal 2: Launch GDB with the compiled ELF binary
+arm-zephyr-eabi-gdb build/zephyr/zephyr.elf
+(gdb) target remote :3333
+(gdb) monitor reset halt
+(gdb) break main
+(gdb) continue
+(gdb) backtrace   # Inspect full call stack!</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-6-4">6.4 Capstone Project: Industrial Fail-Safe Gateway</h2>
+        <p>
+          In our final capstone project (located in <code>samples/06_capstone_industrial_monitor/</code>), we integrate all concepts into an industrial-grade firmware architecture:
+        </p>
+        <ul>
+          <li><strong>Hardware Independent Watchdog (IWDG):</strong> The STM32 hardware watchdog timer triggers a hard MCU reset if not refreshed every 2000 ms.</li>
+          <li><strong>Supervised Watchdog Feeder Task:</strong> Continuously monitors system health metrics (message queue capacity, stack headroom). Only feeds the dog if all subsystems are healthy!</li>
+          <li><strong>Fault Injection CLI Command:</strong> Allows an engineer to simulate a deadlocked thread or memory corruption, proving that the hardware watchdog automatically recovers the system.</li>
+        </ul>
+
+        <h3>6.4.1 Architecture: STM32 Independent Watchdog (IWDG)</h3>
+        <p>The IWDG is clocked by its own dedicated 32 kHz internal Low-Speed RC oscillator (LSI), completely isolated from the main PLL clock. Even if the Cortex-M core hangs, crashes into a HardFault loop, or the main crystal oscillator fails, the IWDG continues running down to zero and forces a hardware MCU reset.</p>
+
+        <h3>6.4.2 Project Configuration: <code>prj.conf</code></h3>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">KCONFIG</span>
+              <span>samples/06_capstone_industrial_monitor/prj.conf</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Enable Hardware Watchdog Subsystem
+CONFIG_WATCHDOG=y
+CONFIG_WDT_DISABLE_AT_BOOT=n
+
+# Enable GPIO for Heartbeat LED
+CONFIG_GPIO=y
+
+# Enable Deferred Logging
+CONFIG_LOG=y
+CONFIG_LOG_MODE_DEFERRED=y
+
+# Enable Interactive Shell for Fault Injection
+CONFIG_SHELL=y
+CONFIG_SHELL_BACKEND_SERIAL=y</code></pre>
+          </div>
+        </div>
+
+        <h3>6.4.3 Capstone Source Code: <code>src/main.c</code></h3>
+        <p>Complete implementation with watchdog channel installation, periodic feeding, and CLI fault injection:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>samples/06_capstone_industrial_monitor/src/main.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/*
+ * Copyright (c) 2026 Apt Computing Labs
+ * "Where Knowledge Meets Innovation"
+ *
+ * Mastering Zephyr RTOS on STM32 - Lab 6: Industrial Watchdog Capstone
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include &lt;zephyr/kernel.h&gt;
+#include &lt;zephyr/drivers/watchdog.h&gt;
+#include &lt;zephyr/drivers/gpio.h&gt;
+#include &lt;zephyr/shell/shell.h&gt;
+#include &lt;zephyr/logging/log.h&gt;
+
+LOG_MODULE_REGISTER(capstone_app, LOG_LEVEL_INF);
+
+#define WDT_TIMEOUT_MS  2000
+#define FEED_INTERVAL_MS 500
+
+static const struct device *const wdt = DEVICE_DT_GET(DT_NODELABEL(iwdg));
+static int wdt_channel_id;
+static bool fault_injected = false;
+
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
+
+/* Fault Injection Command */
+static int cmd_inject_fault(const struct shell *sh, size_t argc, char **argv)
+{
+    ARG_UNUSED(argc);
+    ARG_UNUSED(argv);
+    shell_print(sh, "[CRITICAL] Injecting deadlock fault! Watchdog will bite in 2000ms...");
+    fault_injected = true;
+    return 0;
+}
+
+SHELL_CMD_REGISTER(fault_inject, NULL, "Simulate fatal deadlock to trigger Watchdog", cmd_inject_fault);
+
+int main(void)
+{
+    int ret;
+    struct wdt_timeout_cfg wdt_config;
+
+    LOG_INF("==================================================");
+    LOG_INF("  Zephyr RTOS Industrial Capstone Gateway Initialized ");
+    LOG_INF("  Reset Reason: Checking hardware flags... ");
+    LOG_INF("==================================================");
+
+    if (!gpio_is_ready_dt(&led)) {
+        LOG_ERR("LED device not ready");
+        return 0;
+    }
+    gpio_pin_configure_dt(&led, GPIO_OUTPUT_INACTIVE);
+
+    /* 1. Configure Hardware Watchdog */
+    if (!device_is_ready(wdt)) {
+        LOG_ERR("Watchdog device %s not ready!", wdt->name);
+        return 0;
+    }
+
+    wdt_config.flags = WDT_FLAG_RESET_SOC;
+    wdt_config.window.min = 0;
+    wdt_config.window.max = WDT_TIMEOUT_MS;
+    wdt_config.callback = NULL; /* Hardware resets immediately */
+
+    wdt_channel_id = wdt_install_timeout(wdt, &wdt_config);
+    if (wdt_channel_id &lt; 0) {
+        LOG_ERR("Failed to install watchdog timeout: %d", wdt_channel_id);
+        return 0;
+    }
+
+    ret = wdt_setup(wdt, WDT_OPT_PAUSE_IN_SLEEP);
+    if (ret &lt; 0) {
+        LOG_ERR("Failed to start watchdog: %d", ret);
+        return 0;
+    }
+
+    LOG_INF("Hardware Watchdog active (Timeout: %d ms). System guarded.", WDT_TIMEOUT_MS);
+
+    /* 2. Main Supervisor Loop */
+    while (1) {
+        if (!fault_injected) {
+            /* Feed the hardware watchdog */
+            wdt_feed(wdt, wdt_channel_id);
+            gpio_pin_toggle_dt(&led);
+            LOG_INF("Supervisor heartbeat: Watchdog refreshed.");
+        } else {
+            LOG_WRN("Fault active! Watchdog starving...");
+        }
+
+        k_msleep(FEED_INTERVAL_MS);
+    }
+
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+        <h3>6.4.4 Building & Flashing via ST-Link</h3>
+        <p>Copy and run these terminal commands to compile and flash:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Build and Flash Commands</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># 1. Navigate to directory
+cd samples/06_capstone_industrial_monitor
+
+# 2. Build for target board:
+west build -b nucleo_f401re -p always
+
+# 3. Flash to STM32:
+west flash
+
+# 4. Open serial terminal monitor:
+minicom -D /dev/tty.usbmodem* -b 115200</code></pre>
+          </div>
+        </div>
+
+        <h3>6.4.5 Live Hardware Watchdog Supervisor & Fault Injection Graphic</h3>
+        <p>Test the hardware watchdog fail-safe recovery in real-time. Click <strong>"Inject Task Deadlock"</strong> below to simulate a frozen task and witness automatic MCU reboot:</p>
+
+        <!-- Graphical Output Simulation Widget -->
+        <div class="hardware-sim-widget" data-sim="watchdog">
+          <div class="sim-widget-header">
+            <div class="sim-widget-title">
+              <span>🛡️ Live STM32 Watchdog (IWDG) Supervisor Graphic</span>
+              <span class="sim-status-badge"><span class="sim-status-dot"></span> <span>IWDG ARMED</span></span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">Window: <strong>2000 ms</strong> | Source: <strong>LSI (32 kHz)</strong></div>
+          </div>
+          <div class="sim-body-layout">
+            <!-- Left: Graphic Nucleo Watchdog PCB -->
+            <div class="sim-board-graphic" style="padding:1rem;">
+              <div class="sim-board-pcb" style="text-align:center;">
+                <div class="sim-pcb-label">STM32 Hardware IWDG Core</div>
+                <div style="margin:0.75rem 0;">
+                  <div style="font-size:0.7rem;color:#a7f3d0;margin-bottom:0.25rem;">Watchdog Countdown Window</div>
+                  <div style="background:#022c22;border:1px solid #059669;border-radius:9999px;height:14px;overflow:hidden;padding:2px;">
+                    <div id="sim-wdt-bar" style="background:#10b981;height:100%;width:100%;border-radius:9999px;transition:width 0.1s linear, background 0.2s ease;"></div>
+                  </div>
+                </div>
+                <div class="sim-led-cluster" style="margin-top:0.75rem;">
+                  <div class="sim-led-item">
+                    <div class="sim-led-bulb green" id="sim-wdt-led"></div>
+                    <span class="sim-led-label">Heartbeat (LD2)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Right: Serial Terminal Console -->
+            <div class="sim-terminal-screen">
+              <div class="sim-terminal-header">
+                <span>ST-Link Serial Terminal Monitor (115200 8N1)</span>
+                <span style="color:#10b981;">● CONNECTED</span>
+              </div>
+              <div class="sim-terminal-log" id="sim-wdt-log"></div>
+            </div>
+          </div>
+          <div class="sim-controls-bar">
+            <span>💡 <em>Watchdog is refreshed every 500ms. Inject deadlock to starve the dog and trigger reboot</em></span>
+            <button class="sim-action-btn" id="sim-wdt-fault-btn" style="background:#dc2626;color:#ffffff;border-color:#b91c1c;">⚠️ Inject Thread Deadlock</button>
+          </div>
+        </div>
+
+        <!-- Interactive Lab Checklist -->
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Capstone Lab Checklist</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l6-step1">
+              <label for="l6-step1" class="checklist-text">Navigate to <code>samples/06_capstone_industrial_monitor/</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l6-step2">
+              <label for="l6-step2" class="checklist-text">Build and flash with <code>west build -b <span class="cmd-board-name">nucleo_f401re</span> -p always &amp;&amp; west flash</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l6-step3">
+              <label for="l6-step3" class="checklist-text">Open serial terminal and observe steady 500ms watchdog refresh logs.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l6-step4">
+              <label for="l6-step4" class="checklist-text">Execute <code>fault_inject</code> in the shell; observe hardware reset recovery within 2 seconds.</label>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Final Course Quiz -->
+        <div class="quiz-container" id="sec-6-5">
+          <div class="quiz-header">
+            <span>🏆 Final Certification Knowledge Check: Module 6</span>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">
+              1. What action must an updated firmware image perform in MCUBoot to prevent an automatic rollback upon the next reboot?
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Erasing slot 1 is done prior to or during downloads.">
+                A) Erase the secondary slot (slot 1) completely.
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! boot_write_img_confirmed() marks the image OK in the flash trailer, confirming that the new firmware boots cleanly without crashing.">
+                B) Call <code>boot_write_img_confirmed()</code> to mark the primary slot valid.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Disabling the watchdog makes the system unsafe.">
+                C) Disable the hardware watchdog timer permanently.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) Rewrite the DeviceTree root node.
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+        <!-- Chapter Bottom Navigation -->
+        <div class="chapter-bottom-nav">
+          <a href="ch05-shell-connectivity.html" class="nav-card">
+            <span class="nav-card-dir">← Previous Module</span>
+            <span class="nav-card-title">Module 5: Subsystems & Protocols</span>
+          </a>
+          <a href="../index.html" class="nav-card" style="text-align:right;">
+            <span class="nav-card-dir">Return to Course Portal →</span>
+            <span class="nav-card-title">Curriculum Roadmap & Syllabus</span>
+          </a>
+        </div>
+      
+        <!-- Site Footer -->
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Mastering Zephyr RTOS on STM32 • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, DTS, peripherals, labs...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+
+  <script src="../js/book.js"></script>
+</body>
+</html>

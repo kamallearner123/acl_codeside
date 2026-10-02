@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1d"/>
+      <stop offset="100%" stop-color="#0e172a"/>
+    </linearGradient>
+    <linearGradient id="cardGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#131e33"/>
+      <stop offset="100%" stop-color="#1c2b46"/>
+    </linearGradient>
+    <linearGradient id="wsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <filter id="shadow3" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <rect width="1000" height="620" fill="url(#bg3)" rx="16"/>
+
+  <!-- Title Header -->
+  <text x="50" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="700" fill="#f8fafc">
+    Whitefield Live Telemetry, PCAP Tap &amp; Protocol Dissection Pipeline
+  </text>
+  <text x="50" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="400" fill="#94a3b8">
+    Simultaneous Multi-Node Over-The-Air Sniffing with Real-Time Wireshark Deep Packet Inspection &amp; CLI Control
+  </text>
+
+  <!-- Left: Simulation Core & Tap Pipeline -->
+  <g filter="url(#shadow3)">
+    <rect x="50" y="105" width="340" height="480" rx="12" fill="url(#cardGrad3)" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="50" y="105" width="340" height="34" rx="12" fill="#0284c7"/>
+    <text x="70" y="128" font-family="sans-serif" font-size="13" font-weight="700" fill="#ffffff">
+      TELEMETRY &amp; PACKET TAP ENGINE
+    </text>
+
+    <!-- Node 1 -->
+    <rect x="70" y="155" width="300" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9"/>
+    <circle cx="95" cy="179" r="10" fill="#0284c7"/>
+    <text x="91" y="183" font-family="sans-serif" font-size="10" font-weight="700" fill="#ffffff">1</text>
+    <text x="115" y="174" font-family="sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Node 1: Border Router</text>
+    <text x="115" y="190" font-family="sans-serif" font-size="10" fill="#94a3b8">TAP: /tmp/wf_tap_node1.fifo</text>
+
+    <!-- Node 2 -->
+    <rect x="70" y="215" width="300" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9"/>
+    <circle cx="95" cy="239" r="10" fill="#0284c7"/>
+    <text x="91" y="243" font-family="sans-serif" font-size="10" font-weight="700" fill="#ffffff">2</text>
+    <text x="115" y="234" font-family="sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Node 2: Mesh Router</text>
+    <text x="115" y="250" font-family="sans-serif" font-size="10" fill="#94a3b8">TAP: /tmp/wf_tap_node2.fifo</text>
+
+    <!-- Node N -->
+    <rect x="70" y="275" width="300" height="48" rx="8" fill="#1e293b" stroke="#0ea5e9"/>
+    <circle cx="95" cy="299" r="10" fill="#0284c7"/>
+    <text x="90" y="303" font-family="sans-serif" font-size="10" font-weight="700" fill="#ffffff">N</text>
+    <text x="115" y="294" font-family="sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Node N: Sensor Endpoint</text>
+    <text x="115" y="310" font-family="sans-serif" font-size="10" fill="#94a3b8">TAP: /tmp/wf_tap_nodeN.fifo</text>
+
+    <!-- PCAP Multiplexer Box -->
+    <rect x="70" y="340" width="300" height="110" rx="8" fill="#0b1322" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="85" y="362" font-family="sans-serif" font-size="12" font-weight="700" fill="#f59e0b">Whitefield PCAP Aggregator</text>
+    <text x="85" y="382" font-family="sans-serif" font-size="11" fill="#cbd5e1">• Merges asynchronous node streams</text>
+    <text x="85" y="400" font-family="sans-serif" font-size="11" fill="#cbd5e1">• Generates global simulation PCAP</text>
+    <text x="85" y="418" font-family="sans-serif" font-size="11" fill="#cbd5e1">• Preserves exact RF airtime timestamps</text>
+
+    <!-- CLI Control Panel -->
+    <rect x="70" y="465" width="300" height="105" rx="8" fill="#0f172a" stroke="#10b981"/>
+    <text x="85" y="487" font-family="sans-serif" font-size="12" font-weight="700" fill="#10b981">Node Shell &amp; Chaos Injection</text>
+    <text x="85" y="507" font-family="monospace" font-size="10" fill="#a7f3d0">&gt; wf-cli node 4 link-fail --duration 120s</text>
+    <text x="85" y="525" font-family="monospace" font-size="10" fill="#a7f3d0">&gt; wf-cli node 1 rpl-tree-dump</text>
+    <text x="85" y="543" font-family="monospace" font-size="10" fill="#a7f3d0">&gt; wf-cli inject-attack --sybil --nodes 8..12</text>
+  </g>
+
+  <!-- Right: Live Wireshark Dissection Window -->
+  <g filter="url(#shadow3)">
+    <rect x="420" y="105" width="530" height="480" rx="12" fill="url(#wsGrad)" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="420" y="105" width="530" height="34" rx="12" fill="#4338ca"/>
+    <text x="440" y="128" font-family="sans-serif" font-size="13" font-weight="700" fill="#ffffff">
+      LIVE WIRESHARK DEEP PACKET INSPECTION (Real-Time Dissection)
+    </text>
+
+    <!-- Wireshark table header -->
+    <rect x="435" y="148" width="500" height="24" fill="#312e81"/>
+    <text x="445" y="164" font-family="monospace" font-size="11" font-weight="700" fill="#e0e7ff">No.  Time (s)     Source         Protocol  Info</text>
+
+    <!-- Row 1: IEEE 802.15.4 Beacon -->
+    <rect x="435" y="174" width="500" height="22" fill="#1e1b4b"/>
+    <text x="445" y="190" font-family="monospace" font-size="10" fill="#c7d2fe">101  0.142010     0x0001         IEEE 802.15.4 Beacon Req, PAN 0xabcd</text>
+
+    <!-- Row 2: RPL DIO (DAG Information Object) -->
+    <rect x="435" y="198" width="500" height="22" fill="#2d1e56"/>
+    <text x="445" y="214" font-family="monospace" font-size="10" fill="#f472b6">102  0.148520     fe80::1        ICMPv6 (RPL)  DIO Rank: 256 (DODAG Root)</text>
+
+    <!-- Row 3: RPL DIS (Solicitation) -->
+    <rect x="435" y="222" width="500" height="22" fill="#1e1b4b"/>
+    <text x="445" y="238" font-family="monospace" font-size="10" fill="#c7d2fe">103  0.151120     fe80::4        ICMPv6 (RPL)  DIS DODAG Information Solicitation</text>
+
+    <!-- Row 4: RPL DAO (Destination Advertisement) -->
+    <rect x="435" y="246" width="500" height="22" fill="#2d1e56"/>
+    <text x="445" y="262" font-family="monospace" font-size="10" fill="#f472b6">104  0.165890     fe80::4        ICMPv6 (RPL)  DAO Transit Info: Parent fe80::1</text>
+
+    <!-- Row 5: 6LoWPAN Fragment 1 -->
+    <rect x="435" y="270" width="500" height="22" fill="#1e293b"/>
+    <text x="445" y="286" font-family="monospace" font-size="10" fill="#38bdf8">105  0.198300     fd00::4        6LoWPAN       Fragment 1, Tag 0x12, Datagram 480B</text>
+
+    <!-- Row 6: CoAP Sensor Telemetry -->
+    <rect x="435" y="294" width="500" height="22" fill="#064e3b"/>
+    <text x="445" y="310" font-family="monospace" font-size="10" fill="#34d399">106  0.201410     fd00::4        CoAP          NON POST /telemetry (temp=24.5C, hum=58%)</text>
+
+    <!-- Packet Details Pane -->
+    <rect x="435" y="328" width="500" height="240" rx="6" fill="#090d16" stroke="#4f46e5" stroke-width="1"/>
+    <text x="450" y="348" font-family="sans-serif" font-size="11" font-weight="700" fill="#818cf8">Packet Details (Dissected Packet #102 - RPL DIO):</text>
+
+    <text x="455" y="370" font-family="monospace" font-size="10" fill="#94a3b8">&#9662; Frame 102: 86 bytes on wire (688 bits), 86 bytes captured</text>
+    <text x="455" y="388" font-family="monospace" font-size="10" fill="#94a3b8">&#9662; IEEE 802.15.4 Data, Dst: 0xffff (Broadcast), Src: 0x0001</text>
+    <text x="465" y="406" font-family="monospace" font-size="10" fill="#38bdf8">&#9656; Frame Control Field: 0x4841 (Data, Ack Req: False, Short Addr)</text>
+    <text x="455" y="424" font-family="monospace" font-size="10" fill="#94a3b8">&#9662; 6LoWPAN: Compression format: LOWPAN_IPHC (RFC 6282)</text>
+    <text x="465" y="442" font-family="monospace" font-size="10" fill="#a5b4fc">&#9656; IPv6 Header Compressed: Next Header: ICMPv6, Hop Limit: 255</text>
+    <text x="455" y="460" font-family="monospace" font-size="10" fill="#f472b6">&#9662; Internet Control Message Protocol v6 (ICMPv6)</text>
+    <text x="465" y="478" font-family="monospace" font-size="10" fill="#f472b6">&#9662; Routing Protocol for Low-Power and Lossy Networks (RPL)</text>
+    <text x="480" y="496" font-family="monospace" font-size="10" fill="#cbd5e1">Code: DODAG Information Object (0x01)</text>
+    <text x="480" y="514" font-family="monospace" font-size="10" fill="#cbd5e1">RPLInstanceID: 0x01 | Version: 2 | Grounded: True</text>
+    <text x="480" y="532" font-family="monospace" font-size="10" fill="#cbd5e1">DODAGID: fd00::1 | DAGRank: 256 (Root Level)</text>
+    <text x="480" y="550" font-family="monospace" font-size="10" fill="#34d399">DODAG Configuration: MinHopRankIncrease: 256, MaxRankIncrease: 1792</text>
+  </g>
+</svg>

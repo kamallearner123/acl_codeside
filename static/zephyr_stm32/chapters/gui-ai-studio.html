@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive Visual Hardware Configurator & AI Assistant for Zephyr RTOS on STM32.">
+  <title>GUI Hardware Studio & AI Generator | Zephyr + STM32 Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .studio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    .studio-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .studio-control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .studio-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .studio-select, .studio-input {
+      padding: 0.6rem 0.8rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.875rem;
+    }
+    .studio-checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.4rem 0;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .studio-checkbox-row input {
+      accent-color: var(--accent-primary);
+      width: 16px;
+      height: 16px;
+    }
+    .ai-prompt-box {
+      width: 100%;
+      height: 90px;
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.875rem;
+      resize: vertical;
+    }
+    @media (max-width: 900px) {
+      .studio-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-chapter-id="gui-studio">
+
+  <div id="reading-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Zephyr + STM32</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, DTS, peripherals, labs..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <select id="board-selector" class="board-select">
+          <option value="nucleo_f401re">Nucleo-F401RE (Cortex-M4)</option>
+          <option value="nucleo_g071rb">Nucleo-G071RB (Cortex-M0+)</option>
+          <option value="nucleo_l476rg">Nucleo-L476RG (Low-Power)</option>
+        </select>
+      </div>
+
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+
+      <a href="/courses/exploring-zephyr-using-stm32/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;border:1px solid var(--border-subtle);background:var(--bg-glass);backdrop-filter:blur(8px);transition:all 0.2s;" title="Return to Course Details on Apt Computing Labs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- App Layout -->
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">Interactive Tool</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview & Syllabus</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M1</span>
+              <span>Foundations & Setup</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-foundations-toolchain.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Architecture & West Toolchain</span>
+                <span class="chapter-read-time">25m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch01-foundations-toolchain.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 The Need for an OS</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 FreeRTOS Era & Limits</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Why Zephyr RTOS?</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 STM32 Architecture</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Toolchain with West</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 Lab 1: Blinky & VCP</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M2</span>
+              <span>DeviceTree & Kconfig</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-devicetree-kconfig.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: DTS Syntax & STM32 Overlays</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 DeviceTree vs Kconfig</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Anatomy of DTS Nodes</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 Board Overlays (.overlay)</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Lab 2: External IO & Overlays</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M3</span>
+              <span>Kernel Fundamentals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-kernel-threads-sync.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: Multithreading & Synchronization</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Scheduling & Priorities</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Static vs Dynamic Threads</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Semaphores vs Mutexes</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Lab 3: Message Queue Pipeline</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M4</span>
+              <span>STM32 Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-stm32-peripherals.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Drivers, DMA UART & Sensors</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch04-stm32-peripherals.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 Device Driver Model</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Async DMA UART</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 I2C Sensor Subsystem</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Hardware PWM Timers</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 Lab 4: Weather Station</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M5</span>
+              <span>Subsystems & Protocols</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-shell-connectivity.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: Shell, CAN Bus & BLE</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch05-shell-connectivity.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Zephyr Shell Subsystem</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Deferred Logging</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 CAN Bus (bxCAN / FDCAN)</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Lab 5: Diagnostic Shell</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M6</span>
+              <span>Production & Capstone</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-production-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: MCUBoot, Twister & Capstone</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch06-production-capstone.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 MCUBoot Dual-Slot DFU</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 Twister Automated Testing</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 OpenOCD & GDB Debugging</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 Lab 6: Watchdog Supervisor</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Certification Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="gui-ai-studio.html" class="chapter-nav-item active">
+            <span class="chapter-check-icon">⚡</span>
+            <span class="chapter-title-text">GUI Studio & AI Generator</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Standards</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Reader -->
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs">
+          <a href="../index.html">Home</a>
+          <span>/</span>
+          <span>Interactive Tools</span>
+          <span>/</span>
+          <span>GUI Studio & AI Generator</span>
+        </div>
+        <div class="chapter-actions">
+          <a href="../index.html" class="btn-primary">Return to Portal 🏠</a>
+        </div>
+      </div>
+
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Next-Gen Embedded Engineering</span>
+          <h1 class="chapter-h1">Zephyr GUI Configurator & AI Assistant Studio</h1>
+          <p class="chapter-lead">
+            Experience how visual graphical tools and generative AI can configure STM32 hardware, synthesize DeviceTree overlays (<code>.overlay</code>), configure Kconfig (<code>prj.conf</code>), and generate compile-ready C application drivers.
+          </p>
+        </div>
+
+        <div class="callout callout-tip">
+          <div class="callout-header">💡 How this Works</div>
+          <div class="callout-body">
+            <p>Select your hardware peripherals or type a natural-language description below. The studio will dynamically generate the exact, production-ready <strong>DeviceTree Overlay</strong>, <strong>Kconfig</strong>, and <strong>C code</strong> in real-time!</p>
+          </div>
+        </div>
+
+        <!-- Interactive Studio Grid -->
+        <div class="studio-grid">
+          <!-- Left: Visual Controls -->
+          <div class="studio-panel">
+            <h3 style="margin:0;color:var(--accent-primary);display:flex;align-items:center;gap:0.5rem;">
+              <span>🎛️ Visual Hardware Configurator</span>
+            </h3>
+
+            <div class="studio-control-group">
+              <label class="studio-label">Target Nucleo Board</label>
+              <select id="gui-board" class="studio-select">
+                <option value="nucleo_f401re">ST Nucleo-F401RE (Cortex-M4 @ 84MHz)</option>
+                <option value="nucleo_g071rb">ST Nucleo-G071RB (Cortex-M0+ @ 64MHz)</option>
+                <option value="nucleo_l476rg">ST Nucleo-L476RG (Low-Power @ 80MHz)</option>
+              </select>
+            </div>
+
+            <div class="studio-control-group">
+              <label class="studio-label">Add External Hardware Peripherals</label>
+              
+              <label class="studio-checkbox-row">
+                <input type="checkbox" id="chk-ext-led" checked>
+                <span>External Status LED (PB0, Active High)</span>
+              </label>
+
+              <label class="studio-checkbox-row">
+                <input type="checkbox" id="chk-ext-btn" checked>
+                <span>External Pushbutton (PB1, Internal Pull-Up, Active Low)</span>
+              </label>
+
+              <label class="studio-checkbox-row">
+                <input type="checkbox" id="chk-i2c-sensor" checked>
+                <span>I2C1 Sensor: Bosch BMP280 Barometer (Address 0x76)</span>
+              </label>
+
+              <label class="studio-checkbox-row">
+                <input type="checkbox" id="chk-pwm-buzzer">
+                <span>PWM Hardware Timer Buzzer / Motor (TIM2 Channel 1)</span>
+              </label>
+
+              <label class="studio-checkbox-row">
+                <input type="checkbox" id="chk-shell-cli" checked>
+                <span>Interactive Zephyr Shell Console over UART ST-Link</span>
+              </label>
+
+              <label class="studio-checkbox-row">
+                <input type="checkbox" id="chk-watchdog">
+                <span>Hardware Independent Watchdog (IWDG Fail-Safe)</span>
+              </label>
+            </div>
+
+            <hr style="border:0;border-top:1px dashed var(--border-subtle);margin:0.5rem 0;">
+
+            <div class="studio-control-group">
+              <label class="studio-label">🤖 AI Prompt Co-Pilot (Describe Custom Needs)</label>
+              <textarea id="ai-user-prompt" class="ai-prompt-box" placeholder="e.g. Add a relay on PC1 and an analog light sensor on ADC1 channel 0..."></textarea>
+              <button id="btn-generate-ai" class="btn-primary" style="justify-content:center;margin-top:0.5rem;">
+                ⚡ Generate Zephyr Configuration
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Generated Output Tabs -->
+          <div class="studio-panel" style="padding:1rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border-subtle);padding-bottom:0.5rem;">
+              <div style="display:flex;gap:0.5rem;" id="code-tabs">
+                <button class="btn-secondary" id="tab-overlay" style="border-color:var(--accent-primary);color:var(--accent-primary);">.overlay</button>
+                <button class="btn-secondary" id="tab-prj">prj.conf</button>
+                <button class="btn-secondary" id="tab-main">main.c</button>
+              </div>
+              <button class="code-copy-btn" id="studio-copy-btn" style="color:var(--text-primary);border-color:var(--border-strong);">Copy</button>
+            </div>
+
+            <div style="position:relative;flex:1;min-height:380px;">
+              <pre id="studio-output-code" style="font-family:var(--font-mono);font-size:0.8rem;background:var(--bg-code);color:var(--text-code);padding:1rem;border-radius:var(--radius-sm);height:100%;overflow:auto;margin:0;white-space:pre-wrap;"></pre>
+            </div>
+          </div>
+        </div>
+
+        <h2>Building Your Own Standalone GUI or AI Tool: 3 Actionable Approaches</h2>
+
+        <div style="display:flex;flex-direction:column;gap:1.25rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h3 style="margin-top:0;color:var(--accent-primary);">Approach 1: Web-Based GUI with WebSerial / WebUSB</h3>
+            <p style="font-size:0.9rem;">
+              You can build an in-browser graphical studio (using HTML5/Canvas or React + WebSerial API). The user configures pins visually, and the browser directly connects to the Nucleo ST-Link USB VCP to flash the board or read live sensor telemetry—zero software installation required!
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h3 style="margin-top:0;color:#10b981;">Approach 2: VS Code Extension with Language Server Protocol (LSP)</h3>
+            <p style="font-size:0.9rem;">
+              You can create a custom VS Code extension with a Webview panel. By reading the workspace's active <code>.dts</code> and <code>.overlay</code> files with Zephyr's official Python <code>edtlib</code> (DeviceTree parser library), your GUI can graphically highlight pin conflicts and edit DTS properties in real time.
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h3 style="margin-top:0;color:#8b5cf6;">Approach 3: Autonomous AI Agent Loop (Self-Correcting Compiler)</h3>
+            <p style="font-size:0.9rem;">
+              You can use an LLM API (e.g. Gemini 2.0 / Claude 3.5) with tool execution. The agent receives your prompt ("Connect MPU6050 to Nucleo-F401RE"), generates the files, executes <code>west build</code>, reads any compiler warnings or syntax errors, and iteratively fixes the overlay until the build passes cleanly with 0 warnings!
+            </p>
+          </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="chapter-bottom-nav">
+          <a href="ch06-production-capstone.html" class="nav-card">
+            <span class="nav-card-dir">← Previous Module</span>
+            <span class="nav-card-title">Module 6: Production Engineering & Capstone</span>
+          </a>
+          <a href="references.html" class="nav-card" style="text-align:right;">
+            <span class="nav-card-dir">Next Section →</span>
+            <span class="nav-card-title">References & Official Documentation</span>
+          </a>
+        </div>
+      
+        <!-- Site Footer -->
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Mastering Zephyr RTOS on STM32 • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <script src="../js/book.js"></script>
+  <script>
+    // Studio State & Generator Logic
+    (function() {
+      let activeTab = 'overlay';
+
+      function generate() {
+        const board = document.getElementById('gui-board').value;
+        const hasLed = document.getElementById('chk-ext-led').checked;
+        const hasBtn = document.getElementById('chk-ext-btn').checked;
+        const hasSensor = document.getElementById('chk-i2c-sensor').checked;
+        const hasPwm = document.getElementById('chk-pwm-buzzer').checked;
+        const hasShell = document.getElementById('chk-shell-cli').checked;
+        const hasWdt = document.getElementById('chk-watchdog').checked;
+        const customPrompt = document.getElementById('ai-user-prompt').value.trim();
+
+        // 1. Generate Overlay
+        let overlay = `/* Generated Board Overlay for ${board} */\n/ {\n`;
+        let aliases = `    aliases {\n`;
+        if (hasLed) aliases += `        ext-led = &ext_led_node;\n`;
+        if (hasBtn) aliases += `        ext-button = &ext_btn_node;\n`;
+        if (hasPwm) aliases += `        pwm-buzzer = &pwm_buzzer_node;\n`;
+        aliases += `    };\n\n`;
+        overlay += aliases;
+
+        if (hasLed) {
+          overlay += `    external_leds {\n        compatible = "gpio-leds";\n        ext_led_node: led_ext {\n            gpios = <&gpiob 0 GPIO_ACTIVE_HIGH>;\n            label = "External Warning LED";\n        };\n    };\n\n`;
+        }
+
+        if (hasBtn) {
+          overlay += `    external_keys {\n        compatible = "gpio-keys";\n        ext_btn_node: btn_ext {\n            gpios = <&gpiob 1 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;\n            label = "External Pushbutton";\n        };\n    };\n\n`;
+        }
+
+        if (hasSensor) {
+          overlay += `&i2c1 {\n    status = "okay";\n    clock-frequency = <I2C_BITRATE_FAST>;\n\n    bmp280: bmp280@76 {\n        compatible = "bosch,bmp280";\n        reg = <0x76>;\n        status = "okay";\n    };\n};\n\n`;
+        }
+
+        if (hasPwm) {
+          overlay += `&timers2 {\n    status = "okay";\n    pwm2: pwm {\n        status = "okay";\n        pinctrl-0 = <&tim2_ch1_pa5>;\n        pinctrl-names = "default";\n    };\n};\n\n`;
+          overlay += `    pwmbuzzers {\n        compatible = "pwm-leds";\n        pwm_buzzer_node: buzzer {\n            pwms = <&pwm2 1 PWM_HZ(4000) PWM_POLARITY_NORMAL>;\n            label = "Piezo Buzzer";\n        };\n    };\n\n`;
+        }
+
+        if (customPrompt) {
+          overlay += `    /* AI Custom Extension: "${customPrompt}" */\n    custom_device {\n        compatible = "generic-gpio";\n        status = "okay";\n    };\n\n`;
+        }
+
+        overlay += `};\n`;
+
+        // 2. Generate prj.conf
+        let prj = `# Compiler & Subsystem Features for ${board}\nCONFIG_GPIO=y\nCONFIG_SERIAL=y\nCONFIG_CONSOLE=y\nCONFIG_UART_CONSOLE=y\nCONFIG_PRINTK=y\n`;
+        if (hasSensor) prj += `\n# I2C & Sensor Subsystem\nCONFIG_I2C=y\nCONFIG_SENSOR=y\n`;
+        if (hasPwm) prj += `\n# Hardware PWM Timers\nCONFIG_PWM=y\n`;
+        if (hasShell) prj += `\n# Diagnostic Shell\nCONFIG_SHELL=y\nCONFIG_SHELL_BACKEND_SERIAL=y\nCONFIG_LOG=y\nCONFIG_LOG_MODE_DEFERRED=y\n`;
+        if (hasWdt) prj += `\n# Hardware Watchdog\nCONFIG_WATCHDOG=y\n`;
+
+        // 3. Generate main.c
+        let main = `/* Auto-Generated Zephyr Application for ${board} */\n#include <zephyr/kernel.h>\n#include <zephyr/drivers/gpio.h>\n#include <zephyr/sys/printk.h>\n`;
+        if (hasSensor) main += `#include <zephyr/drivers/sensor.h>\n`;
+        if (hasShell) main += `#include <zephyr/shell/shell.h>\n`;
+        if (hasWdt) main += `#include <zephyr/drivers/watchdog.h>\n`;
+
+        main += `\nint main(void)\n{\n    printk("System booting on %s...\\n", CONFIG_BOARD);\n`;
+        if (hasLed) main += `    printk("Configuring External LED on PB0...\\n");\n`;
+        if (hasSensor) main += `    printk("Initializing I2C1 BMP280 Environmental Sensor...\\n");\n`;
+        if (hasWdt) main += `    printk("Guarding MCU with Hardware Watchdog (IWDG)...\\n");\n`;
+        main += `\n    while (1) {\n        k_msleep(1000);\n        printk("Heartbeat OK @ %u ms\\n", k_uptime_get_32());\n    }\n    return 0;\n}\n`;
+
+        const codeMap = {
+          overlay: overlay,
+          prj: prj,
+          main: main
+        };
+
+        const out = document.getElementById('studio-output-code');
+        if (out) out.textContent = codeMap[activeTab];
+      }
+
+      // Event Listeners
+      ['gui-board', 'chk-ext-led', 'chk-ext-btn', 'chk-i2c-sensor', 'chk-pwm-buzzer', 'chk-shell-cli', 'chk-watchdog'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', generate);
+      });
+
+      const btnAi = document.getElementById('btn-generate-ai');
+      if (btnAi) btnAi.addEventListener('click', generate);
+
+      const tabOverlay = document.getElementById('tab-overlay');
+      const tabPrj = document.getElementById('tab-prj');
+      const tabMain = document.getElementById('tab-main');
+
+      function setTab(tab, btn) {
+        activeTab = tab;
+        [tabOverlay, tabPrj, tabMain].forEach(b => {
+          b.style.borderColor = 'var(--border-subtle)';
+          b.style.color = 'var(--text-secondary)';
+        });
+        btn.style.borderColor = 'var(--accent-primary)';
+        btn.style.color = 'var(--accent-primary)';
+        generate();
+      }
+
+      if (tabOverlay) tabOverlay.addEventListener('click', () => setTab('overlay', tabOverlay));
+      if (tabPrj) tabPrj.addEventListener('click', () => setTab('prj', tabPrj));
+      if (tabMain) tabMain.addEventListener('click', () => setTab('main', tabMain));
+
+      const copyBtn = document.getElementById('studio-copy-btn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const out = document.getElementById('studio-output-code');
+          if (!out) return;
+          try {
+            await navigator.clipboard.writeText(out.textContent);
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+          } catch(e) {}
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', generate);
+    })();
+  </script>
+</body>
+</html>

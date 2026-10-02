@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070c18"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="buildingGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+    <linearGradient id="buildingGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <filter id="glow5" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="1000" height="620" fill="url(#bg5)" rx="16"/>
+
+  <!-- Title Header -->
+  <text x="50" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="700" fill="#f8fafc">
+    Urban Canyon RF Multipath &amp; Smart Street Lighting Propagation
+  </text>
+  <text x="50" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="400" fill="#94a3b8">
+    Simulating Nakagami-m Small-Scale Fading, Facade Reflection &amp; Heavy Vehicle Line-of-Sight Blockage
+  </text>
+
+  <!-- Sky Area -->
+  <rect x="50" y="95" width="900" height="280" fill="url(#skyGrad)" rx="8"/>
+
+  <!-- Left Skyscraper Silhouette -->
+  <rect x="50" y="115" width="160" height="260" fill="url(#buildingGrad1)"/>
+  <!-- Windows -->
+  <g fill="#fbbf24" opacity="0.4">
+    <rect x="70" y="135" width="12" height="15" rx="1"/>
+    <rect x="95" y="135" width="12" height="15" rx="1"/>
+    <rect x="120" y="135" width="12" height="15" rx="1"/>
+    <rect x="145" y="135" width="12" height="15" rx="1"/>
+    <rect x="70" y="165" width="12" height="15" rx="1"/>
+    <rect x="120" y="165" width="12" height="15" rx="1"/>
+    <rect x="145" y="165" width="12" height="15" rx="1"/>
+    <rect x="95" y="195" width="12" height="15" rx="1"/>
+    <rect x="120" y="195" width="12" height="15" rx="1"/>
+    <rect x="70" y="225" width="12" height="15" rx="1"/>
+    <rect x="95" y="225" width="12" height="15" rx="1"/>
+    <rect x="145" y="225" width="12" height="15" rx="1"/>
+  </g>
+  <text x="130" y="320" font-family="sans-serif" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle">Glass / Concrete Facade</text>
+  <text x="130" y="340" font-family="sans-serif" font-size="10" fill="#64748b" text-anchor="middle">(High Reflection / Scattering)</text>
+
+  <!-- Right Skyscraper Silhouette -->
+  <rect x="790" y="115" width="160" height="260" fill="url(#buildingGrad2)"/>
+  <g fill="#38bdf8" opacity="0.4">
+    <rect x="810" y="135" width="12" height="15" rx="1"/>
+    <rect x="835" y="135" width="12" height="15" rx="1"/>
+    <rect x="860" y="135" width="12" height="15" rx="1"/>
+    <rect x="885" y="135" width="12" height="15" rx="1"/>
+    <rect x="810" y="170" width="12" height="15" rx="1"/>
+    <rect x="860" y="170" width="12" height="15" rx="1"/>
+    <rect x="835" y="205" width="12" height="15" rx="1"/>
+    <rect x="885" y="205" width="12" height="15" rx="1"/>
+  </g>
+  <text x="870" y="320" font-family="sans-serif" font-size="12" font-weight="700" fill="#94a3b8" text-anchor="middle">Steel / Glass Tower</text>
+  <text x="870" y="340" font-family="sans-serif" font-size="10" fill="#64748b" text-anchor="middle">(Specular Multi-Ray Bounce)</text>
+
+  <!-- Street Asphalt Ground -->
+  <rect x="50" y="375" width="900" height="35" fill="#334155"/>
+  <line x1="50" y1="392" x2="950" y2="392" stroke="#facc15" stroke-width="2" stroke-dasharray="25,20"/>
+
+  <!-- Streetlight 1 (Gateway 6LBR) -->
+  <g transform="translate(250, 240)">
+    <line x1="0" y1="135" x2="0" y2="0" stroke="#94a3b8" stroke-width="4"/>
+    <path d="M 0 0 C 0 -15, 20 -20, 30 -20" fill="none" stroke="#94a3b8" stroke-width="3"/>
+    <!-- Luminaire -->
+    <ellipse cx="32" cy="-18" rx="8" ry="4" fill="#fbbf24" filter="url(#glow5)"/>
+    <!-- Antenna -->
+    <line x1="0" y1="-5" x2="0" y2="-25" stroke="#38bdf8" stroke-width="2"/>
+    <circle cx="0" cy="-25" r="4" fill="#0284c7"/>
+    <text x="-15" y="-32" font-family="sans-serif" font-size="11" font-weight="700" fill="#38bdf8">Pole 1 (CMS Root)</text>
+  </g>
+
+  <!-- Blockage: Double Decker City Bus between Pole 1 and Pole 2 -->
+  <g transform="translate(360, 310)">
+    <rect width="90" height="65" rx="4" fill="#dc2626"/>
+    <rect x="10" y="10" width="70" height="15" rx="2" fill="#e2e8f0" opacity="0.8"/>
+    <rect x="10" y="32" width="70" height="15" rx="2" fill="#e2e8f0" opacity="0.8"/>
+    <circle cx="20" cy="65" r="6" fill="#0f172a"/>
+    <circle cx="70" cy="65" r="6" fill="#0f172a"/>
+    <text x="45" y="58" font-family="sans-serif" font-size="8" fill="#ffffff" text-anchor="middle">Heavy Vehicle</text>
+  </g>
+
+  <!-- Streetlight 2 (Node 2) -->
+  <g transform="translate(500, 240)">
+    <line x1="0" y1="135" x2="0" y2="0" stroke="#94a3b8" stroke-width="4"/>
+    <path d="M 0 0 C 0 -15, 20 -20, 30 -20" fill="none" stroke="#94a3b8" stroke-width="3"/>
+    <ellipse cx="32" cy="-18" rx="8" ry="4" fill="#fbbf24" filter="url(#glow5)"/>
+    <line x1="0" y1="-5" x2="0" y2="-25" stroke="#10b981" stroke-width="2"/>
+    <circle cx="0" cy="-25" r="4" fill="#059669"/>
+    <text x="-10" y="-32" font-family="sans-serif" font-size="11" font-weight="700" fill="#10b981">Pole 2 (Repeater)</text>
+  </g>
+
+  <!-- Streetlight 3 (Node 3) -->
+  <g transform="translate(730, 240)">
+    <line x1="0" y1="135" x2="0" y2="0" stroke="#94a3b8" stroke-width="4"/>
+    <path d="M 0 0 C 0 -15, 20 -20, 30 -20" fill="none" stroke="#94a3b8" stroke-width="3"/>
+    <ellipse cx="32" cy="-18" rx="8" ry="4" fill="#fbbf24" filter="url(#glow5)"/>
+    <line x1="0" y1="-5" x2="0" y2="-25" stroke="#10b981" stroke-width="2"/>
+    <circle cx="0" cy="-25" r="4" fill="#059669"/>
+    <text x="-10" y="-32" font-family="sans-serif" font-size="11" font-weight="700" fill="#10b981">Pole 3 (Dimmer)</text>
+  </g>
+
+  <!-- Propagation Rays: Direct (Blocked) vs Multipath -->
+  <!-- Blocked direct ray -->
+  <line x1="250" y1="215" x2="405" y2="330" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4"/>
+  <text x="310" y="270" font-family="sans-serif" font-size="10" font-weight="700" fill="#ef4444">Blocked LOS (-28 dB)</text>
+
+  <!-- Ray 1: Left Facade Reflection -->
+  <path d="M 250 215 L 180 180 L 500 215" fill="none" stroke="#38bdf8" stroke-width="2"/>
+  <text x="220" y="165" font-family="sans-serif" font-size="10" fill="#38bdf8">Ray 1: Facade Bounce</text>
+
+  <!-- Ray 2: Street Ground Reflection -->
+  <path d="M 250 215 L 470 375 L 500 215" fill="none" stroke="#a855f7" stroke-width="2"/>
+  <text x="475" y="360" font-family="sans-serif" font-size="10" fill="#a855f7">Ray 2: Ground Reflection</text>
+
+  <!-- Ray 3: Right Tower Multipath to Pole 3 -->
+  <path d="M 500 215 L 810 160 L 730 215" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="690" y="160" font-family="sans-serif" font-size="10" fill="#f59e0b">Ray 3: Right Tower Bounce</text>
+
+  <!-- Bottom: Whitefield ns-3 Channel Calculation Parameters -->
+  <g transform="translate(50, 425)">
+    <rect width="900" height="175" rx="10" fill="#111d31" stroke="#334155" stroke-width="1.5"/>
+    <text x="25" y="28" font-family="sans-serif" font-size="13" font-weight="700" fill="#f8fafc">
+      WHITEFIELD RF PROPAGATION ENGINE &amp; NAKAGAMI FADING PARAMETERS
+    </text>
+
+    <!-- Formula 1 -->
+    <rect x="25" y="45" width="270" height="110" rx="6" fill="#1e293b"/>
+    <text x="40" y="68" font-family="sans-serif" font-size="11" font-weight="700" fill="#38bdf8">Log-Distance Path Loss</text>
+    <text x="40" y="88" font-family="monospace" font-size="11" fill="#cbd5e1">PL(d) = PL_0 + 10·γ·log10(d/d_0)</text>
+    <text x="40" y="108" font-family="sans-serif" font-size="10" fill="#94a3b8">Urban exponent: γ = 3.6 to 4.2</text>
+    <text x="40" y="126" font-family="sans-serif" font-size="10" fill="#94a3b8">Reference loss PL_0 = 46.5 dB @ 1m</text>
+    <text x="40" y="144" font-family="sans-serif" font-size="10" fill="#34d399">Dynamic vehicle shadow loss: 15-30 dB</text>
+
+    <!-- Formula 2 -->
+    <rect x="315" y="45" width="270" height="110" rx="6" fill="#1e293b"/>
+    <text x="330" y="68" font-family="sans-serif" font-size="11" font-weight="700" fill="#a855f7">Nakagami-m Fast Fading</text>
+    <text x="330" y="88" font-family="monospace" font-size="11" fill="#cbd5e1">p(x) = 2m^m x^(2m-1) e^(-mx^2/Ω) / Γ(m)</text>
+    <text x="330" y="108" font-family="sans-serif" font-size="10" fill="#94a3b8">m = 1.0 (Rayleigh rich scatter)</text>
+    <text x="330" y="126" font-family="sans-serif" font-size="10" fill="#94a3b8">m = 3.0 (LOS dominant Ricean)</text>
+    <text x="330" y="144" font-family="sans-serif" font-size="10" fill="#34d399">Dynamic m adaptation based on 3D pose</text>
+
+    <!-- Formula 3 -->
+    <rect x="605" y="45" width="270" height="110" rx="6" fill="#1e293b"/>
+    <text x="620" y="68" font-family="sans-serif" font-size="11" font-weight="700" fill="#f59e0b">CSMA/CA Backoff &amp; Clear Channel</text>
+    <text x="620" y="88" font-family="monospace" font-size="11" fill="#cbd5e1">CCA Threshold: -85 dBm</text>
+    <text x="620" y="108" font-family="sans-serif" font-size="10" fill="#94a3b8">Backoff exponent: BE_min=3, BE_max=8</text>
+    <text x="620" y="126" font-family="sans-serif" font-size="10" fill="#94a3b8">Hidden node collision rate: &lt; 2.4%</text>
+    <text x="620" y="144" font-family="sans-serif" font-size="10" fill="#34d399">Trickle I_min = 125ms, I_max = 16min</text>
+  </g>
+</svg>

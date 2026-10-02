@@ -3,11 +3,27 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import Http404
 from django.core.mail import send_mail
 from django.contrib import messages
-from django.conf import settings
+import os
 import logging
+from django.conf import settings
+from django.views.static import serve
 from .models import Course
 
 logger = logging.getLogger(__name__)
+
+ZEPHYR_BOOK_DIR = os.path.join(settings.BASE_DIR, 'static', 'zephyr_stm32')
+
+def zephyr_book_index(request):
+    """Serve the root index of the Exploring Zephyr using STM32 digital book."""
+    return serve(request, 'index.html', document_root=ZEPHYR_BOOK_DIR)
+
+def zephyr_book_serve(request, subpath):
+    """Serve chapters, stylesheets, scripts, images and assets for the Zephyr digital book."""
+    if not subpath:
+        subpath = 'index.html'
+    elif subpath.endswith('/'):
+        subpath = os.path.join(subpath, 'index.html')
+    return serve(request, subpath, document_root=ZEPHYR_BOOK_DIR)
 
 class CourseListView(ListView):
     model = Course

@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1d"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <filter id="shadow6" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <rect width="1000" height="620" fill="url(#bg6)" rx="16"/>
+
+  <!-- Title Header -->
+  <text x="50" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="700" fill="#f8fafc">
+    Industrial TSCH (IEEE 802.15.4e / 6TiSCH) Slotframe Schedule Matrix
+  </text>
+  <text x="50" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="400" fill="#94a3b8">
+    Deterministic Sub-Millisecond Frequency-Hopping Matrix: Eliminating Multi-Path Fading &amp; External Wi-Fi Interference
+  </text>
+
+  <!-- Left: Slotframe Grid Matrix -->
+  <g filter="url(#shadow6)" transform="translate(50, 105)">
+    <rect width="570" height="380" rx="10" fill="#111d31" stroke="#334155" stroke-width="1.5"/>
+
+    <!-- Y-Axis Labels: Channel Offsets -->
+    <text x="15" y="55" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">Ch Off 0 (2405 MHz)</text>
+    <text x="15" y="110" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">Ch Off 1 (2425 MHz)</text>
+    <text x="15" y="165" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">Ch Off 2 (2450 MHz)</text>
+    <text x="15" y="220" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">Ch Off 3 (2475 MHz)</text>
+    <text x="15" y="275" font-family="monospace" font-size="11" font-weight="700" fill="#38bdf8">Ch Off 4 (2480 MHz)</text>
+
+    <!-- X-Axis Labels: Time Slots (10ms each) -->
+    <text x="180" y="30" font-family="monospace" font-size="11" font-weight="700" fill="#f59e0b">Slot 0</text>
+    <text x="245" y="30" font-family="monospace" font-size="11" font-weight="700" fill="#f59e0b">Slot 1</text>
+    <text x="310" y="30" font-family="monospace" font-size="11" font-weight="700" fill="#f59e0b">Slot 2</text>
+    <text x="375" y="30" font-family="monospace" font-size="11" font-weight="700" fill="#f59e0b">Slot 3</text>
+    <text x="440" y="30" font-family="monospace" font-size="11" font-weight="700" fill="#f59e0b">Slot 4</text>
+    <text x="505" y="30" font-family="monospace" font-size="11" font-weight="700" fill="#f59e0b">Slot 5</text>
+
+    <!-- Grid lines -->
+    <!-- Rows -->
+    <line x1="165" y1="40" x2="550" y2="40" stroke="#1e293b" stroke-width="1"/>
+    <line x1="165" y1="95" x2="550" y2="95" stroke="#1e293b" stroke-width="1"/>
+    <line x1="165" y1="150" x2="550" y2="150" stroke="#1e293b" stroke-width="1"/>
+    <line x1="165" y1="205" x2="550" y2="205" stroke="#1e293b" stroke-width="1"/>
+    <line x1="165" y1="260" x2="550" y2="260" stroke="#1e293b" stroke-width="1"/>
+    <line x1="165" y1="315" x2="550" y2="315" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Cols -->
+    <line x1="165" y1="40" x2="165" y2="315" stroke="#1e293b" stroke-width="1"/>
+    <line x1="230" y1="40" x2="230" y2="315" stroke="#1e293b" stroke-width="1"/>
+    <line x1="295" y1="40" x2="295" y2="315" stroke="#1e293b" stroke-width="1"/>
+    <line x1="360" y1="40" x2="360" y2="315" stroke="#1e293b" stroke-width="1"/>
+    <line x1="425" y1="40" x2="425" y2="315" stroke="#1e293b" stroke-width="1"/>
+    <line x1="490" y1="40" x2="490" y2="315" stroke="#1e293b" stroke-width="1"/>
+    <line x1="550" y1="40" x2="550" y2="315" stroke="#1e293b" stroke-width="1"/>
+
+    <!-- Cell Blocks -->
+    <!-- Slot 0, Ch 0: Enhanced Beacon (EB Broadcast) -->
+    <rect x="168" y="43" width="59" height="49" rx="4" fill="#854d0e"/>
+    <text x="198" y="65" font-family="sans-serif" font-size="9" font-weight="700" fill="#fef08a" text-anchor="middle">EB</text>
+    <text x="198" y="80" font-family="sans-serif" font-size="8" fill="#fef08a" text-anchor="middle">Broadcast</text>
+
+    <!-- Slot 1, Ch 0: Node 2 -> Root (Critical Telemetry) -->
+    <rect x="233" y="43" width="59" height="49" rx="4" fill="#1e3a8a"/>
+    <text x="263" y="65" font-family="sans-serif" font-size="9" font-weight="700" fill="#93c5fd" text-anchor="middle">N2 &#8594; Root</text>
+    <text x="263" y="80" font-family="sans-serif" font-size="8" fill="#93c5fd" text-anchor="middle">Vibration</text>
+
+    <!-- Slot 2, Ch 1: Node 3 -> Node 2 -->
+    <rect x="298" y="98" width="59" height="49" rx="4" fill="#065f46"/>
+    <text x="328" y="120" font-family="sans-serif" font-size="9" font-weight="700" fill="#a7f3d0" text-anchor="middle">N3 &#8594; N2</text>
+    <text x="328" y="135" font-family="sans-serif" font-size="8" fill="#a7f3d0" text-anchor="middle">Pressure</text>
+
+    <!-- Slot 3, Ch 2: Node 4 -> Root (Actuator Control) -->
+    <rect x="363" y="153" width="59" height="49" rx="4" fill="#701a75"/>
+    <text x="393" y="175" font-family="sans-serif" font-size="9" font-weight="700" fill="#f5d0fe" text-anchor="middle">Root &#8594; N4</text>
+    <text x="393" y="190" font-family="sans-serif" font-size="8" fill="#f5d0fe" text-anchor="middle">Valve Open</text>
+
+    <!-- Slot 4, Ch 3: Shared Contention (Join/6P) -->
+    <rect x="428" y="208" width="59" height="49" rx="4" fill="#374151"/>
+    <text x="458" y="230" font-family="sans-serif" font-size="9" font-weight="700" fill="#e5e7eb" text-anchor="middle">Shared</text>
+    <text x="458" y="245" font-family="sans-serif" font-size="8" fill="#e5e7eb" text-anchor="middle">6P / Join</text>
+
+    <!-- Slot 5, Ch 0: Sleep / Idle (Power Save) -->
+    <rect x="493" y="43" width="54" height="49" rx="4" fill="#0f172a" stroke="#334155" stroke-dasharray="2,2"/>
+    <text x="520" y="73" font-family="sans-serif" font-size="8" fill="#64748b" text-anchor="middle">IDLE</text>
+
+    <!-- Slot duration note -->
+    <text x="360" y="345" font-family="sans-serif" font-size="11" fill="#94a3b8" text-anchor="middle">
+      Slotframe Length: 101 Timeslots (1010 ms Repeat Cycle) • Timeslot Duration: 10 ms
+    </text>
+    <text x="360" y="365" font-family="sans-serif" font-size="10" fill="#34d399" text-anchor="middle">
+      Guaranteed Deterministic Delivery: 99.999% Reliability (IEC 62591 / ISA100.11a Target)
+    </text>
+  </g>
+
+  <!-- Right: Frequency Hopping Formula & Timeslot Detail -->
+  <g filter="url(#shadow6)" transform="translate(640, 105)">
+    <rect width="310" height="380" rx="10" fill="#111d31" stroke="#334155" stroke-width="1.5"/>
+
+    <text x="20" y="28" font-family="sans-serif" font-size="12" font-weight="700" fill="#38bdf8">
+      PSEUDO-RANDOM HOPPING ENGINE
+    </text>
+
+    <rect x="15" y="45" width="280" height="65" rx="6" fill="#1e293b"/>
+    <text x="25" y="68" font-family="monospace" font-size="11" fill="#facc15">
+      f = F[(ASN + chOffset) % N_ch]
+    </text>
+    <text x="25" y="90" font-family="sans-serif" font-size="10" fill="#cbd5e1">
+      ASN = Absolute Slot Number (5-byte counter)
+    </text>
+    <text x="25" y="104" font-family="sans-serif" font-size="10" fill="#cbd5e1">
+      N_ch = 16 available 2.4 GHz IEEE channels
+    </text>
+
+    <!-- 10ms Timeslot Anatomy -->
+    <text x="20" y="135" font-family="sans-serif" font-size="12" font-weight="700" fill="#a855f7">
+      10ms TIMESLOT ANATOMY
+    </text>
+
+    <g transform="translate(15, 150)">
+      <!-- TsTxOffset -->
+      <rect x="0" y="0" width="55" height="35" rx="3" fill="#1e293b" stroke="#64748b"/>
+      <text x="27" y="18" font-family="sans-serif" font-size="8" fill="#94a3b8" text-anchor="middle">TxOffset</text>
+      <text x="27" y="30" font-family="sans-serif" font-size="8" fill="#cbd5e1" text-anchor="middle">2.1ms</text>
+
+      <!-- Packet Tx -->
+      <rect x="58" y="0" width="95" height="35" rx="3" fill="#0284c7"/>
+      <text x="105" y="18" font-family="sans-serif" font-size="9" font-weight="700" fill="#ffffff" text-anchor="middle">Frame TX</text>
+      <text x="105" y="30" font-family="sans-serif" font-size="8" fill="#e0f2fe" text-anchor="middle">4.2ms (127B)</text>
+
+      <!-- TsRxAckDelay -->
+      <rect x="156" y="0" width="35" height="35" rx="3" fill="#1e293b" stroke="#64748b"/>
+      <text x="173" y="22" font-family="sans-serif" font-size="8" fill="#94a3b8" text-anchor="middle">Turn</text>
+
+      <!-- ACK Rx -->
+      <rect x="194" y="0" width="50" height="35" rx="3" fill="#059669"/>
+      <text x="219" y="18" font-family="sans-serif" font-size="9" font-weight="700" fill="#ffffff" text-anchor="middle">ACK</text>
+      <text x="219" y="30" font-family="sans-serif" font-size="8" fill="#d1fae5" text-anchor="middle">1.0ms</text>
+
+      <!-- Guard / Sleep -->
+      <rect x="247" y="0" width="33" height="35" rx="3" fill="#334155"/>
+      <text x="263" y="22" font-family="sans-serif" font-size="8" fill="#cbd5e1" text-anchor="middle">Sleep</text>
+    </g>
+
+    <!-- Key Metrics in Industrial Plant -->
+    <rect x="15" y="205" width="280" height="160" rx="6" fill="#1e293b"/>
+    <text x="25" y="225" font-family="sans-serif" font-size="11" font-weight="700" fill="#f8fafc">
+      Industrial Performance Under Test:
+    </text>
+    <text x="25" y="248" font-family="sans-serif" font-size="10" fill="#cbd5e1">&#8226; Multipath Null Avoidance: 100% (Hopping)</text>
+    <text x="25" y="268" font-family="sans-serif" font-size="10" fill="#cbd5e1">&#8226; Coexisting Wi-Fi Blast: Handled via Retries</text>
+    <text x="25" y="288" font-family="sans-serif" font-size="10" fill="#cbd5e1">&#8226; Clock Drift Resync via ACK Time Correction</text>
+    <text x="25" y="308" font-family="sans-serif" font-size="10" fill="#cbd5e1">&#8226; Radio Duty Cycle: &lt; 0.8% (Multi-year battery)</text>
+    <text x="25" y="328" font-family="sans-serif" font-size="10" fill="#34d399">&#8226; Zero Packet Collision between scheduled slots</text>
+    <text x="25" y="348" font-family="sans-serif" font-size="10" fill="#94a3b8">&#8226; Simulated in Whitefield with Zephyr net stack</text>
+  </g>
+
+  <!-- Bottom: Factory Floor Illustration -->
+  <g transform="translate(50, 500)">
+    <rect width="900" height="100" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="25" y="24" font-family="sans-serif" font-size="12" font-weight="700" fill="#f8fafc">
+      Factory Floor Simulation Scenario: Petrochemical Distillation Refinery &amp; Heavy Rotating Turbines
+    </text>
+    <text x="25" y="44" font-family="sans-serif" font-size="10" fill="#94a3b8">
+      Simulated in Whitefield: 350 wireless vibration sensors mounted on steam pumps, cracking columns, and high-voltage switchgear.
+    </text>
+    <text x="25" y="60" font-family="sans-serif" font-size="10" fill="#94a3b8">
+      Whitefield validates that when high-power 2.4GHz Wi-Fi handheld scanners jam channels 1, 6, and 11, TSCH autonomously routes packets across remaining clean channels with &lt; 15ms end-to-end latency.
+    </text>
+    <text x="25" y="80" font-family="sans-serif" font-size="10" font-weight="600" fill="#38bdf8">
+      Outcome: Certified SIL-2 fail-safe emergency trip communication verified prior to hardware fabrication.
+    </text>
+  </g>
+</svg>

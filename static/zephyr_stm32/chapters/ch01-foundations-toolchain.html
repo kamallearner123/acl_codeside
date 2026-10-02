@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 1: Foundations & Toolchain Setup - Mastering Zephyr RTOS on STM32 Nucleo boards.">
+  <title>Module 1: Foundations & Toolchain | Zephyr + STM32 Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch01">
+
+  <!-- Reading Progress Bar -->
+  <div id="reading-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Zephyr + STM32</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, DTS, peripherals, labs..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <select id="board-selector" class="board-select">
+          <option value="nucleo_f401re">Nucleo-F401RE (Cortex-M4)</option>
+          <option value="nucleo_g071rb">Nucleo-G071RB (Cortex-M0+)</option>
+          <option value="nucleo_l476rg">Nucleo-L476RG (Low-Power)</option>
+        </select>
+      </div>
+
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+
+      <a href="/courses/exploring-zephyr-using-stm32/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;border:1px solid var(--border-subtle);background:var(--bg-glass);backdrop-filter:blur(8px);transition:all 0.2s;" title="Return to Course Details on Apt Computing Labs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">Ch 1 of 6</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview & Syllabus</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M1</span>
+              <span>Foundations & Setup</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-foundations-toolchain.html" class="chapter-nav-item active">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Architecture & West Toolchain</span>
+                <span class="chapter-read-time">25m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch01-foundations-toolchain.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 The Need for an OS</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 FreeRTOS Era & Limits</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Why Zephyr RTOS?</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 STM32 Architecture</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Toolchain with West</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 Lab 1: Blinky & VCP</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M2</span>
+              <span>DeviceTree & Kconfig</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-devicetree-kconfig.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 2: DTS Syntax & STM32 Overlays</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 DeviceTree vs Kconfig</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Anatomy of DTS Nodes</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 Board Overlays (.overlay)</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Lab 2: External IO & Overlays</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M3</span>
+              <span>Kernel Fundamentals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-kernel-threads-sync.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 3: Multithreading & Synchronization</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Scheduling & Priorities</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Static vs Dynamic Threads</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Semaphores vs Mutexes</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Lab 3: Message Queue Pipeline</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M4</span>
+              <span>STM32 Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-stm32-peripherals.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 4: Drivers, DMA UART & Sensors</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch04-stm32-peripherals.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 Device Driver Model</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Async DMA UART</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 I2C Sensor Subsystem</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Hardware PWM Timers</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 Lab 4: Weather Station</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M5</span>
+              <span>Subsystems & Protocols</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-shell-connectivity.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 5: Shell, CAN Bus & BLE</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch05-shell-connectivity.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Zephyr Shell Subsystem</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Deferred Logging</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 CAN Bus (bxCAN / FDCAN)</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Lab 5: Diagnostic Shell</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M6</span>
+              <span>Production & Capstone</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-production-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 6: MCUBoot, Twister & Capstone</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch06-production-capstone.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 MCUBoot Dual-Slot DFU</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 Twister Automated Testing</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 OpenOCD & GDB Debugging</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 Lab 6: Watchdog Supervisor</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Certification Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="gui-ai-studio.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">⚡</span>
+            <span class="chapter-title-text">GUI Studio & AI Generator</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Standards</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs">
+          <a href="../index.html">Home</a>
+          <span>/</span>
+          <span>Module 1</span>
+          <span>/</span>
+          <span>Toolchain & Setup</span>
+        </div>
+        <div class="chapter-actions">
+          <a href="../index.html" class="btn-secondary">← Course Roadmap</a>
+          <a href="ch02-devicetree-kconfig.html" class="btn-primary">Chapter 2 →</a>
+        </div>
+      </div>
+
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Module 01 • Architecture & Setup</span>
+          <h1 class="chapter-h1">Foundations, Toolchain & Your First Zephyr App</h1>
+          <p class="chapter-lead">
+            Learn the core architectural principles of the Zephyr RTOS, configure your cross-platform development environment using <code>west</code> and the Zephyr SDK, understand the STM32 Nucleo hardware architecture, and build your first multi-board dual-LED blinky with ST-Link VCP serial console output.
+          </p>
+
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 25 minutes</div>
+            <div class="meta-item">🛠️ Lab Project: <code>samples/01_blinky_vcp</code></div>
+            <div class="meta-item">🎯 Pre-requisites: Basic C & terminal familiarity</div>
+          </div>
+        </div>
+
+        <!-- Inspirational Quote -->
+        <div class="quote-card">
+          <div class="quote-mark">“</div>
+          <blockquote class="quote-text">
+            “There is no way around hard work. Embrace it. You have to put in the hours because there is always something which you can improve.”
+          </blockquote>
+          <div class="quote-author">Roger Federer</div>
+        </div>
+
+        <!-- Section 1.1 -->
+        <h2 id="sec-1-1">1.1 The Need for an Operating System in Embedded Systems</h2>
+        <p>
+          To understand why the embedded systems industry is rapidly standardizing on modern real-time operating systems, we must first examine how firmware has historically been written—and why traditional approaches collapse under modern complexity.
+        </p>
+
+        <h3>The Bare-Metal Super-Loop Paradigm</h3>
+        <p>
+          In traditional "bare-metal" embedded programming, your entire microcontroller firmware consists of a single infinite loop executing inside <code>main()</code>, accompanied by hardware Interrupt Service Routines (ISRs):
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>The Classical Bare-Metal Super-Loop Architecture</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>int main(void)
+{
+    hardware_init();
+    
+    while (1) {
+        read_environmental_sensor(); // Takes 50 ms over slow I2C bus!
+        update_user_display();       // Takes 30 ms to draw pixels!
+        poll_button_inputs();        // Misses button presses if pressed during I2C read!
+        transmit_telemetry();        // Blocks CPU while waiting for UART TX buffer!
+        
+        delay_ms(100);               // Burns millions of CPU clock cycles in empty loops!
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <h3>Why Bare-Metal Fails in Modern Engineering</h3>
+        <div style="overflow-x:auto;margin:1.25rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+                <th style="padding:0.6rem;color:var(--status-error);">Bare-Metal Limitation</th>
+                <th style="padding:0.6rem;">Real-World Consequence in Production</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.6rem;font-weight:600;">1. Blocking Delays Waste Energy</td>
+                <td style="padding:0.6rem;">Calling busy-wait delays (e.g. <code>HAL_Delay()</code>) burns battery power by keeping the CPU at full clock speed rather than entering low-power sleep states.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.6rem;font-weight:600;">2. Non-Deterministic Latency (Jitter)</td>
+                <td style="padding:0.6rem;">If a safety-critical motor controller needs to react within 200 microseconds, but the main loop is blocked waiting for an I2C temperature sensor, the deadline is missed!</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.6rem;font-weight:600;">3. Spaghetti State Machines</td>
+                <td style="padding:0.6rem;">To avoid blocking, engineers write massive, nested <code>switch/case</code> state machines. As features grow, the code becomes fragile, unreadable, and impossible to unit test.</td>
+              </tr>
+              <tr>
+                <td style="padding:0.6rem;font-weight:600;">4. Hazardous Race Conditions</td>
+                <td style="padding:0.6rem;">Sharing global variables between hardware ISRs and the main loop without mutexes or lockless ring buffers leads to subtle memory corruption and random MCU resets.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="background:var(--bg-tertiary);border-left:4px solid var(--accent-primary);padding:1rem 1.25rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin:1.25rem 0;">
+          <h4 style="margin:0 0 0.5rem;color:var(--text-primary);">🎯 The 4 Core Capabilities an Operating System Solves:</h4>
+          <ol style="margin:0 0 0 1.25rem;font-size:0.9rem;color:var(--text-secondary);line-height:1.6;">
+            <li><strong>Deterministic Preemption:</strong> High-priority tasks (e.g., motor safety cutoff, emergency CAN alert) immediately preempt lower-priority tasks (e.g., drawing display pixels) within microseconds.</li>
+            <li><strong>Tickless Idle & Power Efficiency:</strong> Instead of burning power in empty delay loops, the OS scheduler automatically puts the CPU into low-power sleep (Stop/Standby) whenever threads are waiting for timers or I/O interrupts.</li>
+            <li><strong>Thread Isolation & Modularity:</strong> Decouples unrelated software functions into cleanly isolated threads with their own private stack memory and execution context.</li>
+            <li><strong>Safe Inter-Process Communication (IPC):</strong> Provides built-in thread synchronization primitives (mutexes with priority inheritance, semaphores, and message queues) to eliminate hazardous race conditions without disabling global interrupts.</li>
+          </ol>
+        </div>
+
+        <!-- Section 1.2 -->
+        <h2 id="sec-1-2">1.2 The FreeRTOS Era: What It Solved &amp; Why It Falls Short Today</h2>
+        <p>
+          To escape the limitations of the bare-metal super-loop, the embedded community embraced <strong>FreeRTOS</strong> in the early 2000s. FreeRTOS became the most widely deployed real-time kernel in history because it was:
+        </p>
+        <ul>
+          <li><strong>Extremely Lightweight:</strong> Requires just ~5 to 10 KB of Flash and a few hundred bytes of RAM.</li>
+          <li><strong>Deterministic Scheduler:</strong> Provided tick-based preemptive priority scheduling and basic round-robin execution.</li>
+          <li><strong>Basic Synchronization:</strong> Introduced semaphores, mutexes (with priority inheritance), message queues, and event groups.</li>
+          <li><strong>Broad CPU Architecture Support:</strong> Easily ported to 30+ microcontroller architectures via small assembly port files (e.g. <code>port.c</code>).</li>
+        </ul>
+
+        <h3>Why FreeRTOS Falls Short in Modern Connected Systems</h3>
+        <p>
+          While FreeRTOS is an excellent minimalistic task scheduler, today's embedded systems are no longer isolated 8-bit or simple 32-bit controllers. Modern smart devices are connected IoT edge nodes, industrial motor drives with CANopen/CAN-FD, and medical telemetry monitors requiring secure over-the-air (OTA) bootloaders, encrypted TLS sockets, and complex sensor pipelines.
+        </p>
+        <p>Under these modern product requirements, the FreeRTOS architecture encounters severe limitations:</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.25rem;">
+            <h4 style="margin-top:0;color:var(--status-warning);">1. FreeRTOS is ONLY a Scheduler, NOT an OS</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;">
+              FreeRTOS contains no device driver model, no standardized bus abstractions (I2C/SPI/UART/CAN), no unified power management framework, and no native networking. It only schedules threads; everything else must be supplied by the engineer.
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.25rem;">
+            <h4 style="margin-top:0;color:var(--status-error);">2. The Vendor Lock-In Trap</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;">
+              Because FreeRTOS lacks a standard driver layer, every silicon manufacturer creates their own proprietary wrapper (STM32Cube FreeRTOS vs ESP-IDF vs NXP MCUXpresso). Application code written for an STM32 cannot run on Nordic or NXP without rewriting all peripheral calls.
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.25rem;">
+            <h4 style="margin-top:0;color:#f59e0b);">3. The "Frankenstein Stack" Dilemma</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;">
+              To build a production IoT device with FreeRTOS, you must manually glue together disparate third-party libraries (FreeRTOS + LwIP + mbedTLS + FatFS + vendor HAL). Managing version compatibility, CVE security patches, and conflicting open-source licenses becomes an ongoing maintenance nightmare.
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:1.25rem;">
+            <h4 style="margin-top:0;color:#ef4444);">4. Hardcoded Macros &amp; Runtime HardFaults</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;">
+              Pin mappings, clock trees, and DMA channels are scattered across hundreds of C macros. If a developer accidentally references a disabled peripheral or misassigns an alternate function pin, the code compiles without error but triggers a fatal <code>HardFault</code> at runtime on hardware.
+            </p>
+          </div>
+        </div>
+
+        <!-- Section 1.3 -->
+        <h2 id="sec-1-3">1.3 Why Zephyr RTOS? The Linux-Grade Revolution for Microcontrollers</h2>
+        <p>
+          Governed under the open <strong>Linux Foundation</strong> and backed by technology leaders including Google, Intel, Meta, Nordic Semiconductor, STMicroelectronics, NXP, and Analog Devices, <strong>Zephyr RTOS</strong> represents the next generational leap in embedded software engineering.
+        </p>
+
+        <p>Zephyr solves the systemic flaws of FreeRTOS by bringing <strong>Linux-grade architectural principles</strong> to 32-bit microcontrollers:</p>
+
+        <div style="display:flex;flex-direction:column;gap:1rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h4 style="margin:0 0 0.4rem;color:var(--accent-primary);">1. DeviceTree (DTS) Decoupling &amp; Compile-Time Verification</h4>
+            <p style="font-size:0.875rem;margin:0;color:var(--text-secondary);line-height:1.6;">
+              Hardware topology (which pins connect to what peripherals, base memory addresses, IRQ numbers, and clock speeds) is declared in standardized DeviceTree files. Your application C code accesses hardware through compile-time macros like <code>GPIO_DT_SPEC_GET()</code>. If a peripheral is disabled or a pin is misconfigured, <strong>the build fails immediately at compile time</strong> with a descriptive error message—guaranteeing that invalid hardware configurations never make it to runtime!
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h4 style="margin:0 0 0.4rem;color:#10b981);">2. Granular Kconfig Modular Configuration</h4>
+            <p style="font-size:0.875rem;margin:0;color:var(--text-secondary);line-height:1.6;">
+              Derived directly from the Linux kernel build system. Every driver, subsystem, stack size, and optimization flag is toggled via standardized Kconfig symbols (e.g., <code>CONFIG_GPIO=y</code>, <code>CONFIG_LOG=y</code>). The linker automatically strips unreferenced code, allowing Zephyr to scale from tiny 32KB MCUs up to high-performance multi-core application processors.
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h4 style="margin:0 0 0.4rem;color:#8b5cf6);">3. True Cross-Vendor Portability ("Write Once, Run on Any MCU")</h4>
+            <p style="font-size:0.875rem;margin:0;color:var(--text-secondary);line-height:1.6;">
+              Zephyr provides universal driver APIs for over 150 standard sensors, displays, flash memories, and communication buses. The exact same application C code that reads an I2C temperature sensor or drives a PWM motor on an STM32 Nucleo compiles and runs without modification on a Nordic nRF52, ESP32, or NXP i.MX RT board!
+            </p>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:1.25rem;border-radius:var(--radius-md);">
+            <h4 style="margin:0 0 0.4rem;color:#f59e0b);">4. Batteries-Included Certified Subsystems</h4>
+            <p style="font-size:0.875rem;margin:0;color:var(--text-secondary);line-height:1.6;">
+              Zephyr is not just a scheduler—it includes a certified open-source Bluetooth Low Energy 5.4 (BLE) Host &amp; Controller, a full native TCP/IPv4/IPv6 networking stack with BSD sockets, USB Device and Host, CAN bus (CANopen / ISO-TP), POSIX compatibility, an interactive Shell CLI, the <strong>Twister</strong> automated testing runner, and secure bootloader integration with <strong>MCUBoot</strong>.
+            </p>
+          </div>
+        </div>
+
+        <h3>Evolutionary Comparison: Bare-Metal vs FreeRTOS vs Zephyr</h3>
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+                <th style="padding:0.75rem;">Architectural Dimension</th>
+                <th style="padding:0.75rem;">Bare-Metal (Super-Loop)</th>
+                <th style="padding:0.75rem;">FreeRTOS</th>
+                <th style="padding:0.75rem;color:var(--accent-primary);">Zephyr RTOS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem;font-weight:600;">Hardware Description</td>
+                <td style="padding:0.75rem;">Hardcoded register macros</td>
+                <td style="padding:0.75rem;">Vendor C header files / HAL</td>
+                <td style="padding:0.75rem;font-weight:600;color:var(--accent-primary);">Standard DeviceTree (DTS)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem;font-weight:600;">Hardware Error Detection</td>
+                <td style="padding:0.75rem;">Runtime HardFault</td>
+                <td style="padding:0.75rem;">Runtime crash / silent bug</td>
+                <td style="padding:0.75rem;font-weight:600;color:#10b981;">Compile-time verification</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem;font-weight:600;">Driver Ecosystem</td>
+                <td style="padding:0.75rem;">None (Manual registers)</td>
+                <td style="padding:0.75rem;">Vendor-specific HAL only</td>
+                <td style="padding:0.75rem;font-weight:600;color:var(--accent-primary);">150+ universal sensor/bus drivers</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem;font-weight:600;">Subsystems (Shell, BLE, CAN)</td>
+                <td style="padding:0.75rem;">Manual implementation</td>
+                <td style="padding:0.75rem;">Third-party stitching required</td>
+                <td style="padding:0.75rem;font-weight:600;color:var(--accent-primary);">Built-in first-class subsystems</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem;font-weight:600;">Cross-Vendor Code Reuse</td>
+                <td style="padding:0.75rem;">0% (Rewritten per chip)</td>
+                <td style="padding:0.75rem;">~20% (Kernel primitives only)</td>
+                <td style="padding:0.75rem;font-weight:600;color:#10b981;">95%+ (Write once, run anywhere)</td>
+              </tr>
+              <tr>
+                <td style="padding:0.75rem;font-weight:600;">Automated Testing &amp; CI/CD</td>
+                <td style="padding:0.75rem;">Custom scripts</td>
+                <td style="padding:0.75rem;">External unit test runners</td>
+                <td style="padding:0.75rem;font-weight:600;color:#10b981;">Integrated Twister + QEMU/Renode</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Code Comparison: Blinking an LED Across Architectures</h3>
+        <p>To see how Zephyr eliminates hardcoded registers and vendor lock-in, compare how an LED is toggled:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>1. Bare-Metal STM32 HAL (Tightly coupled to STM32 pins)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/* Hardcoded to GPIOA and Pin 5 (Nucleo LD2). Cannot run on any other chip! */
+HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+HAL_Delay(500); // Burns CPU cycles at full power!</code></pre>
+          </div>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>2. FreeRTOS + STM32Cube (RTOS delay, but still tied to vendor HAL)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/* Scheduled sleep, but still bound to proprietary ST HAL macros */
+HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+vTaskDelay(pdMS_TO_TICKS(500)); // Non-blocking sleep, but vendor-locked!</code></pre>
+          </div>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>3. Zephyr RTOS (Decoupled, compile-time verified, 100% portable)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/* Query hardware from DeviceTree alias 'led0' at compile time */
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
+
+/* Portable C code: Runs identically on STM32, Nordic nRF52, or ESP32! */
+gpio_pin_toggle_dt(&led);
+k_msleep(500); // Kernel puts CPU into low-power sleep automatically</code></pre>
+          </div>
+        </div>
+
+        <!-- Section 1.4 -->
+        <h2 id="sec-1-4">1.4 STM32 Nucleo Family Architecture</h2>
+        <p>
+          STMicroelectronics Nucleo-64 boards are ideal for mastering Zephyr. They provide an onboard <strong>ST-LINK/V2-1 or ST-LINK/V3</strong> debugger, meaning you do not need an external JTAG probe. The ST-Link provides two critical channels over a single USB cable:
+        </p>
+        <ol>
+          <li><strong>SWD (Serial Wire Debug):</strong> Flashes the STM32 Flash memory and provides hardware breakpoints via GDB or OpenOCD.</li>
+          <li><strong>VCP (Virtual COM Port):</strong> Bridges the STM32 hardware USART directly to your PC as a standard serial port (e.g., <code>/dev/tty.usbmodem*</code> or <code>COMx</code>) for print output and interactive Shell commands.</li>
+        </ol>
+
+        <!-- Dynamic Board Hardware Spec -->
+        <div data-board-target="nucleo_f401re">
+          <div class="callout callout-hardware">
+            <div class="callout-header">🔌 Active Board: Nucleo-F401RE Pin Map</div>
+            <div class="callout-body">
+              <p>Your active selection is the <strong>Nucleo-F401RE</strong> (ARM Cortex-M4 @ 84MHz):</p>
+              <ul style="margin:0.5rem 0 0 1rem;">
+                <li><strong>Green User LED (LD2):</strong> Connected to <strong>PA5</strong> (DeviceTree alias: <code>led0</code>)</li>
+                <li><strong>Blue User Button (B1):</strong> Connected to <strong>PC13</strong> with active-low pull-up (alias: <code>sw0</code>)</li>
+                <li><strong>ST-Link VCP Console:</strong> USART2 on <strong>PA2 (TX)</strong> and <strong>PA3 (RX)</strong> @ 115200 baud</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div data-board-target="nucleo_g071rb">
+          <div class="callout callout-hardware">
+            <div class="callout-header">🔌 Active Board: Nucleo-G071RB Pin Map</div>
+            <div class="callout-body">
+              <p>Your active selection is the <strong>Nucleo-G071RB</strong> (ARM Cortex-M0+ @ 64MHz):</p>
+              <ul style="margin:0.5rem 0 0 1rem;">
+                <li><strong>Green User LED (LD4):</strong> Connected to <strong>PA5</strong> (DeviceTree alias: <code>led0</code>)</li>
+                <li><strong>Blue User Button (B1):</strong> Connected to <strong>PC13</strong> (alias: <code>sw0</code>)</li>
+                <li><strong>ST-Link VCP Console:</strong> USART2 on <strong>PA2 (TX)</strong> and <strong>PA3 (RX)</strong> @ 115200 baud</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div data-board-target="nucleo_l476rg">
+          <div class="callout callout-hardware">
+            <div class="callout-header">🔌 Active Board: Nucleo-L476RG Pin Map</div>
+            <div class="callout-body">
+              <p>Your active selection is the <strong>Nucleo-L476RG</strong> (ARM Cortex-M4 with FPU @ 80MHz):</p>
+              <ul style="margin:0.5rem 0 0 1rem;">
+                <li><strong>Green User LED (LD2):</strong> Connected to <strong>PA5</strong> (DeviceTree alias: <code>led0</code>)</li>
+                <li><strong>Blue User Button (B1):</strong> Connected to <strong>PC13</strong> (alias: <code>sw0</code>)</li>
+                <li><strong>ST-Link VCP Console:</strong> USART2 on <strong>PA2 (TX)</strong> and <strong>PA3 (RX)</strong> @ 115200 baud</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="sec-1-5">1.5 Toolchain Setup with <code>west</code> and Zephyr SDK</h2>
+        <p>Zephyr applications are built using a Python virtual environment, CMake, Ninja, and the official Zephyr SDK (which includes ARM GCC toolchains and OpenOCD).</p>
+
+        <h3>Step 1: Install Host Dependencies</h3>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Host Preparation (macOS / Ubuntu Linux)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># macOS (using Homebrew)
+brew install cmake ninja gperf python3 ccache qemu dtc
+
+# Ubuntu / Debian Linux
+sudo apt update
+sudo apt install -y --no-install-recommends git cmake ninja-build gperf \
+  ccache dfu-util device-tree-compiler wget \
+  python3-dev python3-pip python3-setuptools python3-tk python3-wheel xz-utils file</code></pre>
+          </div>
+        </div>
+
+        <h3>Step 2: Initialize Python Virtual Environment & <code>west</code></h3>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Python Venv & West Workspace</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Create and activate virtual environment
+python3 -m venv ~/zephyrproject/.venv
+source ~/zephyrproject/.venv/bin/activate
+
+# Install west
+pip install west
+
+# Initialize Zephyr workspace (clones zephyr manifest)
+cd ~/zephyrproject
+west init
+west update
+
+# Export CMake package & install Python dependencies
+west zephyr-export
+pip install -r ~/zephyrproject/zephyr/scripts/requirements.txt</code></pre>
+          </div>
+        </div>
+
+        <h3>Step 3: Install Zephyr SDK (ARM Toolchain)</h3>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Zephyr SDK Toolchain Setup</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Install Zephyr SDK with the arm-zephyr-eabi toolchain
+cd ~
+wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.8/zephyr-sdk-0.16.8_macos-aarch64.tar.xz
+# (or _linux-x86_64.tar.xz on Linux)
+tar xvf zephyr-sdk-0.16.8_*.tar.xz
+cd zephyr-sdk-0.16.8
+./setup.sh -t arm-zephyr-eabi -h -c</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-1-6">1.6 Hands-On Lab 1: First Blinky & VCP Telemetry Engine</h2>
+        <p>
+          In this foundational project, we configure, build, flash, and verify an industrial-grade Blinky heartbeat firmware on STM32 using Zephyr's GPIO driver model and the ST-Link Virtual COM Port (VCP). The source code is located at <code>samples/01_blinky_vcp/</code>.
+        </p>
+
+        <h3>1.6.1 Hardware Setup & Pin Mapping</h3>
+        <p>This project uses the onboard peripherals of your STM32 Nucleo board — no external wiring required:</p>
+        <div style="overflow-x:auto;margin:1rem 0 1.5rem;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+                <th style="padding:0.6rem;">Peripheral</th>
+                <th style="padding:0.6rem;">STM32 Pin</th>
+                <th style="padding:0.6rem;">DTS Alias</th>
+                <th style="padding:0.6rem;">Electrical Function</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.6rem;font-weight:600;color:var(--status-success);">Green User LED (LD2)</td>
+                <td style="padding:0.6rem;"><code>PA5</code> (Nucleo-64)</td>
+                <td style="padding:0.6rem;"><code>led0</code></td>
+                <td style="padding:0.6rem;">Active-HIGH GPIO Output (Push-Pull)</td>
+              </tr>
+              <tr>
+                <td style="padding:0.6rem;font-weight:600;color:var(--accent-primary);">ST-Link VCP Console</td>
+                <td style="padding:0.6rem;"><code>PA2</code> (TX), <code>PA3</code> (RX)</td>
+                <td style="padding:0.6rem;"><code>zephyr,console</code></td>
+                <td style="padding:0.6rem;">USART2 / 115200 Baud, 8 Data Bits, 1 Stop Bit, No Parity</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>1.6.2 Project Configuration: <code>prj.conf</code></h3>
+        <p>Copy and paste this configuration to enable GPIO drivers, standard printk formatting, and the UART console:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">KCONFIG</span>
+              <span>samples/01_blinky_vcp/prj.conf</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Enable GPIO driver subsystem
+CONFIG_GPIO=y
+
+# Enable standard serial console for ST-Link VCP
+CONFIG_SERIAL=y
+CONFIG_CONSOLE=y
+CONFIG_UART_CONSOLE=y
+
+# Enable printk formatting support
+CONFIG_PRINTK=y
+CONFIG_CBPRINTF_FP_SUPPORT=y</code></pre>
+          </div>
+        </div>
+
+        <h3>1.6.3 Application Source Code: <code>src/main.c</code></h3>
+        <p>Here is the complete, self-contained application source code:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>samples/01_blinky_vcp/src/main.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/*
+ * Copyright (c) 2026 Apt Computing Labs
+ * "Where Knowledge Meets Innovation"
+ *
+ * Mastering Zephyr RTOS on STM32 - Lab 1: Blinky & VCP
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include &lt;zephyr/kernel.h&gt;
+#include &lt;zephyr/drivers/gpio.h&gt;
+#include &lt;zephyr/sys/printk.h&gt;
+
+/* 1000 msec = 1 sec blink interval */
+#define SLEEP_TIME_MS   1000
+
+/* Devicetree node identifier for the 'led0' alias */
+#define LED0_NODE DT_ALIAS(led0)
+
+#if !DT_NODE_HAS_STATUS(LED0_NODE, okay)
+#error "Unsupported board: led0 devicetree alias is not defined!"
+#endif
+
+/* Retrieve GPIO specification from DeviceTree at compile time */
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
+
+int main(void)
+{
+    int ret;
+    uint32_t count = 0;
+
+    printk("\n=========================================\n");
+    printk("  Mastering Zephyr RTOS on STM32 - Lab 1 \n");
+    printk("  Board: %s\n", CONFIG_BOARD);
+    printk("=========================================\n");
+
+    /* Verify that the underlying STM32 GPIO controller is ready */
+    if (!gpio_is_ready_dt(&led)) {
+        printk("Error: GPIO device %s is not ready!\n", led.port->name);
+        return 0;
+    }
+
+    /* Configure GPIO pin as output with initial inactive state */
+    ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT_INACTIVE);
+    if (ret &lt; 0) {
+        printk("Error %d: Failed to configure LED pin!\n", ret);
+        return 0;
+    }
+
+    printk("LED initialized successfully on port %s, pin %d\n", 
+           led.port->name, led.pin);
+
+    while (1) {
+        ret = gpio_pin_toggle_dt(&led);
+        if (ret &lt; 0) {
+            printk("Error toggling LED!\n");
+            return 0;
+        }
+
+        count++;
+        printk("[%u s] Heartbeat Ping #%u - LED Toggled\n", 
+               (count * SLEEP_TIME_MS) / 1000, count);
+
+        /* Put thread to sleep - yields CPU to idle thread / low-power mode */
+        k_msleep(SLEEP_TIME_MS);
+    }
+
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+        <h3>1.6.4 Building & Flashing via ST-Link</h3>
+        <p>Copy and run these terminal commands to compile and flash directly to your STM32 target:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Build and Flash Commands</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># 1. Navigate to the sample directory
+cd samples/01_blinky_vcp
+
+# 2. Build for your target board:
+west build -b nucleo_f401re -p always
+
+# 3. Flash firmware via onboard ST-Link SWD:
+west flash
+
+# 4. Open serial terminal monitor (115200 baud, 8N1):
+# macOS:
+minicom -D /dev/tty.usbmodem* -b 115200
+# Linux:
+minicom -D /dev/ttyACM0 -b 115200</code></pre>
+          </div>
+        </div>
+
+        <h3>1.6.5 Graphical Hardware Output Simulation & Telemetry</h3>
+        <p>Here is the real-time physical simulation of your hardware execution (observe the blinking LED and live VCP telemetry stream):</p>
+
+        <!-- Graphical Output Simulation Widget -->
+        <div class="hardware-sim-widget" data-sim="blinky-vcp">
+          <div class="sim-widget-header">
+            <div class="sim-widget-title">
+              <span>📟 Live Hardware Output Graphic</span>
+              <span class="sim-status-badge"><span class="sim-status-dot"></span> <span class="sim-run-state">RUNNING (1 Hz)</span></span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">Target: <strong class="cmd-board-name">nucleo_f401re</strong> | Pin: <strong>PA5 (LD2)</strong></div>
+          </div>
+          <div class="sim-body-layout">
+            <!-- Left: Graphic STM32 Board -->
+            <div class="sim-board-graphic">
+              <div class="sim-board-pcb">
+                <div class="sim-pcb-label">STMicroelectronics Nucleo</div>
+                <div class="sim-mcu-chip">STM32 MCU<br><span style="font-size:0.55rem;color:#10b981;">Cortex-M</span></div>
+                <div class="sim-led-cluster">
+                  <div class="sim-led-item">
+                    <div class="sim-led-bulb green" id="sim-blinky-led"></div>
+                    <span class="sim-led-label">LD2 (PA5)</span>
+                  </div>
+                  <div class="sim-led-item">
+                    <div class="sim-led-bulb" style="background:#ef4444;border-color:#f87171;box-shadow:0 0 6px #ef4444;"></div>
+                    <span class="sim-led-label">PWR (3V3)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Right: Serial VCP Terminal Output -->
+            <div class="sim-terminal-screen">
+              <div class="sim-terminal-header">
+                <span>ST-Link Virtual COM Port (115200 8N1)</span>
+                <span style="color:#10b981;">● CONNECTED</span>
+              </div>
+              <div class="sim-terminal-log" id="sim-blinky-log"></div>
+            </div>
+          </div>
+          <div class="sim-controls-bar">
+            <div style="display:flex;gap:0.5rem;">
+              <button class="sim-action-btn" id="sim-blinky-pause-btn">⏸ Pause Simulation</button>
+              <button class="sim-action-btn" id="sim-blinky-step-btn">⚡ Manual Pulse</button>
+            </div>
+            <button class="sim-action-btn" id="sim-blinky-clear-btn">🗑 Clear Terminal</button>
+          </div>
+        </div>
+
+        <!-- Interactive Lab Checklist -->
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Hands-On Lab 1 Checklist</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l1-step1">
+              <label for="l1-step1" class="checklist-text">Install Python virtual environment and <code>west</code> meta-tool.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l1-step2">
+              <label for="l1-step2" class="checklist-text">Download and configure Zephyr SDK with <code>arm-zephyr-eabi</code> toolchain.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l1-step3">
+              <label for="l1-step3" class="checklist-text">Plug in STM32 Nucleo board via USB and verify ST-Link enumeration.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l1-step4">
+              <label for="l1-step4" class="checklist-text">Run <code>west build -b <span class="cmd-board-name">nucleo_f401re</span></code> and confirm clean build.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l1-step5">
+              <label for="l1-step5" class="checklist-text">Run <code>west flash</code> and observe LD2 green LED toggling at 1 Hz.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l1-step6">
+              <label for="l1-step6" class="checklist-text">Open serial terminal and observe formatted heartbeat printk logs.</label>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Knowledge Check Quiz -->
+        <div class="quiz-container" id="sec-1-7">
+          <div class="quiz-header">
+            <span>🧠 Knowledge Check: Module 1</span>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">
+              1. What is the primary purpose of the <code>GPIO_DT_SPEC_GET()</code> macro in Zephyr?
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="No, pin configuration occurs at runtime using gpio_pin_configure_dt().">
+                A) It immediately switches the hardware pin mode from input to output.
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! It extracts the pointer to the STM32 GPIO device, pin number, and electrical flags (active high/low) resolved from the DeviceTree at compile time.">
+                B) It extracts the GPIO device struct, pin number, and flags from the DeviceTree at compile time.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Zephyr abstracts pin numbers into devicetree nodes to avoid hardcoding STM32 HAL register offsets.">
+                C) It queries the STM32 CMSIS header file for raw GPIO register memory addresses.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. It does not perform memory allocation.">
+                D) It dynamically allocates kernel heap memory for a new GPIO object.
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-box" style="margin-top:1.5rem;">
+            <div class="quiz-question-text">
+              2. What is the fundamental architectural cause of timing jitter and missed deadlines in a bare-metal "super-loop"?
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Cortex-M interrupt controllers (NVIC) are extremely fast and deterministic.">
+                A) The ARM Cortex-M NVIC interrupt controller has high hardware overhead.
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! In a single-threaded super-loop, a slow blocking operation (like an I2C sensor conversion or busy-wait delay) delays all subsequent tasks in the loop until it finishes.">
+                B) Blocking operations (such as slow I2C bus reads or delay loops) delay execution of all subsequent tasks in the sequential loop.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Flash wait states introduce minor clock delays, but not tens of milliseconds of task jitter.">
+                C) Flash memory wait states introduce non-deterministic execution spikes.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Microcontrollers do not use virtual memory.">
+                D) Virtual memory page faults stall the CPU pipeline.
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-question-box" style="margin-top:1.5rem;">
+            <div class="quiz-question-text">
+              3. Why is application code written for FreeRTOS on STM32 usually NOT portable to Nordic or NXP microcontrollers without major rewrites?
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. FreeRTOS kernel API functions like xTaskCreate() and vTaskDelay() are the same across ports.">
+                A) FreeRTOS changes its kernel API functions on different silicon vendors.
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! FreeRTOS is only a task scheduler; it has no unified driver model. Developers must use vendor-specific HALs (STM32Cube vs nrfx vs MCUXpresso) which are mutually incompatible.">
+                B) FreeRTOS lacks a unified driver model; peripheral I/O calls must use vendor-proprietary HALs (STM32Cube vs nrfx).
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. GCC compiles ARM Cortex-M assembly for all of them.">
+                C) ARM Cortex-M processors use incompatible instruction sets across vendors.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Thread stacks are allocated identically in RAM.">
+                D) FreeRTOS cannot allocate thread stacks in internal SRAM on non-ST microcontrollers.
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+        <!-- Chapter Bottom Navigation -->
+        <div class="chapter-bottom-nav">
+          <a href="../index.html" class="nav-card">
+            <span class="nav-card-dir">← Previous Page</span>
+            <span class="nav-card-title">Course Roadmap &amp; Overview</span>
+          </a>
+          <a href="ch02-devicetree-kconfig.html" class="nav-card" style="text-align:right;">
+            <span class="nav-card-dir">Next Module →</span>
+            <span class="nav-card-title">Module 2: DeviceTree &amp; Kconfig Deep Dive</span>
+          </a>
+        </div>
+
+        <!-- Site Footer -->
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Mastering Zephyr RTOS on STM32 • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, DTS, peripherals, labs...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+
+  <script src="../js/book.js"></script>
+</body>
+</html>

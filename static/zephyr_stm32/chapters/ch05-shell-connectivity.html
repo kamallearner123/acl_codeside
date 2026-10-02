@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 5: Subsystems, Shell & Industrial Protocols - Zephyr Shell, Deferred Logging, CAN Bus and BLE on STM32.">
+  <title>Module 5: Subsystems & Protocols | Zephyr + STM32 Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch05">
+
+  <div id="reading-progress-bar"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Zephyr + STM32</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, DTS, peripherals, labs..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <select id="board-selector" class="board-select">
+          <option value="nucleo_f401re">Nucleo-F401RE (Cortex-M4)</option>
+          <option value="nucleo_g071rb">Nucleo-G071RB (Cortex-M0+)</option>
+          <option value="nucleo_l476rg">Nucleo-L476RG (Low-Power)</option>
+        </select>
+      </div>
+
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+
+      <a href="/courses/exploring-zephyr-using-stm32/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);text-decoration:none;border:1px solid var(--border-subtle);background:var(--bg-glass);backdrop-filter:blur(8px);transition:all 0.2s;" title="Return to Course Details on Apt Computing Labs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- App Layout -->
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">Ch 5 of 6</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview & Syllabus</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M1</span>
+              <span>Foundations & Setup</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-foundations-toolchain.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Architecture & West Toolchain</span>
+                <span class="chapter-read-time">25m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch01-foundations-toolchain.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 The Need for an OS</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 FreeRTOS Era & Limits</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Why Zephyr RTOS?</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 STM32 Architecture</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Toolchain with West</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 Lab 1: Blinky & VCP</a></li>
+                <li><a href="ch01-foundations-toolchain.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M2</span>
+              <span>DeviceTree & Kconfig</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-devicetree-kconfig.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 2: DTS Syntax & STM32 Overlays</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 DeviceTree vs Kconfig</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Anatomy of DTS Nodes</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 Board Overlays (.overlay)</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Lab 2: External IO & Overlays</a></li>
+                <li><a href="ch02-devicetree-kconfig.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M3</span>
+              <span>Kernel Fundamentals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-kernel-threads-sync.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 3: Multithreading & Synchronization</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Scheduling & Priorities</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Static vs Dynamic Threads</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Semaphores vs Mutexes</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Lab 3: Message Queue Pipeline</a></li>
+                <li><a href="ch03-kernel-threads-sync.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M4</span>
+              <span>STM32 Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-stm32-peripherals.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 4: Drivers, DMA UART & Sensors</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch04-stm32-peripherals.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 Device Driver Model</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Async DMA UART</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 I2C Sensor Subsystem</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Hardware PWM Timers</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 Lab 4: Weather Station</a></li>
+                <li><a href="ch04-stm32-peripherals.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M5</span>
+              <span>Subsystems & Protocols</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-shell-connectivity.html" class="chapter-nav-item active">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: Shell, CAN Bus & BLE</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch05-shell-connectivity.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Zephyr Shell Subsystem</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Deferred Logging</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 CAN Bus (bxCAN / FDCAN)</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Lab 5: Diagnostic Shell</a></li>
+                <li><a href="ch05-shell-connectivity.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 Knowledge Check</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">M6</span>
+              <span>Production & Capstone</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-production-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Ch 6: MCUBoot, Twister & Capstone</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="ch06-production-capstone.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 MCUBoot Dual-Slot DFU</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 Twister Automated Testing</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 OpenOCD & GDB Debugging</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 Lab 6: Watchdog Supervisor</a></li>
+                <li><a href="ch06-production-capstone.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Certification Quiz</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="gui-ai-studio.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">⚡</span>
+            <span class="chapter-title-text">GUI Studio & AI Generator</span>
+          </a>
+        </div>
+
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Standards</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content Reader -->
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs">
+          <a href="../index.html">Home</a>
+          <span>/</span>
+          <span>Module 5</span>
+          <span>/</span>
+          <span>Subsystems & Shell</span>
+        </div>
+        <div class="chapter-actions">
+          <a href="ch04-stm32-peripherals.html" class="btn-secondary">← Chapter 4</a>
+          <a href="ch06-production-capstone.html" class="btn-primary">Chapter 6 →</a>
+        </div>
+      </div>
+
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Module 05 • Interactive Systems</span>
+          <h1 class="chapter-h1">Subsystems, Shell & Industrial Protocols</h1>
+          <p class="chapter-lead">
+            Turn your firmware into a professional interactive diagnostic platform: implement a dynamic Command Line Interface (CLI) using the Zephyr Shell, decouple high-throughput debugging using the Deferred Logging Subsystem, master CAN bus communications (bxCAN / FDCAN), and understand BLE architecture.
+          </p>
+
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 30 minutes</div>
+            <div class="meta-item">🛠️ Lab Project: <code>samples/05_shell_telemetry</code></div>
+            <div class="meta-item">🎯 Key Subsystems: Shell, Logging, CAN, BLE</div>
+          </div>
+        </div>
+
+        <h2 id="sec-5-1">5.1 The Zephyr Shell Subsystem</h2>
+        <p>
+          In embedded engineering, hardcoding print statements and re-flashing to test every tweak is painfully slow. Zephyr includes a powerful UNIX-like Shell subsystem running directly over your UART ST-Link console:
+        </p>
+
+        <ul>
+          <li><strong>Tab Autocompletion:</strong> Type <code>ke&lt;TAB&gt;</code> to expand to <code>kernel</code>.</li>
+          <li><strong>Command History:</strong> Up/Down arrow keys recall previous commands.</li>
+          <li><strong>Built-in Kernel Commands:</strong> <code>kernel threads</code> displays all active thread stacks, CPU utilization, and state. <code>device list</code> inspects every initialized hardware driver.</li>
+          <li><strong>ANSI Color Support:</strong> Colored error banners and interactive prompts.</li>
+        </ul>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Registering Custom Shell Commands</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;zephyr/shell/shell.h&gt;
+
+/* Handler function for: 'system status' */
+static int cmd_status_handler(const struct shell *sh, size_t argc, char **argv)
+{
+    ARG_UNUSED(argc);
+    ARG_UNUSED(argv);
+
+    shell_print(sh, "=== System Telemetry Status ===");
+    shell_print(sh, "Uptime: %u ms", k_uptime_get_32());
+    shell_print(sh, "Target Board: %s", CONFIG_BOARD);
+    return 0;
+}
+
+/* Register root command 'system' with subcommand 'status' */
+SHELL_STATIC_SUBCMD_SET_CREATE(sub_system,
+    SHELL_CMD(status, NULL, "Print system telemetry status.", cmd_status_handler),
+    SHELL_SUBCMD_SET_END
+);
+
+SHELL_CMD_REGISTER(system, &sub_system, "System diagnostic commands", NULL);</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-5-2">5.2 High-Throughput Deferred Logging</h2>
+        <p>
+          Calling raw <code>printk()</code> inside an interrupt or a fast control loop blocks CPU execution and alters timing (Heisenbugs). Zephyr's Logging Subsystem (<code>CONFIG_LOG=y</code>) operates in <strong>Deferred Mode</strong> by default:
+        </p>
+        <ol>
+          <li>When you call <code>LOG_INF("Pressure: %d", val);</code>, Zephyr packs the format pointer and arguments into a lightweight lock-free ring buffer in just a few CPU cycles.</li>
+          <li>The background idle thread or log processing thread formats and transmits the ASCII string to the UART only when the MCU is otherwise idle!</li>
+        </ol>
+
+        <h2 id="sec-5-3">5.3 Industrial CAN Bus (Controller Area Network) on STM32</h2>
+        <p>
+          CAN is the de-facto standard in automotive, robotics, and industrial automation due to its differential noise immunity and hardware collision arbitration.
+        </p>
+        <ul>
+          <li><strong>STM32F4 / L4:</strong> Feature <strong>bxCAN</strong> (Basic Extended CAN, up to 1 Mbps, 8-byte payload).</li>
+          <li><strong>STM32G0 / G4 / H7:</strong> Feature <strong>FDCAN</strong> (CAN with Flexible Data-Rate, up to 8 Mbps, 64-byte payload).</li>
+        </ul>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Transmitting a CAN Frame in Zephyr</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;zephyr/drivers/can.h&gt;
+
+const struct device *const can_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_canbus));
+
+struct can_frame frame = {
+    .id = 0x123,            /* Standard 11-bit CAN Identifier */
+    .dlc = 4,               /* 4 bytes of data */
+    .flags = 0,
+    .data = { 0xAA, 0xBB, 0xCC, 0xDD }
+};
+
+/* Transmit frame onto physical bus (timeout 100ms) */
+int ret = can_send(can_dev, &frame, K_MSEC(100), NULL, NULL);
+if (ret != 0) {
+    LOG_ERR("CAN transmission failed: %d", ret);
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-5-4">5.4 Hands-On Lab 5: Interactive Diagnostic Console</h2>
+        <p>
+          In this laboratory exercise (provided in <code>samples/05_shell_telemetry/</code>), we integrate the Zephyr Shell to allow runtime control of board LEDs, query memory statistics, and stream live sensor telemetry on demand.
+        </p>
+
+        <h3>5.4.1 Project Configuration: <code>prj.conf</code></h3>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">KCONFIG</span>
+              <span>samples/05_shell_telemetry/prj.conf</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Enable Shell subsystem
+CONFIG_SHELL=y
+CONFIG_SHELL_BACKENDS=y
+CONFIG_SHELL_BACKEND_SERIAL=y
+CONFIG_SHELL_PROMPT_UART="nucleo:~$ "
+
+# Enable built-in kernel diagnostics
+CONFIG_THREAD_NAME=y
+CONFIG_THREAD_ANALYZER=y
+CONFIG_DEVICE_SHELL=y
+
+# Enable Deferred Logging with Shell backend
+CONFIG_LOG=y
+CONFIG_LOG_MODE_DEFERRED=y
+CONFIG_LOG_BACKEND_SHELL=y
+CONFIG_GPIO=y</code></pre>
+          </div>
+        </div>
+
+        <h3>5.4.2 Application Code: <code>samples/05_shell_telemetry/src/main.c</code></h3>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>samples/05_shell_telemetry/src/main.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;zephyr/kernel.h&gt;
+#include &lt;zephyr/drivers/gpio.h&gt;
+#include &lt;zephyr/shell/shell.h&gt;
+#include &lt;zephyr/logging/log.h&gt;
+
+LOG_MODULE_REGISTER(main_app, LOG_LEVEL_INF);
+
+static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
+
+/* Shell Command: 'led on' and 'led off' */
+static int cmd_led_on(const struct shell *sh, size_t argc, char **argv)
+{
+    ARG_UNUSED(argc);
+    ARG_UNUSED(argv);
+    gpio_pin_set_dt(&led, 1);
+    shell_print(sh, "Onboard LED turned ON.");
+    return 0;
+}
+
+static int cmd_led_off(const struct shell *sh, size_t argc, char **argv)
+{
+    ARG_UNUSED(argc);
+    ARG_UNUSED(argv);
+    gpio_pin_set_dt(&led, 0);
+    shell_print(sh, "Onboard LED turned OFF.");
+    return 0;
+}
+
+SHELL_STATIC_SUBCMD_SET_CREATE(sub_led,
+    SHELL_CMD(on, NULL, "Turn onboard LED on", cmd_led_on),
+    SHELL_CMD(off, NULL, "Turn onboard LED off", cmd_led_off),
+    SHELL_SUBCMD_SET_END
+);
+
+SHELL_CMD_REGISTER(led, &sub_led, "Control onboard LED state", NULL);
+
+int main(void)
+{
+    if (!gpio_is_ready_dt(&led)) {
+        LOG_ERR("LED port not ready");
+        return 0;
+    }
+    gpio_pin_configure_dt(&led, GPIO_OUTPUT_INACTIVE);
+
+    LOG_INF("Zephyr Diagnostic Shell ready. Type 'help' or press TAB.");
+
+    while (1) {
+        k_sleep(K_FOREVER);
+    }
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+        <h3>5.4.3 Building & Flashing via ST-Link</h3>
+        <p>Compile and flash the interactive shell diagnostic console:</p>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Build and Flash Commands</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># 1. Navigate to directory
+cd samples/05_shell_telemetry
+
+# 2. Build for target board:
+west build -b nucleo_f401re -p always
+
+# 3. Flash to STM32:
+west flash
+
+# 4. Open serial terminal monitor (115200 baud, 8N1):
+minicom -D /dev/tty.usbmodem* -b 115200</code></pre>
+          </div>
+        </div>
+
+        <h3>5.4.4 Interactive Zephyr Diagnostic Shell Simulator</h3>
+        <p>Test the interactive CLI console below. Click any command chip or type your own command and press Enter:</p>
+
+        <!-- Graphical Output Simulation Widget -->
+        <div class="hardware-sim-widget" data-sim="shell-console">
+          <div class="sim-widget-header">
+            <div class="sim-widget-title">
+              <span>💻 Interactive Zephyr Diagnostic Shell Graphic</span>
+              <span class="sim-status-badge"><span class="sim-status-dot"></span> <span>UART SHELL READY</span></span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">Prompt: <code>nucleo:~$ </code> | Speed: <strong>115200 8N1</strong></div>
+          </div>
+          <div class="sim-body-layout">
+            <!-- Left: Graphic Nucleo Board with Reactive Shell LED -->
+            <div class="sim-board-graphic">
+              <div class="sim-board-pcb">
+                <div class="sim-pcb-label">STMicroelectronics Nucleo-64</div>
+                <div class="sim-mcu-chip">STM32 MCU<br><span style="font-size:0.55rem;color:#10b981;">Shell Controlled</span></div>
+                <div class="sim-led-cluster">
+                  <div class="sim-led-item">
+                    <div class="sim-led-bulb green" id="sim-shell-board-led"></div>
+                    <span class="sim-led-label">LD2 (PA5)</span>
+                  </div>
+                  <div class="sim-led-item">
+                    <div class="sim-led-bulb" style="background:#ef4444;border-color:#f87171;box-shadow:0 0 6px #ef4444;"></div>
+                    <span class="sim-led-label">PWR (3V3)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Right: Interactive Shell Terminal -->
+            <div class="sim-terminal-screen">
+              <div class="sim-terminal-header">
+                <span>Zephyr Shell Subsystem v3.7.0</span>
+                <span style="color:#10b981;">● ONLINE</span>
+              </div>
+              <div class="sim-terminal-log" id="sim-shell-log" style="height:150px;min-height:150px;"></div>
+              <div style="display:flex;align-items:center;background:#0d1117;border-top:1px solid #1f2937;padding:0.4rem 0.75rem;">
+                <span style="color:#38bdf8;font-family:var(--font-mono);font-size:0.75rem;margin-right:0.4rem;">nucleo:~$</span>
+                <input type="text" id="sim-shell-input" placeholder="Type command (e.g. led on, system status) and press Enter..." style="flex:1;background:transparent;border:0;color:#f8fafc;font-family:var(--font-mono);font-size:0.75rem;outline:none;">
+              </div>
+            </div>
+          </div>
+          <div class="sim-controls-bar">
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
+              <span style="font-size:0.75rem;color:var(--text-muted);">Quick Commands:</span>
+              <button class="sim-action-btn" data-shell-cmd="led on">led on</button>
+              <button class="sim-action-btn" data-shell-cmd="led off">led off</button>
+              <button class="sim-action-btn" data-shell-cmd="system status">system status</button>
+              <button class="sim-action-btn" data-shell-cmd="kernel threads">kernel threads</button>
+              <button class="sim-action-btn" data-shell-cmd="help">help</button>
+            </div>
+            <button class="sim-action-btn" data-shell-cmd="clear">🗑 Clear</button>
+          </div>
+        </div>
+
+        <!-- Interactive Lab Checklist -->
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Hands-On Lab 5 Checklist</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step1">
+              <label for="l5-step1" class="checklist-text">Open <code>samples/05_shell_telemetry/</code> directory.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step2">
+              <label for="l5-step2" class="checklist-text">Compile with <code>west build -b <span class="cmd-board-name">nucleo_f401re</span> -p always &amp;&amp; west flash</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step3">
+              <label for="l5-step3" class="checklist-text">Open serial terminal and press <code>&lt;ENTER&gt;</code> to reveal <code>nucleo:~$</code> prompt.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step4">
+              <label for="l5-step4" class="checklist-text">Test <code>led on</code> and <code>led off</code>; verify immediate physical response.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step5">
+              <label for="l5-step5" class="checklist-text">Execute <code>kernel threads</code> to inspect all RTOS stacks live.</label>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Knowledge Check Quiz -->
+        <div class="quiz-container" id="sec-5-5">
+          <div class="quiz-header">
+            <span>🧠 Knowledge Check: Module 5</span>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">
+              1. Why is Deferred Logging preferred over Immediate Logging in real-time embedded systems?
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Logging requires a small ring-buffer in RAM.">
+                A) It eliminates the need for RAM memory buffers entirely.
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! By queuing formatting to the background idle thread, time-sensitive ISRs and high-priority control loops are not blocked by slow UART transmission.">
+                B) It prevents slow UART hardware transmission from blocking time-critical threads and ISRs.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. The Shell operates over standard UART.">
+                C) It encrypts the serial packets before sending them over the wire.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) It automatically reroutes serial logs to the STM32 hardware reset vector.
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+        <!-- Chapter Bottom Navigation -->
+        <div class="chapter-bottom-nav">
+          <a href="ch04-stm32-peripherals.html" class="nav-card">
+            <span class="nav-card-dir">← Previous Module</span>
+            <span class="nav-card-title">Module 4: STM32 Peripherals & Drivers</span>
+          </a>
+          <a href="ch06-production-capstone.html" class="nav-card" style="text-align:right;">
+            <span class="nav-card-dir">Next Module →</span>
+            <span class="nav-card-title">Module 6: Production Engineering & Capstone</span>
+          </a>
+        </div>
+      
+        <!-- Site Footer -->
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Mastering Zephyr RTOS on STM32 • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, DTS, peripherals, labs...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+
+  <script src="../js/book.js"></script>
+</body>
+</html>
