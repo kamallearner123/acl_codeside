@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Exploring Zephyr Using STM32 | Installation{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6 fw-bold">Exploring Zephyr Using STM32</h1>
+            <p class="text-muted mb-0">Installation</p>
+        </div>
+        <a class="btn btn-outline-primary" href="{% url 'materials:dashboard' %}">← Back to Materials</a>
+    </div>
+
+    <section aria-labelledby="installation-heading">
+        <h2 id="installation-heading" class="h4 fw-bold mb-3">Install system dependencies</h2>
+        <p>Update the package index and install the tools and Python packages required for the Zephyr development environment.</p>
+        <pre class="bg-dark text-light rounded p-3"><code>sudo apt update
+
+sudo apt install -y \
+    git cmake ninja-build gperf \
+    device-tree-compiler \
+    python3-dev python3-venv python3-pip \
+    python3-setuptools python3-wheel \
+    wget</code></pre>
+    </section>
+</div>
+{% endblock %}

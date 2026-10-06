@@ -632,6 +632,24 @@ sudo apt install -y --no-install-recommends git cmake ninja-build gperf \
   python3-dev python3-pip python3-setuptools python3-tk python3-wheel xz-utils file</code></pre>
           </div>
         </div>
+        <p><code>apt update</code> refreshes Ubuntu/Debian's package indexes. In the install command, <code>-y</code> automatically confirms the installation, while <code>--no-install-recommends</code> skips optional recommended packages.</p>
+        <ul>
+          <li><strong><code>git</code>:</strong> downloads and manages Zephyr and its project repositories.</li>
+          <li><strong><code>cmake</code>:</strong> configures Zephyr applications and generates build files.</li>
+          <li><strong><code>ninja-build</code>:</strong> provides Ninja, the fast build tool used to compile applications.</li>
+          <li><strong><code>gperf</code>:</strong> generates perfect hash functions for data structures used by Zephyr.</li>
+          <li><strong><code>ccache</code>:</strong> caches compiler outputs to speed up repeated builds.</li>
+          <li><strong><code>dfu-util</code>:</strong> transfers firmware to devices that support USB Device Firmware Upgrade (DFU).</li>
+          <li><strong><code>device-tree-compiler</code>:</strong> provides <code>dtc</code>, which compiles DeviceTree source descriptions.</li>
+          <li><strong><code>wget</code>:</strong> downloads files such as SDK archives from the command line.</li>
+          <li><strong><code>python3-dev</code>:</strong> supplies Python headers needed to build packages with native extensions.</li>
+          <li><strong><code>python3-pip</code>:</strong> installs Python packages, including Zephyr's <code>west</code> tool.</li>
+          <li><strong><code>python3-setuptools</code>:</strong> supports building and installing Python packages.</li>
+          <li><strong><code>python3-tk</code>:</strong> provides Python's Tkinter GUI toolkit for tools that use it.</li>
+          <li><strong><code>python3-wheel</code>:</strong> supports installing and building Python wheel packages.</li>
+          <li><strong><code>xz-utils</code>:</strong> extracts the compressed <code>.tar.xz</code> Zephyr SDK archive.</li>
+          <li><strong><code>file</code>:</strong> identifies file types, useful when checking downloaded tools and archives.</li>
+        </ul>
 
         <h3>Step 2: Initialize Python Virtual Environment & <code>west</code></h3>
         <div class="code-container">
@@ -677,7 +695,7 @@ wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.8/zeph
 # (or _linux-x86_64.tar.xz on Linux)
 tar xvf zephyr-sdk-0.16.8_*.tar.xz
 cd zephyr-sdk-0.16.8
-./setup.sh -t arm-zephyr-eabi -h -c</code></pre>
+./setup.sh -t arm-zephyr-eabi -c</code></pre>
           </div>
         </div>
 
