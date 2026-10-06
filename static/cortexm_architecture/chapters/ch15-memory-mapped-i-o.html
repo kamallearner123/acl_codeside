@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A vendor-neutral look at Memory-Mapped I/O, with the STM32F446 as a worked example.">
+  <title>Memory-Mapped I/O | ARM Cortex-M Architecture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch15-memory-mapped-i-o">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Cortex-M</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, NVIC, stack, linker, faults, CMSIS..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/arm-cortex-m-architecture/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Chapters</span>
+          <span class="progress-pill">Ch 15 of 36</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
+          </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C1</span>
+              <span>Core</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-embedded-processor-fundamentals.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Processor Basics</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch01-embedded-processor-fundamentals.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 What an Embedded Processor Is</a></li><li><a href="ch01-embedded-processor-fundamentals.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 The Von Neumann and Harvard…</a></li><li><a href="ch01-embedded-processor-fundamentals.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 CPU, Memory and Peripherals</a></li><li><a href="ch01-embedded-processor-fundamentals.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 The Fetch-Decode-Execute Cycle</a></li><li><a href="ch01-embedded-processor-fundamentals.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Key Metrics</a></li><li><a href="ch01-embedded-processor-fundamentals.html#sec-1-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C2</span>
+              <span>Core</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-arm-architecture-overview.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: Arm Overview</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch02-arm-architecture-overview.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 Who Is Arm?</a></li><li><a href="ch02-arm-architecture-overview.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Architecture vs Microarchite…</a></li><li><a href="ch02-arm-architecture-overview.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 The Three Profiles</a></li><li><a href="ch02-arm-architecture-overview.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Architecture Versions</a></li><li><a href="ch02-arm-architecture-overview.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Licensing Model</a></li><li><a href="ch02-arm-architecture-overview.html#sec-2-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C3</span>
+              <span>Core</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-the-cortex-m-family.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: Cortex-M Family</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch03-the-cortex-m-family.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Design Goals of the Cortex-M…</a></li><li><a href="ch03-the-cortex-m-family.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Family Overview</a></li><li><a href="ch03-the-cortex-m-family.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 The Shared Programmer's View</a></li><li><a href="ch03-the-cortex-m-family.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Choosing a Core</a></li><li><a href="ch03-the-cortex-m-family.html#sec-3-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C4</span>
+              <span>Core</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-cortex-m0-m0-m3-m4-m7-and-m33.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Core Variants</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch04-cortex-m0-m0-m3-m4-m7-and-m33.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 Cortex-M0 and M0+</a></li><li><a href="ch04-cortex-m0-m0-m3-m4-m7-and-m33.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Cortex-M3</a></li><li><a href="ch04-cortex-m0-m0-m3-m4-m7-and-m33.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 Cortex-M4</a></li><li><a href="ch04-cortex-m0-m0-m3-m4-m7-and-m33.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Cortex-M7</a></li><li><a href="ch04-cortex-m0-m0-m3-m4-m7-and-m33.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 Cortex-M23 and M33</a></li><li><a href="ch04-cortex-m0-m0-m3-m4-m7-and-m33.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Side-by-Side</a></li><li><a href="ch04-cortex-m0-m0-m3-m4-m7-and-m33.html#sec-4-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.7 Selecting the Compiler Flags</a></li><li><a href="ch04-cortex-m0-m0-m3-m4-m7-and-m33.html#sec-4-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C5</span>
+              <span>Core</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-the-programmer-s-model.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: Programmer's Model</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch05-the-programmer-s-model.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 What the Programmer's Model Is</a></li><li><a href="ch05-the-programmer-s-model.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Operating Modes and Privilege</a></li><li><a href="ch05-the-programmer-s-model.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 Two Stacks</a></li><li><a href="ch05-the-programmer-s-model.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Execution State</a></li><li><a href="ch05-the-programmer-s-model.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 Special Registers</a></li><li><a href="ch05-the-programmer-s-model.html#sec-5-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.6 Memory Model</a></li><li><a href="ch05-the-programmer-s-model.html#sec-5-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C6</span>
+              <span>Core</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-registers.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: Registers</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch06-registers.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 Register Overview</a></li><li><a href="ch06-registers.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 Core Register Set</a></li><li><a href="ch06-registers.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 Special-Purpose Registers</a></li><li><a href="ch06-registers.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 Memory-Mapped Core Peripherals</a></li><li><a href="ch06-registers.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Register Naming in Documents</a></li><li><a href="ch06-registers.html#sec-6-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C7</span>
+              <span>Core</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch07-r0-r12-sp-lr-pc-and-xpsr.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 7: R0-R12/SP/LR/PC/xPSR</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch07-r0-r12-sp-lr-pc-and-xpsr.html#sec-7-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.1 General-Purpose Registers R0…</a></li><li><a href="ch07-r0-r12-sp-lr-pc-and-xpsr.html#sec-7-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.2 Stack Pointer R13</a></li><li><a href="ch07-r0-r12-sp-lr-pc-and-xpsr.html#sec-7-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.3 Link Register R14</a></li><li><a href="ch07-r0-r12-sp-lr-pc-and-xpsr.html#sec-7-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.4 Program Counter R15</a></li><li><a href="ch07-r0-r12-sp-lr-pc-and-xpsr.html#sec-7-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.5 xPSR</a></li><li><a href="ch07-r0-r12-sp-lr-pc-and-xpsr.html#sec-7-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.6 The Register File During a C…</a></li><li><a href="ch07-r0-r12-sp-lr-pc-and-xpsr.html#sec-7-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C8</span>
+              <span>Core</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch08-instruction-set-basics.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 8: Instruction Set</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch08-instruction-set-basics.html#sec-8-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.1 What an Instruction Set Is</a></li><li><a href="ch08-instruction-set-basics.html#sec-8-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.2 Instruction Categories</a></li><li><a href="ch08-instruction-set-basics.html#sec-8-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.3 Load-Store Architecture</a></li><li><a href="ch08-instruction-set-basics.html#sec-8-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.4 Addressing Modes</a></li><li><a href="ch08-instruction-set-basics.html#sec-8-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.5 Condition Flags and Branches</a></li><li><a href="ch08-instruction-set-basics.html#sec-8-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.6 Useful System Instructions</a></li><li><a href="ch08-instruction-set-basics.html#sec-8-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C9</span>
+              <span>Core</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch09-thumb-and-thumb-2.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 9: Thumb/Thumb-2</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch09-thumb-and-thumb-2.html#sec-9-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.1 Why Thumb Exists</a></li><li><a href="ch09-thumb-and-thumb-2.html#sec-9-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.2 16-bit and 32-bit Encodings</a></li><li><a href="ch09-thumb-and-thumb-2.html#sec-9-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.3 IT Blocks</a></li><li><a href="ch09-thumb-and-thumb-2.html#sec-9-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.4 Other Thumb-2 Features</a></li><li><a href="ch09-thumb-and-thumb-2.html#sec-9-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.5 Code Density</a></li><li><a href="ch09-thumb-and-thumb-2.html#sec-9-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.6 Armv7E-M and Armv8-M Additions</a></li><li><a href="ch09-thumb-and-thumb-2.html#sec-9-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C10</span>
+              <span>Memory</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch10-the-memory-map.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 10: Memory Map</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch10-the-memory-map.html#sec-10-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.1 One 4 GB Address Space</a></li><li><a href="ch10-the-memory-map.html#sec-10-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.2 A Real Example: STM32F446</a></li><li><a href="ch10-the-memory-map.html#sec-10-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.3 Memory Types and Attributes</a></li><li><a href="ch10-the-memory-map.html#sec-10-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.4 Execute Never and Region Ru…</a></li><li><a href="ch10-the-memory-map.html#sec-10-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.5 Bit-Banding (M3 and M4)</a></li><li><a href="ch10-the-memory-map.html#sec-10-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C11</span>
+              <span>Memory</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch11-flash-memory.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 11: Flash</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch11-flash-memory.html#sec-11-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.1 What Flash Holds</a></li><li><a href="ch11-flash-memory.html#sec-11-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.2 How Flash Works</a></li><li><a href="ch11-flash-memory.html#sec-11-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.3 Wait States and Accelerators</a></li><li><a href="ch11-flash-memory.html#sec-11-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.4 Sectors on STM32F446</a></li><li><a href="ch11-flash-memory.html#sec-11-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.5 Programming Flash from Code</a></li><li><a href="ch11-flash-memory.html#sec-11-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.6 Protection and Option Bytes</a></li><li><a href="ch11-flash-memory.html#sec-11-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C12</span>
+              <span>Memory</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch12-sram.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 12: SRAM</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch12-sram.html#sec-12-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.1 SRAM Basics</a></li><li><a href="ch12-sram.html#sec-12-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.2 What Lives in SRAM</a></li><li><a href="ch12-sram.html#sec-12-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.3 Multiple RAM Blocks</a></li><li><a href="ch12-sram.html#sec-12-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.4 Bus Contention</a></li><li><a href="ch12-sram.html#sec-12-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.5 Retention and Low Power</a></li><li><a href="ch12-sram.html#sec-12-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.6 Checking Usage</a></li><li><a href="ch12-sram.html#sec-12-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C13</span>
+              <span>Memory</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch13-the-stack.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 13: Stack</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch13-the-stack.html#sec-13-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.1 What the Stack Is</a></li><li><a href="ch13-the-stack.html#sec-13-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.2 Full Descending Stack</a></li><li><a href="ch13-the-stack.html#sec-13-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.3 A Function Frame</a></li><li><a href="ch13-the-stack.html#sec-13-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.4 Exception Stacking</a></li><li><a href="ch13-the-stack.html#sec-13-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.5 Sizing the Stack</a></li><li><a href="ch13-the-stack.html#sec-13-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.6 Stack Overflow Symptoms</a></li><li><a href="ch13-the-stack.html#sec-13-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C14</span>
+              <span>Memory</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch14-the-heap.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 14: Heap</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch14-the-heap.html#sec-14-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.1 What the Heap Is</a></li><li><a href="ch14-the-heap.html#sec-14-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.2 How newlib Gets Memory</a></li><li><a href="ch14-the-heap.html#sec-14-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.3 Why Embedded Systems Avoid…</a></li><li><a href="ch14-the-heap.html#sec-14-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.4 Alternatives</a></li><li><a href="ch14-the-heap.html#sec-14-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.5 If You Must Use malloc</a></li><li><a href="ch14-the-heap.html#sec-14-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C15</span>
+              <span>Memory</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch15-memory-mapped-i-o.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 15: Memory-Mapped I/O</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch15-memory-mapped-i-o.html#sec-15-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.1 Peripherals Are Addresses</a></li><li><a href="ch15-memory-mapped-i-o.html#sec-15-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.2 The `volatile` Qualifier</a></li><li><a href="ch15-memory-mapped-i-o.html#sec-15-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.3 Struct Overlays (CMSIS Style)</a></li><li><a href="ch15-memory-mapped-i-o.html#sec-15-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.4 Read-Modify-Write Hazards</a></li><li><a href="ch15-memory-mapped-i-o.html#sec-15-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.5 Register Access Types</a></li><li><a href="ch15-memory-mapped-i-o.html#sec-15-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.6 Memory Barriers and Write B…</a></li><li><a href="ch15-memory-mapped-i-o.html#sec-15-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C16</span>
+              <span>Exceptions</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch16-nvic.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 16: NVIC</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch16-nvic.html#sec-16-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.1 The Nested Vectored Interru…</a></li><li><a href="ch16-nvic.html#sec-16-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.2 Registers (Base 0xE000E100)</a></li><li><a href="ch16-nvic.html#sec-16-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.3 Priorities</a></li><li><a href="ch16-nvic.html#sec-16-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.4 Preemption and Sub-Priority</a></li><li><a href="ch16-nvic.html#sec-16-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.5 Nesting and Tail-Chaining</a></li><li><a href="ch16-nvic.html#sec-16-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.6 Masking</a></li><li><a href="ch16-nvic.html#sec-16-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C17</span>
+              <span>Exceptions</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch17-interrupts.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 17: Interrupts</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch17-interrupts.html#sec-17-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.1 What Is an Interrupt?</a></li><li><a href="ch17-interrupts.html#sec-17-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.2 What Happens on an Interrupt</a></li><li><a href="ch17-interrupts.html#sec-17-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.3 Writing an ISR</a></li><li><a href="ch17-interrupts.html#sec-17-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.4 Rules for Good ISRs</a></li><li><a href="ch17-interrupts.html#sec-17-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.5 Interrupt Latency Factors</a></li><li><a href="ch17-interrupts.html#sec-17-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.6 Sleep and Wake-up</a></li><li><a href="ch17-interrupts.html#sec-17-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C18</span>
+              <span>Exceptions</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch18-exceptions.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 18: Exceptions</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch18-exceptions.html#sec-18-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.1 Exceptions vs Interrupts</a></li><li><a href="ch18-exceptions.html#sec-18-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.2 The Exception Table</a></li><li><a href="ch18-exceptions.html#sec-18-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.3 Exception Number vs IRQ Num…</a></li><li><a href="ch18-exceptions.html#sec-18-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.4 Exception States</a></li><li><a href="ch18-exceptions.html#sec-18-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.5 Priority Rules</a></li><li><a href="ch18-exceptions.html#sec-18-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.6 Returning from an Exception</a></li><li><a href="ch18-exceptions.html#sec-18-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.7 Exception Entry and the Vec…</a></li><li><a href="ch18-exceptions.html#sec-18-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C19</span>
+              <span>Exceptions</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch19-systick.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 19: SysTick</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch19-systick.html#sec-19-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.1 What SysTick Is</a></li><li><a href="ch19-systick.html#sec-19-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.2 Registers (Base 0xE000E010)</a></li><li><a href="ch19-systick.html#sec-19-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.3 Computing the Reload Value</a></li><li><a href="ch19-systick.html#sec-19-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.4 Configuring It</a></li><li><a href="ch19-systick.html#sec-19-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.5 Uses</a></li><li><a href="ch19-systick.html#sec-19-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.6 Cautions</a></li><li><a href="ch19-systick.html#sec-19-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C20</span>
+              <span>Exceptions</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch20-svc-and-pendsv.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 20: SVC/PendSV</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch20-svc-and-pendsv.html#sec-20-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.1 Two Exceptions for the OS</a></li><li><a href="ch20-svc-and-pendsv.html#sec-20-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.2 SVC: Supervisor Call</a></li><li><a href="ch20-svc-and-pendsv.html#sec-20-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.3 PendSV: Pended Supervisor C…</a></li><li><a href="ch20-svc-and-pendsv.html#sec-20-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.4 A Context Switch in Outline</a></li><li><a href="ch20-svc-and-pendsv.html#sec-20-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.5 Why a Separate PendSV?</a></li><li><a href="ch20-svc-and-pendsv.html#sec-20-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C21</span>
+              <span>Exceptions</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch21-fault-handling.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 21: Faults</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch21-fault-handling.html#sec-21-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.1 What a Fault Is</a></li><li><a href="ch21-fault-handling.html#sec-21-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.2 Fault Types</a></li><li><a href="ch21-fault-handling.html#sec-21-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.3 Status Registers (SCB)</a></li><li><a href="ch21-fault-handling.html#sec-21-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.4 Enabling Separate Handlers</a></li><li><a href="ch21-fault-handling.html#sec-21-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.5 A HardFault Handler That Te…</a></li><li><a href="ch21-fault-handling.html#sec-21-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.6 Imprecise Bus Faults</a></li><li><a href="ch21-fault-handling.html#sec-21-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.7 Typical Causes</a></li><li><a href="ch21-fault-handling.html#sec-21-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C22</span>
+              <span>Exceptions</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch22-reset-and-startup.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 22: Reset &amp; Startup</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch22-reset-and-startup.html#sec-22-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.1 What Reset Does</a></li><li><a href="ch22-reset-and-startup.html#sec-22-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.2 What the Core Does After Re…</a></li><li><a href="ch22-reset-and-startup.html#sec-22-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.3 Boot Selection on STM32</a></li><li><a href="ch22-reset-and-startup.html#sec-22-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.4 The Startup Code</a></li><li><a href="ch22-reset-and-startup.html#sec-22-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.5 Reset Cause Flags</a></li><li><a href="ch22-reset-and-startup.html#sec-22-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C23</span>
+              <span>Exceptions</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch23-the-vector-table.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 23: Vector Table</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch23-the-vector-table.html#sec-23-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.1 What the Vector Table Is</a></li><li><a href="ch23-the-vector-table.html#sec-23-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.2 Layout</a></li><li><a href="ch23-the-vector-table.html#sec-23-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.3 Defining It in C</a></li><li><a href="ch23-the-vector-table.html#sec-23-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.4 Relocating with VTOR</a></li><li><a href="ch23-the-vector-table.html#sec-23-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.5 Debugging Vector Problems</a></li><li><a href="ch23-the-vector-table.html#sec-23-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C24</span>
+              <span>Exceptions</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch24-the-linker-script.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 24: Linker Script</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch24-the-linker-script.html#sec-24-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.1 What the Linker Script Does</a></li><li><a href="ch24-the-linker-script.html#sec-24-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.2 The MEMORY Block</a></li><li><a href="ch24-the-linker-script.html#sec-24-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.3 The SECTIONS Block</a></li><li><a href="ch24-the-linker-script.html#sec-24-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.4 Load Address vs Run Address</a></li><li><a href="ch24-the-linker-script.html#sec-24-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.5 Symbols Shared with C</a></li><li><a href="ch24-the-linker-script.html#sec-24-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.6 Useful Techniques</a></li><li><a href="ch24-the-linker-script.html#sec-24-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C25</span>
+              <span>System</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch25-the-clock-system.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 25: Clocks</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch25-the-clock-system.html#sec-25-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.1 Why Clocks Matter</a></li><li><a href="ch25-the-clock-system.html#sec-25-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.2 Clock Sources</a></li><li><a href="ch25-the-clock-system.html#sec-25-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.3 The PLL</a></li><li><a href="ch25-the-clock-system.html#sec-25-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.4 Bus Prescalers</a></li><li><a href="ch25-the-clock-system.html#sec-25-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.5 Start-Up Sequence</a></li><li><a href="ch25-the-clock-system.html#sec-25-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.6 Clock Gating and Power</a></li><li><a href="ch25-the-clock-system.html#sec-25-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C26</span>
+              <span>System</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch26-the-mpu.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 26: MPU</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch26-the-mpu.html#sec-26-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.1 What the MPU Does</a></li><li><a href="ch26-the-mpu.html#sec-26-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.2 Uses</a></li><li><a href="ch26-the-mpu.html#sec-26-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.3 Region Registers (Armv7-M)</a></li><li><a href="ch26-the-mpu.html#sec-26-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.4 Example: Guard Region at th…</a></li><li><a href="ch26-the-mpu.html#sec-26-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.5 Access Permissions</a></li><li><a href="ch26-the-mpu.html#sec-26-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.6 Handling the Fault</a></li><li><a href="ch26-the-mpu.html#sec-26-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C27</span>
+              <span>System</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch27-the-fpu.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 27: FPU</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch27-the-fpu.html#sec-27-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 27.1 Floating Point on Cortex-M</a></li><li><a href="ch27-the-fpu.html#sec-27-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 27.2 FPU Registers</a></li><li><a href="ch27-the-fpu.html#sec-27-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 27.3 Enabling the FPU</a></li><li><a href="ch27-the-fpu.html#sec-27-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 27.4 ABI Choices</a></li><li><a href="ch27-the-fpu.html#sec-27-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 27.5 Cost on Context Switch and…</a></li><li><a href="ch27-the-fpu.html#sec-27-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 27.6 Precision Pitfalls</a></li><li><a href="ch27-the-fpu.html#sec-27-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 27.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C28</span>
+              <span>System</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch28-dma.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 28: DMA</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch28-dma.html#sec-28-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 28.1 DMA in One Sentence</a></li><li><a href="ch28-dma.html#sec-28-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 28.2 The Bus Matrix</a></li><li><a href="ch28-dma.html#sec-28-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 28.3 Transfer Types</a></li><li><a href="ch28-dma.html#sec-28-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 28.4 Configuration Checklist</a></li><li><a href="ch28-dma.html#sec-28-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 28.5 Pitfalls</a></li><li><a href="ch28-dma.html#sec-28-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 28.6 Impact on Architecture</a></li><li><a href="ch28-dma.html#sec-28-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 28.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C29</span>
+              <span>System</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch29-cache-and-memory-systems.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 29: Cache &amp; Memory</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch29-cache-and-memory-systems.html#sec-29-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 29.1 Why Caches Exist</a></li><li><a href="ch29-cache-and-memory-systems.html#sec-29-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 29.2 Memory Hierarchy</a></li><li><a href="ch29-cache-and-memory-systems.html#sec-29-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 29.3 Tightly Coupled Memory</a></li><li><a href="ch29-cache-and-memory-systems.html#sec-29-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 29.4 Cache Coherency Problem</a></li><li><a href="ch29-cache-and-memory-systems.html#sec-29-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 29.5 Write Policies</a></li><li><a href="ch29-cache-and-memory-systems.html#sec-29-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 29.6 Memory Barriers</a></li><li><a href="ch29-cache-and-memory-systems.html#sec-29-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 29.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C30</span>
+              <span>Debug &amp; Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch30-debug-architecture.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 30: Debug Architecture</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch30-debug-architecture.html#sec-30-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 30.1 Why Debug Hardware Is in th…</a></li><li><a href="ch30-debug-architecture.html#sec-30-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 30.2 CoreSight Components</a></li><li><a href="ch30-debug-architecture.html#sec-30-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 30.3 Hardware Breakpoints and Wa…</a></li><li><a href="ch30-debug-architecture.html#sec-30-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 30.4 Debug Halting</a></li><li><a href="ch30-debug-architecture.html#sec-30-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 30.5 printf over SWO</a></li><li><a href="ch30-debug-architecture.html#sec-30-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 30.6 Debug vs Low Power</a></li><li><a href="ch30-debug-architecture.html#sec-30-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 30.7 Production Considerations</a></li><li><a href="ch30-debug-architecture.html#sec-30-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 30.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C31</span>
+              <span>Debug &amp; Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch31-swd-and-jtag.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 31: SWD/JTAG</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch31-swd-and-jtag.html#sec-31-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 31.1 Two Debug Protocols</a></li><li><a href="ch31-swd-and-jtag.html#sec-31-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 31.2 SWD Signals</a></li><li><a href="ch31-swd-and-jtag.html#sec-31-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 31.3 SWD Packet</a></li><li><a href="ch31-swd-and-jtag.html#sec-31-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 31.4 Debug Port and Access Ports</a></li><li><a href="ch31-swd-and-jtag.html#sec-31-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 31.5 Wiring Rules</a></li><li><a href="ch31-swd-and-jtag.html#sec-31-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 31.6 Connectors and Probes</a></li><li><a href="ch31-swd-and-jtag.html#sec-31-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 31.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C32</span>
+              <span>Debug &amp; Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch32-gdb.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 32: GDB</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch32-gdb.html#sec-32-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 32.1 GDB and the Debug Chain</a></li><li><a href="ch32-gdb.html#sec-32-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 32.2 A Minimal Session</a></li><li><a href="ch32-gdb.html#sec-32-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 32.3 Essential Commands</a></li><li><a href="ch32-gdb.html#sec-32-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 32.4 Reading Peripheral Registers</a></li><li><a href="ch32-gdb.html#sec-32-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 32.5 Debugging Faults</a></li><li><a href="ch32-gdb.html#sec-32-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 32.6 Build for Debugging</a></li><li><a href="ch32-gdb.html#sec-32-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 32.7 Scripting</a></li><li><a href="ch32-gdb.html#sec-32-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 32.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C33</span>
+              <span>Debug &amp; Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch33-cmsis.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 33: CMSIS</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch33-cmsis.html#sec-33-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 33.1 What CMSIS Is</a></li><li><a href="ch33-cmsis.html#sec-33-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 33.2 CMSIS Components</a></li><li><a href="ch33-cmsis.html#sec-33-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 33.3 CMSIS-Core in Practice</a></li><li><a href="ch33-cmsis.html#sec-33-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 33.4 Device Header Conventions</a></li><li><a href="ch33-cmsis.html#sec-33-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 33.5 CMSIS-DSP Example</a></li><li><a href="ch33-cmsis.html#sec-33-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 33.6 CMSIS vs HAL vs LL</a></li><li><a href="ch33-cmsis.html#sec-33-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 33.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C34</span>
+              <span>Integration</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch34-stm32-peripheral-architecture.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 34: STM32 Peripherals</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch34-stm32-peripheral-architecture.html#sec-34-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 34.1 The Core Is Only Part of th…</a></li><li><a href="ch34-stm32-peripheral-architecture.html#sec-34-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 34.2 Typical Peripheral Anatomy</a></li><li><a href="ch34-stm32-peripheral-architecture.html#sec-34-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 34.3 GPIO and Alternate Functions</a></li><li><a href="ch34-stm32-peripheral-architecture.html#sec-34-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 34.4 Three Levels of Interrupt P…</a></li><li><a href="ch34-stm32-peripheral-architecture.html#sec-34-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 34.5 Mapping Other Vendors</a></li><li><a href="ch34-stm32-peripheral-architecture.html#sec-34-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 34.6 Reading a Reference Manual…</a></li><li><a href="ch34-stm32-peripheral-architecture.html#sec-34-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 34.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C35</span>
+              <span>Integration</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch35-from-reset-to-main.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 35: Reset to main()</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch35-from-reset-to-main.html#sec-35-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 35.1 The Complete Timeline</a></li><li><a href="ch35-from-reset-to-main.html#sec-35-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 35.2 What Is Guaranteed at Entry…</a></li><li><a href="ch35-from-reset-to-main.html#sec-35-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 35.3 Order of Initialisation in…</a></li><li><a href="ch35-from-reset-to-main.html#sec-35-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 35.4 Debugging Boot Problems</a></li><li><a href="ch35-from-reset-to-main.html#sec-35-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 35.5 Time Budget</a></li><li><a href="ch35-from-reset-to-main.html#sec-35-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 35.6 Putting It All Together</a></li><li><a href="ch35-from-reset-to-main.html#sec-35-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 35.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C36</span>
+              <span>Integration</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch36-from-c-code-to-machine-code.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 36: C to Machine Code</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch36-from-c-code-to-machine-code.html#sec-36-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 36.1 The Pipeline from C to Mach…</a></li><li><a href="ch36-from-c-code-to-machine-code.html#sec-36-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 36.2 Look at the Assembly</a></li><li><a href="ch36-from-c-code-to-machine-code.html#sec-36-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 36.3 Optimisation Levels</a></li><li><a href="ch36-from-c-code-to-machine-code.html#sec-36-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 36.4 What the Compiler Assumes</a></li><li><a href="ch36-from-c-code-to-machine-code.html#sec-36-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 36.5 Inspecting Binaries</a></li><li><a href="ch36-from-c-code-to-machine-code.html#sec-36-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 36.6 Calling Conventions Revisited</a></li><li><a href="ch36-from-c-code-to-machine-code.html#sec-36-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 36.7 From Machine Code to the Pi…</a></li><li><a href="ch36-from-c-code-to-machine-code.html#sec-36-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 36.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Further Reading</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs"><a href="../index.html">Home</a><span>/</span><span>Chapter 15</span><span>/</span><span>Memory-Mapped I/O</span></div>
+        <div class="chapter-actions">
+          <a href="ch14-the-heap.html" class="btn-secondary">← Chapter 14</a>
+          <a href="ch16-nvic.html" class="btn-primary">Chapter 16 →</a>
+        </div>
+      </div>
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Chapter 15 • Memory</span>
+          <h1 class="chapter-h1">Memory-Mapped I/O</h1>
+          <p class="chapter-lead">A vendor-neutral look at Memory-Mapped I/O, with the STM32F446 as a worked example.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 30 minutes</div>
+            <div class="meta-item">🛠️ Lab: Lab 15</div>
+            <div class="meta-item">🎯 Topics: Memory-Mapped I/O</div>
+          </div>
+        </div>
+<h2 id="sec-15-1">15.1 Peripherals Are Addresses</h2>
+<p>On Cortex-M a peripheral register is just a location in memory. A store writes the hardware, a load reads it. The compiler must be told that these accesses have side effects.</p>
+<h2 id="sec-15-2">15.2 The <code>volatile</code> Qualifier</h2>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Direct register access</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#define GPIOA_BASE   0x40020000UL
+#define GPIOA_MODER  (*(volatile uint32_t *)(GPIOA_BASE + 0x00))
+#define GPIOA_ODR    (*(volatile uint32_t *)(GPIOA_BASE + 0x14))
+
+GPIOA_MODER |= (1u &lt;&lt; (5 * 2));      /* PA5 as output */
+GPIOA_ODR   ^= (1u &lt;&lt; 5);            /* toggle PA5 */</code></pre>
+          </div>
+        </div>
+
+<p><code>volatile</code> forbids the compiler from caching, merging or removing the access. Without it a polling loop on a status flag may be optimised into an infinite loop.</p>
+<h2 id="sec-15-3">15.3 Struct Overlays (CMSIS Style)</h2>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>One struct per peripheral</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>typedef struct {
+    volatile uint32_t MODER;
+    volatile uint32_t OTYPER;
+    volatile uint32_t OSPEEDR;
+    volatile uint32_t PUPDR;
+    volatile uint32_t IDR;
+    volatile uint32_t ODR;
+    volatile uint32_t BSRR;
+} GPIO_TypeDef;
+
+#define GPIOA ((GPIO_TypeDef *)0x40020000UL)
+GPIOA-&gt;BSRR = (1u &lt;&lt; 5);             /* set PA5 atomically */</code></pre>
+          </div>
+        </div>
+
+<p>The struct member offsets must match the reference manual exactly.</p>
+<h2 id="sec-15-4">15.4 Read-Modify-Write Hazards</h2>
+<p><code>ODR |= bit</code> is read, OR, write. An interrupt that changes <code>ODR</code> in between is overwritten. Vendors provide <strong>set/reset registers</strong> (<code>BSRR</code>) so a single write changes only the chosen pins.</p>
+<h2 id="sec-15-5">15.5 Register Access Types</h2>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Type</th>
+<th style="padding:0.6rem;">Meaning</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">rw</td>
+<td style="padding:0.6rem;vertical-align:top;">Read and write normally</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">r</td>
+<td style="padding:0.6rem;vertical-align:top;">Read only</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">w</td>
+<td style="padding:0.6rem;vertical-align:top;">Write only, reads undefined</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">rc_w1</td>
+<td style="padding:0.6rem;vertical-align:top;">Read, clear by writing 1</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">rc_r</td>
+<td style="padding:0.6rem;vertical-align:top;">Cleared by reading (status flags)</td>
+</tr>
+</tbody></table></div>
+
+        <div class="callout callout-warning">
+          <div class="callout-header">Clearing flags</div>
+          <div class="callout-body">Writing the whole register back can clear flags you did not intend. Write only the bit you mean.</div>
+        </div>
+
+<h2 id="sec-15-6">15.6 Memory Barriers and Write Buffers</h2>
+<p>A store to a peripheral may sit in a write buffer. After changing a clock enable or interrupt setting, <code>DSB</code> ensures it completed before the next step.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Clock enable then use</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>RCC-&gt;AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+(void)RCC-&gt;AHB1ENR;                 /* dummy read ensures the write finished */
+GPIOA-&gt;MODER |= ...;</code></pre>
+          </div>
+        </div>
+
+
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Lab 15: Toggle Without HAL</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l15-step1">
+              <label for="l15-step1" class="checklist-text">Enable the GPIOA clock and blink PA5 using only raw register macros.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l15-step2">
+              <label for="l15-step2" class="checklist-text">Remove <code>volatile</code> and compile at -O2; inspect the disassembly of a busy-wait loop.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l15-step3">
+              <label for="l15-step3" class="checklist-text">Use BSRR instead of ODR and explain the difference.</label>
+            </li>
+          </ul>
+        </div>
+
+
+        <div class="quiz-container" id="sec-15-quiz">
+          <div class="quiz-header"><span>🧠 Knowledge Check: Chapter 15</span></div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">1. Why is volatile needed for register pointers?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                A) Each access has side effects and must not be optimised away
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                B) It makes the code faster
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) It places data in flash
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">2. What advantage does BSRR have over ODR?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                A) A single write changes selected pins atomically
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                B) It is faster to read
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) It sets all pins
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">3. What is an rc_w1 bit?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                A) Read, clear by writing 1
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                B) Read-only constant
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) Reserved
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+
+        <div class="chapter-bottom-nav">
+          <a href="ch14-the-heap.html" class="nav-card"><span class="nav-card-dir">← Previous</span><span class="nav-card-title">Chapter 14: The Heap</span></a>
+          <a href="ch16-nvic.html" class="nav-card" style="text-align:right;"><span class="nav-card-dir">Next →</span><span class="nav-card-title">Chapter 16: NVIC</span></a>
+        </div>
+
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">ARM Cortex-M Architecture • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+
+      </article>
+    </main>
+  </div>
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, NVIC, stack, linker, faults, CMSIS...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+  <script src="../js/book.js"></script>
+</body>
+</html>

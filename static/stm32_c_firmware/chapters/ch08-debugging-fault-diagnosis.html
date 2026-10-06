@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Stop guessing. Understand the ST-LINK and SWD link, drive GDB from the command line, watch buses with a logic analyzer, and decode HardFaults register by register.">
+  <title>ST-LINK, SWD, GDB, Logic Analyzer &amp; Fault Diagnosis | Programming STM32 with C</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch08-debugging-fault-diagnosis">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">STM32 + C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, GPIO, DMA, GDB..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/stm32-firmware-development-with-c/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Chapters</span>
+          <span class="progress-pill">Ch 8 of 9</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
+          </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C1</span>
+              <span>Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-embedded-c-stm32-architecture.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Embedded C &amp; Architecture</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 Why C, and Why "Embedded" C…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 Fixed-Width Types and Intege…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Bit Manipulation - The Every…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 `volatile`, `const` and `sta…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Pointers and Memory-Mapped R…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 STM32 Family and the Cortex-…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Memory Map and Bus Matrix</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.8 Clocks, Reset and the Boot S…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.9 Hands-On Lab 1: Register-Lev…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C2</span>
+              <span>Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-cubemx-cubeide.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: CubeMX &amp; CubeIDE</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch02-cubemx-cubeide.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 The ST Software Stack</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Creating a Project in STM32C…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 CubeMX: Pinout, Clock Tree a…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Anatomy of the Generated Pro…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 The USER CODE Rule</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.6 HAL Conventions You Will See…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.7 Build, Flash and Run</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.8 Hands-On Lab 2: First CubeMX…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C3</span>
+              <span>Digital I/O</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-gpio-interrupts.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: GPIO &amp; Interrupts</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch03-gpio-interrupts.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Anatomy of a GPIO Pin</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Using GPIO with HAL</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Polling a Button - and Why I…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Interrupts: The Concept</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 EXTI and the NVIC</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.6 Writing Good ISRs</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.7 Debouncing</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.8 Hands-On Lab 3: Interrupt-Dr…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C4</span>
+              <span>Analog &amp; Timing</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-timers-pwm-adc.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Timers, PWM &amp; ADC</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch04-timers-pwm-adc.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 What a Hardware Timer Does</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Periodic Interrupts and Accu…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 PWM: Analog Control from a D…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Input Capture: Measuring Tim…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 The ADC: Measuring Voltage</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Triggering the ADC with a Ti…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.7 Hands-On Lab 4: Potentiomete…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C5</span>
+              <span>Serial &amp; Transfers</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-uart-dma.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: USART/UART &amp; DMA</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch05-uart-dma.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Serial Communication Basics</a></li><li><a href="ch05-uart-dma.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Three Ways to Transfer Data</a></li><li><a href="ch05-uart-dma.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 Interrupt-Driven Reception</a></li><li><a href="ch05-uart-dma.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Retargeting printf</a></li><li><a href="ch05-uart-dma.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 DMA: Moving Data Without the…</a></li><li><a href="ch05-uart-dma.html#sec-5-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.6 DMA RX with Idle-Line Detect…</a></li><li><a href="ch05-uart-dma.html#sec-5-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.7 DMA with the ADC</a></li><li><a href="ch05-uart-dma.html#sec-5-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.8 A Command Console</a></li><li><a href="ch05-uart-dma.html#sec-5-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.9 Hands-On Lab 5: DMA UART Com…</a></li><li><a href="ch05-uart-dma.html#sec-5-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C6</span>
+              <span>Buses</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-i2c-spi-can.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: I2C, SPI &amp; CAN</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch06-i2c-spi-can.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 Choosing a Bus</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 I2C Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 SPI Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 CAN Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Hands-On Lab 6: Three-Bus Br…</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C7</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch07-sensors-displays-motors.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 7: Sensors, Displays &amp; Motors</span>
+                <span class="chapter-read-time">55m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch07-sensors-displays-motors.html#sec-7-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.1 Interfacing Sensors: A Method</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.2 BME280 over I2C</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.3 MPU6050 Accelerometer and Gy…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.4 Analog Sensors: NTC Thermistor</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.5 Displays</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.6 Actuators: Servos</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.7 Actuators: DC Motors with an…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.8 Actuators: Stepper Motors</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.9 Hands-On Lab 7: Weather Stat…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C8</span>
+              <span>Debugging</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch08-debugging-fault-diagnosis.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 8: Debugging &amp; Fault Diagnosis</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.1 The Debug Chain: ST-LINK and…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.2 GDB from the Command Line</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.3 Watching the Wires: Logic An…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.4 Fault Diagnosis: Decoding a…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C9</span>
+              <span>Projects</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch09-projects-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 9: Mini Projects &amp; Capstone</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch09-projects-capstone.html#sec-9-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.1 From Exercises to Products</a></li><li><a href="ch09-projects-capstone.html#sec-9-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.2 Five Mini Projects</a></li><li><a href="ch09-projects-capstone.html#sec-9-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.3 Capstone: CAN-Connected Envi…</a></li><li><a href="ch09-projects-capstone.html#sec-9-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.4 Test Plan and Definition of…</a></li><li><a href="ch09-projects-capstone.html#sec-9-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Further Reading</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs"><a href="../index.html">Home</a><span>/</span><span>Chapter 8</span><span>/</span><span>Debugging &amp; Fault Diagnosis</span></div>
+        <div class="chapter-actions">
+          <a href="ch07-sensors-displays-motors.html" class="btn-secondary">← Chapter 7</a>
+          <a href="ch09-projects-capstone.html" class="btn-primary">Chapter 9 →</a>
+        </div>
+      </div>
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Chapter 08 • Debugging</span>
+          <h1 class="chapter-h1">ST-LINK, SWD, GDB, Logic Analyzer &amp; Fault Diagnosis</h1>
+          <p class="chapter-lead">Stop guessing. Understand the ST-LINK and SWD link, drive GDB from the command line, watch buses with a logic analyzer, and decode HardFaults register by register.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 60 minutes</div>
+            <div class="meta-item">🛠️ Lab: Debug the broken firmware</div>
+            <div class="meta-item">🎯 Topics: ST-LINK, SWD, GDB, Faults</div>
+          </div>
+        </div>
+<h2 id="sec-8-1">8.1 The Debug Chain: ST-LINK and SWD</h2>
+<p>Every Nucleo board carries an <strong>ST-LINK/V2-1</strong> probe. It is a second small MCU that talks USB to your PC and <strong>SWD</strong> (Serial Wire Debug) to the target STM32. It also provides the Virtual COM Port (USART2) and a mass-storage drag-and-drop programmer.</p>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Signal</th>
+<th style="padding:0.6rem;">Pin (F446)</th>
+<th style="padding:0.6rem;">Purpose</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>SWDIO</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">PA13</td>
+<td style="padding:0.6rem;vertical-align:top;">Bidirectional data</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>SWCLK</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">PA14</td>
+<td style="padding:0.6rem;vertical-align:top;">Clock from the probe</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>SWO</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">PB3</td>
+<td style="padding:0.6rem;vertical-align:top;">Optional trace output (printf over ITM)</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>NRST</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">NRST</td>
+<td style="padding:0.6rem;vertical-align:top;">Reset line, needed for "connect under reset"</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>GND / VDD</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">-</td>
+<td style="padding:0.6rem;vertical-align:top;">Reference and target voltage sense</td>
+</tr>
+</tbody></table></div>
+
+        <div class="callout callout-warning">
+          <div class="callout-header">Do not repurpose PA13/PA14</div>
+          <div class="callout-body">If CubeMX or your code reconfigures PA13/PA14 as GPIO, the debugger loses the chip. Recover with <strong>Connect under reset</strong> in STM32CubeProgrammer (hold NRST, then connect).</div>
+        </div>
+
+<p>SWD uses only two wires and gives you: halt/run/step, read and write memory and registers, flash programming, hardware breakpoints (6 on Cortex-M4 FPB) and watchpoints (4 on the DWT unit).</p>
+<h3>Debug configuration in CubeIDE</h3>
+<ol><li>Run <strong>Debug As &gt; STM32 C/C++ Application</strong> once; CubeIDE creates a launch configuration.</li><li>In <strong>Debugger</strong> select *ST-LINK (ST-LINK GDB server)*, interface <strong>SWD</strong>, and enable <strong>SWV</strong> if you want ITM printf.</li><li>Set the core clock in the SWV settings to your real SYSCLK (e.g. 180 MHz) or the trace timestamps will be wrong.</li></ol>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Retarget printf to ITM (SWO)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stdio.h&gt;
+
+int _write(int fd, char *ptr, int len)
+{
+    (void)fd;
+    for (int i = 0; i &lt; len; i++) {
+        ITM_SendChar((uint32_t)ptr[i]);
+    }
+    return len;
+}</code></pre>
+          </div>
+        </div>
+
+<h2 id="sec-8-2">8.2 GDB from the Command Line</h2>
+<p>CubeIDE drives GDB for you, but knowing the raw tools makes you independent of any IDE. With <strong>OpenOCD</strong> as the GDB server:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Start OpenOCD and GDB</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code># Terminal 1 - GDB server
+openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
+
+# Terminal 2 - client
+arm-none-eabi-gdb build/app.elf
+(gdb) target extended-remote :3333
+(gdb) monitor reset halt
+(gdb) load
+(gdb) break main
+(gdb) continue</code></pre>
+          </div>
+        </div>
+
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Command</th>
+<th style="padding:0.6rem;">Meaning</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>break file.c:42</code> / <code>tbreak fn</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Breakpoint / one-shot breakpoint</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>watch counter</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Stop when the variable changes (uses a DWT comparator)</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>rwatch</code> / <code>awatch</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Stop on read / on any access</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>info registers</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Core registers (<code>pc</code>, <code>lr</code>, <code>sp</code>, <code>xpsr</code>)</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>x/8wx 0x40020014</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Examine 8 words of memory - peripheral registers included</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>p/x GPIOA-&gt;ODR</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Print a peripheral register using SVD-aware symbols</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>bt</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Backtrace of the current call stack</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>finish</code> / <code>step</code> / <code>next</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Run to return / step in / step over</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>monitor reset halt</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Reset the target and stop at the first instruction</td>
+</tr>
+</tbody></table></div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">GDB</span>
+              <span>Conditional breakpoint and commands</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>(gdb) break sensor_read if channel == 3
+(gdb) commands
+&gt; silent
+&gt; printf "ch=%d raw=%d\n", channel, raw
+&gt; continue
+&gt; end</code></pre>
+          </div>
+        </div>
+
+
+        <div class="callout callout-tip">
+          <div class="callout-header">Optimisation and debugging</div>
+          <div class="callout-body">Build the Debug configuration with <code>-Og -g3</code>. With <code>-O2</code> variables are optimised away ("value optimised out") and stepping jumps around. Only switch to Release for final timing tests.</div>
+        </div>
+
+<h3>Reading peripherals without code</h3>
+<p><code>x/wx</code> on a register address is the quickest hardware check. For example, to confirm that PA5 is an output: <code>x/wx 0x40020000</code> returns GPIOA-&gt;MODER; bits 11:10 must equal <code>01</code>.</p>
+<h2 id="sec-8-3">8.3 Watching the Wires: Logic Analyzer</h2>
+<p>A debugger shows what the <strong>CPU</strong> believes. A logic analyzer shows what the <strong>pins</strong> really do. Use it for every bus bring-up.</p>
+<ol><li>Connect the analyzer <strong>GND</strong> to the board GND first, then probes to the signals.</li><li>In PulseView/sigrok pick the sample rate at least <strong>4x</strong> (preferably 10x) the signal frequency.</li><li>Set a trigger (e.g. falling edge on CS or I2C start condition).</li><li>Add a protocol decoder: <strong>I2C</strong>, <strong>SPI</strong>, <strong>UART</strong>, <strong>CAN</strong> (via a transceiver RXD pin).</li></ol>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Symptom on the analyzer</th>
+<th style="padding:0.6rem;">Likely cause</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">I2C: address followed by NACK</td>
+<td style="padding:0.6rem;vertical-align:top;">Wrong 7-bit address (shifted by one bit), device unpowered</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">I2C: slow rising edges</td>
+<td style="padding:0.6rem;vertical-align:top;">Pull-ups too weak or bus capacitance too high</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">SPI: data shifted by one bit</td>
+<td style="padding:0.6rem;vertical-align:top;">Wrong CPOL/CPHA mode</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">UART: framing errors</td>
+<td style="padding:0.6rem;vertical-align:top;">Baud rate mismatch (check clock tree) or wrong stop bits</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">PWM: wrong period</td>
+<td style="padding:0.6rem;vertical-align:top;">PSC/ARR computed from the wrong timer clock</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">CAN: no ACK bit</td>
+<td style="padding:0.6rem;vertical-align:top;">No other node on the bus or missing termination</td>
+</tr>
+</tbody></table></div>
+
+        <div class="callout callout-hardware">
+          <div class="callout-header">Toggle a spare pin as a timing probe</div>
+          <div class="callout-body">Set a GPIO high at the start of a function and low at the end. The analyzer then shows the exact execution time and jitter without any debugger intrusion. This is the cheapest profiler you will ever have.</div>
+        </div>
+
+<h2 id="sec-8-4">8.4 Fault Diagnosis: Decoding a HardFault</h2>
+<p>When the core executes something illegal it raises a fault. On Cortex-M4 there are four: <strong>HardFault</strong>, <strong>MemManage</strong>, <strong>BusFault</strong> and <strong>UsageFault</strong>. If the specific ones are not enabled they escalate to HardFault.</p>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Common cause</th>
+<th style="padding:0.6rem;">Typical fault bit</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">NULL or wild pointer dereference</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>BFSR.PRECISERR</code> / <code>IACCVIOL</code></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Stack overflow</td>
+<td style="padding:0.6rem;vertical-align:top;">Often <code>STKERR</code> or a corrupted return address</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Unaligned access with <code>UNALIGN_TRP</code></td>
+<td style="padding:0.6rem;vertical-align:top;"><code>UNALIGNED</code> (UFSR)</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Divide by zero (when trapped)</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>DIVBYZERO</code> (UFSR)</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Executing data / bad function pointer</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>INVSTATE</code> or <code>IACCVIOL</code></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Accessing a peripheral with its clock disabled</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>PRECISERR</code> bus fault</td>
+</tr>
+</tbody></table></div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>HardFault handler that captures the stack frame</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>volatile struct {
+    uint32_t r0, r1, r2, r3, r12, lr, pc, psr;
+    uint32_t cfsr, hfsr, mmfar, bfar;
+} g_fault;
+
+void HardFault_Handler(void)
+{
+    __asm volatile(
+        "tst lr, #4        \n"
+        "ite eq            \n"
+        "mrseq r0, msp     \n"
+        "mrsne r0, psp     \n"
+        "b hardfault_c     \n");
+}
+
+void hardfault_c(uint32_t *sp)
+{
+    g_fault.r0 = sp[0];  g_fault.r1 = sp[1];
+    g_fault.r2 = sp[2];  g_fault.r3 = sp[3];
+    g_fault.r12 = sp[4]; g_fault.lr = sp[5];
+    g_fault.pc = sp[6];  g_fault.psr = sp[7];
+    g_fault.cfsr  = SCB-&gt;CFSR;
+    g_fault.hfsr  = SCB-&gt;HFSR;
+    g_fault.mmfar = SCB-&gt;MMFAR;
+    g_fault.bfar  = SCB-&gt;BFAR;
+    __BKPT(0);                 /* halt here when a debugger is attached */
+    for (;;) { }
+}</code></pre>
+          </div>
+        </div>
+
+<p>The stacked <strong>PC</strong> is the address of the faulting instruction. Convert it to a source line:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Find the faulting line</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>arm-none-eabi-addr2line -e build/app.elf -f -p 0x080012A4
+# -&gt; sensor_read at ../Core/Src/sensor.c:57</code></pre>
+          </div>
+        </div>
+
+
+        <div class="callout callout-tip">
+          <div class="callout-header">Enable the detailed faults</div>
+          <div class="callout-body">In <code>main()</code> set <code>SCB-&gt;SHCSR |= SCB_SHCSR_USGFAULTENA_Msk | SCB_SHCSR_BUSFAULTENA_Msk | SCB_SHCSR_MEMFAULTENA_Msk;</code> and <code>SCB-&gt;CCR |= SCB_CCR_DIV_0_TRP_Msk;</code>. You then get the precise fault handlers rather than everything landing in HardFault.</div>
+        </div>
+
+<h3>Stack overflow detection</h3>
+<ul><li>Fill the stack with a known pattern (<code>0xDEADBEEF</code>) at start-up and check the high-water mark periodically.</li><li>Place the stack at the bottom of RAM so an overflow hits a fault instead of silently corrupting globals.</li><li>Avoid large local arrays and deep recursion; keep ISRs lean.</li></ul>
+<h3>A systematic method</h3>
+<ol><li><strong>Reproduce</strong> - find the minimum steps that trigger the problem.</li><li><strong>Observe</strong> - debugger for the CPU view, logic analyzer for the pin view, UART log for the timeline.</li><li><strong>Hypothesise</strong> - one cause at a time; write it down.</li><li><strong>Test</strong> - change one thing, re-measure.</li><li><strong>Lock in</strong> - add an assert or a test so it cannot return silently.</li></ol>
+
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Lab 8: Debug the Broken Firmware</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l8-step1">
+              <label for="l8-step1" class="checklist-text">Start a debug session in CubeIDE, set a breakpoint in <code>main()</code> and inspect <code>RCC-&gt;CFGR</code> and <code>GPIOA-&gt;MODER</code> in the registers view.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l8-step2">
+              <label for="l8-step2" class="checklist-text">Run <code>openocd</code> and <code>arm-none-eabi-gdb</code> manually and repeat the same inspection with <code>x/wx</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l8-step3">
+              <label for="l8-step3" class="checklist-text">Add a <code>watch</code> on a global counter and find which function modifies it unexpectedly.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l8-step4">
+              <label for="l8-step4" class="checklist-text">Redirect <code>printf</code> to SWO and view the output in the SWV console.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l8-step5">
+              <label for="l8-step5" class="checklist-text">Capture an I2C transaction with the logic analyzer and decode the address and ACK bits.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l8-step6">
+              <label for="l8-step6" class="checklist-text">Introduce a NULL pointer write; catch it in the HardFault handler and map the stacked PC to a source line with <code>addr2line</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l8-step7">
+              <label for="l8-step7" class="checklist-text">Toggle a spare GPIO around a function and measure its execution time on the analyzer.</label>
+            </li>
+          </ul>
+        </div>
+
+
+        <div class="quiz-container" id="sec-8-quiz">
+          <div class="quiz-header"><span>🧠 Knowledge Check: Chapter 8</span></div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">1. Which two signals make up the SWD interface?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Those are UART signals.">
+                A) TX and RX
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! SWO is optional trace output.">
+                B) SWDIO and SWCLK
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Those are I2C.">
+                C) SCL and SDA
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Those are SPI.">
+                D) MOSI and MISO
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">2. In a HardFault handler, which stacked register tells you where the fault happened?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) R0
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. LR holds the EXC_RETURN value in the handler; the stacked LR is the caller&#x27;s return address.">
+                B) LR
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! Use addr2line to map it to a source line.">
+                C) PC
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) PSR
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">3. Why use a logic analyzer when you already have a debugger?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) It is faster than a debugger at stepping code
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) It shows the real electrical signals on the pins, which the CPU's view may not match
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) It programs the flash
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) It replaces the need for pull-ups
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">4. Why should a Debug build use -Og instead of -O2?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) Because -Og produces smaller code
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) Variables stay visible and stepping follows the source
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) Because -O2 is not supported on Cortex-M
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+
+        <div class="chapter-bottom-nav">
+          <a href="ch07-sensors-displays-motors.html" class="nav-card"><span class="nav-card-dir">← Previous</span><span class="nav-card-title">Chapter 7: Sensors, Displays &amp; Motors</span></a>
+          <a href="ch09-projects-capstone.html" class="nav-card" style="text-align:right;"><span class="nav-card-dir">Next →</span><span class="nav-card-title">Chapter 9: Mini Projects &amp; Capstone</span></a>
+        </div>
+
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Programming STM32 with C • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+
+      </article>
+    </main>
+  </div>
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, GPIO, DMA, GDB...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+  <script src="../js/book.js"></script>
+</body>
+</html>

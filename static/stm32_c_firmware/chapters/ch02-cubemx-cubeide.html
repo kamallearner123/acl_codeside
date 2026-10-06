@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Go from an empty project to a running firmware: configure pins and the clock tree in CubeMX, understand the generated code, and learn how to add your own code without losing it on regeneration.">
+  <title>STM32CubeMX &amp; STM32CubeIDE Workflow | Programming STM32 with C</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch02-cubemx-cubeide">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">STM32 + C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, GPIO, DMA, GDB..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/stm32-firmware-development-with-c/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Chapters</span>
+          <span class="progress-pill">Ch 2 of 9</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
+          </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C1</span>
+              <span>Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-embedded-c-stm32-architecture.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Embedded C &amp; Architecture</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 Why C, and Why "Embedded" C…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 Fixed-Width Types and Intege…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Bit Manipulation - The Every…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 `volatile`, `const` and `sta…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Pointers and Memory-Mapped R…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 STM32 Family and the Cortex-…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Memory Map and Bus Matrix</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.8 Clocks, Reset and the Boot S…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.9 Hands-On Lab 1: Register-Lev…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C2</span>
+              <span>Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-cubemx-cubeide.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: CubeMX &amp; CubeIDE</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch02-cubemx-cubeide.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 The ST Software Stack</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Creating a Project in STM32C…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 CubeMX: Pinout, Clock Tree a…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Anatomy of the Generated Pro…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 The USER CODE Rule</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.6 HAL Conventions You Will See…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.7 Build, Flash and Run</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.8 Hands-On Lab 2: First CubeMX…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C3</span>
+              <span>Digital I/O</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-gpio-interrupts.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: GPIO &amp; Interrupts</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch03-gpio-interrupts.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Anatomy of a GPIO Pin</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Using GPIO with HAL</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Polling a Button - and Why I…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Interrupts: The Concept</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 EXTI and the NVIC</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.6 Writing Good ISRs</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.7 Debouncing</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.8 Hands-On Lab 3: Interrupt-Dr…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C4</span>
+              <span>Analog &amp; Timing</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-timers-pwm-adc.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Timers, PWM &amp; ADC</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch04-timers-pwm-adc.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 What a Hardware Timer Does</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Periodic Interrupts and Accu…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 PWM: Analog Control from a D…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Input Capture: Measuring Tim…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 The ADC: Measuring Voltage</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Triggering the ADC with a Ti…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.7 Hands-On Lab 4: Potentiomete…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C5</span>
+              <span>Serial &amp; Transfers</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-uart-dma.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: USART/UART &amp; DMA</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch05-uart-dma.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Serial Communication Basics</a></li><li><a href="ch05-uart-dma.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Three Ways to Transfer Data</a></li><li><a href="ch05-uart-dma.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 Interrupt-Driven Reception</a></li><li><a href="ch05-uart-dma.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Retargeting printf</a></li><li><a href="ch05-uart-dma.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 DMA: Moving Data Without the…</a></li><li><a href="ch05-uart-dma.html#sec-5-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.6 DMA RX with Idle-Line Detect…</a></li><li><a href="ch05-uart-dma.html#sec-5-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.7 DMA with the ADC</a></li><li><a href="ch05-uart-dma.html#sec-5-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.8 A Command Console</a></li><li><a href="ch05-uart-dma.html#sec-5-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.9 Hands-On Lab 5: DMA UART Com…</a></li><li><a href="ch05-uart-dma.html#sec-5-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C6</span>
+              <span>Buses</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-i2c-spi-can.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: I2C, SPI &amp; CAN</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch06-i2c-spi-can.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 Choosing a Bus</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 I2C Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 SPI Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 CAN Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Hands-On Lab 6: Three-Bus Br…</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C7</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch07-sensors-displays-motors.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 7: Sensors, Displays &amp; Motors</span>
+                <span class="chapter-read-time">55m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch07-sensors-displays-motors.html#sec-7-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.1 Interfacing Sensors: A Method</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.2 BME280 over I2C</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.3 MPU6050 Accelerometer and Gy…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.4 Analog Sensors: NTC Thermistor</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.5 Displays</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.6 Actuators: Servos</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.7 Actuators: DC Motors with an…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.8 Actuators: Stepper Motors</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.9 Hands-On Lab 7: Weather Stat…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C8</span>
+              <span>Debugging</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch08-debugging-fault-diagnosis.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 8: Debugging &amp; Fault Diagnosis</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.1 The Debug Chain: ST-LINK and…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.2 GDB from the Command Line</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.3 Watching the Wires: Logic An…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.4 Fault Diagnosis: Decoding a…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C9</span>
+              <span>Projects</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch09-projects-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 9: Mini Projects &amp; Capstone</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch09-projects-capstone.html#sec-9-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.1 From Exercises to Products</a></li><li><a href="ch09-projects-capstone.html#sec-9-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.2 Five Mini Projects</a></li><li><a href="ch09-projects-capstone.html#sec-9-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.3 Capstone: CAN-Connected Envi…</a></li><li><a href="ch09-projects-capstone.html#sec-9-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.4 Test Plan and Definition of…</a></li><li><a href="ch09-projects-capstone.html#sec-9-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Further Reading</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs"><a href="../index.html">Home</a><span>/</span><span>Chapter 2</span><span>/</span><span>CubeMX &amp; CubeIDE</span></div>
+        <div class="chapter-actions">
+          <a href="ch01-embedded-c-stm32-architecture.html" class="btn-secondary">← Chapter 1</a>
+          <a href="ch03-gpio-interrupts.html" class="btn-primary">Chapter 3 →</a>
+        </div>
+      </div>
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Chapter 02 • Tools</span>
+          <h1 class="chapter-h1">STM32CubeMX &amp; STM32CubeIDE Workflow</h1>
+          <p class="chapter-lead">Go from an empty project to a running firmware: configure pins and the clock tree in CubeMX, understand the generated code, and learn how to add your own code without losing it on regeneration.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 35 minutes</div>
+            <div class="meta-item">🛠️ Lab: First CubeMX project</div>
+            <div class="meta-item">🎯 Topics: CubeMX, CubeIDE, HAL</div>
+          </div>
+        </div>
+<h2 id="sec-2-1">2.1 The ST Software Stack</h2>
+<p>ST provides several layers. Knowing which one is which prevents a lot of confusion:</p>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Layer</th>
+<th style="padding:0.6rem;">What it is</th>
+<th style="padding:0.6rem;">Use it when</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>CMSIS</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">ARM core headers + ST device header (<code>stm32f4xx.h</code>) with register structs</td>
+<td style="padding:0.6rem;vertical-align:top;">Register-level code, always present</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>HAL</strong> (Hardware Abstraction Layer)</td>
+<td style="padding:0.6rem;vertical-align:top;">Portable C API: <code>HAL_GPIO_WritePin</code>, <code>HAL_UART_Transmit</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Most application work; quick, portable across families</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>LL</strong> (Low-Layer)</td>
+<td style="padding:0.6rem;vertical-align:top;">Thin, fast, header-style register helpers</td>
+<td style="padding:0.6rem;vertical-align:top;">Timing-critical paths, small code size</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>STM32CubeMX</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">GUI that configures pins, clocks, peripherals and <strong>generates</strong> init code</td>
+<td style="padding:0.6rem;vertical-align:top;">Start of every project</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>STM32CubeIDE</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">Eclipse-based IDE: editor, GCC toolchain, debugger, CubeMX built in</td>
+<td style="padding:0.6rem;vertical-align:top;">Daily development</td>
+</tr>
+</tbody></table></div>
+<p>This book uses <strong>HAL generated by CubeMX</strong> for most examples, and drops to registers or LL where it teaches something.</p>
+<h2 id="sec-2-2">2.2 Creating a Project in STM32CubeIDE</h2>
+<ol><li>*File → New → STM32 Project*, pick the <strong>Board Selector</strong> tab and choose <strong>NUCLEO-F446RE</strong>.</li><li>Name the project, keep <strong>C</strong> as language and <strong>Executable</strong> as type.</li><li>Answer <strong>Yes</strong> to "Initialize all peripherals with their default mode" - this configures LD2, B1 and USART2 for you.</li><li>CubeIDE opens the <code>.ioc</code> file - the CubeMX configurator.</li></ol>
+<p>The <code>.ioc</code> file is the single source of truth for hardware configuration. Commit it to version control; the generated C code can always be regenerated from it.</p>
+<h2 id="sec-2-3">2.3 CubeMX: Pinout, Clock Tree and Peripherals</h2>
+<p>The configurator has four tabs worth knowing:</p>
+<ul><li><strong>Pinout &amp; Configuration</strong> - click a pin and pick its function (e.g. <code>PA6 → TIM3_CH1</code>). Peripherals are enabled in the left tree. Conflicts show in orange/red.</li><li><strong>Clock Configuration</strong> - the clock tree. Choose HSE (bypass) or HSI, set the PLL and see APB1/APB2 frequencies. Setting HCLK to 180 MHz is a one-line entry.</li><li><strong>Project Manager</strong> - project name, toolchain, <strong>Code Generator</strong> options, heap/stack size.</li><li><strong>Power Consumption Calculator</strong> - optional estimates for battery designs.</li></ul>
+
+        <div class="callout callout-hardware">
+          <div class="callout-header">Clock for the F446RE Nucleo</div>
+          <div class="callout-body">Set <strong>RCC → High Speed Clock (HSE) = BYPASS Clock Source</strong>, then in the Clock Configuration tab select HSE as PLL source, enter <code>180</code> in HCLK and let CubeMX solve the dividers. Verify APB1 = 45 MHz and APB2 = 90 MHz.</div>
+        </div>
+
+<h3>Recommended code-generator options</h3>
+<ul><li>*Generate peripheral initialization as a pair of .c/.h files per peripheral* - keeps <code>main.c</code> readable.</li><li>*Keep user code when re-generating* - <strong>must be ticked</strong> (it is by default).</li><li>*Delete previously generated files when not re-generated* - keeps the tree clean when you disable a peripheral.</li></ul>
+<h2 id="sec-2-4">2.4 Anatomy of the Generated Project</h2>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">TEXT</span>
+              <span>Project tree</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>Core/
+  Inc/    main.h  gpio.h  usart.h  stm32f4xx_hal_conf.h  stm32f4xx_it.h
+  Src/    main.c  gpio.c  usart.c  stm32f4xx_it.c  stm32f4xx_hal_msp.c
+          system_stm32f4xx.c  syscalls.c  sysmem.c
+Drivers/
+  CMSIS/  device and core headers
+  STM32F4xx_HAL_Driver/   the HAL source
+Startup/  startup_stm32f446retx.s
+STM32F446RETX_FLASH.ld    linker script
+firmware.ioc              CubeMX configuration</code></pre>
+          </div>
+        </div>
+
+<p>The key files:</p>
+<ul><li><strong>main.c</strong> - <code>main()</code> calls <code>HAL_Init()</code>, <code>SystemClock_Config()</code>, the <code>MX_xxx_Init()</code> functions, then your loop.</li><li><strong>stm32f4xx_it.c</strong> - interrupt handlers (<code>SysTick_Handler</code>, <code>EXTI15_10_IRQHandler</code>, ...). Most just call the matching HAL handler.</li><li><strong>stm32f4xx_hal_msp.c</strong> and <code>xxx.c</code> - MSP = MCU Support Package: enables peripheral clocks and configures GPIO alternate functions for each peripheral.</li><li><strong>stm32f4xx_hal_conf.h</strong> - which HAL modules are compiled in.</li></ul>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Generated main() - simplified</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>int main(void)
+{
+  /* USER CODE BEGIN 1 */
+  /* USER CODE END 1 */
+
+  HAL_Init();                 /* Flash prefetch, SysTick 1 ms, NVIC grouping */
+  SystemClock_Config();       /* the clock tree you drew in CubeMX            */
+
+  MX_GPIO_Init();             /* pins                                         */
+  MX_USART2_UART_Init();      /* peripherals                                  */
+
+  /* USER CODE BEGIN 2 */
+  /* USER CODE END 2 */
+
+  while (1)
+  {
+    /* USER CODE BEGIN 3 */
+    /* USER CODE END 3 */
+  }
+}</code></pre>
+          </div>
+        </div>
+
+<h2 id="sec-2-5">2.5 The USER CODE Rule</h2>
+<p>CubeMX regenerates the files every time you save the <code>.ioc</code>. Anything <strong>outside</strong> the <code>USER CODE BEGIN/END</code> markers is overwritten.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Right and wrong places for your code</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/* WRONG: this line vanishes the next time the .ioc is saved */
+HAL_UART_Transmit(&amp;huart2, (uint8_t *)"hi\r\n", 4, 100);
+MX_USART2_UART_Init();
+
+/* RIGHT: inside a USER CODE section */
+/* USER CODE BEGIN 2 */
+HAL_UART_Transmit(&amp;huart2, (uint8_t *)"hi\r\n", 4, 100);
+/* USER CODE END 2 */</code></pre>
+          </div>
+        </div>
+
+
+        <div class="callout callout-warning">
+          <div class="callout-header">Do not edit generated lines</div>
+          <div class="callout-body">If you must change generated behaviour, change it in the <code>.ioc</code> file. Editing outside user sections works - until you next touch CubeMX, and then your work silently disappears.</div>
+        </div>
+
+<h3>Good habits for larger projects</h3>
+<p>Keep your own logic out of <code>main.c</code>. Create <code>app.c</code>/<code>app.h</code> (or one pair per feature, such as <code>sensor.c</code>, <code>console.c</code>) and call into them from user sections: <code>app_init();</code> in <code>USER CODE 2</code> and <code>app_poll();</code> in <code>USER CODE 3</code>. Your code stays testable, and the generated files stay boring.</p>
+<h2 id="sec-2-6">2.6 HAL Conventions You Will See Everywhere</h2>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Convention</th>
+<th style="padding:0.6rem;">Example</th>
+<th style="padding:0.6rem;">Meaning</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Handle structs</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>UART_HandleTypeDef huart2;</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Holds peripheral instance, config and state</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Return type</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>HAL_StatusTypeDef</code></td>
+<td style="padding:0.6rem;vertical-align:top;"><code>HAL_OK</code>, <code>HAL_ERROR</code>, <code>HAL_BUSY</code>, <code>HAL_TIMEOUT</code></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Blocking calls</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>HAL_UART_Transmit(&amp;h, buf, n, timeout)</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Wait until done or timeout (ms)</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Interrupt calls</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>HAL_UART_Receive_IT(...)</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Return immediately, callback when finished</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">DMA calls</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>HAL_UART_Receive_DMA(...)</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Hardware moves data, callback on completion</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Callbacks</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>HAL_UART_RxCpltCallback()</code></td>
+<td style="padding:0.6rem;vertical-align:top;"><code>__weak</code> functions you override in your own code</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Time base</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>HAL_GetTick()</code>, <code>HAL_Delay(ms)</code></td>
+<td style="padding:0.6rem;vertical-align:top;">1 ms SysTick counter</td>
+</tr>
+</tbody></table></div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Checking HAL return codes</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>HAL_StatusTypeDef st = HAL_I2C_IsDeviceReady(&amp;hi2c1, 0x76 &lt;&lt; 1, 3, 100);
+if (st != HAL_OK) {
+    Error_Handler();          /* or log and recover - never ignore errors */
+}</code></pre>
+          </div>
+        </div>
+
+<h2 id="sec-2-7">2.7 Build, Flash and Run</h2>
+<ul><li><strong>Build:</strong> hammer icon (Ctrl+B). Check the Console for <code>0 errors</code>, and the Build Analyzer for memory.</li><li><strong>Run/Debug:</strong> green bug icon (F11) creates a debug configuration that uses the on-board ST-LINK, flashes the ELF and halts at <code>main()</code>. Press F8 to resume.</li><li><strong>Flash only:</strong> use *Run As → STM32 C/C++ Application*, or STM32CubeProgrammer with the <code>.elf</code>/<code>.bin</code>.</li></ul>
+
+        <div class="callout callout-tip">
+          <div class="callout-header">Optimisation levels</div>
+          <div class="callout-body">The *Debug* build configuration uses <code>-Og</code>/<code>-O0</code> so variables are inspectable. The *Release* configuration uses <code>-Os</code>. Switch to Release to measure real code size and speed, but debug with Debug.</div>
+        </div>
+
+<h2 id="sec-2-8">2.8 Hands-On Lab 2: First CubeMX Project</h2>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Lab 2 - heartbeat and greeting in USER CODE sections</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/* USER CODE BEGIN Includes */
+#include &lt;string.h&gt;
+#include &lt;stdio.h&gt;
+/* USER CODE END Includes */
+
+/* ... inside main(), in USER CODE BEGIN 2 ... */
+const char *hello = "STM32F446RE ready\r\n";
+HAL_UART_Transmit(&amp;huart2, (uint8_t *)hello, strlen(hello), HAL_MAX_DELAY);
+
+/* ... inside while(1), in USER CODE BEGIN 3 ... */
+HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+HAL_Delay(500);</code></pre>
+          </div>
+        </div>
+
+
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Lab 2 Checklist</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step1">
+              <label for="l2-step1" class="checklist-text">Create the NUCLEO-F446RE project with default peripherals initialised.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step2">
+              <label for="l2-step2" class="checklist-text">Set the clock tree to HCLK = 180 MHz and confirm APB1 = 45 MHz, APB2 = 90 MHz.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step3">
+              <label for="l2-step3" class="checklist-text">Add the greeting and heartbeat code only inside USER CODE sections.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step4">
+              <label for="l2-step4" class="checklist-text">Open a terminal on the ST-LINK Virtual COM Port at 115200 8N1 and read the greeting.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step5">
+              <label for="l2-step5" class="checklist-text">Re-open the <code>.ioc</code>, change the LED pin label, regenerate, and confirm your code survived.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l2-step6">
+              <label for="l2-step6" class="checklist-text">Find <code>MX_GPIO_Init()</code> and identify which RCC clock-enable and <code>GPIOx-&gt;MODER</code> setting configures LD2.</label>
+            </li>
+          </ul>
+        </div>
+
+
+        <div class="quiz-container" id="sec-2-quiz">
+          <div class="quiz-header"><span>🧠 Knowledge Check: Chapter 2</span></div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">1. Where must your own code be placed in generated files?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. It overwrites everything outside markers.">
+                A) Anywhere, CubeMX merges it
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! Only these regions are preserved on regeneration.">
+                B) Between USER CODE BEGIN and USER CODE END markers
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. The `.ioc` is configuration, not C code.">
+                C) Only in the <code>.ioc</code> file
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Those are vendor files.">
+                D) Only in the Drivers folder
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">2. Which file is the single source of truth for the hardware configuration?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. It is generated from the .ioc.">
+                A) <code>main.c</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! Everything else can be regenerated from it.">
+                B) The <code>.ioc</code> file
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) <code>startup_stm32f446retx.s</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. It only selects HAL modules.">
+                D) <code>stm32f4xx_hal_conf.h</code>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">3. What does <code>HAL_UART_Receive_IT()</code> do?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. That is `HAL_UART_Receive()`.">
+                A) Blocks until the buffer is full
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) Starts reception and returns immediately; a callback is called when done
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. That is `_DMA`.">
+                C) Uses DMA
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) Sends data
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+
+        <div class="chapter-bottom-nav">
+          <a href="ch01-embedded-c-stm32-architecture.html" class="nav-card"><span class="nav-card-dir">← Previous</span><span class="nav-card-title">Chapter 1: Embedded C &amp; STM32 Architecture</span></a>
+          <a href="ch03-gpio-interrupts.html" class="nav-card" style="text-align:right;"><span class="nav-card-dir">Next →</span><span class="nav-card-title">Chapter 3: GPIO &amp; External Interrupts</span></a>
+        </div>
+
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Programming STM32 with C • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+
+      </article>
+    </main>
+  </div>
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, GPIO, DMA, GDB...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+  <script src="../js/book.js"></script>
+</body>
+</html>

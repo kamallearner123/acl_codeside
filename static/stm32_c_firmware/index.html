@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Programming STM32 with C: From CubeMX to Hardware Debugging">
+  <title>Course Overview | Programming STM32 with C</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-chapter-id="index">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="index.html" class="brand-badge">
+        <img src="assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">STM32 + C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, GPIO, DMA, GDB..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/stm32-firmware-development-with-c/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Chapters</span>
+          <span class="progress-pill">Overview</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
+          </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C1</span>
+              <span>Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch01-embedded-c-stm32-architecture.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Embedded C &amp; Architecture</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="chapters/ch01-embedded-c-stm32-architecture.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 Why C, and Why "Embedded" C…</a></li><li><a href="chapters/ch01-embedded-c-stm32-architecture.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 Fixed-Width Types and Intege…</a></li><li><a href="chapters/ch01-embedded-c-stm32-architecture.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Bit Manipulation - The Every…</a></li><li><a href="chapters/ch01-embedded-c-stm32-architecture.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 `volatile`, `const` and `sta…</a></li><li><a href="chapters/ch01-embedded-c-stm32-architecture.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Pointers and Memory-Mapped R…</a></li><li><a href="chapters/ch01-embedded-c-stm32-architecture.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 STM32 Family and the Cortex-…</a></li><li><a href="chapters/ch01-embedded-c-stm32-architecture.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Memory Map and Bus Matrix</a></li><li><a href="chapters/ch01-embedded-c-stm32-architecture.html#sec-1-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.8 Clocks, Reset and the Boot S…</a></li><li><a href="chapters/ch01-embedded-c-stm32-architecture.html#sec-1-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.9 Hands-On Lab 1: Register-Lev…</a></li><li><a href="chapters/ch01-embedded-c-stm32-architecture.html#sec-1-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C2</span>
+              <span>Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch02-cubemx-cubeide.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: CubeMX &amp; CubeIDE</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="chapters/ch02-cubemx-cubeide.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 The ST Software Stack</a></li><li><a href="chapters/ch02-cubemx-cubeide.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Creating a Project in STM32C…</a></li><li><a href="chapters/ch02-cubemx-cubeide.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 CubeMX: Pinout, Clock Tree a…</a></li><li><a href="chapters/ch02-cubemx-cubeide.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Anatomy of the Generated Pro…</a></li><li><a href="chapters/ch02-cubemx-cubeide.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 The USER CODE Rule</a></li><li><a href="chapters/ch02-cubemx-cubeide.html#sec-2-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.6 HAL Conventions You Will See…</a></li><li><a href="chapters/ch02-cubemx-cubeide.html#sec-2-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.7 Build, Flash and Run</a></li><li><a href="chapters/ch02-cubemx-cubeide.html#sec-2-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.8 Hands-On Lab 2: First CubeMX…</a></li><li><a href="chapters/ch02-cubemx-cubeide.html#sec-2-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C3</span>
+              <span>Digital I/O</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch03-gpio-interrupts.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: GPIO &amp; Interrupts</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="chapters/ch03-gpio-interrupts.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Anatomy of a GPIO Pin</a></li><li><a href="chapters/ch03-gpio-interrupts.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Using GPIO with HAL</a></li><li><a href="chapters/ch03-gpio-interrupts.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Polling a Button - and Why I…</a></li><li><a href="chapters/ch03-gpio-interrupts.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Interrupts: The Concept</a></li><li><a href="chapters/ch03-gpio-interrupts.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 EXTI and the NVIC</a></li><li><a href="chapters/ch03-gpio-interrupts.html#sec-3-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.6 Writing Good ISRs</a></li><li><a href="chapters/ch03-gpio-interrupts.html#sec-3-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.7 Debouncing</a></li><li><a href="chapters/ch03-gpio-interrupts.html#sec-3-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.8 Hands-On Lab 3: Interrupt-Dr…</a></li><li><a href="chapters/ch03-gpio-interrupts.html#sec-3-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C4</span>
+              <span>Analog &amp; Timing</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch04-timers-pwm-adc.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Timers, PWM &amp; ADC</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="chapters/ch04-timers-pwm-adc.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 What a Hardware Timer Does</a></li><li><a href="chapters/ch04-timers-pwm-adc.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Periodic Interrupts and Accu…</a></li><li><a href="chapters/ch04-timers-pwm-adc.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 PWM: Analog Control from a D…</a></li><li><a href="chapters/ch04-timers-pwm-adc.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Input Capture: Measuring Tim…</a></li><li><a href="chapters/ch04-timers-pwm-adc.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 The ADC: Measuring Voltage</a></li><li><a href="chapters/ch04-timers-pwm-adc.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Triggering the ADC with a Ti…</a></li><li><a href="chapters/ch04-timers-pwm-adc.html#sec-4-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.7 Hands-On Lab 4: Potentiomete…</a></li><li><a href="chapters/ch04-timers-pwm-adc.html#sec-4-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C5</span>
+              <span>Serial &amp; Transfers</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch05-uart-dma.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: USART/UART &amp; DMA</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="chapters/ch05-uart-dma.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Serial Communication Basics</a></li><li><a href="chapters/ch05-uart-dma.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Three Ways to Transfer Data</a></li><li><a href="chapters/ch05-uart-dma.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 Interrupt-Driven Reception</a></li><li><a href="chapters/ch05-uart-dma.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Retargeting printf</a></li><li><a href="chapters/ch05-uart-dma.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 DMA: Moving Data Without the…</a></li><li><a href="chapters/ch05-uart-dma.html#sec-5-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.6 DMA RX with Idle-Line Detect…</a></li><li><a href="chapters/ch05-uart-dma.html#sec-5-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.7 DMA with the ADC</a></li><li><a href="chapters/ch05-uart-dma.html#sec-5-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.8 A Command Console</a></li><li><a href="chapters/ch05-uart-dma.html#sec-5-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.9 Hands-On Lab 5: DMA UART Com…</a></li><li><a href="chapters/ch05-uart-dma.html#sec-5-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C6</span>
+              <span>Buses</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch06-i2c-spi-can.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: I2C, SPI &amp; CAN</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="chapters/ch06-i2c-spi-can.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 Choosing a Bus</a></li><li><a href="chapters/ch06-i2c-spi-can.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 I2C Fundamentals</a></li><li><a href="chapters/ch06-i2c-spi-can.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 SPI Fundamentals</a></li><li><a href="chapters/ch06-i2c-spi-can.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 CAN Fundamentals</a></li><li><a href="chapters/ch06-i2c-spi-can.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Hands-On Lab 6: Three-Bus Br…</a></li><li><a href="chapters/ch06-i2c-spi-can.html#sec-6-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C7</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch07-sensors-displays-motors.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 7: Sensors, Displays &amp; Motors</span>
+                <span class="chapter-read-time">55m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="chapters/ch07-sensors-displays-motors.html#sec-7-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.1 Interfacing Sensors: A Method</a></li><li><a href="chapters/ch07-sensors-displays-motors.html#sec-7-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.2 BME280 over I2C</a></li><li><a href="chapters/ch07-sensors-displays-motors.html#sec-7-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.3 MPU6050 Accelerometer and Gy…</a></li><li><a href="chapters/ch07-sensors-displays-motors.html#sec-7-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.4 Analog Sensors: NTC Thermistor</a></li><li><a href="chapters/ch07-sensors-displays-motors.html#sec-7-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.5 Displays</a></li><li><a href="chapters/ch07-sensors-displays-motors.html#sec-7-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.6 Actuators: Servos</a></li><li><a href="chapters/ch07-sensors-displays-motors.html#sec-7-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.7 Actuators: DC Motors with an…</a></li><li><a href="chapters/ch07-sensors-displays-motors.html#sec-7-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.8 Actuators: Stepper Motors</a></li><li><a href="chapters/ch07-sensors-displays-motors.html#sec-7-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.9 Hands-On Lab 7: Weather Stat…</a></li><li><a href="chapters/ch07-sensors-displays-motors.html#sec-7-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C8</span>
+              <span>Debugging</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch08-debugging-fault-diagnosis.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 8: Debugging &amp; Fault Diagnosis</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="chapters/ch08-debugging-fault-diagnosis.html#sec-8-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.1 The Debug Chain: ST-LINK and…</a></li><li><a href="chapters/ch08-debugging-fault-diagnosis.html#sec-8-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.2 GDB from the Command Line</a></li><li><a href="chapters/ch08-debugging-fault-diagnosis.html#sec-8-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.3 Watching the Wires: Logic An…</a></li><li><a href="chapters/ch08-debugging-fault-diagnosis.html#sec-8-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.4 Fault Diagnosis: Decoding a…</a></li><li><a href="chapters/ch08-debugging-fault-diagnosis.html#sec-8-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C9</span>
+              <span>Projects</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch09-projects-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 9: Mini Projects &amp; Capstone</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="chapters/ch09-projects-capstone.html#sec-9-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.1 From Exercises to Products</a></li><li><a href="chapters/ch09-projects-capstone.html#sec-9-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.2 Five Mini Projects</a></li><li><a href="chapters/ch09-projects-capstone.html#sec-9-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.3 Capstone: CAN-Connected Envi…</a></li><li><a href="chapters/ch09-projects-capstone.html#sec-9-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.4 Test Plan and Definition of…</a></li><li><a href="chapters/ch09-projects-capstone.html#sec-9-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <a href="chapters/references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Further Reading</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs"><a href="index.html">Home</a><span>/</span><span>Course Roadmap</span></div>
+        <div class="chapter-actions"><a href="chapters/ch01-embedded-c-stm32-architecture.html" class="btn-primary">Start Chapter 1 →</a></div>
+      </div>
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Digital Book &amp; Laboratory Course</span>
+          <h1 class="chapter-h1">Programming STM32 with C: From CubeMX to Hardware Debugging</h1>
+          <p class="chapter-lead">The foundation book for STM32 firmware engineers. Start from embedded C and CubeMX, drive every common peripheral and bus, then debug like a professional with ST-LINK, SWD, GDB and a logic analyzer - and finish with a capstone you can show in an interview.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">🎯 Level: Beginner to Intermediate</div>
+            <div class="meta-item">⏱️ 9 chapters • 9 labs • 5 mini projects + capstone</div>
+            <div class="meta-item">⚡ Reference board: NUCLEO-F446RE</div>
+          </div>
+        </div>
+        <h2 id="sec-0-1">What You Will Learn</h2>
+        <div style="margin:1rem 0;"><span class="progress-pill" style="margin:0.2rem;">Embedded C</span><span class="progress-pill" style="margin:0.2rem;">STM32 architecture</span><span class="progress-pill" style="margin:0.2rem;">STM32CubeMX</span><span class="progress-pill" style="margin:0.2rem;">STM32CubeIDE</span><span class="progress-pill" style="margin:0.2rem;">GPIO</span><span class="progress-pill" style="margin:0.2rem;">Interrupts</span><span class="progress-pill" style="margin:0.2rem;">Timers</span><span class="progress-pill" style="margin:0.2rem;">PWM</span><span class="progress-pill" style="margin:0.2rem;">ADC</span><span class="progress-pill" style="margin:0.2rem;">USART/UART</span><span class="progress-pill" style="margin:0.2rem;">I²C</span><span class="progress-pill" style="margin:0.2rem;">SPI</span><span class="progress-pill" style="margin:0.2rem;">CAN</span><span class="progress-pill" style="margin:0.2rem;">DMA</span><span class="progress-pill" style="margin:0.2rem;">Sensors</span><span class="progress-pill" style="margin:0.2rem;">Displays</span><span class="progress-pill" style="margin:0.2rem;">Motors/actuators</span><span class="progress-pill" style="margin:0.2rem;">ST-LINK</span><span class="progress-pill" style="margin:0.2rem;">SWD</span><span class="progress-pill" style="margin:0.2rem;">GDB debugging</span><span class="progress-pill" style="margin:0.2rem;">Logic analyzer</span><span class="progress-pill" style="margin:0.2rem;">Fault diagnosis</span><span class="progress-pill" style="margin:0.2rem;">Mini projects</span><span class="progress-pill" style="margin:0.2rem;">Capstone</span></div>
+        <h2 id="sec-0-2">Hardware You Need</h2>
+        <ul>
+          <li>NUCLEO-F446RE board (on-board ST-LINK/V2-1, user LED on PA5, user button on PC13).</li>
+          <li>Breadboard, jumper wires, a 10 kΩ potentiometer, LEDs and 330 Ω resistors, a push button.</li>
+          <li>I2C sensor (BME280 or MPU6050), 0.96" SSD1306 OLED, SG90 servo, TB6612FNG or L298N driver with a small DC motor.</li>
+          <li>Two CAN transceivers (e.g. SN65HVD230 3.3 V) and 120 Ω termination resistors - or a second Nucleo board.</li>
+          <li>An 8-channel 24 MHz USB logic analyzer (Saleae-compatible clones work with sigrok/PulseView).</li>
+        </ul>
+        <h2 id="sec-0-3">Software You Need</h2>
+        <ul>
+          <li>STM32CubeIDE (includes the GCC toolchain, GDB server and CubeMX) - free from ST.</li>
+          <li>STM32CubeProgrammer and the ST-LINK drivers.</li>
+          <li>A serial terminal (PuTTY, minicom, or the CubeIDE console) and PulseView.</li>
+        </ul>
+        <h2 id="sec-0-4">Chapter Roadmap</h2>
+        <div class="chapter-bottom-nav" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <a href="chapters/ch01-embedded-c-stm32-architecture.html" class="nav-card" style="text-decoration:none;">
+            <span class="nav-card-dir">Chapter 1 • 40 min</span>
+            <span class="nav-card-title">Embedded C &amp; STM32 Architecture</span>
+            <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">Build the C skills that firmware demands - fixed-width types, bit manipulation, volatile, memory-mapped registers - and learn the parts of the STM32 architecture you actually need: Cortex-M core, memory map, buses, clocks and the boot sequence.</span>
+          </a>
+          <a href="chapters/ch02-cubemx-cubeide.html" class="nav-card" style="text-decoration:none;">
+            <span class="nav-card-dir">Chapter 2 • 35 min</span>
+            <span class="nav-card-title">STM32CubeMX &amp; STM32CubeIDE Workflow</span>
+            <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">Go from an empty project to a running firmware: configure pins and the clock tree in CubeMX, understand the generated code, and learn how to add your own code without losing it on regeneration.</span>
+          </a>
+          <a href="chapters/ch03-gpio-interrupts.html" class="nav-card" style="text-decoration:none;">
+            <span class="nav-card-dir">Chapter 3 • 45 min</span>
+            <span class="nav-card-title">GPIO &amp; External Interrupts</span>
+            <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">Master digital input and output on STM32, then step from polling to interrupt-driven design: EXTI lines, the NVIC, priorities, safe ISR patterns and debouncing.</span>
+          </a>
+          <a href="chapters/ch04-timers-pwm-adc.html" class="nav-card" style="text-decoration:none;">
+            <span class="nav-card-dir">Chapter 4 • 50 min</span>
+            <span class="nav-card-title">Timers, PWM &amp; ADC</span>
+            <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">Use hardware timers for precise time bases and PWM, and the ADC to measure the analog world. You will derive PSC/ARR values by hand and convert raw counts into engineering units.</span>
+          </a>
+          <a href="chapters/ch05-uart-dma.html" class="nav-card" style="text-decoration:none;">
+            <span class="nav-card-dir">Chapter 5 • 45 min</span>
+            <span class="nav-card-title">USART/UART &amp; DMA</span>
+            <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">Talk to the PC and to other devices over USART, from polling through interrupts to DMA with idle-line detection. Retarget printf, build a command parser and learn why DMA frees the CPU.</span>
+          </a>
+          <a href="chapters/ch06-i2c-spi-can.html" class="nav-card" style="text-decoration:none;">
+            <span class="nav-card-dir">Chapter 6 • 60 min</span>
+            <span class="nav-card-title">I2C, SPI &amp; CAN Communication</span>
+            <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">Three buses, three philosophies. Learn addressing and pull-ups on I2C, clock modes and chip-select on SPI, and frames, filters and bit timing on CAN - with working HAL code for each.</span>
+          </a>
+          <a href="chapters/ch07-sensors-displays-motors.html" class="nav-card" style="text-decoration:none;">
+            <span class="nav-card-dir">Chapter 7 • 55 min</span>
+            <span class="nav-card-title">Sensors, Displays &amp; Motors</span>
+            <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">Turn the buses into products: read environmental and motion sensors, put information on an OLED, and drive servos, DC motors and steppers safely from an STM32.</span>
+          </a>
+          <a href="chapters/ch08-debugging-fault-diagnosis.html" class="nav-card" style="text-decoration:none;">
+            <span class="nav-card-dir">Chapter 8 • 60 min</span>
+            <span class="nav-card-title">ST-LINK, SWD, GDB, Logic Analyzer &amp; Fault Diagnosis</span>
+            <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">Stop guessing. Understand the ST-LINK and SWD link, drive GDB from the command line, watch buses with a logic analyzer, and decode HardFaults register by register.</span>
+          </a>
+          <a href="chapters/ch09-projects-capstone.html" class="nav-card" style="text-decoration:none;">
+            <span class="nav-card-dir">Chapter 9 • 60 min</span>
+            <span class="nav-card-title">Mini Projects &amp; Capstone</span>
+            <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">Consolidate everything: five mini projects with clear acceptance criteria, then a capstone - a CAN-connected environmental data logger with a command console, watchdog and a test plan.</span>
+          </a>
+        </div>
+        <div class="callout callout-tip" style="margin-top:2rem;">
+          <div class="callout-header">💡 How to use this book</div>
+          <div class="callout-body">Type the code yourself, build it, and tick the lab checklist at the end of each chapter. Every chapter ends with a quiz - if you cannot answer a question, re-read that section before moving on.</div>
+        </div>
+
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Programming STM32 with C • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+
+      </article>
+    </main>
+  </div>
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, GPIO, DMA, GDB...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+  <script src="js/book.js"></script>
+</body>
+</html>

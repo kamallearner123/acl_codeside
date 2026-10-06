@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Turn the buses into products: read environmental and motion sensors, put information on an OLED, and drive servos, DC motors and steppers safely from an STM32.">
+  <title>Sensors, Displays &amp; Motors | Programming STM32 with C</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch07-sensors-displays-motors">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">STM32 + C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, GPIO, DMA, GDB..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/stm32-firmware-development-with-c/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Chapters</span>
+          <span class="progress-pill">Ch 7 of 9</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
+          </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C1</span>
+              <span>Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-embedded-c-stm32-architecture.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Embedded C &amp; Architecture</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 Why C, and Why "Embedded" C…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 Fixed-Width Types and Intege…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Bit Manipulation - The Every…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 `volatile`, `const` and `sta…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Pointers and Memory-Mapped R…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 STM32 Family and the Cortex-…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Memory Map and Bus Matrix</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.8 Clocks, Reset and the Boot S…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.9 Hands-On Lab 1: Register-Lev…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C2</span>
+              <span>Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-cubemx-cubeide.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: CubeMX &amp; CubeIDE</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch02-cubemx-cubeide.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 The ST Software Stack</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Creating a Project in STM32C…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 CubeMX: Pinout, Clock Tree a…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Anatomy of the Generated Pro…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 The USER CODE Rule</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.6 HAL Conventions You Will See…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.7 Build, Flash and Run</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.8 Hands-On Lab 2: First CubeMX…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C3</span>
+              <span>Digital I/O</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-gpio-interrupts.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: GPIO &amp; Interrupts</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch03-gpio-interrupts.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Anatomy of a GPIO Pin</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Using GPIO with HAL</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Polling a Button - and Why I…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Interrupts: The Concept</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 EXTI and the NVIC</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.6 Writing Good ISRs</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.7 Debouncing</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.8 Hands-On Lab 3: Interrupt-Dr…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C4</span>
+              <span>Analog &amp; Timing</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-timers-pwm-adc.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Timers, PWM &amp; ADC</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch04-timers-pwm-adc.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 What a Hardware Timer Does</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Periodic Interrupts and Accu…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 PWM: Analog Control from a D…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Input Capture: Measuring Tim…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 The ADC: Measuring Voltage</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Triggering the ADC with a Ti…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.7 Hands-On Lab 4: Potentiomete…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C5</span>
+              <span>Serial &amp; Transfers</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-uart-dma.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: USART/UART &amp; DMA</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch05-uart-dma.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Serial Communication Basics</a></li><li><a href="ch05-uart-dma.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Three Ways to Transfer Data</a></li><li><a href="ch05-uart-dma.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 Interrupt-Driven Reception</a></li><li><a href="ch05-uart-dma.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Retargeting printf</a></li><li><a href="ch05-uart-dma.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 DMA: Moving Data Without the…</a></li><li><a href="ch05-uart-dma.html#sec-5-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.6 DMA RX with Idle-Line Detect…</a></li><li><a href="ch05-uart-dma.html#sec-5-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.7 DMA with the ADC</a></li><li><a href="ch05-uart-dma.html#sec-5-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.8 A Command Console</a></li><li><a href="ch05-uart-dma.html#sec-5-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.9 Hands-On Lab 5: DMA UART Com…</a></li><li><a href="ch05-uart-dma.html#sec-5-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C6</span>
+              <span>Buses</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-i2c-spi-can.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: I2C, SPI &amp; CAN</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch06-i2c-spi-can.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 Choosing a Bus</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 I2C Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 SPI Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 CAN Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Hands-On Lab 6: Three-Bus Br…</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C7</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch07-sensors-displays-motors.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 7: Sensors, Displays &amp; Motors</span>
+                <span class="chapter-read-time">55m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch07-sensors-displays-motors.html#sec-7-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.1 Interfacing Sensors: A Method</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.2 BME280 over I2C</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.3 MPU6050 Accelerometer and Gy…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.4 Analog Sensors: NTC Thermistor</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.5 Displays</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.6 Actuators: Servos</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.7 Actuators: DC Motors with an…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.8 Actuators: Stepper Motors</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.9 Hands-On Lab 7: Weather Stat…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C8</span>
+              <span>Debugging</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch08-debugging-fault-diagnosis.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 8: Debugging &amp; Fault Diagnosis</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.1 The Debug Chain: ST-LINK and…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.2 GDB from the Command Line</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.3 Watching the Wires: Logic An…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.4 Fault Diagnosis: Decoding a…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C9</span>
+              <span>Projects</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch09-projects-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 9: Mini Projects &amp; Capstone</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch09-projects-capstone.html#sec-9-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.1 From Exercises to Products</a></li><li><a href="ch09-projects-capstone.html#sec-9-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.2 Five Mini Projects</a></li><li><a href="ch09-projects-capstone.html#sec-9-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.3 Capstone: CAN-Connected Envi…</a></li><li><a href="ch09-projects-capstone.html#sec-9-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.4 Test Plan and Definition of…</a></li><li><a href="ch09-projects-capstone.html#sec-9-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Further Reading</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs"><a href="../index.html">Home</a><span>/</span><span>Chapter 7</span><span>/</span><span>Sensors, Displays &amp; Motors</span></div>
+        <div class="chapter-actions">
+          <a href="ch06-i2c-spi-can.html" class="btn-secondary">← Chapter 6</a>
+          <a href="ch08-debugging-fault-diagnosis.html" class="btn-primary">Chapter 8 →</a>
+        </div>
+      </div>
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Chapter 07 • Peripherals</span>
+          <h1 class="chapter-h1">Sensors, Displays &amp; Motors</h1>
+          <p class="chapter-lead">Turn the buses into products: read environmental and motion sensors, put information on an OLED, and drive servos, DC motors and steppers safely from an STM32.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 55 minutes</div>
+            <div class="meta-item">🛠️ Lab: Weather station with OLED and servo</div>
+            <div class="meta-item">🎯 Topics: Sensors, OLED, Motors</div>
+          </div>
+        </div>
+<h2 id="sec-7-1">7.1 Interfacing Sensors: A Method</h2>
+<p>Whatever the sensor, the workflow is the same, and following it saves hours:</p>
+<ol><li><strong>Read the datasheet's interface section</strong> - bus, address, voltage, maximum clock.</li><li><strong>Check the chip ID</strong> register first. A correct ID proves wiring, address and bus timing in one step.</li><li><strong>Configure</strong> (sample rate, resolution, power mode) and verify by reading the register back.</li><li><strong>Read raw values</strong>, then convert using the datasheet formulas and calibration data.</li><li><strong>Validate</strong> against a reference (a second thermometer, gravity on the accelerometer) and handle errors.</li></ol>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Sensor type</th>
+<th style="padding:0.6rem;">Examples</th>
+<th style="padding:0.6rem;">Interface</th>
+<th style="padding:0.6rem;">Notes</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Environment</td>
+<td style="padding:0.6rem;vertical-align:top;">BME280, SHT31</td>
+<td style="padding:0.6rem;vertical-align:top;">I2C / SPI</td>
+<td style="padding:0.6rem;vertical-align:top;">Temperature, humidity, pressure; factory calibration constants</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Motion</td>
+<td style="padding:0.6rem;vertical-align:top;">MPU6050, LSM6DS3</td>
+<td style="padding:0.6rem;vertical-align:top;">I2C / SPI</td>
+<td style="padding:0.6rem;vertical-align:top;">Accelerometer + gyro, need orientation maths and filtering</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Analog</td>
+<td style="padding:0.6rem;vertical-align:top;">NTC thermistor, LDR, current shunt</td>
+<td style="padding:0.6rem;vertical-align:top;">ADC</td>
+<td style="padding:0.6rem;vertical-align:top;">You supply the signal conditioning</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Distance</td>
+<td style="padding:0.6rem;vertical-align:top;">HC-SR04, VL53L0X</td>
+<td style="padding:0.6rem;vertical-align:top;">Timer capture / I2C</td>
+<td style="padding:0.6rem;vertical-align:top;">Ultrasonic uses input capture (Chapter 4)</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Digital 1-wire</td>
+<td style="padding:0.6rem;vertical-align:top;">DS18B20</td>
+<td style="padding:0.6rem;vertical-align:top;">GPIO + timer</td>
+<td style="padding:0.6rem;vertical-align:top;">Needs microsecond timing</td>
+</tr>
+</tbody></table></div>
+<h2 id="sec-7-2">7.2 BME280 over I2C</h2>
+<p>The Bosch BME280 reports temperature, pressure and humidity. Its raw values are meaningless without the <strong>calibration coefficients</strong> stored in the chip; Bosch publishes the compensation formulas. The temperature path shows the whole technique:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>BME280 temperature in 0.01 degC (datasheet integer compensation)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>static uint16_t T1;  static int16_t T2, T3;
+static int32_t  t_fine;
+
+int bme_init(void)
+{
+  uint8_t id, cal[6];
+  if (reg_read(0xD0, &amp;id, 1) != HAL_OK || id != 0x60) return -1;   /* chip id */
+
+  reg_read(0x88, cal, 6);                                          /* calibration */
+  T1 = (uint16_t)(cal[1] &lt;&lt; 8 | cal[0]);
+  T2 = (int16_t) (cal[3] &lt;&lt; 8 | cal[2]);
+  T3 = (int16_t) (cal[5] &lt;&lt; 8 | cal[4]);
+
+  reg_write(0xF2, 0x01);          /* humidity oversampling x1  */
+  reg_write(0xF4, 0x27);          /* temp x1, press x1, normal mode */
+  reg_write(0xF5, 0xA0);          /* standby 1000 ms, filter off    */
+  return 0;
+}
+
+int32_t bme_read_temp_centi(void)
+{
+  uint8_t d[8];
+  reg_read(0xF7, d, 8);                                    /* press, temp, hum */
+  int32_t adc_T = (int32_t)d[3] &lt;&lt; 12 | (int32_t)d[4] &lt;&lt; 4 | d[5] &gt;&gt; 4;
+
+  int32_t v1 = (((adc_T &gt;&gt; 3) - ((int32_t)T1 &lt;&lt; 1)) * T2) &gt;&gt; 11;
+  int32_t v2 = (((((adc_T &gt;&gt; 4) - (int32_t)T1) * ((adc_T &gt;&gt; 4) - (int32_t)T1)) &gt;&gt; 12) * T3) &gt;&gt; 14;
+  t_fine = v1 + v2;
+  return (t_fine * 5 + 128) &gt;&gt; 8;                          /* 2534 = 25.34 degC */
+}</code></pre>
+          </div>
+        </div>
+
+<p>For pressure and humidity, use the compensation code from Bosch's open-source <strong>BME280 sensor API</strong> (BSD-3 licence) rather than retyping long formulas - plug in your <code>reg_read</code>/<code>reg_write</code> as its platform functions.</p>
+
+        <div class="callout callout-tip">
+          <div class="callout-header">Integers beat floats</div>
+          <div class="callout-body">Returning centi-degrees as <code>int32_t</code> avoids float <code>printf</code> and keeps results deterministic. Convert to a string only at the display or console edge: <code>printf("%ld.%02ld C", t / 100, t % 100)</code>.</div>
+        </div>
+
+<h2 id="sec-7-3">7.3 MPU6050 Accelerometer and Gyroscope</h2>
+<p>The MPU6050 (I2C address <code>0x68</code>, or <code>0x69</code> if AD0 is high) starts in sleep mode. Write 0 to <code>PWR_MGMT_1</code> (0x6B) to wake it, then burst-read 14 bytes from <code>0x3B</code>: accel X/Y/Z, temperature, gyro X/Y/Z (each 16-bit big-endian, signed).</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Read acceleration in milli-g</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#define MPU_ADDR (0x68 &lt;&lt; 1)
+
+int mpu_init(void)
+{
+  uint8_t who, zero = 0;
+  HAL_I2C_Mem_Read(&amp;hi2c1, MPU_ADDR, 0x75, 1, &amp;who, 1, 50);        /* WHO_AM_I */
+  if (who != 0x68) return -1;
+  HAL_I2C_Mem_Write(&amp;hi2c1, MPU_ADDR, 0x6B, 1, &amp;zero, 1, 50);      /* wake up  */
+  return 0;
+}
+
+void mpu_read_mg(int32_t *ax, int32_t *ay, int32_t *az)
+{
+  uint8_t d[14];
+  HAL_I2C_Mem_Read(&amp;hi2c1, MPU_ADDR, 0x3B, 1, d, 14, 50);
+  int16_t x = (int16_t)(d[0] &lt;&lt; 8 | d[1]);
+  int16_t y = (int16_t)(d[2] &lt;&lt; 8 | d[3]);
+  int16_t z = (int16_t)(d[4] &lt;&lt; 8 | d[5]);
+  /* default range +/-2 g -&gt; 16384 LSB per g */
+  *ax = x * 1000L / 16384;  *ay = y * 1000L / 16384;  *az = z * 1000L / 16384;
+}</code></pre>
+          </div>
+        </div>
+
+<p>A board lying flat should read about (0, 0, +1000) mg. If not, check the axis orientation and the range setting. Raw gyro/accel data is noisy and drifts; <strong>fuse</strong> them (complementary or Madgwick filter) to estimate tilt.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Tilt angle with a complementary filter (call at fixed dt)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/* angle_deg: previous estimate; gyro_dps: rate; acc_angle: from atan2f(ax, az) */
+angle_deg = 0.98f * (angle_deg + gyro_dps * dt) + 0.02f * acc_angle;</code></pre>
+          </div>
+        </div>
+
+<h2 id="sec-7-4">7.4 Analog Sensors: NTC Thermistor</h2>
+<p>An NTC in a divider with a 10 kΩ resistor gives a voltage that falls as temperature rises. Convert voltage → resistance → temperature with the beta equation:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Thermistor temperature (10k NTC, beta 3950, divider to 3.3 V)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;math.h&gt;
+
+float ntc_temp_c(uint16_t raw)
+{
+  float r = 10000.0f * raw / (4095.0f - raw);            /* thermistor on low side */
+  float inv_t = 1.0f / 298.15f + logf(r / 10000.0f) / 3950.0f;
+  return 1.0f / inv_t - 273.15f;
+}</code></pre>
+          </div>
+        </div>
+
+<h2 id="sec-7-5">7.5 Displays</h2>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Display</th>
+<th style="padding:0.6rem;">Interface</th>
+<th style="padding:0.6rem;">Resolution</th>
+<th style="padding:0.6rem;">Remarks</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">16×2 HD44780 character LCD</td>
+<td style="padding:0.6rem;vertical-align:top;">4/8-bit parallel (or I2C backpack)</td>
+<td style="padding:0.6rem;vertical-align:top;">16 chars × 2</td>
+<td style="padding:0.6rem;vertical-align:top;">Simple text; needs 5 V on many modules</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>SSD1306 OLED</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">I2C or SPI</td>
+<td style="padding:0.6rem;vertical-align:top;">128×64 / 128×32 mono</td>
+<td style="padding:0.6rem;vertical-align:top;">Cheap, sharp, low power - our choice</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">ST7735 / ILI9341 TFT</td>
+<td style="padding:0.6rem;vertical-align:top;">SPI</td>
+<td style="padding:0.6rem;vertical-align:top;">128×160 … 320×240 colour</td>
+<td style="padding:0.6rem;vertical-align:top;">Needs DMA for smooth refresh</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">7-segment (TM1637, MAX7219)</td>
+<td style="padding:0.6rem;vertical-align:top;">2-wire / SPI</td>
+<td style="padding:0.6rem;vertical-align:top;">digits</td>
+<td style="padding:0.6rem;vertical-align:top;">Counters and clocks</td>
+</tr>
+</tbody></table></div>
+<h3>SSD1306 over I2C (address 0x3C)</h3>
+<p>The controller keeps a 128×64 bit image: 8 "pages" of 128 bytes; each byte is a vertical strip of 8 pixels. The usual technique is a <strong>frame buffer</strong> in RAM (1024 bytes): draw into it with simple functions, then send the whole buffer in one I2C transfer.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>SSD1306 minimal driver</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#define OLED_ADDR (0x3C &lt;&lt; 1)
+static uint8_t fb[128 * 8];
+
+static void oled_cmd(uint8_t c) { HAL_I2C_Mem_Write(&amp;hi2c1, OLED_ADDR, 0x00, 1, &amp;c, 1, 50); }  /* 0x00 = command */
+
+void oled_init(void)
+{
+  static const uint8_t seq[] = {
+    0xAE, 0xD5, 0x80, 0xA8, 0x3F, 0xD3, 0x00, 0x40, 0x8D, 0x14, 0x20, 0x00,
+    0xA1, 0xC8, 0xDA, 0x12, 0x81, 0xCF, 0xD9, 0xF1, 0xDB, 0x40, 0xA4, 0xA6, 0xAF };
+  for (unsigned i = 0; i &lt; sizeof seq; i++) oled_cmd(seq[i]);
+}
+
+void oled_pixel(int x, int y, int on)
+{
+  if ((unsigned)x &gt;= 128 || (unsigned)y &gt;= 64) return;       /* clip */
+  if (on) fb[x + (y / 8) * 128] |=  (1u &lt;&lt; (y % 8));
+  else    fb[x + (y / 8) * 128] &amp;= ~(1u &lt;&lt; (y % 8));
+}
+
+void oled_update(void)
+{
+  oled_cmd(0x21); oled_cmd(0); oled_cmd(127);                 /* column range */
+  oled_cmd(0x22); oled_cmd(0); oled_cmd(7);                   /* page range   */
+  HAL_I2C_Mem_Write(&amp;hi2c1, OLED_ADDR, 0x40, 1, fb, sizeof fb, 100);   /* 0x40 = data */
+}</code></pre>
+          </div>
+        </div>
+
+<p>Text needs a font table (5×7 or 8×8 bitmap, 1 KB of <code>const</code> data in Flash). Open-source drivers such as *stm32-ssd1306* provide fonts, lines and bitmaps - reading one after writing the minimal driver above is an excellent exercise.</p>
+
+        <div class="callout callout-tip">
+          <div class="callout-header">Update only when needed</div>
+          <div class="callout-body">At 400 kHz a full 1024-byte transfer takes roughly 25 ms. Refresh when data changes (or at 5-10 Hz), not on every loop iteration, and use <code>HAL_I2C_Mem_Write_DMA</code> if the CPU must stay free.</div>
+        </div>
+
+<h2 id="sec-7-6">7.6 Actuators: Servos</h2>
+<p>A hobby servo contains a motor, gearbox, position sensor and controller. You give it a <strong>50 Hz PWM signal</strong>; the pulse width sets the angle: about 1.0 ms = 0°, 1.5 ms = 90°, 2.0 ms = 180° (ranges vary, calibrate yours). Wiring: brown/black = GND, red = <strong>external 5 V</strong>, orange/yellow = signal from the STM32 (PA7, TIM3_CH2).</p>
+
+        <div class="callout callout-warning">
+          <div class="callout-header">Never power motors from the board's 3V3 pin</div>
+          <div class="callout-body">A servo can draw an ampere when it starts or stalls, which resets the MCU. Use a separate 5 V supply and <strong>connect its ground to the Nucleo's ground</strong>.</div>
+        </div>
+
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Smooth servo motion</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>void servo_move(uint16_t from_us, uint16_t to_us, uint16_t step_us, uint16_t delay_ms)
+{
+  if (from_us &lt; to_us) for (uint16_t p = from_us; p &lt;= to_us; p += step_us) { servo_set_us(p); HAL_Delay(delay_ms); }
+  else                 for (int32_t p = from_us; p &gt;= to_us; p -= step_us) { servo_set_us(p); HAL_Delay(delay_ms); }
+}</code></pre>
+          </div>
+        </div>
+
+<h2 id="sec-7-7">7.7 Actuators: DC Motors with an H-Bridge</h2>
+<p>A GPIO pin can supply about 20 mA; a small motor needs hundreds of mA. Use a <strong>motor driver</strong> (TB6612FNG, DRV8833, L298N) - an H-bridge that takes logic inputs and switches motor power. Two direction inputs plus a PWM input control one motor:</p>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">IN1</th>
+<th style="padding:0.6rem;">IN2</th>
+<th style="padding:0.6rem;">PWM</th>
+<th style="padding:0.6rem;">Motor</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">1</td>
+<td style="padding:0.6rem;vertical-align:top;">0</td>
+<td style="padding:0.6rem;vertical-align:top;">duty</td>
+<td style="padding:0.6rem;vertical-align:top;">Forward at duty speed</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">0</td>
+<td style="padding:0.6rem;vertical-align:top;">1</td>
+<td style="padding:0.6rem;vertical-align:top;">duty</td>
+<td style="padding:0.6rem;vertical-align:top;">Reverse</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">0</td>
+<td style="padding:0.6rem;vertical-align:top;">0</td>
+<td style="padding:0.6rem;vertical-align:top;">any</td>
+<td style="padding:0.6rem;vertical-align:top;">Coast (free-spin)</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">1</td>
+<td style="padding:0.6rem;vertical-align:top;">1</td>
+<td style="padding:0.6rem;vertical-align:top;">any</td>
+<td style="padding:0.6rem;vertical-align:top;">Brake</td>
+</tr>
+</tbody></table></div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>TB6612 motor channel A: PWM on TIM4_CH1 (PB6), IN1 = PC0, IN2 = PC1</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>void motor_set(int8_t speed_pct)                    /* -100 .. +100 */
+{
+  if (speed_pct &gt; 100)  speed_pct = 100;
+  if (speed_pct &lt; -100) speed_pct = -100;
+
+  HAL_GPIO_WritePin(IN1_GPIO_Port, IN1_Pin, speed_pct &gt; 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(IN2_GPIO_Port, IN2_Pin, speed_pct &lt; 0 ? GPIO_PIN_SET : GPIO_PIN_RESET);
+
+  uint32_t mag = speed_pct &lt; 0 ? -speed_pct : speed_pct;
+  uint32_t arr = __HAL_TIM_GET_AUTORELOAD(&amp;htim4);
+  __HAL_TIM_SET_COMPARE(&amp;htim4, TIM_CHANNEL_1, (arr + 1) * mag / 100);
+}</code></pre>
+          </div>
+        </div>
+
+<p>Good-practice checklist for motors:</p>
+<ul><li>Separate motor supply (VM), <strong>common ground</strong> with the MCU, and a bulk capacitor (100-470 µF) near the driver.</li><li>PWM at <strong>10-25 kHz</strong> to stay above audible range.</li><li><strong>Ramp</strong> speed changes - sudden reversals draw large currents and stress gears.</li><li>Never reverse direction without first braking/coasting for a few milliseconds (avoid shoot-through on discrete bridges).</li><li>For closed-loop speed or position control, add an <strong>encoder</strong> (timer in encoder mode) and a PI controller.</li></ul>
+<h2 id="sec-7-8">7.8 Actuators: Stepper Motors</h2>
+<p>A stepper moves in fixed angular increments by energising coils in sequence. The common 28BYJ-48 with a ULN2003 board (5 V) needs four GPIOs and an 8-state half-step sequence:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Half-step sequence for 28BYJ-48 (pins PC4..PC7 -&gt; IN1..IN4)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>static const uint8_t seq[8] = { 0x1, 0x3, 0x2, 0x6, 0x4, 0xC, 0x8, 0x9 };
+static uint8_t idx;
+
+void stepper_step(int dir)                          /* +1 or -1 */
+{
+  idx = (idx + 8 + dir) &amp; 7;
+  GPIOC-&gt;ODR = (GPIOC-&gt;ODR &amp; ~(0xFUL &lt;&lt; 4)) | ((uint32_t)seq[idx] &lt;&lt; 4);
+}
+/* call from a timer interrupt every 2 ms -&gt; about 1 rev per 8 s at 4096 half-steps/rev */</code></pre>
+          </div>
+        </div>
+
+<p>For stronger NEMA motors use a <strong>step/direction driver</strong> (A4988, DRV8825, TMC2209): one GPIO for DIR and a timer generating STEP pulses. Pulse rate = speed, so smooth acceleration ramps are just changing ARR over time.</p>
+
+        <div class="callout callout-warning">
+          <div class="callout-header">Step pulses belong to a timer</div>
+          <div class="callout-body">Generating steps with <code>HAL_Delay()</code> makes motors stutter and lose steps. Use a timer interrupt or PWM output so timing does not depend on other code.</div>
+        </div>
+
+<h2 id="sec-7-9">7.9 Hands-On Lab 7: Weather Station with OLED and Servo</h2>
+<p>Combine a BME280, an SSD1306 OLED and a servo into a small "gauge": the OLED shows temperature, pressure and humidity, and the servo needle points to the temperature on a 0-50 °C scale. The console from Chapter 5 should be able to read the same values.</p>
+
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Lab 7 Checklist</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l7-step1">
+              <label for="l7-step1" class="checklist-text">Connect BME280 and OLED to the same I2C1 bus (PB8/PB9); the scanner must show <code>0x76</code> and <code>0x3C</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l7-step2">
+              <label for="l7-step2" class="checklist-text">Read the BME280 chip ID and temperature; compare with a reference thermometer.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l7-step3">
+              <label for="l7-step3" class="checklist-text">Draw the temperature on the OLED, refreshing at 2 Hz without blocking the main loop.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l7-step4">
+              <label for="l7-step4" class="checklist-text">Map 0-50 °C to 1000-2000 µs servo pulses with <code>servo_set_us()</code> and clamp out-of-range readings.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l7-step5">
+              <label for="l7-step5" class="checklist-text">Power the servo from an external 5 V supply with common ground; verify the MCU does not reset when the servo moves.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l7-step6">
+              <label for="l7-step6" class="checklist-text">Add a console command <code>temp</code> that prints the latest value.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l7-step7">
+              <label for="l7-step7" class="checklist-text">Challenge: show the MPU6050 tilt angle on the OLED as a bar graph.</label>
+            </li>
+          </ul>
+        </div>
+
+
+        <div class="quiz-container" id="sec-7-quiz">
+          <div class="quiz-header"><span>🧠 Knowledge Check: Chapter 7</span></div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">1. What should you check first when bringing up a new I2C sensor?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) Its full measurement range
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! It validates wiring, address and bus settings in one step.">
+                B) That a bus scan finds it and its chip-ID register returns the expected value
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) The PWM frequency
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) The ADC resolution
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">2. Why must a motor have its own supply with a shared ground?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) Because GPIO pins are 5 V tolerant
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) Motors draw large and spiky currents that would reset the MCU, and signals need a common reference
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) Motors need a clock signal
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) To lower the PWM frequency
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">3. How are the pixels of an SSD1306 organised in its frame buffer?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. That would need 8 KB.">
+                A) One byte per pixel
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) In 8 pages; each byte is a vertical strip of 8 pixels
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) One bit per row
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. That is for colour TFTs.">
+                D) In 16-bit RGB565
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+
+        <div class="chapter-bottom-nav">
+          <a href="ch06-i2c-spi-can.html" class="nav-card"><span class="nav-card-dir">← Previous</span><span class="nav-card-title">Chapter 6: I2C, SPI &amp; CAN Communication</span></a>
+          <a href="ch08-debugging-fault-diagnosis.html" class="nav-card" style="text-align:right;"><span class="nav-card-dir">Next →</span><span class="nav-card-title">Chapter 8: ST-LINK, SWD, GDB, Logic Analyzer &amp; Fault Diagnosis</span></a>
+        </div>
+
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Programming STM32 with C • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+
+      </article>
+    </main>
+  </div>
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, GPIO, DMA, GDB...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+  <script src="../js/book.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{% extends 'tailwind_base.html' %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 pt-40 pb-20">
+    <div class="bg-white rounded-3xl p-8 shadow-premium border border-gray-50 text-center">
+        <h1 class="text-2xl font-bold text-brand-navy mb-3">Verify your email to enroll</h1>
+        <p class="text-brand-textSecondary mb-6">Enter the 6-digit code sent to <strong>{{ email }}</strong>.</p>
+        {% for message in messages %}
+        <div class="p-3 mb-4 rounded-xl {% if message.tags == 'success' %}bg-green-50 text-green-800{% else %}bg-red-50 text-red-800{% endif %}">{{ message }}</div>
+        {% endfor %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autofocus autocomplete="one-time-code"
+                   class="w-full px-4 py-3 rounded-xl border border-gray-200 text-center text-2xl tracking-widest mb-6 outline-none focus:border-brand-navy">
+            <button type="submit" class="bg-brand-navy text-white px-8 py-3 rounded-full font-bold">Verify &amp; Enroll</button>
+        </form>
+        <p class="mt-6 text-sm"><a href="{% url "courses:detail" course.slug %}" class="text-brand-navy underline">Start over</a></p>
+    </div>
+</div>
+{% endblock %}

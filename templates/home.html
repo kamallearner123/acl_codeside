@@ -416,6 +416,105 @@
                         </div>
                     </div>
                 </div>
+
+<!-- Course 6: STM32 Firmware with C -->
+                <div class="flex flex-col sm:flex-row bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 reveal group md:col-span-2">
+                    <div class="sm:w-1/4 bg-gray-50 p-6 flex flex-col justify-center items-center text-center border-r border-gray-100 group-hover:bg-cyan-50 transition-colors">
+                        <i class="fas fa-microchip text-5xl text-cyan-600 mb-4"></i>
+                        <span class="inline-block px-3 py-1 bg-white rounded-full text-xs font-bold text-brand-navy shadow-sm mb-2">8 WEEKS</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Beginner to Intermediate</span>
+                    </div>
+                    <div class="sm:w-3/4 p-8 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-2xl font-bold text-brand-navy group-hover:text-cyan-600 transition-colors">STM32 Firmware Development with C</h3>
+                                <span class="bg-cyan-100 text-cyan-800 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase">New Course</span>
+                            </div>
+                            <p class="text-brand-textSecondary text-sm mb-4">Foundation book for STM32 firmware engineers: Embedded C, CubeMX/CubeIDE, GPIO, interrupts, timers, PWM, ADC, UART, I2C, SPI, CAN, DMA, sensors, motors and hardware debugging with ST-LINK, SWD and GDB.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">Embedded C</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">STM32 Nucleo</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">CubeMX</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">GDB Debugging</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">CAN / I2C / SPI</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4 mt-auto">
+                            <a href="{% url 'courses:detail' 'stm32-firmware-development-with-c' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy hover:text-cyan-600 transition-colors">
+                                View Syllabus <i class="fas fa-chevron-right text-xs"></i>
+                            </a>
+                            <a href="{% url 'courses:stm32_c_book_index' %}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm font-bold text-brand-coral hover:underline">
+                                <i class="fas fa-book-open"></i> Go to Full Course <i class="fas fa-external-link-alt text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+<!-- Course 7: Embedded Rust with STM32 -->
+                <div class="flex flex-col sm:flex-row bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 reveal group md:col-span-2">
+                    <div class="sm:w-1/4 bg-gray-50 p-6 flex flex-col justify-center items-center text-center border-r border-gray-100 group-hover:bg-cyan-50 transition-colors">
+                        <i class="fas fa-microchip text-5xl text-cyan-600 mb-4"></i>
+                        <span class="inline-block px-3 py-1 bg-white rounded-full text-xs font-bold text-brand-navy shadow-sm mb-2">8 WEEKS</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Intermediate</span>
+                    </div>
+                    <div class="sm:w-3/4 p-8 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-2xl font-bold text-brand-navy group-hover:text-cyan-600 transition-colors">Embedded Rust with STM32</h3>
+                                <span class="bg-cyan-100 text-cyan-800 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase">New Course</span>
+                            </div>
+                            <p class="text-brand-textSecondary text-sm mb-4">Book 2 for STM32/C developers: ownership, borrowing, lifetimes, no_std, HAL drivers, interrupts, UART, I2C, SPI, ADC, CAN, DMA, testing and a safe embedded product capstone.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">Embedded Rust</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">STM32 Nucleo</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">no_std</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">probe-rs / defmt</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">CAN / I2C / SPI</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4 mt-auto">
+                            <a href="{% url 'courses:detail' 'embedded-rust-with-stm32' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy hover:text-cyan-600 transition-colors">
+                                View Syllabus <i class="fas fa-chevron-right text-xs"></i>
+                            </a>
+                            <a href="{% url 'courses:stm32_rust_book_index' %}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm font-bold text-brand-coral hover:underline">
+                                <i class="fas fa-book-open"></i> Go to Full Course <i class="fas fa-external-link-alt text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+<!-- Course 8: ARM Cortex-M Architecture -->
+                <div class="flex flex-col sm:flex-row bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 reveal group md:col-span-2">
+                    <div class="sm:w-1/4 bg-gray-50 p-6 flex flex-col justify-center items-center text-center border-r border-gray-100 group-hover:bg-cyan-50 transition-colors">
+                        <i class="fas fa-microchip text-5xl text-cyan-600 mb-4"></i>
+                        <span class="inline-block px-3 py-1 bg-white rounded-full text-xs font-bold text-brand-navy shadow-sm mb-2">8 WEEKS</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Intermediate</span>
+                    </div>
+                    <div class="sm:w-3/4 p-8 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-2xl font-bold text-brand-navy group-hover:text-cyan-600 transition-colors">ARM Cortex-M Architecture</h3>
+                                <span class="bg-cyan-100 text-cyan-800 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase">New Course</span>
+                            </div>
+                            <p class="text-brand-textSecondary text-sm mb-4">Book 3, the engineering reference: Cortex-M core, registers, memory map, NVIC, exceptions, faults, startup, linker script, clocks, MPU, FPU, DMA, SWD/GDB, CMSIS and C to machine code.</p>
+                            <div class="flex flex-wrap gap-2 mb-6">
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">ARM Cortex-M</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">Vendor-neutral</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">NVIC / Faults</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">Linker / Startup</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">SWD / GDB / CMSIS</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4 mt-auto">
+                            <a href="{% url 'courses:detail' 'arm-cortex-m-architecture' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy hover:text-cyan-600 transition-colors">
+                                View Syllabus <i class="fas fa-chevron-right text-xs"></i>
+                            </a>
+                            <a href="{% url 'courses:cortexm_book_index' %}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm font-bold text-brand-coral hover:underline">
+                                <i class="fas fa-book-open"></i> Go to Full Course <i class="fas fa-external-link-alt text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

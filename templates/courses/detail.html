@@ -45,6 +45,21 @@
                             <i class="fas fa-book-open mr-2 text-brand-coral"></i> Go to Course <i class="fas fa-arrow-right ml-2 text-xs transform group-hover:translate-x-1 transition-transform"></i>
                         </a>
                         {% endif %}
+                        {% if course.slug == 'stm32-firmware-development-with-c' %}
+                        <a href="{% url 'courses:stm32_c_book_index' %}" target="_blank" rel="noopener noreferrer" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center backdrop-blur-sm group">
+                            <i class="fas fa-book-open mr-2 text-brand-coral"></i> Go to Course <i class="fas fa-arrow-right ml-2 text-xs transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                        {% endif %}
+                        {% if course.slug == 'embedded-rust-with-stm32' %}
+                        <a href="{% url 'courses:stm32_rust_book_index' %}" target="_blank" rel="noopener noreferrer" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center backdrop-blur-sm group">
+                            <i class="fas fa-book-open mr-2 text-brand-coral"></i> Go to Course <i class="fas fa-arrow-right ml-2 text-xs transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                        {% endif %}
+                        {% if course.slug == 'arm-cortex-m-architecture' %}
+                        <a href="{% url 'courses:cortexm_book_index' %}" target="_blank" rel="noopener noreferrer" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center backdrop-blur-sm group">
+                            <i class="fas fa-book-open mr-2 text-brand-coral"></i> Go to Course <i class="fas fa-arrow-right ml-2 text-xs transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                        {% endif %}
                     </div>
 
                     {% if course.slug == 'agentic-ai-learn-by-examples' %}

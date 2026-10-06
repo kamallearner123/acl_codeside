@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Targets, triples and the Cortex-M target family, and how cargo builds for a chip you are not running on.">
+  <title>Cross Compilation for ARM | Embedded Rust with STM32</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch10-cross-compilation">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">STM32 + Rust</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, ownership, GPIO, DMA, defmt..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/embedded-rust-with-stm32/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Chapters</span>
+          <span class="progress-pill">Ch 10 of 26</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
+          </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R1</span>
+              <span>Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-why-embedded-rust.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Why Embedded Rust</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch01-why-embedded-rust.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 Where C Firmware Actually Br…</a></li><li><a href="ch01-why-embedded-rust.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 What Rust Changes</a></li><li><a href="ch01-why-embedded-rust.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 What Rust Does Not Change</a></li><li><a href="ch01-why-embedded-rust.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 The Embedded Rust Ecosystem…</a></li><li><a href="ch01-why-embedded-rust.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 When to Choose Rust, When to…</a></li><li><a href="ch01-why-embedded-rust.html#sec-1-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R2</span>
+              <span>Language</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-rust-for-c-developers.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: Rust for C Developers</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch02-rust-for-c-developers.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 Variables, Mutability and Ty…</a></li><li><a href="ch02-rust-for-c-developers.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 No Implicit Conversions</a></li><li><a href="ch02-rust-for-c-developers.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 Integer Overflow</a></li><li><a href="ch02-rust-for-c-developers.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Functions and Expressions</a></li><li><a href="ch02-rust-for-c-developers.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Arrays, Slices and Bounds</a></li><li><a href="ch02-rust-for-c-developers.html#sec-2-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.6 A First Look at `unsafe`</a></li><li><a href="ch02-rust-for-c-developers.html#sec-2-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R3</span>
+              <span>Language</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-ownership.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: Ownership</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch03-ownership.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 The Three Rules of Ownership</a></li><li><a href="ch03-ownership.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Copy vs Move</a></li><li><a href="ch03-ownership.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Drop: Deterministic Cleanup…</a></li><li><a href="ch03-ownership.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Ownership of Hardware</a></li><li><a href="ch03-ownership.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 Passing Ownership Around</a></li><li><a href="ch03-ownership.html#sec-3-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R4</span>
+              <span>Language</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-borrowing.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Borrowing</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch04-borrowing.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 References Instead of Owners…</a></li><li><a href="ch04-borrowing.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 What the Compiler Rejects</a></li><li><a href="ch04-borrowing.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 `&amp;mut` for Hardware Drivers</a></li><li><a href="ch04-borrowing.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Splitting Borrows</a></li><li><a href="ch04-borrowing.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 The `static mut` Trap</a></li><li><a href="ch04-borrowing.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Borrowing and the Embedded M…</a></li><li><a href="ch04-borrowing.html#sec-4-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R5</span>
+              <span>Language</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-lifetimes.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: Lifetimes</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch05-lifetimes.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 What a Lifetime Is</a></li><li><a href="ch05-lifetimes.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Lifetime Elision</a></li><li><a href="ch05-lifetimes.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 Structs That Hold References</a></li><li><a href="ch05-lifetimes.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 `'static`: Data That Lives f…</a></li><li><a href="ch05-lifetimes.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 Reading Lifetime Errors</a></li><li><a href="ch05-lifetimes.html#sec-5-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R6</span>
+              <span>Language</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-structs-enums.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: Structs &amp; Enums</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch06-structs-enums.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 Structs: Data with Meaning</a></li><li><a href="ch06-structs-enums.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 Enums That Carry Data</a></li><li><a href="ch06-structs-enums.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 State Machines with Enums</a></li><li><a href="ch06-structs-enums.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 The Type-State Pattern</a></li><li><a href="ch06-structs-enums.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Hardware Abstraction with St…</a></li><li><a href="ch06-structs-enums.html#sec-6-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R7</span>
+              <span>Language</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch07-traits-generics.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 7: Traits &amp; Generics</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch07-traits-generics.html#sec-7-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.1 Traits: Shared Behaviour</a></li><li><a href="ch07-traits-generics.html#sec-7-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.2 Generics and Monomorphization</a></li><li><a href="ch07-traits-generics.html#sec-7-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.3 `embedded-hal`: The Trait Li…</a></li><li><a href="ch07-traits-generics.html#sec-7-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.4 Trait Bounds as Documentation</a></li><li><a href="ch07-traits-generics.html#sec-7-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.5 Mocking for Tests</a></li><li><a href="ch07-traits-generics.html#sec-7-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R8</span>
+              <span>Language</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch08-option-result.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 8: Option &amp; Result</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch08-option-result.html#sec-8-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.1 No Null, No Ignored Errors</a></li><li><a href="ch08-option-result.html#sec-8-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.2 Result and the `?` Operator</a></li><li><a href="ch08-option-result.html#sec-8-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.3 Handling the Error Is a Desi…</a></li><li><a href="ch08-option-result.html#sec-8-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.4 `unwrap`, `expect` and Panics</a></li><li><a href="ch08-option-result.html#sec-8-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.5 Combinators</a></li><li><a href="ch08-option-result.html#sec-8-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R9</span>
+              <span>Embedded</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch09-no-std.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 9: no_std</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch09-no-std.html#sec-9-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.1 Three Layers of the Standard…</a></li><li><a href="ch09-no-std.html#sec-9-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.2 The Skeleton of a `no_std` P…</a></li><li><a href="ch09-no-std.html#sec-9-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.3 No Heap? Use Fixed-Capacity…</a></li><li><a href="ch09-no-std.html#sec-9-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.4 Optional: A Heap with `alloc`</a></li><li><a href="ch09-no-std.html#sec-9-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.5 Formatting and Logging Witho…</a></li><li><a href="ch09-no-std.html#sec-9-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.6 What Changes from C</a></li><li><a href="ch09-no-std.html#sec-9-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R10</span>
+              <span>Embedded</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch10-cross-compilation.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 10: Cross Compilation</span>
+                <span class="chapter-read-time">30m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch10-cross-compilation.html#sec-10-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.1 Native vs Cross Compilation</a></li><li><a href="ch10-cross-compilation.html#sec-10-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.2 Choosing the Right Target</a></li><li><a href="ch10-cross-compilation.html#sec-10-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.3 Project Configuration</a></li><li><a href="ch10-cross-compilation.html#sec-10-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.4 What the Compiler Produces</a></li><li><a href="ch10-cross-compilation.html#sec-10-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.5 Why It Just Works</a></li><li><a href="ch10-cross-compilation.html#sec-10-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.6 Size and Speed Controls</a></li><li><a href="ch10-cross-compilation.html#sec-10-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 10.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R11</span>
+              <span>Embedded</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch11-linker-memory.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 11: Linker &amp; Memory</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch11-linker-memory.html#sec-11-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.1 The STM32F446 Memory Map</a></li><li><a href="ch11-linker-memory.html#sec-11-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.2 Sections: Where Your Variab…</a></li><li><a href="ch11-linker-memory.html#sec-11-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.3 Reading the Result</a></li><li><a href="ch11-linker-memory.html#sec-11-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.4 Stack Overflow: C vs Rust</a></li><li><a href="ch11-linker-memory.html#sec-11-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.5 Placing Data Explicitly</a></li><li><a href="ch11-linker-memory.html#sec-11-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.6 Vector Table and Interrupt…</a></li><li><a href="ch11-linker-memory.html#sec-11-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 11.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R12</span>
+              <span>Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch12-toolchain.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 12: Toolchain</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch12-toolchain.html#sec-12-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.1 The Toolchain at a Glance</a></li><li><a href="ch12-toolchain.html#sec-12-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.2 Installation</a></li><li><a href="ch12-toolchain.html#sec-12-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.3 Creating a Project</a></li><li><a href="ch12-toolchain.html#sec-12-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.4 The Daily Workflow</a></li><li><a href="ch12-toolchain.html#sec-12-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.5 Reading Crate Documentation</a></li><li><a href="ch12-toolchain.html#sec-12-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.6 VS Code Setup</a></li><li><a href="ch12-toolchain.html#sec-12-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 12.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R13</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch13-gpio.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 13: GPIO</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch13-gpio.html#sec-13-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.1 Your First Rust Firmware: B…</a></li><li><a href="ch13-gpio.html#sec-13-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.2 Reading a Button</a></li><li><a href="ch13-gpio.html#sec-13-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.3 Pin Modes Are Types</a></li><li><a href="ch13-gpio.html#sec-13-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.4 PAC vs HAL</a></li><li><a href="ch13-gpio.html#sec-13-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.5 Splitting Pins Across Modules</a></li><li><a href="ch13-gpio.html#sec-13-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 13.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R14</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch14-interrupts.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 14: Interrupts</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch14-interrupts.html#sec-14-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.1 The Problem: Sharing Data w…</a></li><li><a href="ch14-interrupts.html#sec-14-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.2 Atomics for Flags and Count…</a></li><li><a href="ch14-interrupts.html#sec-14-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.3 Sharing a Peripheral: `Mute…</a></li><li><a href="ch14-interrupts.html#sec-14-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.4 The Flag-and-Process Patter…</a></li><li><a href="ch14-interrupts.html#sec-14-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.5 Priorities and Nested Inter…</a></li><li><a href="ch14-interrupts.html#sec-14-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.6 RTIC in a Nutshell</a></li><li><a href="ch14-interrupts.html#sec-14-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 14.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R15</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch15-timers-pwm.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 15: Timers &amp; PWM</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch15-timers-pwm.html#sec-15-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.1 Timers: Time Bases and PWM</a></li><li><a href="ch15-timers-pwm.html#sec-15-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.2 PWM Output</a></li><li><a href="ch15-timers-pwm.html#sec-15-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.3 Safe Duty-Cycle Handling</a></li><li><a href="ch15-timers-pwm.html#sec-15-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.4 Servo and Motor Control</a></li><li><a href="ch15-timers-pwm.html#sec-15-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.5 Input Capture and Encoders</a></li><li><a href="ch15-timers-pwm.html#sec-15-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.6 Delays Are Not Timers</a></li><li><a href="ch15-timers-pwm.html#sec-15-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 15.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R16</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch16-uart.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 16: UART</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch16-uart.html#sec-16-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.1 UART in Rust</a></li><li><a href="ch16-uart.html#sec-16-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.2 Polling Read and Write</a></li><li><a href="ch16-uart.html#sec-16-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.3 Interrupt-Driven Receive wi…</a></li><li><a href="ch16-uart.html#sec-16-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.4 A Command Parser</a></li><li><a href="ch16-uart.html#sec-16-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.5 `defmt` vs UART Logging</a></li><li><a href="ch16-uart.html#sec-16-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.6 DMA Receive Preview</a></li><li><a href="ch16-uart.html#sec-16-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 16.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R17</span>
+              <span>Buses</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch17-i2c.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 17: I2C</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch17-i2c.html#sec-17-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.1 I²C and the `embedded-hal`…</a></li><li><a href="ch17-i2c.html#sec-17-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.2 Raw Transactions</a></li><li><a href="ch17-i2c.html#sec-17-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.3 A Generic Sensor Driver</a></li><li><a href="ch17-i2c.html#sec-17-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.4 Sharing One Bus Between Sev…</a></li><li><a href="ch17-i2c.html#sec-17-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.5 Converting Raw Data</a></li><li><a href="ch17-i2c.html#sec-17-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.6 Error Recovery</a></li><li><a href="ch17-i2c.html#sec-17-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 17.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R18</span>
+              <span>Buses</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch18-spi.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 18: SPI</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch18-spi.html#sec-18-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.1 SPI Basics Recap</a></li><li><a href="ch18-spi.html#sec-18-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.2 Creating SPI1</a></li><li><a href="ch18-spi.html#sec-18-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.3 Chip Select Done Safely</a></li><li><a href="ch18-spi.html#sec-18-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.4 Flash and SD Storage</a></li><li><a href="ch18-spi.html#sec-18-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.5 Displays with `embedded-gra…</a></li><li><a href="ch18-spi.html#sec-18-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.6 Debugging SPI</a></li><li><a href="ch18-spi.html#sec-18-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 18.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R19</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch19-adc.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 19: ADC</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch19-adc.html#sec-19-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.1 ADC Recap</a></li><li><a href="ch19-adc.html#sec-19-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.2 Single Conversion</a></li><li><a href="ch19-adc.html#sec-19-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.3 Typed Units</a></li><li><a href="ch19-adc.html#sec-19-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.4 Filtering</a></li><li><a href="ch19-adc.html#sec-19-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.5 Internal Channels and Calib…</a></li><li><a href="ch19-adc.html#sec-19-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.6 Continuous Sampling with DMA</a></li><li><a href="ch19-adc.html#sec-19-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 19.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R20</span>
+              <span>Buses</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch20-can.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 20: CAN</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch20-can.html#sec-20-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.1 CAN on STM32</a></li><li><a href="ch20-can.html#sec-20-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.2 Bit Timing</a></li><li><a href="ch20-can.html#sec-20-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.3 Initialising with `bxcan`</a></li><li><a href="ch20-can.html#sec-20-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.4 Sending and Receiving</a></li><li><a href="ch20-can.html#sec-20-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.5 Designing Messages with Types</a></li><li><a href="ch20-can.html#sec-20-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.6 Diagnostics</a></li><li><a href="ch20-can.html#sec-20-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 20.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R21</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch21-dma.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 21: DMA</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch21-dma.html#sec-21-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.1 What DMA Gives You</a></li><li><a href="ch21-dma.html#sec-21-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.2 Ownership of the Buffer</a></li><li><a href="ch21-dma.html#sec-21-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.3 UART RX with DMA and Idle L…</a></li><li><a href="ch21-dma.html#sec-21-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.4 Alignment and Placement</a></li><li><a href="ch21-dma.html#sec-21-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.5 ADC and Timer-Triggered Sam…</a></li><li><a href="ch21-dma.html#sec-21-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.6 Debugging DMA</a></li><li><a href="ch21-dma.html#sec-21-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 21.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R22</span>
+              <span>Quality</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch22-testing.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 22: Testing</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch22-testing.html#sec-22-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.1 Why Rust Firmware Is Easier…</a></li><li><a href="ch22-testing.html#sec-22-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.2 Host-Testable Crates</a></li><li><a href="ch22-testing.html#sec-22-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.3 Mocking the Hardware</a></li><li><a href="ch22-testing.html#sec-22-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.4 On-Target Tests with `defmt…</a></li><li><a href="ch22-testing.html#sec-22-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.5 Property and Edge Testing</a></li><li><a href="ch22-testing.html#sec-22-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.6 Continuous Integration</a></li><li><a href="ch22-testing.html#sec-22-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 22.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R23</span>
+              <span>Quality</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch23-debugging.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 23: Debugging</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch23-debugging.html#sec-23-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.1 The Rust Debugging Toolbox</a></li><li><a href="ch23-debugging.html#sec-23-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.2 `cargo run` with probe-rs</a></li><li><a href="ch23-debugging.html#sec-23-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.3 `defmt` Logging</a></li><li><a href="ch23-debugging.html#sec-23-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.4 Breakpoints in VS Code</a></li><li><a href="ch23-debugging.html#sec-23-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.5 GDB and OpenOCD</a></li><li><a href="ch23-debugging.html#sec-23-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.6 Panics and Hard Faults</a></li><li><a href="ch23-debugging.html#sec-23-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.7 Stack Overflow Protection</a></li><li><a href="ch23-debugging.html#sec-23-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.8 Logic Analyzer</a></li><li><a href="ch23-debugging.html#sec-23-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 23.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R24</span>
+              <span>Design</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch24-driver-design.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 24: Driver Design</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch24-driver-design.html#sec-24-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.1 What Makes a Driver Reusable</a></li><li><a href="ch24-driver-design.html#sec-24-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.2 Skeleton of a Driver Crate</a></li><li><a href="ch24-driver-design.html#sec-24-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.3 Type-State Configuration</a></li><li><a href="ch24-driver-design.html#sec-24-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.4 Async Variants</a></li><li><a href="ch24-driver-design.html#sec-24-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.5 Documentation and Publishing</a></li><li><a href="ch24-driver-design.html#sec-24-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.6 Review Checklist</a></li><li><a href="ch24-driver-design.html#sec-24-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 24.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R25</span>
+              <span>Design</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch25-architecture.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 25: Architecture</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch25-architecture.html#sec-25-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.1 From Programs to Products</a></li><li><a href="ch25-architecture.html#sec-25-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.2 Workspace Layout</a></li><li><a href="ch25-architecture.html#sec-25-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.3 Choosing a Concurrency Model</a></li><li><a href="ch25-architecture.html#sec-25-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.4 Message Passing Over Shared…</a></li><li><a href="ch25-architecture.html#sec-25-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.5 State Machines</a></li><li><a href="ch25-architecture.html#sec-25-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.6 Reliability Features</a></li><li><a href="ch25-architecture.html#sec-25-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.7 Memory Budget</a></li><li><a href="ch25-architecture.html#sec-25-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 25.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">R26</span>
+              <span>Capstone</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch26-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 26: Capstone</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch26-capstone.html#sec-26-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.1 Capstone Overview</a></li><li><a href="ch26-capstone.html#sec-26-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.2 Requirements</a></li><li><a href="ch26-capstone.html#sec-26-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.3 Architecture</a></li><li><a href="ch26-capstone.html#sec-26-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.4 Suggested Crates</a></li><li><a href="ch26-capstone.html#sec-26-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.5 Core Control Loop</a></li><li><a href="ch26-capstone.html#sec-26-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.6 Test Plan</a></li><li><a href="ch26-capstone.html#sec-26-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.7 Milestones</a></li><li><a href="ch26-capstone.html#sec-26-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.8 Assessment Rubric</a></li><li><a href="ch26-capstone.html#sec-26-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 26.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Further Reading</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs"><a href="../index.html">Home</a><span>/</span><span>Chapter 10</span><span>/</span><span>Cross Compilation</span></div>
+        <div class="chapter-actions">
+          <a href="ch09-no-std.html" class="btn-secondary">← Chapter 9</a>
+          <a href="ch11-linker-memory.html" class="btn-primary">Chapter 11 →</a>
+        </div>
+      </div>
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Chapter 10 • Embedded</span>
+          <h1 class="chapter-h1">Cross Compilation for ARM</h1>
+          <p class="chapter-lead">Targets, triples and the Cortex-M target family, and how cargo builds for a chip you are not running on.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 30 minutes</div>
+            <div class="meta-item">🛠️ Lab: Build for the target</div>
+            <div class="meta-item">🎯 Topics: Cross Compilation</div>
+          </div>
+        </div>
+<h2 id="sec-10-1">10.1 Native vs Cross Compilation</h2>
+<p>Your PC runs x86-64 (or Apple/ARM64); the NUCLEO-F446RE runs a 32-bit Cortex-M4F. <strong>Cross-compilation</strong> means building code for a different machine than the one doing the build. In C you installed <code>arm-none-eabi-gcc</code>; in Rust you add a <strong>target</strong>.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Install the Cortex-M4F target</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>rustup target add thumbv7em-none-eabihf
+rustup target list --installed</code></pre>
+          </div>
+        </div>
+
+<p>The name decodes as: <code>thumbv7em</code> (Thumb-2 instruction set, ARMv7E-M) - <code>none</code> (no operating system) - <code>eabihf</code> (embedded ABI, hardware floating point).</p>
+<h2 id="sec-10-2">10.2 Choosing the Right Target</h2>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Core</th>
+<th style="padding:0.6rem;">Example chips</th>
+<th style="padding:0.6rem;">Rust target</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Cortex-M0 / M0+</td>
+<td style="padding:0.6rem;vertical-align:top;">STM32F0, G0, L0</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>thumbv6m-none-eabi</code></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Cortex-M3</td>
+<td style="padding:0.6rem;vertical-align:top;">STM32F1, L1</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>thumbv7m-none-eabi</code></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Cortex-M4 / M7 without FPU</td>
+<td style="padding:0.6rem;vertical-align:top;">-</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>thumbv7em-none-eabi</code></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Cortex-M4F / M7F with FPU</td>
+<td style="padding:0.6rem;vertical-align:top;"><strong>STM32F4 (F446)</strong>, L4, F7</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>thumbv7em-none-eabihf</code></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Cortex-M23</td>
+<td style="padding:0.6rem;vertical-align:top;">STM32L5 (partly)</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>thumbv8m.base-none-eabi</code></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Cortex-M33</td>
+<td style="padding:0.6rem;vertical-align:top;">STM32L5, U5, H5</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>thumbv8m.main-none-eabihf</code></td>
+</tr>
+</tbody></table></div>
+
+        <div class="callout callout-warning">
+          <div class="callout-header">Match the target to the FPU</div>
+          <div class="callout-body">Using <code>thumbv7em-none-eabi</code> (soft float) on an F4 works but is much slower for <code>f32</code>. Using <code>...eabihf</code> on a core without an FPU crashes on the first float instruction.</div>
+        </div>
+
+<h2 id="sec-10-3">10.3 Project Configuration</h2>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">TOML</span>
+              <span>.cargo/config.toml</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>[build]
+target = "thumbv7em-none-eabihf"
+
+[target.thumbv7em-none-eabihf]
+runner = "probe-rs run --chip STM32F446RETx"
+rustflags = ["-C", "link-arg=-Tlink.x", "-C", "link-arg=-Tdefmt.x"]
+
+[env]
+DEFMT_LOG = "info"</code></pre>
+          </div>
+        </div>
+
+<p>With this file, <code>cargo build</code> cross-compiles and <code>cargo run</code> builds, flashes and starts the program in one command.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">TOML</span>
+              <span>Cargo.toml</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>[package]
+name = "blinky"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cortex-m = { version = "0.7", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7"
+stm32f4xx-hal = { version = "0.21", features = ["stm32f446"] }
+defmt = "0.3"
+defmt-rtt = "0.4"
+panic-probe = { version = "0.3", features = ["print-defmt"] }
+
+[profile.dev]
+opt-level = "s"        # unoptimised Rust is too slow and large for most firmware
+debug = true
+
+[profile.release]
+opt-level = "s"
+lto = "fat"
+codegen-units = 1
+debug = true           # debug info lives in the ELF, not in flash</code></pre>
+          </div>
+        </div>
+
+
+        <div class="callout callout-tip">
+          <div class="callout-header">Pin your versions</div>
+          <div class="callout-body">HAL crates change their APIs between releases. Commit <code>Cargo.lock</code> and note the HAL version in your README so a colleague (or you in a year) gets the same build. The examples in this book target <code>stm32f4xx-hal</code> 0.21 and <code>embedded-hal</code> 1.0.</div>
+        </div>
+
+<h2 id="sec-10-4">10.4 What the Compiler Produces</h2>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Inspect the result</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>cargo build --release
+cargo size --release -- -A          # section sizes (cargo-binutils)
+cargo objdump --release -- -d | less
+arm-none-eabi-nm -S --size-sort target/thumbv7em-none-eabihf/release/blinky | tail
+cargo bloat --release -n 10         # which functions use the flash</code></pre>
+          </div>
+        </div>
+
+<p>The output is an ELF file - the same format as in Book 1 - so your debugger, <code>addr2line</code> and logic of reading a map file all still apply.</p>
+<h2 id="sec-10-5">10.5 Why It Just Works</h2>
+<ul><li><code>core</code> is pre-compiled for each target and shipped with <code>rustup target add</code>.</li><li><code>compiler_builtins</code> supplies helper routines (e.g. 64-bit division) that C gets from <code>libgcc</code>.</li><li>LLVM generates the machine code; the linker is <code>rust-lld</code>, bundled with Rust.</li></ul>
+<p>If you need a target without a pre-built <code>core</code> (rare), nightly Rust and <code>-Z build-std</code> build <code>core</code> from source.</p>
+<h2 id="sec-10-6">10.6 Size and Speed Controls</h2>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Setting</th>
+<th style="padding:0.6rem;">Effect</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>opt-level = "s"</code> / <code>"z"</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Optimise for size</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>opt-level = 3</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Optimise for speed</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>lto = "fat"</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Whole-program optimisation, removes unused code</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>codegen-units = 1</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Better optimisation, slower build</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>panic = "abort"</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Implicit on <code>no_std</code> targets - no unwinding code</td>
+</tr>
+</tbody></table></div>
+
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Lab 10: Cross-Compile and Inspect</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l10-step1">
+              <label for="l10-step1" class="checklist-text">Install the <code>thumbv7em-none-eabihf</code> target and create <code>.cargo/config.toml</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l10-step2">
+              <label for="l10-step2" class="checklist-text">Build a minimal blinky and run <code>cargo size</code> in debug and release; record <code>.text</code>, <code>.data</code> and <code>.bss</code>.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l10-step3">
+              <label for="l10-step3" class="checklist-text">Change <code>opt-level</code> between <code>"s"</code> and <code>3</code> and compare size and speed.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l10-step4">
+              <label for="l10-step4" class="checklist-text">Run <code>cargo bloat</code> and identify the three largest functions.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l10-step5">
+              <label for="l10-step5" class="checklist-text">Open the ELF in <code>arm-none-eabi-objdump</code> and find <code>Reset</code>, <code>main</code> and the vector table.</label>
+            </li>
+          </ul>
+        </div>
+
+
+        <div class="quiz-container" id="sec-10-quiz">
+          <div class="quiz-header"><span>🧠 Knowledge Check: Chapter 10</span></div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">1. Which target matches an STM32F446 (Cortex-M4F)?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. That is Cortex-M0.">
+                A) <code>thumbv6m-none-eabi</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) <code>thumbv7em-none-eabihf</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. That is your PC.">
+                C) <code>x86_64-unknown-linux-gnu</code>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">2. What does the <code>none</code> in the target name mean?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                A) No operating system
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                B) No floating point
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) No linker
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">3. What does <code>cargo run</code> do with the runner configured?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) Only compiles
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) Builds, flashes and starts the firmware through the debug probe
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) Starts a simulator
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+
+        <div class="chapter-bottom-nav">
+          <a href="ch09-no-std.html" class="nav-card"><span class="nav-card-dir">← Previous</span><span class="nav-card-title">Chapter 9: no_std: The Embedded Environment</span></a>
+          <a href="ch11-linker-memory.html" class="nav-card" style="text-align:right;"><span class="nav-card-dir">Next →</span><span class="nav-card-title">Chapter 11: Linker Scripts &amp; Memory Layout</span></a>
+        </div>
+
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Embedded Rust with STM32 • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+
+      </article>
+    </main>
+  </div>
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, ownership, GPIO, DMA, defmt...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+  <script src="../js/book.js"></script>
+</body>
+</html>

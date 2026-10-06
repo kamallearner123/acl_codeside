@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Talk to the PC and to other devices over USART, from polling through interrupts to DMA with idle-line detection. Retarget printf, build a command parser and learn why DMA frees the CPU.">
+  <title>USART/UART &amp; DMA | Programming STM32 with C</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch05-uart-dma">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">STM32 + C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, GPIO, DMA, GDB..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/stm32-firmware-development-with-c/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Chapters</span>
+          <span class="progress-pill">Ch 5 of 9</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
+          </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C1</span>
+              <span>Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-embedded-c-stm32-architecture.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Embedded C &amp; Architecture</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 Why C, and Why "Embedded" C…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 Fixed-Width Types and Intege…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Bit Manipulation - The Every…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 `volatile`, `const` and `sta…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Pointers and Memory-Mapped R…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 STM32 Family and the Cortex-…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Memory Map and Bus Matrix</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.8 Clocks, Reset and the Boot S…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.9 Hands-On Lab 1: Register-Lev…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C2</span>
+              <span>Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-cubemx-cubeide.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: CubeMX &amp; CubeIDE</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch02-cubemx-cubeide.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 The ST Software Stack</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Creating a Project in STM32C…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 CubeMX: Pinout, Clock Tree a…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Anatomy of the Generated Pro…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 The USER CODE Rule</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.6 HAL Conventions You Will See…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.7 Build, Flash and Run</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.8 Hands-On Lab 2: First CubeMX…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C3</span>
+              <span>Digital I/O</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-gpio-interrupts.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: GPIO &amp; Interrupts</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch03-gpio-interrupts.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Anatomy of a GPIO Pin</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Using GPIO with HAL</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Polling a Button - and Why I…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Interrupts: The Concept</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 EXTI and the NVIC</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.6 Writing Good ISRs</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.7 Debouncing</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.8 Hands-On Lab 3: Interrupt-Dr…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C4</span>
+              <span>Analog &amp; Timing</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-timers-pwm-adc.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Timers, PWM &amp; ADC</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch04-timers-pwm-adc.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 What a Hardware Timer Does</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Periodic Interrupts and Accu…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 PWM: Analog Control from a D…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Input Capture: Measuring Tim…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 The ADC: Measuring Voltage</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Triggering the ADC with a Ti…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.7 Hands-On Lab 4: Potentiomete…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C5</span>
+              <span>Serial &amp; Transfers</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-uart-dma.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: USART/UART &amp; DMA</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch05-uart-dma.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Serial Communication Basics</a></li><li><a href="ch05-uart-dma.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Three Ways to Transfer Data</a></li><li><a href="ch05-uart-dma.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 Interrupt-Driven Reception</a></li><li><a href="ch05-uart-dma.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Retargeting printf</a></li><li><a href="ch05-uart-dma.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 DMA: Moving Data Without the…</a></li><li><a href="ch05-uart-dma.html#sec-5-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.6 DMA RX with Idle-Line Detect…</a></li><li><a href="ch05-uart-dma.html#sec-5-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.7 DMA with the ADC</a></li><li><a href="ch05-uart-dma.html#sec-5-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.8 A Command Console</a></li><li><a href="ch05-uart-dma.html#sec-5-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.9 Hands-On Lab 5: DMA UART Com…</a></li><li><a href="ch05-uart-dma.html#sec-5-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C6</span>
+              <span>Buses</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-i2c-spi-can.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: I2C, SPI &amp; CAN</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch06-i2c-spi-can.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 Choosing a Bus</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 I2C Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 SPI Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 CAN Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Hands-On Lab 6: Three-Bus Br…</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C7</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch07-sensors-displays-motors.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 7: Sensors, Displays &amp; Motors</span>
+                <span class="chapter-read-time">55m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch07-sensors-displays-motors.html#sec-7-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.1 Interfacing Sensors: A Method</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.2 BME280 over I2C</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.3 MPU6050 Accelerometer and Gy…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.4 Analog Sensors: NTC Thermistor</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.5 Displays</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.6 Actuators: Servos</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.7 Actuators: DC Motors with an…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.8 Actuators: Stepper Motors</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.9 Hands-On Lab 7: Weather Stat…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C8</span>
+              <span>Debugging</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch08-debugging-fault-diagnosis.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 8: Debugging &amp; Fault Diagnosis</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.1 The Debug Chain: ST-LINK and…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.2 GDB from the Command Line</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.3 Watching the Wires: Logic An…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.4 Fault Diagnosis: Decoding a…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C9</span>
+              <span>Projects</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch09-projects-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 9: Mini Projects &amp; Capstone</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch09-projects-capstone.html#sec-9-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.1 From Exercises to Products</a></li><li><a href="ch09-projects-capstone.html#sec-9-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.2 Five Mini Projects</a></li><li><a href="ch09-projects-capstone.html#sec-9-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.3 Capstone: CAN-Connected Envi…</a></li><li><a href="ch09-projects-capstone.html#sec-9-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.4 Test Plan and Definition of…</a></li><li><a href="ch09-projects-capstone.html#sec-9-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Further Reading</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs"><a href="../index.html">Home</a><span>/</span><span>Chapter 5</span><span>/</span><span>USART/UART &amp; DMA</span></div>
+        <div class="chapter-actions">
+          <a href="ch04-timers-pwm-adc.html" class="btn-secondary">← Chapter 4</a>
+          <a href="ch06-i2c-spi-can.html" class="btn-primary">Chapter 6 →</a>
+        </div>
+      </div>
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Chapter 05 • Serial &amp; Transfers</span>
+          <h1 class="chapter-h1">USART/UART &amp; DMA</h1>
+          <p class="chapter-lead">Talk to the PC and to other devices over USART, from polling through interrupts to DMA with idle-line detection. Retarget printf, build a command parser and learn why DMA frees the CPU.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 45 minutes</div>
+            <div class="meta-item">🛠️ Lab: DMA UART command console</div>
+            <div class="meta-item">🎯 Topics: USART, DMA</div>
+          </div>
+        </div>
+<h2 id="sec-5-1">5.1 Serial Communication Basics</h2>
+<p><strong>UART</strong> (Universal Asynchronous Receiver/Transmitter) sends bytes one bit at a time with no shared clock. Both ends must agree on the settings beforehand; the most common is <strong>115200 baud, 8 data bits, no parity, 1 stop bit (8N1)</strong>.</p>
+<p>A frame for one byte: start bit (0), 8 data bits LSB-first, stop bit (1). At 115200 baud one bit lasts 8.68 µs and one byte (10 bits) 86.8 µs, so throughput is about <strong>11.5 KB/s</strong>.</p>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Term</th>
+<th style="padding:0.6rem;">Meaning</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">UART / USART</td>
+<td style="padding:0.6rem;vertical-align:top;">USART can also do synchronous mode, SmartCard, IrDA, LIN</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">TX / RX</td>
+<td style="padding:0.6rem;vertical-align:top;">Cross them: <strong>MCU TX → device RX</strong>, MCU RX ← device TX</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Common ground</td>
+<td style="padding:0.6rem;vertical-align:top;">Always connect GND between the boards</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Logic level</td>
+<td style="padding:0.6rem;vertical-align:top;">3.3 V on STM32. RS-232 (±12 V) needs a MAX3232; RS-485 needs a transceiver</td>
+</tr>
+</tbody></table></div>
+
+        <div class="callout callout-hardware">
+          <div class="callout-header">Virtual COM Port</div>
+          <div class="callout-body">On the Nucleo, <strong>USART2 (PA2 TX / PA3 RX)</strong> is wired to the ST-LINK, which presents it to your PC as a COM port (<code>/dev/ttyACM0</code> on Linux, <code>COMx</code> on Windows). No extra cable is needed to print debug output.</div>
+        </div>
+
+<h2 id="sec-5-2">5.2 Three Ways to Transfer Data</h2>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Method</th>
+<th style="padding:0.6rem;">HAL call</th>
+<th style="padding:0.6rem;">CPU usage</th>
+<th style="padding:0.6rem;">Use when</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>Polling</strong></td>
+<td style="padding:0.6rem;vertical-align:top;"><code>HAL_UART_Transmit()</code> / <code>Receive()</code></td>
+<td style="padding:0.6rem;vertical-align:top;">CPU waits in the function</td>
+<td style="padding:0.6rem;vertical-align:top;">Quick tests, short messages</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>Interrupt</strong></td>
+<td style="padding:0.6rem;vertical-align:top;"><code>HAL_UART_Transmit_IT()</code> / <code>Receive_IT()</code></td>
+<td style="padding:0.6rem;vertical-align:top;">CPU interrupted per byte</td>
+<td style="padding:0.6rem;vertical-align:top;">Moderate rates, simple designs</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>DMA</strong></td>
+<td style="padding:0.6rem;vertical-align:top;"><code>HAL_UART_Transmit_DMA()</code> / <code>Receive_DMA()</code></td>
+<td style="padding:0.6rem;vertical-align:top;">CPU free until the transfer completes</td>
+<td style="padding:0.6rem;vertical-align:top;">High rates, background streaming</td>
+</tr>
+</tbody></table></div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Polling transmit and receive</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>uint8_t msg[] = "Hello STM32\r\n";
+HAL_UART_Transmit(&amp;huart2, msg, sizeof(msg) - 1, 100);     /* 100 ms timeout */
+
+uint8_t c;
+if (HAL_UART_Receive(&amp;huart2, &amp;c, 1, 10) == HAL_OK) {
+    /* got a character */
+}</code></pre>
+          </div>
+        </div>
+
+<h2 id="sec-5-3">5.3 Interrupt-Driven Reception</h2>
+<p>Receiving by polling forces you to call <code>Receive()</code> often enough not to miss bytes. With interrupts you arm the receiver for one byte and re-arm in the callback, pushing bytes into a ring buffer.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Interrupt RX with a ring buffer</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#define RX_BUF_SIZE 128                 /* power of two */
+static uint8_t  rx_byte;
+static uint8_t  rx_buf[RX_BUF_SIZE];
+static volatile uint16_t head, tail;
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart-&gt;Instance == USART2) {
+    rx_buf[head] = rx_byte;
+    head = (head + 1) &amp; (RX_BUF_SIZE - 1);
+    HAL_UART_Receive_IT(&amp;huart2, &amp;rx_byte, 1);       /* re-arm */
+  }
+}
+
+int rx_get(void)                        /* returns -1 when empty */
+{
+  if (head == tail) return -1;
+  uint8_t c = rx_buf[tail];
+  tail = (tail + 1) &amp; (RX_BUF_SIZE - 1);
+  return c;
+}
+/* Start once: HAL_UART_Receive_IT(&amp;huart2, &amp;rx_byte, 1); */</code></pre>
+          </div>
+        </div>
+
+
+        <div class="callout callout-tip">
+          <div class="callout-header">Single producer, single consumer</div>
+          <div class="callout-body">A ring buffer needs no locking when exactly one context (the ISR) writes <code>head</code> and one (main) writes <code>tail</code>. Make both <code>volatile</code> and use a power-of-two size so wrapping is a cheap mask.</div>
+        </div>
+
+<h2 id="sec-5-4">5.4 Retargeting printf</h2>
+<p>Debug output is far easier with <code>printf</code>. In CubeIDE the C library calls <code>_write()</code>; override it to send through USART2:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>printf over USART2 (add to a USER CODE section in main.c)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stdio.h&gt;
+
+int _write(int file, char *ptr, int len)
+{
+  HAL_UART_Transmit(&amp;huart2, (uint8_t *)ptr, len, HAL_MAX_DELAY);
+  return len;
+}
+
+/* usage */
+printf("T=%d.%02d C  ADC=%u\r\n", t / 100, t % 100, adc);</code></pre>
+          </div>
+        </div>
+
+
+        <div class="callout callout-warning">
+          <div class="callout-header">printf has a cost</div>
+          <div class="callout-body"><code>printf</code> is slow, blocks while transmitting (115200 baud = about 87 µs per character) and can use several KB of Flash and stack. <strong>Never call it from an ISR</strong>, and remove or reduce it in time-critical code.</div>
+        </div>
+
+<h2 id="sec-5-5">5.5 DMA: Moving Data Without the CPU</h2>
+<p>A <strong>DMA controller</strong> is a small bus master that copies data between memory and peripherals on its own. The CPU only sets up the transfer (source, destination, length) and is interrupted when it is done - or when half is done.</p>
+<p>The F446 has <strong>DMA1</strong> and <strong>DMA2</strong>, each with 8 <strong>streams</strong>; every stream selects one of 8 <strong>channels</strong> (request sources). The mapping is fixed by the hardware - for example, USART2_RX = DMA1 Stream 5 Channel 4 and USART2_TX = DMA1 Stream 6 Channel 4. CubeMX picks these for you; look at the *DMA Settings* tab of the peripheral.</p>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Setting</th>
+<th style="padding:0.6rem;">Options</th>
+<th style="padding:0.6rem;">Notes</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Direction</td>
+<td style="padding:0.6rem;vertical-align:top;">Peripheral→Memory, Memory→Peripheral, Memory→Memory (DMA2 only)</td>
+<td style="padding:0.6rem;vertical-align:top;">RX is P→M, TX is M→P</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Mode</td>
+<td style="padding:0.6rem;vertical-align:top;"><strong>Normal</strong> (one shot) or <strong>Circular</strong> (wraps forever)</td>
+<td style="padding:0.6rem;vertical-align:top;">Circular suits continuous ADC and UART RX</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Increment address</td>
+<td style="padding:0.6rem;vertical-align:top;">Memory yes, peripheral no</td>
+<td style="padding:0.6rem;vertical-align:top;">Peripheral register address stays fixed</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Data width</td>
+<td style="padding:0.6rem;vertical-align:top;">Byte / Half-word / Word</td>
+<td style="padding:0.6rem;vertical-align:top;">Match the peripheral (ADC 12-bit = half-word)</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Priority</td>
+<td style="padding:0.6rem;vertical-align:top;">Low…Very High</td>
+<td style="padding:0.6rem;vertical-align:top;">Matters when several streams compete</td>
+</tr>
+</tbody></table></div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Transmit with DMA</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>static uint8_t tx_buf[64];
+volatile uint8_t tx_busy;
+
+void console_send(const char *s)
+{
+  while (tx_busy) { }                              /* wait for previous */
+  size_t n = strlen(s);
+  memcpy(tx_buf, s, n);
+  tx_busy = 1;
+  HAL_UART_Transmit_DMA(&amp;huart2, tx_buf, n);       /* returns immediately */
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart-&gt;Instance == USART2) tx_busy = 0;
+}</code></pre>
+          </div>
+        </div>
+
+
+        <div class="callout callout-warning">
+          <div class="callout-header">Buffer lifetime</div>
+          <div class="callout-body">The DMA reads the buffer <strong>after</strong> the function returns. Do not pass a local (stack) array that goes out of scope; use static or global buffers and do not modify them until the completion callback.</div>
+        </div>
+
+<h2 id="sec-5-6">5.6 DMA RX with Idle-Line Detection</h2>
+<p>You rarely know how many bytes will arrive. The UART <strong>IDLE</strong> flag is set when the line has been quiet for one frame time after reception - the end of a message. HAL wraps it into <code>HAL_UARTEx_ReceiveToIdle_DMA()</code>.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Variable-length messages with DMA + IDLE</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#define DMA_BUF_SIZE 128
+static uint8_t dma_buf[DMA_BUF_SIZE];
+static uint8_t cmd[DMA_BUF_SIZE];
+static volatile uint16_t cmd_len;
+static volatile uint8_t  cmd_ready;
+
+/* USER CODE BEGIN 2 */
+HAL_UARTEx_ReceiveToIdle_DMA(&amp;huart2, dma_buf, DMA_BUF_SIZE);
+__HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);     /* no half-transfer events */
+/* USER CODE END 2 */
+
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
+{
+  if (huart-&gt;Instance == USART2) {
+    memcpy(cmd, dma_buf, size);                      /* hand over a copy */
+    cmd_len   = size;
+    cmd_ready = 1;
+    HAL_UARTEx_ReceiveToIdle_DMA(&amp;huart2, dma_buf, DMA_BUF_SIZE);   /* restart */
+    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
+  }
+}</code></pre>
+          </div>
+        </div>
+
+<p>Handle errors too: an <strong>overrun</strong> (ORE - a byte arrived before the previous one was read), <strong>framing</strong> (wrong baud rate) and <strong>noise</strong> errors stop reception until you restart it. Implement <code>HAL_UART_ErrorCallback</code> and re-arm the receiver.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Recover from UART errors</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+  if (huart-&gt;Instance == USART2) {
+    HAL_UARTEx_ReceiveToIdle_DMA(&amp;huart2, dma_buf, DMA_BUF_SIZE);
+    __HAL_DMA_DISABLE_IT(huart2.hdmarx, DMA_IT_HT);
+  }
+}</code></pre>
+          </div>
+        </div>
+
+<h2 id="sec-5-7">5.7 DMA with the ADC</h2>
+<p>Continuous ADC sampling is the classic DMA use-case. A circular buffer is filled forever; callbacks fire at the half and full points so you can process one half while DMA fills the other (<strong>ping-pong</strong> processing).</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>ADC1 + DMA circular buffer (Mode = Circular, half-word)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#define ADC_BUF_LEN 256
+static uint16_t adc_buf[ADC_BUF_LEN];
+
+/* USER CODE BEGIN 2 */
+HAL_ADC_Start_DMA(&amp;hadc1, (uint32_t *)adc_buf, ADC_BUF_LEN);
+/* USER CODE END 2 */
+
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc) { process(&amp;adc_buf[0],              ADC_BUF_LEN / 2); }
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)     { process(&amp;adc_buf[ADC_BUF_LEN / 2], ADC_BUF_LEN / 2); }</code></pre>
+          </div>
+        </div>
+
+<p>Keep <code>process()</code> short or just set a flag; heavy processing belongs in <code>main()</code>.</p>
+<h2 id="sec-5-8">5.8 A Command Console</h2>
+<p>With RX working, build a tiny shell. It turns the board into something you can control and test interactively - invaluable for the rest of the book.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Minimal command parser</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>static void handle_command(char *line)
+{
+  if (strcmp(line, "led on") == 0) {
+    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+    printf("OK\r\n");
+  } else if (strcmp(line, "led off") == 0) {
+    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+    printf("OK\r\n");
+  } else if (strncmp(line, "pwm ", 4) == 0) {
+    int pct = atoi(line + 4);
+    if (pct &gt;= 0 &amp;&amp; pct &lt;= 100) { set_brightness_percent((uint8_t)pct); printf("OK\r\n"); }
+    else printf("ERR range 0-100\r\n");
+  } else if (strcmp(line, "adc") == 0) {
+    printf("adc=%u\r\n", adc_read());
+  } else {
+    printf("ERR unknown command. Try: led on|off, pwm N, adc\r\n");
+  }
+}
+
+/* in the main loop */
+if (cmd_ready) {
+  cmd_ready = 0;
+  cmd[cmd_len] = '\0';
+  cmd[strcspn((char *)cmd, "\r\n")] = '\0';          /* strip line ending */
+  handle_command((char *)cmd);
+}</code></pre>
+          </div>
+        </div>
+
+
+        <div class="callout callout-warning">
+          <div class="callout-header">Validate all input</div>
+          <div class="callout-body">Check lengths and ranges before using received data. A command parser without bounds checks is a classic source of buffer overflows and crashes.</div>
+        </div>
+
+<h2 id="sec-5-9">5.9 Hands-On Lab 5: DMA UART Command Console</h2>
+
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Lab 5 Checklist</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step1">
+              <label for="l5-step1" class="checklist-text">Enable USART2 at 115200 8N1 with DMA for RX (Normal mode) and TX (Normal mode) in CubeMX.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step2">
+              <label for="l5-step2" class="checklist-text">Retarget <code>printf</code> and print a banner at boot.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step3">
+              <label for="l5-step3" class="checklist-text">Implement idle-line reception and the command parser from section 5.8.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step4">
+              <label for="l5-step4" class="checklist-text">Send <code>led on</code>, <code>led off</code>, <code>pwm 40</code> and <code>adc</code> from the terminal and confirm responses.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step5">
+              <label for="l5-step5" class="checklist-text">Deliberately send a 200-character line and confirm the firmware survives.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step6">
+              <label for="l5-step6" class="checklist-text">Change the baud rate on the PC side only, observe the framing errors, then fix them.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l5-step7">
+              <label for="l5-step7" class="checklist-text">Challenge: add a <code>uptime</code> command that prints <code>HAL_GetTick()</code> in seconds.</label>
+            </li>
+          </ul>
+        </div>
+
+
+        <div class="quiz-container" id="sec-5-quiz">
+          <div class="quiz-header"><span>🧠 Knowledge Check: Chapter 5</span></div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">1. Which DMA mode should be used for continuous ADC sampling into a buffer?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. It stops after one pass.">
+                A) Normal
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! The DMA wraps to the start and runs forever.">
+                B) Circular
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) Memory-to-memory
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) Burst only
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">2. What does the UART IDLE line interrupt tell you?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) A parity error occurred
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) The line has been quiet for one frame after reception - a message has ended
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) The transmit buffer is empty
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) The baud rate changed
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">3. Why must a DMA TX buffer not be a local variable?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) Local variables are read-only
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) The buffer is read after the function returns, when the stack frame is gone
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) DMA cannot access RAM
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) Local variables are slower
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+
+        <div class="chapter-bottom-nav">
+          <a href="ch04-timers-pwm-adc.html" class="nav-card"><span class="nav-card-dir">← Previous</span><span class="nav-card-title">Chapter 4: Timers, PWM &amp; ADC</span></a>
+          <a href="ch06-i2c-spi-can.html" class="nav-card" style="text-align:right;"><span class="nav-card-dir">Next →</span><span class="nav-card-title">Chapter 6: I2C, SPI &amp; CAN Communication</span></a>
+        </div>
+
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Programming STM32 with C • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+
+      </article>
+    </main>
+  </div>
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, GPIO, DMA, GDB...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+  <script src="../js/book.js"></script>
+</body>
+</html>

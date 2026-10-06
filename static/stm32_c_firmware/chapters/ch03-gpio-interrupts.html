@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Master digital input and output on STM32, then step from polling to interrupt-driven design: EXTI lines, the NVIC, priorities, safe ISR patterns and debouncing.">
+  <title>GPIO &amp; External Interrupts | Programming STM32 with C</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body data-chapter-id="ch03-gpio-interrupts">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">STM32 + C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, GPIO, DMA, GDB..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/stm32-firmware-development-with-c/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Chapters</span>
+          <span class="progress-pill">Ch 3 of 9</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
+          </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C1</span>
+              <span>Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-embedded-c-stm32-architecture.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Embedded C &amp; Architecture</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 Why C, and Why "Embedded" C…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 Fixed-Width Types and Intege…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Bit Manipulation - The Every…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 `volatile`, `const` and `sta…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Pointers and Memory-Mapped R…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 STM32 Family and the Cortex-…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Memory Map and Bus Matrix</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.8 Clocks, Reset and the Boot S…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.9 Hands-On Lab 1: Register-Lev…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C2</span>
+              <span>Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-cubemx-cubeide.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: CubeMX &amp; CubeIDE</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch02-cubemx-cubeide.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 The ST Software Stack</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Creating a Project in STM32C…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 CubeMX: Pinout, Clock Tree a…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Anatomy of the Generated Pro…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 The USER CODE Rule</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.6 HAL Conventions You Will See…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.7 Build, Flash and Run</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.8 Hands-On Lab 2: First CubeMX…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C3</span>
+              <span>Digital I/O</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-gpio-interrupts.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: GPIO &amp; Interrupts</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch03-gpio-interrupts.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Anatomy of a GPIO Pin</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Using GPIO with HAL</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Polling a Button - and Why I…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Interrupts: The Concept</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 EXTI and the NVIC</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.6 Writing Good ISRs</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.7 Debouncing</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.8 Hands-On Lab 3: Interrupt-Dr…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C4</span>
+              <span>Analog &amp; Timing</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-timers-pwm-adc.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Timers, PWM &amp; ADC</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch04-timers-pwm-adc.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 What a Hardware Timer Does</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Periodic Interrupts and Accu…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 PWM: Analog Control from a D…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Input Capture: Measuring Tim…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 The ADC: Measuring Voltage</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Triggering the ADC with a Ti…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.7 Hands-On Lab 4: Potentiomete…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C5</span>
+              <span>Serial &amp; Transfers</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-uart-dma.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: USART/UART &amp; DMA</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch05-uart-dma.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Serial Communication Basics</a></li><li><a href="ch05-uart-dma.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Three Ways to Transfer Data</a></li><li><a href="ch05-uart-dma.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 Interrupt-Driven Reception</a></li><li><a href="ch05-uart-dma.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Retargeting printf</a></li><li><a href="ch05-uart-dma.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 DMA: Moving Data Without the…</a></li><li><a href="ch05-uart-dma.html#sec-5-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.6 DMA RX with Idle-Line Detect…</a></li><li><a href="ch05-uart-dma.html#sec-5-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.7 DMA with the ADC</a></li><li><a href="ch05-uart-dma.html#sec-5-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.8 A Command Console</a></li><li><a href="ch05-uart-dma.html#sec-5-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.9 Hands-On Lab 5: DMA UART Com…</a></li><li><a href="ch05-uart-dma.html#sec-5-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C6</span>
+              <span>Buses</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-i2c-spi-can.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: I2C, SPI &amp; CAN</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch06-i2c-spi-can.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 Choosing a Bus</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 I2C Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 SPI Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 CAN Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Hands-On Lab 6: Three-Bus Br…</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C7</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch07-sensors-displays-motors.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 7: Sensors, Displays &amp; Motors</span>
+                <span class="chapter-read-time">55m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch07-sensors-displays-motors.html#sec-7-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.1 Interfacing Sensors: A Method</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.2 BME280 over I2C</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.3 MPU6050 Accelerometer and Gy…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.4 Analog Sensors: NTC Thermistor</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.5 Displays</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.6 Actuators: Servos</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.7 Actuators: DC Motors with an…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.8 Actuators: Stepper Motors</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.9 Hands-On Lab 7: Weather Stat…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C8</span>
+              <span>Debugging</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch08-debugging-fault-diagnosis.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 8: Debugging &amp; Fault Diagnosis</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.1 The Debug Chain: ST-LINK and…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.2 GDB from the Command Line</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.3 Watching the Wires: Logic An…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.4 Fault Diagnosis: Decoding a…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C9</span>
+              <span>Projects</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch09-projects-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 9: Mini Projects &amp; Capstone</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch09-projects-capstone.html#sec-9-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.1 From Exercises to Products</a></li><li><a href="ch09-projects-capstone.html#sec-9-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.2 Five Mini Projects</a></li><li><a href="ch09-projects-capstone.html#sec-9-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.3 Capstone: CAN-Connected Envi…</a></li><li><a href="ch09-projects-capstone.html#sec-9-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.4 Test Plan and Definition of…</a></li><li><a href="ch09-projects-capstone.html#sec-9-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Further Reading</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs"><a href="../index.html">Home</a><span>/</span><span>Chapter 3</span><span>/</span><span>GPIO &amp; Interrupts</span></div>
+        <div class="chapter-actions">
+          <a href="ch02-cubemx-cubeide.html" class="btn-secondary">← Chapter 2</a>
+          <a href="ch04-timers-pwm-adc.html" class="btn-primary">Chapter 4 →</a>
+        </div>
+      </div>
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Chapter 03 • Digital I/O</span>
+          <h1 class="chapter-h1">GPIO &amp; External Interrupts</h1>
+          <p class="chapter-lead">Master digital input and output on STM32, then step from polling to interrupt-driven design: EXTI lines, the NVIC, priorities, safe ISR patterns and debouncing.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 45 minutes</div>
+            <div class="meta-item">🛠️ Lab: Interrupt-driven button + LED</div>
+            <div class="meta-item">🎯 Topics: GPIO, EXTI, NVIC</div>
+          </div>
+        </div>
+<h2 id="sec-3-1">3.1 Anatomy of a GPIO Pin</h2>
+<p>Each STM32 port (GPIOA...GPIOH) has up to 16 pins. Every pin can be configured independently:</p>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Mode</th>
+<th style="padding:0.6rem;">Use</th>
+<th style="padding:0.6rem;">Notes</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>Input</strong> (floating / pull-up / pull-down)</td>
+<td style="padding:0.6rem;vertical-align:top;">Buttons, digital sensors</td>
+<td style="padding:0.6rem;vertical-align:top;">A floating input picks up noise - always pick a pull or have an external one</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>Output push-pull</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">LEDs, logic signals</td>
+<td style="padding:0.6rem;vertical-align:top;">Drives both high and low</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>Output open-drain</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">I2C, shared lines, level shifting</td>
+<td style="padding:0.6rem;vertical-align:top;">Only pulls low; needs a pull-up resistor</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>Alternate function (AF)</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">USART TX, SPI SCK, TIM channels</td>
+<td style="padding:0.6rem;vertical-align:top;">Pin is handed to a peripheral (AF0-AF15)</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><strong>Analog</strong></td>
+<td style="padding:0.6rem;vertical-align:top;">ADC input, DAC output</td>
+<td style="padding:0.6rem;vertical-align:top;">Digital buffer disconnected, lowest leakage</td>
+</tr>
+</tbody></table></div>
+<p>Output <strong>speed</strong> (Low, Medium, Fast, High) controls the slew rate. Use the slowest speed that works - fast edges cause EMI and ringing. </p>
+
+        <div class="callout callout-hardware">
+          <div class="callout-header">NUCLEO-F446RE on-board IO</div>
+          <div class="callout-body"><strong>LD2</strong> user LED is on <strong>PA5</strong> (active-high). <strong>B1</strong> user button is on <strong>PC13</strong> (active-low, external pull-up, pressed = 0). USART2 uses <strong>PA2 (TX)</strong> / <strong>PA3 (RX)</strong> routed to the ST-LINK Virtual COM Port.</div>
+        </div>
+
+<h3>LED wiring maths</h3>
+<p>An LED needs about 5-15 mA. With a 3.3 V pin, a red LED (Vf ≈ 2.0 V) and 330 Ω: I = (3.3 − 2.0) / 330 ≈ 3.9 mA - bright enough, and well under the pin's limits. <strong>Never</strong> exceed 25 mA per pin or the total package limit given in the datasheet.</p>
+<h2 id="sec-3-2">3.2 Using GPIO with HAL</h2>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>GPIO API</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);   /* drive high */
+HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET); /* drive low  */
+HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+
+GPIO_PinState s = HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin);  /* GPIO_PIN_RESET when pressed */</code></pre>
+          </div>
+        </div>
+
+<p>In CubeMX, give pins <strong>user labels</strong> (<code>LD2</code>, <code>B1</code>, <code>MOTOR_EN</code>) - the tool generates <code>LD2_Pin</code> and <code>LD2_GPIO_Port</code> macros so your code never contains <code>GPIOA, GPIO_PIN_5</code>.</p>
+<h3>What <code>MX_GPIO_Init()</code> does</h3>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Generated GPIO init (abridged)</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>__HAL_RCC_GPIOC_CLK_ENABLE();
+__HAL_RCC_GPIOA_CLK_ENABLE();
+
+HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);   /* safe initial level */
+
+GPIO_InitTypeDef g = {0};
+g.Pin   = LD2_Pin;
+g.Mode  = GPIO_MODE_OUTPUT_PP;
+g.Pull  = GPIO_NOPULL;
+g.Speed = GPIO_SPEED_FREQ_LOW;
+HAL_GPIO_Init(LD2_GPIO_Port, &amp;g);</code></pre>
+          </div>
+        </div>
+
+
+        <div class="callout callout-tip">
+          <div class="callout-header">Initial output level</div>
+          <div class="callout-body">Set the output level <strong>before</strong> switching the pin to output mode (CubeMX has a "GPIO output level" setting). Otherwise motors and relays can glitch for a few microseconds at start-up.</div>
+        </div>
+
+<h2 id="sec-3-3">3.3 Polling a Button - and Why It Is Not Enough</h2>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Polling approach</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>while (1) {
+    if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET) {
+        HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+        HAL_Delay(300);                  /* crude debounce - blocks everything */
+    }
+}</code></pre>
+          </div>
+        </div>
+
+<p>This works for a demo, but the CPU is stuck inside <code>HAL_Delay</code> and cannot do anything else. Polling wastes cycles, misses short events and cannot sleep. The fix is interrupts.</p>
+<h2 id="sec-3-4">3.4 Interrupts: The Concept</h2>
+<p>An interrupt is a hardware event that makes the CPU pause the running code, execute a short <strong>interrupt service routine (ISR)</strong>, then resume exactly where it left off. The CPU hardware saves and restores context for you.</p>
+<ol><li>The peripheral raises an interrupt request (e.g. EXTI line 13 detects a falling edge).</li><li>The NVIC compares its priority with the running code and, if higher, preempts.</li><li>The core pushes registers to the stack, fetches the handler address from the <strong>vector table</strong> and jumps to it.</li><li>The ISR runs and clears the flag.</li><li>The core pops registers and resumes.</li></ol>
+<p>The <strong>vector table</strong> lives at the start of Flash. Entry names such as <code>EXTI15_10_IRQHandler</code> are defined in the startup file as weak aliases, so defining a function with that exact name overrides it.</p>
+<h2 id="sec-3-5">3.5 EXTI and the NVIC</h2>
+<p>The <strong>EXTI</strong> (external interrupt/event controller) connects GPIO pins to interrupts. EXTI line *n* can be fed by pin *n* of <strong>one</strong> port at a time (PA0 or PB0 or PC0, not all at once). Lines 0-4 each have their own handler; lines 5-9 share <code>EXTI9_5_IRQHandler</code>; lines 10-15 share <code>EXTI15_10_IRQHandler</code>. B1 on PC13 therefore uses <code>EXTI15_10_IRQn</code>.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Enabling EXTI with CubeMX output</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>/* CubeMX: PC13 -&gt; GPIO_EXTI13, mode = External Interrupt Mode with Falling edge trigger */
+
+/* generated in gpio.c */
+HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
+/* generated in stm32f4xx_it.c */
+void EXTI15_10_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(B1_Pin);     /* clears flag, calls the callback below */
+}
+
+/* your code: override the weak callback (USER CODE 4 in main.c) */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == B1_Pin) {
+    button_event = 1;                   /* set a flag, keep the ISR short */
+  }
+}</code></pre>
+          </div>
+        </div>
+
+<h3>Priorities</h3>
+<p>The F4 implements 4 priority bits. CubeMX uses <strong>group 4</strong>: all bits are *preemption* priority, 0-15, <strong>lower number = more urgent</strong>. A higher-priority interrupt can preempt a lower one; equal priority interrupts wait. System exceptions (HardFault, NMI) are always above configurable ones.</p>
+
+        <div class="callout callout-warning">
+          <div class="callout-header">SysTick priority and HAL_Delay</div>
+          <div class="callout-body"><code>HAL_Delay()</code> waits for the SysTick-driven tick counter. If you call it inside an ISR whose priority is the same or *higher* than SysTick, the tick never increments and the firmware hangs forever. Never call <code>HAL_Delay</code> in an ISR - and never use blocking HAL calls there.</div>
+        </div>
+
+<h2 id="sec-3-6">3.6 Writing Good ISRs</h2>
+<ol><li><strong>Keep it short.</strong> Do the minimum - read a register, store a value, set a flag - then return.</li><li><strong>Defer work.</strong> Set a <code>volatile</code> flag, push into a ring buffer, and handle it in <code>main()</code>.</li><li><strong>No blocking.</strong> No <code>HAL_Delay</code>, no long loops, no <code>printf</code> over UART.</li><li><strong>Share data safely.</strong> Variables shared with <code>main()</code> must be <code>volatile</code>; multi-step updates need a critical section.</li><li><strong>Clear the cause.</strong> Forgetting to clear the flag makes the ISR re-enter endlessly (HAL does this for you in its <code>IRQHandler</code>).</li></ol>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Flag-and-process pattern</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>static volatile uint8_t button_event = 0;
+
+while (1) {
+    if (button_event) {
+        button_event = 0;
+        HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+    }
+    /* other tasks run freely here */
+}
+
+/* Critical section for a 32-bit shared counter updated in main and ISR */
+uint32_t primask = __get_PRIMASK();
+__disable_irq();
+shared_counter += 10;
+__set_PRIMASK(primask);               /* restore, do not blindly enable */</code></pre>
+          </div>
+        </div>
+
+<h2 id="sec-3-7">3.7 Debouncing</h2>
+<p>Mechanical contacts bounce for 1-20 ms, producing several edges per press. An interrupt on every edge would fire many times. Two solutions:</p>
+<ul><li><strong>Hardware:</strong> RC filter (10 kΩ + 100 nF ≈ 1 ms time constant) with a Schmitt-trigger input.</li><li><strong>Software:</strong> ignore edges for a short time after the first one.</li></ul>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Time-based software debounce</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#define DEBOUNCE_MS 30U
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  static uint32_t last = 0;
+  uint32_t now = HAL_GetTick();
+
+  if (GPIO_Pin == B1_Pin &amp;&amp; (now - last) &gt;= DEBOUNCE_MS) {   /* subtraction handles wrap */
+    last = now;
+    button_event = 1;
+  }
+}</code></pre>
+          </div>
+        </div>
+
+
+        <div class="callout callout-tip">
+          <div class="callout-header">Press versus release</div>
+          <div class="callout-body">Trigger on the <strong>falling</strong> edge for a press (active-low button). For long-press detection, start a timer on the falling edge and measure to the rising edge, or sample the pin periodically in a 1 ms tick.</div>
+        </div>
+
+<h2 id="sec-3-8">3.8 Hands-On Lab 3: Interrupt-Driven Button and LED</h2>
+<p>Build a mode switch: each button press cycles the LED through <strong>off → slow blink → fast blink</strong>. The blink must run without <code>HAL_Delay</code>, using <code>HAL_GetTick()</code>.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Lab 3 - non-blocking blink with button modes</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>typedef enum { MODE_OFF, MODE_SLOW, MODE_FAST, MODE_COUNT } led_mode_t;
+
+static volatile uint8_t button_event;
+static led_mode_t mode = MODE_OFF;
+
+/* USER CODE BEGIN 3 (inside while(1)) */
+static uint32_t last_toggle;
+uint32_t period = (mode == MODE_SLOW) ? 500 : 100;
+
+if (button_event) {
+    button_event = 0;
+    mode = (led_mode_t)((mode + 1) % MODE_COUNT);
+    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+}
+if (mode != MODE_OFF &amp;&amp; (HAL_GetTick() - last_toggle) &gt;= period) {
+    last_toggle = HAL_GetTick();
+    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+}
+/* USER CODE END 3 */</code></pre>
+          </div>
+        </div>
+
+
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Lab 3 Checklist</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step1">
+              <label for="l3-step1" class="checklist-text">Configure PC13 as <code>GPIO_EXTI13</code> with falling-edge trigger and enable the EXTI15_10 interrupt in CubeMX.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step2">
+              <label for="l3-step2" class="checklist-text">Implement <code>HAL_GPIO_EXTI_Callback</code> with the 30 ms debounce.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step3">
+              <label for="l3-step3" class="checklist-text">Confirm that without the debounce you sometimes skip a mode - then add it back.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step4">
+              <label for="l3-step4" class="checklist-text">Verify the main loop is not blocked: also print a counter over UART every second.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step5">
+              <label for="l3-step5" class="checklist-text">Move the interrupt priority above/below SysTick and explain what changes.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l3-step6">
+              <label for="l3-step6" class="checklist-text">Challenge: add a second button on PB1 (EXTI1) that reverses the mode order.</label>
+            </li>
+          </ul>
+        </div>
+
+
+        <div class="quiz-container" id="sec-3-quiz">
+          <div class="quiz-header"><span>🧠 Knowledge Check: Chapter 3</span></div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">1. Which statement about pull-ups and open-drain is correct?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. It can only pull low or release.">
+                A) An open-drain pin can drive the line high
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) An open-drain output needs an external or internal pull-up to produce a high level
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) Push-pull outputs need a pull-up resistor
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) Open-drain is only used for analog signals
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">2. Pin PC13 is configured as EXTI. Which handler runs?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. That is for pin 0 of any port.">
+                A) EXTI0_IRQHandler
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. That covers lines 5-9.">
+                B) EXTI9_5_IRQHandler
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! Lines 10-15 share one handler.">
+                C) EXTI15_10_IRQHandler
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. There is no per-port handler.">
+                D) GPIOC_IRQHandler
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">3. What is wrong with calling <code>HAL_Delay(100)</code> inside an EXTI callback?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) It is too short
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct!">
+                B) SysTick may be the same or lower priority than the running ISR, so the tick never advances and the system hangs
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) It uses too much RAM
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) Nothing, it is recommended
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+
+        <div class="chapter-bottom-nav">
+          <a href="ch02-cubemx-cubeide.html" class="nav-card"><span class="nav-card-dir">← Previous</span><span class="nav-card-title">Chapter 2: STM32CubeMX &amp; STM32CubeIDE Workflow</span></a>
+          <a href="ch04-timers-pwm-adc.html" class="nav-card" style="text-align:right;"><span class="nav-card-dir">Next →</span><span class="nav-card-title">Chapter 4: Timers, PWM &amp; ADC</span></a>
+        </div>
+
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Programming STM32 with C • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+
+      </article>
+    </main>
+  </div>
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, GPIO, DMA, GDB...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+  <script src="../js/book.js"></script>
+</body>
+</html>

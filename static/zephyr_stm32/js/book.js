@@ -537,10 +537,38 @@
     code = code.replace(types, m => saveToken(`<span class="token-type">${m}</span>`));
 
     // 8. Function calls
-    code = code.replace(/\b([a-zA-Z_]\w*)(?=\s*\()/g, m => saveToken(`<span class="token-func">${m}</span>`));
+    code = code.replace(/\b(?!___)([a-zA-Z_]\w*)(?=\s*\()/g, m => saveToken(`<span class="token-func">${m}</span>`));
 
     // Restore tokens
-    code = code.replace(/___CTOK(\d+)___/g, (_, id) => tokens[id]);
+    const re = /___CTOK(\d+)___/g;
+    while (re.test(code)) { code = code.replace(re, (_, id) => tokens[id]); }
+    return code;
+  }
+
+
+  function highlightRustCode(code) {
+    const tokens = [];
+    function saveToken(html) {
+      tokens.push(html);
+      return `___RTOK${tokens.length - 1}___`;
+    }
+
+    code = code.replace(/\/\*[\s\S]*?\*\//g, m => saveToken(`<span class="token-comment">${escapeHtml(m)}</span>`));
+    code = code.replace(/\/\/[^\n\r]*/g, m => saveToken(`<span class="token-comment">${escapeHtml(m)}</span>`));
+    code = code.replace(/b?r(#*)"[\s\S]*?"\1/g, m => saveToken(`<span class="token-string">${escapeHtml(m)}</span>`));
+    code = code.replace(/b?"(?:\\.|[^"\\])*"/g, m => saveToken(`<span class="token-string">${escapeHtml(m)}</span>`));
+    code = code.replace(/b?'(?:\\.|[^'\\])'/g, m => saveToken(`<span class="token-string">${escapeHtml(m)}</span>`));
+    code = code.replace(/#!?\[[^\]\n]*\]/g, m => saveToken(`<span class="token-preprocessor">${escapeHtml(m)}</span>`));
+    code = code.replace(/'(?:static|_|[a-z_]\w*)\b/g, m => saveToken(`<span class="token-prop">${m}</span>`));
+    code = code.replace(/\b(?:0x[0-9a-fA-F_]+|0b[01_]+|0o[0-7_]+|\d[\d_]*(?:\.\d[\d_]*)?(?:[ui](?:8|16|32|64|128|size)|f32|f64)?)\b/g, m => saveToken(`<span class="token-number">${m}</span>`));
+    code = code.replace(/\b[a-zA-Z_]\w*!(?=\s*[(\[{])/g, m => saveToken(`<span class="token-macro">${m}</span>`));
+    code = code.replace(/\b(?:as|async|await|break|const|continue|crate|dyn|else|enum|extern|fn|for|if|impl|in|let|loop|match|mod|move|mut|pub|ref|return|self|Self|static|struct|super|trait|type|unsafe|use|where|while)\b/g, m => saveToken(`<span class="token-keyword">${m}</span>`));
+    code = code.replace(/\b(?:u8|u16|u32|u64|u128|usize|i8|i16|i32|i64|i128|isize|f32|f64|bool|char|str|true|false|None|Some|Ok|Err|Option|Result|Vec|String|Box|Self)\b/g, m => saveToken(`<span class="token-type">${m}</span>`));
+    code = code.replace(/\b[A-Z][A-Za-z0-9]*\b/g, m => saveToken(`<span class="token-type">${m}</span>`));
+    code = code.replace(/\b(?!___)([a-z_]\w*)(?=\s*(?:::<[^>\n]*>)?\()/g, m => saveToken(`<span class="token-func">${m}</span>`));
+
+    const re = /___RTOK(\d+)___/g;
+    while (re.test(code)) { code = code.replace(re, (_, id) => tokens[id]); }
     return code;
   }
 
@@ -559,7 +587,8 @@
     code = code.replace(/&[a-zA-Z0-9_]+/g, m => saveToken(`<span class="token-zephyr">${m}</span>`));
     code = code.replace(/\/dts-v1\/;/g, m => saveToken(`<span class="token-preprocessor">${m}</span>`));
 
-    code = code.replace(/___DTOK(\d+)___/g, (_, id) => tokens[id]);
+    const re = /___DTOK(\d+)___/g;
+    while (re.test(code)) { code = code.replace(re, (_, id) => tokens[id]); }
     return code;
   }
 
@@ -576,7 +605,8 @@
     code = code.replace(/(?:^|\s)(-[a-zA-Z]|--[a-zA-Z0-9_-]+)/g, m => saveToken(`<span class="token-prop">${m}</span>`));
     code = code.replace(/\b(nucleo_f401re|nucleo_l476rg|nucleo_g071rb)\b/g, m => saveToken(`<span class="cmd-board-name token-string">${m}</span>`));
 
-    code = code.replace(/___BTOK(\d+)___/g, (_, id) => tokens[id]);
+    const re = /___BTOK(\d+)___/g;
+    while (re.test(code)) { code = code.replace(re, (_, id) => tokens[id]); }
     return code;
   }
 
@@ -600,6 +630,8 @@
 
       if (lang === 'C') {
         codeEl.innerHTML = highlightCCode(rawText);
+      } else if (lang === 'RUST' || lang === 'RS') {
+        codeEl.innerHTML = highlightRustCode(rawText);
       } else if (lang === 'DTS' || lang === 'DEVICETREE') {
         codeEl.innerHTML = highlightDTSCode(rawText);
       } else if (lang === 'BASH' || lang === 'SHELL' || lang === 'TERMINAL') {
