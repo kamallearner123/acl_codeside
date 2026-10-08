@@ -82,22 +82,22 @@
                 <h2 id="install-heading" class="mt-2 text-3xl font-extrabold text-brand-navy">What to install</h2>
                 <p class="mt-3 leading-7 text-brand-textSecondary">Follow the steps for your operating system. The visualiser and manuals need only a modern browser; install the C or Rust toolchain when you are ready to build firmware. Commands below are run in Terminal (macOS/Linux) or PowerShell (Windows), unless noted.</p>
             </div>
-            <div class="grid gap-6 lg:grid-cols-3">
+            <div class="space-y-6">
                 <article class="rounded-3xl border border-gray-100 bg-white p-6 shadow-premium">
                     <h3 class="text-xl font-extrabold text-brand-navy"><i class="fab fa-apple mr-2" aria-hidden="true"></i>macOS</h3>
                     <ol class="mt-4 list-decimal space-y-4 pl-5 leading-6 text-brand-textSecondary">
-                        <li><strong>Install Apple's command-line tools.</strong> Open Terminal and run:
+                        <li><strong class="text-brand-coral">Install Apple's command-line tools.</strong> Open Terminal and run:
                             <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>xcode-select --install
 xcode-select -p
 git --version</code></pre>
                             Accept the installer prompt. Git should print a version; the developer directory should be printed by the second command.
                         </li>
-                        <li><strong>Install VS Code.</strong> Download it from <a class="font-semibold text-brand-navy underline" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">code.visualstudio.com</a>, move it to Applications, then in VS Code open the Command Palette and run <em>Shell Command: Install 'code' command in PATH</em>. Open a new Terminal and verify:
+                        <li><strong class="text-brand-coral">Install VS Code.</strong> Download it from <a class="font-semibold text-brand-navy underline" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">code.visualstudio.com</a>, move it to Applications, then in VS Code open the Command Palette and run <em>Shell Command: Install 'code' command in PATH</em>. Open a new Terminal and verify:
                             <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>code --version</code></pre>
                         </li>
-                        <li><strong>Install ST's C, configuration, and flash tools.</strong> Download and install <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeide.html" target="_blank" rel="noopener noreferrer">STM32CubeIDE</a> and <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeprog.html" target="_blank" rel="noopener noreferrer">STM32CubeProgrammer</a> for your macOS version. STM32CubeIDE includes the STM32CubeMX graphical configuration/code-generation workflow, so a separate CubeMX install is not needed for this course. Create a project in CubeIDE, open its <code>.ioc</code> configuration, generate code, and build; the Console should report <em>Build Finished</em> with no errors. Follow any ST-LINK or macOS security prompts. If you use another IDE/toolchain instead, install standalone <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubemx.html" target="_blank" rel="noopener noreferrer">STM32CubeMX</a> separately.
+                        <li><strong class="text-brand-coral">Install ST's C, configuration, and flash tools.</strong> Download and install <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeide.html" target="_blank" rel="noopener noreferrer">STM32CubeIDE</a> and <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeprog.html" target="_blank" rel="noopener noreferrer">STM32CubeProgrammer</a> for your macOS version. STM32CubeIDE includes the STM32CubeMX graphical configuration/code-generation workflow, so a separate CubeMX install is not needed for this course. Create a project in CubeIDE, open its <code>.ioc</code> configuration, generate code, and build; the Console should report <em>Build Finished</em> with no errors. Follow any ST-LINK or macOS security prompts. If you use another IDE/toolchain instead, install standalone <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubemx.html" target="_blank" rel="noopener noreferrer">STM32CubeMX</a> separately.
                         </li>
-                        <li><strong>Optional: set up Rust.</strong> Install Rust with rustup, then add the course target and probe tools:
+                        <li><strong class="text-brand-coral">Optional: set up Rust.</strong> Install Rust with rustup, then add the course target and probe tools:
                             <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source "$HOME/.cargo/env"
 rustup default stable
@@ -113,22 +113,22 @@ probe-rs --version</code></pre>
                 <article class="rounded-3xl border border-gray-100 bg-white p-6 shadow-premium">
                     <h3 class="text-xl font-extrabold text-brand-navy"><i class="fab fa-linux mr-2" aria-hidden="true"></i>Linux</h3>
                     <ol class="mt-4 list-decimal space-y-4 pl-5 leading-6 text-brand-textSecondary">
-                        <li><strong>Install the common command-line tools</strong> (Debian/Ubuntu):
+                        <li><strong class="text-brand-coral">Install the common command-line tools</strong> (Debian/Ubuntu):
                             <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>sudo apt update
 sudo apt install -y git build-essential cmake ninja-build pkg-config libudev-dev usbutils
 git --version
 gcc --version</code></pre>
                             For another distribution, use its package manager to install the equivalent packages. Install <a class="font-semibold text-brand-navy underline" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">VS Code</a> using the official package/instructions for that distribution, then verify with <code>code --version</code>.
                         </li>
-                        <li><strong>Install ST's C, configuration, and flash tools.</strong> Download <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeide.html" target="_blank" rel="noopener noreferrer">STM32CubeIDE</a> and <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeprog.html" target="_blank" rel="noopener noreferrer">STM32CubeProgrammer</a> for your distribution and follow ST's installer instructions. CubeIDE includes the STM32CubeMX graphical configuration/code-generation workflow; you do not need to install CubeMX separately when using CubeIDE. Create a project, open its <code>.ioc</code> configuration, generate code, then build and confirm <em>Build Finished</em> with no errors. If you use another IDE/toolchain, install standalone <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubemx.html" target="_blank" rel="noopener noreferrer">STM32CubeMX</a>.
+                        <li><strong class="text-brand-coral">Install ST's C, configuration, and flash tools.</strong> Download <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeide.html" target="_blank" rel="noopener noreferrer">STM32CubeIDE</a> and <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeprog.html" target="_blank" rel="noopener noreferrer">STM32CubeProgrammer</a> for your distribution and follow ST's installer instructions. CubeIDE includes the STM32CubeMX graphical configuration/code-generation workflow; you do not need to install CubeMX separately when using CubeIDE. Create a project, open its <code>.ioc</code> configuration, generate code, then build and confirm <em>Build Finished</em> with no errors. If you use another IDE/toolchain, install standalone <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubemx.html" target="_blank" rel="noopener noreferrer">STM32CubeMX</a>.
                         </li>
-                        <li><strong>Allow normal USB access to ST-LINK.</strong> Apply ST's udev rules as directed by the installed ST package/documentation, then reload rules and reconnect the board:
+                        <li><strong class="text-brand-coral">Allow normal USB access to ST-LINK.</strong> Apply ST's udev rules as directed by the installed ST package/documentation, then reload rules and reconnect the board:
                             <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>sudo udevadm control --reload-rules
 sudo udevadm trigger
 lsusb</code></pre>
                             With the board connected, check that it appears in <code>lsusb</code>. Do not run CubeIDE or probe-rs with <code>sudo</code> to bypass permissions.
                         </li>
-                        <li><strong>Optional: set up Rust.</strong> Install rustup from <a class="font-semibold text-brand-navy underline" href="https://rustup.rs/" target="_blank" rel="noopener noreferrer">rustup.rs</a>, then run:
+                        <li><strong class="text-brand-coral">Optional: set up Rust.</strong> Install rustup from <a class="font-semibold text-brand-navy underline" href="https://rustup.rs/" target="_blank" rel="noopener noreferrer">rustup.rs</a>, then run:
                             <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>rustup default stable
 rustup target add thumbv7em-none-eabihf
 cargo install probe-rs-tools --locked
@@ -143,13 +143,13 @@ probe-rs list</code></pre>
                 <article class="rounded-3xl border border-gray-100 bg-white p-6 shadow-premium">
                     <h3 class="text-xl font-extrabold text-brand-navy"><i class="fab fa-windows mr-2" aria-hidden="true"></i>Windows</h3>
                     <ol class="mt-4 list-decimal space-y-4 pl-5 leading-6 text-brand-textSecondary">
-                        <li><strong>Install Git and VS Code.</strong> Use the official <a class="font-semibold text-brand-navy underline" href="https://git-scm.com/download/win" target="_blank" rel="noopener noreferrer">Git for Windows</a> and <a class="font-semibold text-brand-navy underline" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">VS Code</a> installers. Open a new PowerShell window and verify:
+                        <li><strong class="text-brand-coral">Install Git and VS Code.</strong> Use the official <a class="font-semibold text-brand-navy underline" href="https://git-scm.com/download/win" target="_blank" rel="noopener noreferrer">Git for Windows</a> and <a class="font-semibold text-brand-navy underline" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">VS Code</a> installers. Open a new PowerShell window and verify:
                             <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>git --version
 code --version</code></pre>
                         </li>
-                        <li><strong>Install ST's C, configuration, and flash tools.</strong> Download and install <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeide.html" target="_blank" rel="noopener noreferrer">STM32CubeIDE</a> and <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeprog.html" target="_blank" rel="noopener noreferrer">STM32CubeProgrammer</a> using their Windows installers. CubeIDE includes the STM32CubeMX graphical configuration/code-generation workflow, so a separate CubeMX install is not needed for this course. Create a project, open its <code>.ioc</code> configuration, generate code, and build; confirm <em>Build Finished</em> with no errors. If you use another IDE/toolchain, install standalone <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubemx.html" target="_blank" rel="noopener noreferrer">STM32CubeMX</a>.
+                        <li><strong class="text-brand-coral">Install ST's C, configuration, and flash tools.</strong> Download and install <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeide.html" target="_blank" rel="noopener noreferrer">STM32CubeIDE</a> and <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeprog.html" target="_blank" rel="noopener noreferrer">STM32CubeProgrammer</a> using their Windows installers. CubeIDE includes the STM32CubeMX graphical configuration/code-generation workflow, so a separate CubeMX install is not needed for this course. Create a project, open its <code>.ioc</code> configuration, generate code, and build; confirm <em>Build Finished</em> with no errors. If you use another IDE/toolchain, install standalone <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubemx.html" target="_blank" rel="noopener noreferrer">STM32CubeMX</a>.
                         </li>
-                        <li><strong>Optional: set up Rust.</strong> Install rustup for the MSVC host from <a class="font-semibold text-brand-navy underline" href="https://rustup.rs/" target="_blank" rel="noopener noreferrer">rustup.rs</a>. When prompted, install the Visual Studio C++ Build Tools and Windows SDK prerequisites, then open a new PowerShell window and run:
+                        <li><strong class="text-brand-coral">Optional: set up Rust.</strong> Install rustup for the MSVC host from <a class="font-semibold text-brand-navy underline" href="https://rustup.rs/" target="_blank" rel="noopener noreferrer">rustup.rs</a>. When prompted, install the Visual Studio C++ Build Tools and Windows SDK prerequisites, then open a new PowerShell window and run:
                             <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>rustup default stable
 rustup target add thumbv7em-none-eabihf
 cargo install probe-rs-tools --locked
@@ -158,13 +158,33 @@ rustup target list --installed
 probe-rs --version</code></pre>
                             The installed-target list must include <code>thumbv7em-none-eabihf</code>.
                         </li>
-                        <li><strong>Check the ST-LINK driver.</strong> Connect the board and open Device Manager. Confirm the ST-LINK device appears without a warning icon; install the driver from ST's CubeProgrammer package if Windows does not recognise it.
+                        <li><strong class="text-brand-coral">Check the ST-LINK driver.</strong> Connect the board and open Device Manager. Confirm the ST-LINK device appears without a warning icon; install the driver from ST's CubeProgrammer package if Windows does not recognise it.
                         </li>
                     </ol>
                 </article>
             </div>
+            <section class="mt-8 rounded-3xl border border-blue-100 bg-white p-6 shadow-premium" aria-labelledby="ide-screenshots-heading">
+                <div class="mb-5 max-w-3xl">
+                    <h3 id="ide-screenshots-heading" class="text-2xl font-extrabold text-brand-navy">Screenshots: what to check after installing the STM32 tools</h3>
+                    <p class="mt-2 leading-7 text-brand-textSecondary">Use these screenshots as visual references. CubeIDE versions and operating systems may look slightly different. The first image shows the STM32CubeMX home screen; CubeMX's configuration workflow is available from an STM32CubeIDE project.</p>
+                </div>
+                <div class="grid gap-6 lg:grid-cols-2">
+                    <figure class="overflow-hidden rounded-2xl border border-gray-200 bg-slate-50">
+                        <img src="{% static 'img/stm32cubemx-home-check.png' %}" alt="STM32CubeMX home screen showing Existing Projects, New Project, and software installation options" class="h-auto w-full" loading="lazy">
+                        <figcaption class="p-4 text-sm leading-6 text-brand-textSecondary">
+                            <strong class="text-brand-coral">Check 1 — CubeMX opens:</strong> confirm the window offers <strong class="text-brand-navy">New Project</strong> or an MCU/board selector. If using CubeIDE, start an STM32 project and open its <code>.ioc</code> file to reach the pinout and peripheral configuration view.
+                        </figcaption>
+                    </figure>
+                    <figure class="overflow-hidden rounded-2xl border border-gray-200 bg-slate-50">
+                        <img src="{% static 'img/stm32cubeide-editor-check.png' %}" alt="STM32CubeIDE workspace showing Project Explorer, a C source editor, Outline, Console, and Build Analyzer panes" class="h-auto w-full" loading="lazy">
+                        <figcaption class="p-4 text-sm leading-6 text-brand-textSecondary">
+                            <strong class="text-brand-coral">Check 2 — CubeIDE opens a project:</strong> look for <strong class="text-brand-navy">Project Explorer</strong>, a C editor, and the Console/Build Analyzer. Build the project (<kbd>Ctrl</kbd>+<kbd>B</kbd> on Windows/Linux or <kbd>Cmd</kbd>+<kbd>B</kbd> on macOS); the Console should finish with <strong class="text-brand-navy">Build Finished</strong> and no errors.
+                        </figcaption>
+                    </figure>
+                </div>
+            </section>
             <div class="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5 text-sm leading-6 text-blue-950">
-                <strong>What success looks like:</strong> Git and VS Code print version numbers, CubeIDE builds a sample project without errors, Rust's installed-target list includes <code>thumbv7em-none-eabihf</code>, and (when a board is connected) CubeProgrammer or <code>probe-rs list</code> detects ST-LINK. Restart the terminal after installing command-line tools if a command is not found. Install Zephyr SDK, <code>west</code>, and simulator dependencies only when beginning a Zephyr project; follow that project's README for the supported versions.
+                <strong class="text-brand-coral">What success looks like:</strong> Git and VS Code print version numbers, CubeIDE builds a sample project without errors, Rust's installed-target list includes <code>thumbv7em-none-eabihf</code>, and (when a board is connected) CubeProgrammer or <code>probe-rs list</code> detects ST-LINK. Restart the terminal after installing command-line tools if a command is not found. Install Zephyr SDK, <code>west</code>, and simulator dependencies only when beginning a Zephyr project; follow that project's README for the supported versions.
             </div>
         </section>
 
