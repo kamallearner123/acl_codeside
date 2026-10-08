@@ -41,11 +41,15 @@ Recommended visual hierarchy:
 - NVIC: interrupt routing block
 - DMA: independent data-movement block
 - RCC: clock/reset source
-- External devices: sensors, LED, CAN transceiver, PC
-- Active data path: bright animated line
-- Selected flow route: thick, high-contrast line with a clear arrowhead in both
-  the persistent architecture map and the detailed flow diagram; keep the
-  upcoming segment emphasized before playback starts.
+- External devices: show explicit out-of-MCU blocks for board power/reset,
+  sensors, actuators, serial hosts, debug probes, and the CAN transceiver/bus.
+- Data paths: normal-weight dotted lines; animate the dash offset as subtle
+  running lights on the selected/current path. Keep arrowheads small and avoid
+  thick strokes or strong glow that obscures crossing routes.
+- Selected flow route: use brighter color, contrast, and restrained glow rather
+  than heavy strokes; keep the upcoming segment visible before playback starts.
+- Detailed walkthrough: number every connector in flow order. Each numbered
+  marker is clickable and opens that step's explanation in the lesson panel.
 - Inactive components: dimmed
 - Current component: highlighted
 - Completed path: slightly brighter but less prominent than current step
@@ -194,6 +198,19 @@ package pins. Provide click-to-inspect detail for every block. Add step modes:
 The page must state that the attached reference depicts STM32L432xx. Do not
 copy its peripheral inventory, memory sizes, maximum clock values, or pin
 mapping into this L476RG course without checking the L476-specific manuals.
+
+Show external devices outside the MCU boundary in the persistent architecture
+map and include a board-level/external endpoint in every detailed flow. Make it
+clear which blocks are on-chip and which require board wiring or external
+hardware; do not imply GPIO pads are external address/data bus pins.
+
+For Flash/SRAM, include an illustrative firmware image with readable hex bytes
+and separate linker sections/runtime regions: `.isr_vector`, `.text`, `.rodata`,
+the Flash load image for `.data`, the SRAM run region for `.data`, `.bss`, and
+stack/optional heap. Explain that startup copies `.data` from its Flash load
+address to its SRAM run address and clears `.bss`; normal code execution is
+from Flash. Distinguish ELF section/load metadata from a flat raw `.bin`, and
+label example addresses/bytes as illustrative and linker-script-dependent.
 
 ---
 

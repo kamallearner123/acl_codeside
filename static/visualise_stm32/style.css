@@ -173,47 +173,93 @@ button:focus-visible, a:focus-visible, select:focus-visible, .diagram-node:focus
 .flow-diagram-heading { display: flex; align-items: center; justify-content: space-between; padding: 11px 16px 8px; border-top: 1px solid var(--border); }
 .flow-diagram-heading .eyebrow { margin: 0; }
 #detailed-flow-title { color: var(--muted); font-size: 11px; }
-.bus-wire.is-context { stroke-width: 7; opacity: 1; filter: drop-shadow(0 0 5px #39d9d270); }
-.arch-block.is-context rect { stroke: var(--signal-color, var(--cyan)); stroke-width: 2.2; filter: drop-shadow(0 0 6px #39d9d230); }
-.arch-block.is-active-context rect { fill: #183c43; stroke: var(--signal-color, var(--cyan)); stroke-width: 2.6; filter: drop-shadow(0 0 9px #39d9d255); }
-.diagram-edge { fill: none; stroke: #354a63; stroke-width: 2.2; opacity: .62; marker-end: url(#arrow-muted); transition: stroke .25s ease, opacity .25s ease, stroke-width .25s ease, filter .25s ease; }
-.diagram-edge.is-complete { stroke: var(--green); stroke-width: 4.5; opacity: 1; marker-end: url(#arrow-active); filter: drop-shadow(0 0 3px #55d69e80); }
-.diagram-edge.is-current { stroke: var(--signal-color, var(--cyan)); stroke-width: 6; opacity: 1; marker-end: url(#arrow-current); filter: drop-shadow(0 0 5px var(--signal-color, #39d9d2)); }
-.flow-diagram.is-playing .diagram-edge.is-current { stroke-dasharray: 8 7; animation: edge-flow 1s linear infinite; }
+.bus-wire { stroke-dasharray: 2 6; }
+.bus-wire.is-context { stroke-width: 1.5; opacity: 1; filter: brightness(1.5); animation: running-lights .9s linear infinite; }
+.arch-block.is-context rect { stroke: var(--signal-color, var(--cyan)); stroke-width: 1.5; filter: brightness(1.12); }
+.arch-block.is-active-context rect { fill: #205660; stroke: var(--signal-color, var(--cyan)); stroke-width: 1.6; filter: brightness(1.2); }
+.diagram-edge { fill: none; stroke: #7892ad; stroke-width: 1.35; stroke-dasharray: 2 6; opacity: .82; marker-end: url(#arrow-muted); transition: stroke .25s ease, opacity .25s ease, stroke-width .25s ease; }
+.diagram-edge.is-complete { stroke: #63efb2; stroke-width: 1.45; stroke-dasharray: 2 6; opacity: .95; marker-end: url(#arrow-complete); animation: running-lights .9s linear infinite; }
+.diagram-edge.is-current { stroke: var(--signal-color, var(--cyan)); stroke-width: 1.6; stroke-dasharray: 2 6; opacity: 1; marker-end: url(#arrow-current); animation: running-lights .65s linear infinite; }
+.flow-diagram.is-playing .diagram-edge.is-current { animation-duration: .4s; }
 .diagram-node { cursor: pointer; }
-.diagram-node rect { fill: #13243a; stroke: #304762; stroke-width: 1.5; transition: fill .2s ease, stroke .2s ease, filter .2s ease; }
-.diagram-node:hover rect { stroke: #91a9c3; }
-.diagram-node.is-complete rect { fill: #132e36; stroke: #318d76; }
-.diagram-node.is-active rect { fill: #153d43; stroke: var(--signal-color, var(--cyan)); stroke-width: 2.2; filter: drop-shadow(0 0 9px var(--signal-color, #39d9d2)); }
+.diagram-node rect { fill: #1a2f49; stroke: #607b98; stroke-width: 1.4; transition: fill .2s ease, stroke .2s ease, filter .2s ease; }
+.diagram-node:hover rect { fill: #244261; stroke: #c1ddf5; }
+.diagram-node.is-complete rect { fill: #17463f; stroke: #58d9ac; }
+.diagram-node.is-active rect { fill: #24545a; stroke: var(--signal-color, var(--cyan)); stroke-width: 1.8; filter: drop-shadow(0 0 10px var(--signal-color, #39d9d2)) brightness(1.35); }
 .diagram-node.is-selected rect { stroke: var(--orange); stroke-width: 2.2; }
-.node-title { fill: var(--text); font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; text-anchor: middle; }
-.node-kind { fill: #8ea1b9; font-family: "DM Mono", monospace; font-size: 9px; letter-spacing: .11em; text-anchor: middle; text-transform: uppercase; }
-.node-port { fill: var(--cyan); opacity: .72; }
+.diagram-node.is-external rect { fill: #263d55; stroke: #ffc46d; stroke-dasharray: 5 3; }
+.diagram-node.is-external .node-kind { fill: #ffd18c; }
+.node-title { fill: #f4f8ff; font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; text-anchor: middle; }
+.node-kind { fill: #c0d1e4; font-family: "DM Mono", monospace; font-size: 9px; letter-spacing: .11em; text-anchor: middle; text-transform: uppercase; }
+.node-port { fill: #71fff0; opacity: .9; }
 .diagram-node.is-active .node-port { opacity: 1; filter: drop-shadow(0 0 5px var(--cyan)); }
+.step-marker { cursor: pointer; }
+.step-marker circle { fill: #f2fbff; stroke: #071421; stroke-width: 2; transition: fill .18s ease, r .18s ease, filter .18s ease; }
+.step-marker text { fill: #071421; font-family: "DM Mono", monospace; font-size: 10px; font-weight: 700; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.step-marker:hover circle, .step-marker:focus circle { fill: #ffe48a; filter: drop-shadow(0 0 6px #ffe48a); }
+.step-marker.is-current circle { fill: #73fff0; filter: drop-shadow(0 0 7px #73fff0); }
+.step-marker.is-complete circle { fill: #7af0b2; }
+.step-marker:focus-visible { outline: none; }
+.external-board-label { fill: #ffd18c; font-family: "DM Mono", monospace; font-size: 11px; font-weight: 600; letter-spacing: .13em; }
+.arch-block.is-external rect { fill: #332d25; stroke: #ffc46d; stroke-dasharray: 5 3; }
+.arch-block.is-external .arch-block-subtitle { fill: #ffdfa8; }
 .svg-flow-label { fill: #91a9c3; font-family: "DM Mono", monospace; font-size: 9px; letter-spacing: .08em; }
-.mcu-boundary { fill: #091625; fill-opacity: .44; stroke: #48617b; stroke-width: 2; }
-.mcu-boundary-label { fill: #b9cadc; font-family: "DM Mono", monospace; font-size: 14px; font-weight: 500; letter-spacing: .16em; }
-.arch-block rect { fill: #14263c; stroke: #45617d; stroke-width: 1.5; transition: fill .2s ease, stroke .2s ease, filter .2s ease; }
-.arch-block:hover rect { stroke: #9db6d0; }
-.arch-block.is-active rect { fill: #183c43; stroke: var(--signal-color, var(--cyan)); stroke-width: 2.4; filter: drop-shadow(0 0 8px #39d9d240); }
+.mcu-boundary { fill: #091625; fill-opacity: .32; stroke: #7592b0; stroke-width: 1.6; }
+.mcu-boundary-label { fill: #e0edfc; font-family: "DM Mono", monospace; font-size: 14px; font-weight: 500; letter-spacing: .16em; }
+.arch-block rect { fill: #1a304a; stroke: #6d88a4; stroke-width: 1.4; transition: fill .2s ease, stroke .2s ease, filter .2s ease; }
+.arch-block:hover rect { fill: #294968; stroke: #d3e7fa; }
+.arch-block.is-active rect { fill: #24545a; stroke: var(--signal-color, var(--cyan)); stroke-width: 1.5; filter: brightness(1.2); }
 .arch-block.is-selected rect { stroke: var(--orange); stroke-width: 2.5; }
 .arch-block-title { fill: var(--text); font-family: Inter, sans-serif; font-size: 14px; font-weight: 700; text-anchor: middle; }
 .arch-block-subtitle { fill: #99adc2; font-family: "DM Mono", monospace; font-size: 9px; text-anchor: middle; }
-.arch-inner-block { fill: #0b1a2b; stroke: #314963; stroke-width: 1; }
-.arch-inner-label { fill: #aec0d3; font-family: "DM Mono", monospace; font-size: 9px; text-anchor: middle; }
-.bus-wire { fill: none; stroke: #344d67; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
-.bus-wire.instruction { stroke: #397ac0; }
-.bus-wire.address { stroke: #c18137; }
-.bus-wire.data { stroke: #278f93; }
-.bus-wire.event { stroke: #b66b31; }
-.bus-wire.clock { stroke: #7658bb; stroke-dasharray: 3 6; }
-.bus-wire.reset { stroke: #aa4c53; stroke-dasharray: 3 6; }
-.bus-wire.dma { stroke: #348c68; }
-.bus-wire.is-active { stroke: var(--wire-active, var(--cyan)); stroke-width: 4; filter: drop-shadow(0 0 5px var(--wire-active, #39d9d255)); }
-.bus-wire.is-secondary { stroke-width: 2.7; }
-.bus-label { fill: #bacbdb; font-family: "DM Mono", monospace; font-size: 9px; font-weight: 500; letter-spacing: .04em; paint-order: stroke; stroke: #0b1727; stroke-width: 4px; stroke-linejoin: round; }
-.bus-caption { fill: #748ca4; font-family: "DM Mono", monospace; font-size: 8px; letter-spacing: .08em; paint-order: stroke; stroke: #0b1727; stroke-width: 3px; }
-.arch-note { fill: #86a0b9; font-family: Inter, sans-serif; font-size: 10px; }
+.arch-inner-block { fill: #10233a; stroke: #56728f; stroke-width: 1; }
+.arch-inner-label { fill: #d5e5f5; font-family: "DM Mono", monospace; font-size: 9px; text-anchor: middle; }
+.bus-wire { fill: none; stroke: #7892ad; stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
+.bus-wire.instruction { stroke: #6db5ff; }
+.bus-wire.address { stroke: #ffc275; }
+.bus-wire.data { stroke: #6df3e9; }
+.bus-wire.event { stroke: #ffc275; }
+.bus-wire.clock { stroke: #c6afff; stroke-dasharray: 3 6; }
+.bus-wire.reset { stroke: #ff9297; stroke-dasharray: 3 6; }
+.bus-wire.dma { stroke: #71e7ab; }
+.bus-wire.is-active { stroke: var(--wire-active, var(--cyan)); stroke-width: 1.6; filter: brightness(1.45); }
+.bus-wire.is-secondary { stroke-width: 1.8; }
+.bus-wire.is-external { stroke-width: 1.4; stroke-dasharray: 2 6; filter: brightness(1.2); }
+.bus-label { fill: #e3effc; font-family: "DM Mono", monospace; font-size: 9px; font-weight: 500; letter-spacing: .04em; paint-order: stroke; stroke: #0b1727; stroke-width: 4px; stroke-linejoin: round; }
+.bus-caption { fill: #b2c8df; font-family: "DM Mono", monospace; font-size: 8px; letter-spacing: .08em; paint-order: stroke; stroke: #0b1727; stroke-width: 3px; }
+.arch-note { fill: #b4c9df; font-family: Inter, sans-serif; font-size: 10px; }
+.memory-image-panel { margin: 16px; padding: 20px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.memory-image-panel[hidden] { display: none; }
+.memory-image-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.memory-image-heading .eyebrow { margin: 0 0 6px; color: var(--cyan); }
+.memory-image-heading h2 { margin: 0; font-size: 17px; }
+.memory-image-heading p { max-width: 900px; margin: 8px 0 0; color: var(--muted); font-size: 11px; line-height: 1.65; }
+.memory-address-chip { flex: 0 0 auto; padding: 7px 9px; border: 1px solid #ffc27566; border-radius: 8px; color: #ffd18c; font-family: "DM Mono", monospace; font-size: 8px; }
+.memory-image-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, .55fr) minmax(0, 1fr); gap: 14px; align-items: stretch; margin-top: 16px; }
+.memory-column { padding: 14px; border: 1px solid var(--border); border-radius: 11px; background: #09162580; }
+.memory-column h3 { margin: 0; font-size: 12px; }
+.memory-address { margin: 4px 0 12px; color: var(--subtle); font-family: "DM Mono", monospace; font-size: 9px; }
+.memory-segment { display: grid; gap: 4px; margin-top: 7px; padding: 9px 10px; border: 1px solid; border-radius: 7px; }
+.memory-segment strong { font-family: "DM Mono", monospace; font-size: 10px; }
+.memory-segment span { color: var(--muted); font-size: 9px; line-height: 1.45; }
+.vector-segment { border-color: #bb9bff99; background: #a77aff20; color: #d8c7ff; }
+.text-segment { border-color: #68adff99; background: #438eea24; color: #badaff; }
+.rodata-segment { border-color: #6be6dc99; background: #36c8bb20; color: #b8fff7; }
+.data-load-segment, .data-run-segment { border-color: #ffca6d99; background: #f6af3820; color: #ffe0a2; }
+.bss-segment { border-color: #70e4a899; background: #48cc8b20; color: #bcffda; }
+.heap-segment { border-color: #fa9ac899; background: #e674a020; color: #ffd0e5; }
+.stack-segment { border-color: #ff929799; background: #ed616d20; color: #ffd1d3; }
+.binary-dump { display: grid; gap: 7px; margin-top: 12px; padding: 10px; border: 1px solid #49627d; border-radius: 8px; background: #050d17; }
+.binary-dump span { color: #b4c9df; font-family: "DM Mono", monospace; font-size: 8px; }
+.binary-dump code { color: #9fffe2; font-family: "DM Mono", monospace; font-size: 9px; line-height: 1.7; }
+.startup-operations { display: flex; flex-direction: column; justify-content: center; gap: 12px; text-align: center; }
+.startup-copy, .startup-clear { display: grid; gap: 5px; padding: 12px 8px; border: 1px solid #67e3ca88; border-radius: 9px; background: #1e9d8720; }
+.startup-clear { border-color: #7be0a188; background: #39b47720; }
+.startup-operations span, .startup-operations code { color: var(--muted); font-family: "DM Mono", monospace; font-size: 8px; }
+.startup-operations strong { color: #aaffdf; font-size: 10px; }
+.startup-operations p { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
+.memory-image-note { margin: 14px 0 0; padding: 11px 13px; border-left: 2px solid var(--orange); background: #ffb45410; color: var(--muted); font-size: 10px; line-height: 1.65; }
+.memory-image-note strong { color: #ffd18c; }
 .diagram-caption { display: flex; min-height: 37px; align-items: center; justify-content: space-between; padding: 7px 16px; border-top: 1px solid var(--border); }
 #path-status { color: var(--green); font-family: "DM Mono", monospace; font-size: 10px; }
 
@@ -268,6 +314,7 @@ kbd { padding: 2px 5px; border: 1px solid var(--border); border-radius: 4px; bac
 .nav-backdrop { display: none; }
 
 @keyframes edge-flow { to { stroke-dashoffset: -30; } }
+@keyframes running-lights { to { stroke-dashoffset: -16; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
@@ -286,9 +333,17 @@ body.light-theme .diagram-viewport {
 body.light-theme .diagram-node rect { fill: #fff; }
 body.light-theme .diagram-node.is-complete rect { fill: #e1f4ec; }
 body.light-theme .diagram-node.is-active rect { fill: #d8f6f2; }
+body.light-theme .diagram-node.is-external rect { fill: #fff6e8; stroke: #aa680e; }
+body.light-theme .diagram-node.is-external .node-kind { fill: #81500a; }
+body.light-theme .step-marker circle { fill: #fff; stroke: #132338; }
+body.light-theme .step-marker text { fill: #132338; }
+body.light-theme .step-marker.is-current circle { fill: #89f5e9; }
+body.light-theme .step-marker.is-complete circle { fill: #9af0bd; }
 body.light-theme .mcu-boundary { fill: #e7eff6; fill-opacity: .7; stroke: #8da4ba; }
 body.light-theme .mcu-boundary-label { fill: #334b63; }
 body.light-theme .arch-block rect { fill: #fff; }
+body.light-theme .arch-block.is-external rect { fill: #fff6e8; stroke: #aa680e; }
+body.light-theme .arch-block.is-external .arch-block-subtitle { fill: #81500a; }
 body.light-theme .arch-block.is-active rect { fill: #ddf5f2; }
 body.light-theme .arch-block.is-context rect { fill: #f2f8fb; }
 body.light-theme .arch-block.is-active-context rect { fill: #d8f6f2; }
@@ -298,10 +353,14 @@ body.light-theme .arch-inner-block { fill: #edf3f8; stroke: #bdccd9; }
 body.light-theme .bus-label, body.light-theme .bus-caption { fill: #344a62; stroke: #eef4f9; }
 body.light-theme .arch-note { fill: #526b83; }
 body.light-theme .bus-wire.is-active { filter: drop-shadow(0 0 3px #137b7d80); }
+body.light-theme .bus-wire.is-external { filter: brightness(.9); }
 body.light-theme .node-title { fill: #132338; }
 body.light-theme .node-kind { fill: #61758c; }
 body.light-theme .data-chip { background: #f3f7fb; }
 body.light-theme .data-chip code { color: #876414; }
+body.light-theme .memory-column { background: #f5f8fc; }
+body.light-theme .binary-dump { background: #132338; }
+body.light-theme .memory-image-note { color: #445a72; }
 body.light-theme .inspector-fact strong, body.light-theme .concept-callout p { color: #344a62; }
 body.light-theme .control-button.primary, body.light-theme .control-button.play { color: #075b5c; }
 
@@ -336,6 +395,10 @@ body.light-theme .control-button.primary, body.light-theme .control-button.play 
   .inspector-card { min-height: 220px; }
   .concept-callout { margin-top: 16px; }
   .lesson-footer { flex-direction: column; }
+  .memory-image-heading { flex-direction: column; }
+  .memory-image-grid { grid-template-columns: 1fr; }
+  .startup-operations { display: grid; grid-template-columns: 1fr 1fr; }
+  .startup-operations p { grid-column: 1 / -1; }
 }
 @media (max-width: 440px) {
   .breadcrumb { max-width: 160px; line-height: 1.5; }

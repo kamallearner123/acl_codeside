@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="app.js" defer></script>
+  <link rel="stylesheet" href="style.css?v=4">
+  <script src="app.js?v=4" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to visualisation</a>
@@ -76,14 +76,14 @@
             <span><i class="legend-dot event"></i>Interrupt</span>
             <span><i class="legend-dot clock"></i>Clock / reset</span>
           </div>
-          <span class="diagram-hint">Shared architecture map · highlighted path matches this lesson</span>
+          <span class="diagram-hint">Click numbered path markers to read each step · external devices are outside the MCU</span>
         </div>
         <section class="architecture-context" aria-labelledby="architecture-context-title">
           <div class="architecture-context-heading">
             <div>
               <p class="eyebrow">01 · MASTER ARCHITECTURE</p>
               <h2 id="architecture-context-title">Cortex-M4 STM32 block diagram</h2>
-              <p>Keep the address, control, data, interrupt, and clock paths in view while exploring each lesson.</p>
+              <p>Keep the address, control, data, interrupt, clock paths, and connected board-level devices in view while exploring each lesson.</p>
             </div>
             <span id="architecture-context-label" class="context-path-label">PATH: POWER / RESET</span>
           </div>
@@ -95,7 +95,7 @@
           </div>
           <div class="architecture-caption">
             <span>Highlighted route locates the selected lesson in the MCU.</span>
-            <span>Internal logical paths · not external address/data pins</span>
+            <span>Scroll horizontally to see external board devices · address/data are not package pins</span>
           </div>
         </section>
         <div class="flow-diagram-heading">
@@ -108,6 +108,44 @@
             <desc id="diagram-description"></desc>
           </svg>
         </div>
+        <section id="memory-image-panel" class="memory-image-panel" aria-labelledby="memory-image-title" hidden>
+          <div class="memory-image-heading">
+            <div>
+              <p class="eyebrow">FROM BUILD ARTIFACT TO LIVE MEMORY</p>
+              <h2 id="memory-image-title">What the firmware image looks like—and what startup loads</h2>
+              <p>An ELF file records sections and load/run addresses. A raw <code>.bin</code> is a flat byte image; the linker script and startup code determine where each section goes.</p>
+            </div>
+            <span class="memory-address-chip">ILLUSTRATIVE STM32L476RG MAP</span>
+          </div>
+          <div class="memory-image-grid">
+            <article class="memory-column flash-column">
+              <h3>Flash · non-volatile image</h3>
+              <p class="memory-address">example base 0x08000000</p>
+              <div class="memory-segment vector-segment"><strong>.isr_vector</strong><span>initial MSP · Reset_Handler address</span></div>
+              <div class="memory-segment text-segment"><strong>.text</strong><span>machine-code instructions</span></div>
+              <div class="memory-segment rodata-segment"><strong>.rodata</strong><span>read-only constants</span></div>
+              <div class="memory-segment data-load-segment"><strong>.data load image (LMA)</strong><span>initial bytes for writable globals</span></div>
+              <div class="binary-dump" aria-label="Illustrative hexadecimal bytes from a firmware image">
+                <span>HEX BYTES · illustrative, not a compiled program</span>
+                <code>0800 0000&nbsp; 00 80 01 20&nbsp; 41 01 00 08<br>0800 0008&nbsp; 00 B5 02 48&nbsp; 00 68 00 BD</code>
+              </div>
+            </article>
+            <div class="startup-operations" aria-label="Startup memory operations">
+              <div class="startup-copy"><span>Reset_Handler</span><strong>copy .data</strong><code>Flash LMA → SRAM VMA</code></div>
+              <div class="startup-clear"><span>Reset_Handler</span><strong>zero .bss</strong><code>write zeros in SRAM</code></div>
+              <p>Startup performs these operations before calling <code>main()</code>.</p>
+            </div>
+            <article class="memory-column sram-column">
+              <h3>SRAM · writable runtime memory</h3>
+              <p class="memory-address">example base 0x20000000</p>
+              <div class="memory-segment data-run-segment"><strong>.data run region (VMA)</strong><span>initialized globals copied from Flash</span></div>
+              <div class="memory-segment bss-segment"><strong>.bss</strong><span>zero-initialized globals · not stored as bytes in the raw image</span></div>
+              <div class="memory-segment heap-segment"><strong>Heap (optional)</strong><span>dynamic allocations, if the runtime uses them</span></div>
+              <div class="memory-segment stack-segment"><strong>Stack ↓</strong><span>calls, saved registers, local variables · grows per ABI/runtime</span></div>
+            </article>
+          </div>
+          <p class="memory-image-note"><strong>Key distinction:</strong> firmware code normally executes directly from Flash; startup copies only initialized writable data to its SRAM run address and clears <code>.bss</code>. The displayed initial MSP value is an example at the top of SRAM1; SRAM2, when used, can be a separate linker memory region. Exact addresses and layout come from the selected MCU linker script.</p>
+        </section>
         <div class="diagram-caption">
           <span><i class="legend-dot active"></i> Active path</span>
           <span id="path-status" aria-live="polite">Ready</span>

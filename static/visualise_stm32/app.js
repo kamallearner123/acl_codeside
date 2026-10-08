@@ -33,7 +33,11 @@
       node('AHB / APB bridge', 'BUS BRIDGE', 'The bridge connects the AHB interconnect to APB peripheral buses. APB transactions have protocol/timing rules distinct from AHB transfers.'),
       node('APB1 peripherals', 'TIM · USART · I2C · CAN', 'APB1 connects selected lower-speed peripherals such as timers, serial interfaces, and bxCAN on supported STM32L4 parts. Verify the exact instance map for the device.'),
       node('APB2 peripherals', 'TIM · SPI · ADC', 'APB2 connects selected peripherals such as timers, serial interfaces, and ADC on supported STM32L4 parts. Exact mapping is device-specific.'),
-      node('GPIO pins', 'PACKAGE PADS', 'Peripheral and GPIO signals reach package pads through pin alternate-function selection. The board schematic determines external connections.')
+      node('GPIO pins', 'PACKAGE PADS', 'Peripheral and GPIO signals reach package pads through pin alternate-function selection. The board schematic determines external connections.'),
+      node('HSE / LSE source', 'EXTERNAL CLOCK', 'An external crystal or clock source may connect to the MCU oscillator pins when selected by the board design; many boards instead use an internal oscillator.'),
+      node('SWD probe + host', 'EXTERNAL DEBUG', 'An external ST-LINK or compatible debug probe connects the host computer to the MCU debug pins for programming and debugging.'),
+      node('Sensor / actuator', 'EXTERNAL BOARD CIRCUIT', 'External sensors and loads connect through package pins and board-level circuitry. Check voltage, current, protection, and pin mapping.'),
+      node('CAN transceiver / bus', 'EXTERNAL PHYSICAL LAYER', 'A CAN transceiver converts MCU logic-level TX/RX to differential CANH/CANL. The transceiver and terminated bus are external to the MCU.')
     ],
     [
       edge('Instruction address + fetch control', 'The Cortex-M4 has separate instruction and data paths into the memory system. This is a logical on-chip interface, not an external address pin bus.', 'The core issues an instruction fetch on its I-CODE interface toward the interconnect.'),
@@ -48,7 +52,7 @@
     'A bus transaction is more than a wire: the master presents an address and control, the interconnect selects a target, and data is transferred in the appropriate direction. Interrupt and clock/reset paths are separate from payload data buses.'
   );
   architectureFlow.architecture = {
-    width: 1480,
+    width: 1735,
     height: 900,
     wires: [
       { edge: 0, kind: 'instruction', label: 'I-CODE · instruction address + fetch control →', labelX: 350, labelY: 145, points: [[320, 158], [430, 158], [430, 330], [565, 330]] },
@@ -82,7 +86,11 @@
       { edge: 7, kind: 'clock', label: 'SYSCLK → core', labelX: 338, labelY: 91, points: [[380, 96], [350, 96], [350, 108], [190, 108], [190, 120]] },
       { edge: 7, kind: 'clock', label: 'APB clocks', labelX: 1100, labelY: 340, points: [[555, 145], [1165, 145], [1165, 448], [1195, 448]] },
       { edge: 7, kind: 'clock', label: 'APB2 clock', labelX: 1100, labelY: 356, points: [[555, 160], [1180, 160], [1180, 593], [1195, 593]] },
-      { edge: 7, kind: 'reset', label: 'Reset control', labelX: 326, labelY: 95, points: [[380, 112], [360, 112], [360, 294], [190, 294], [190, 285]] }
+      { edge: 7, kind: 'reset', label: 'Reset control', labelX: 326, labelY: 95, points: [[380, 112], [360, 112], [360, 294], [190, 294], [190, 285]] },
+      { edge: 7, kind: 'clock', label: 'HSE / LSE (board dependent)', labelX: 1490, labelY: 126, points: [[1490, 128], [1455, 128], [1455, 97], [555, 97]], external: true },
+      { edge: 6, kind: 'data', label: 'SWDIO / SWCLK · debug access', labelX: 1490, labelY: 321, points: [[1490, 316], [1450, 316], [1450, 504], [320, 504]], external: true },
+      { edge: 4, kind: 'data', label: 'GPIO / alternate-function signals', labelX: 1490, labelY: 511, points: [[1415, 735], [1465, 735], [1465, 510], [1490, 510]], external: true },
+      { edge: 4, kind: 'data', label: 'CAN TX / RX logic · CANH / CANL', labelX: 1490, labelY: 701, points: [[1415, 735], [1490, 735]], external: true }
     ],
     components: [
       { node: 0, id: 'core', x: 60, y: 120, width: 260, height: 165, title: 'Cortex-M4F core', subtitle: 'CPU · registers · ALU · FPU', inner: ['PC · SP · LR · R0–R12 · xPSR', 'I-CODE   D-CODE   SYSTEM'] },
@@ -98,7 +106,11 @@
       { node: 10, id: 'bridge', x: 900, y: 690, width: 230, height: 100, title: 'AHB / APB bridge', subtitle: 'bus protocol + clock domain' },
       { node: 11, id: 'apb1', x: 1195, y: 400, width: 220, height: 100, title: 'APB1 peripherals', subtitle: 'TIM · USART · I2C · bxCAN' },
       { node: 12, id: 'apb2', x: 1195, y: 545, width: 220, height: 100, title: 'APB2 peripherals', subtitle: 'TIM · SPI · ADC' },
-      { node: 13, id: 'pins', x: 1195, y: 700, width: 220, height: 70, title: 'GPIO package pins', subtitle: 'alternate function → board circuit' }
+      { node: 13, id: 'pins', x: 1195, y: 700, width: 220, height: 70, title: 'GPIO package pins', subtitle: 'alternate function → board circuit' },
+      { node: 14, id: 'clock-source', x: 1490, y: 78, width: 210, height: 100, title: 'HSE / LSE source', subtitle: 'optional crystal / external clock', external: true },
+      { node: 15, id: 'debug-probe', x: 1490, y: 268, width: 210, height: 100, title: 'SWD probe + host', subtitle: 'external programming / debug', external: true },
+      { node: 16, id: 'board-circuit', x: 1490, y: 458, width: 210, height: 105, title: 'Sensor / actuator', subtitle: 'external board circuit', external: true },
+      { node: 17, id: 'can-physical', x: 1490, y: 650, width: 210, height: 105, title: 'CAN transceiver / bus', subtitle: 'external physical layer', external: true }
     ]
   };
   architectureFlow.edgeNodes = [
@@ -590,6 +602,46 @@
     )
   ];
 
+  const externalContextByFlow = {
+    'Power-on and reset': { label: 'Board power + RESET input', kind: 'EXTERNAL · POWER / RESET', from: 0, data: 'VDD stable · reset released', description: 'External supply and reset circuitry establish valid operating conditions. The exact power and reset circuit is board-specific.' },
+    'Flash and SRAM layout': { label: 'Programmer / debug host', kind: 'EXTERNAL · HOST PC', from: 0, data: 'ELF / HEX / BIN over SWD', description: 'A host tool programs the Flash image over a debug probe; at runtime the MCU fetches code from Flash and startup initializes SRAM.' },
+    'CPU instruction execution': { label: 'Debugger / host computer', kind: 'EXTERNAL · DEBUG', from: 0, data: 'SWD debug access', description: 'The external debugger can inspect registers and memory through the debug port; it is not part of the CPU instruction path.' },
+    'GPIO output: register to pin': { label: 'LED / external load', kind: 'EXTERNAL · BOARD CIRCUIT', from: 5, data: 'GPIO pad voltage / current', description: 'The output pad connects to an external or on-board load through the board circuit. Check current limits, polarity, and any driver components.' },
+    'GPIO input: pin to program': { label: 'Button / sensor contact', kind: 'EXTERNAL · INPUT DEVICE', from: 4, data: 'Logic level at package pin', description: 'A switch or sensor drives the physical pin through board wiring and any required pull-up, pull-down, filtering, or protection.' },
+    'RCC and clock flow': { label: 'Crystal / clock source', kind: 'EXTERNAL · OPTIONAL CLOCK', from: 0, data: 'HSE / LSE reference (if fitted)', description: 'An external oscillator is optional; the selected clock source depends on board components and RCC configuration.' },
+    'Timer: clock to event': { label: 'PWM load / event source', kind: 'EXTERNAL · TIMER SIGNAL', from: 4, data: 'PWM edge / capture input', description: 'A timer output can drive an external load through suitable circuitry, or an external signal can enter a capture pin.' },
+    'Interrupt: event to callback': { label: 'Button / peripheral event', kind: 'EXTERNAL · EVENT SOURCE', from: 1, data: 'Physical event or signal', description: 'A real external event may reach a GPIO or peripheral input; software-generated or internal events do not require an external device.' },
+    'DMA: hardware data movement': { label: 'Sensor / serial device', kind: 'EXTERNAL · DATA SOURCE', from: 0, data: 'Peripheral sample / received byte', description: 'External devices provide or consume signals at a peripheral interface; DMA transfers data between the peripheral register and memory.' },
+    'UART transmit': { label: 'USB-UART adapter / host', kind: 'EXTERNAL · SERIAL PEER', from: 3, data: 'TX logic-level serial frame', description: 'A USB-UART adapter or another UART endpoint receives the TX signal. Match voltage levels, baud rate, ground, and TX/RX wiring.' },
+    'UART receive with interrupt': { label: 'UART sender / host', kind: 'EXTERNAL · SERIAL PEER', from: 0, data: 'RX start + data + stop bits', description: 'An external UART sender drives the RX pin through compatible logic levels; the peripheral signals each received byte to software.' },
+    'UART receive with DMA': { label: 'UART sender / host', kind: 'EXTERNAL · SERIAL PEER', from: 0, data: 'Incoming byte stream', description: 'An external sender supplies a UART stream; DMA stores received peripheral data into the configured SRAM buffer.' },
+    'SPI full-duplex transfer': { label: 'SPI sensor / slave', kind: 'EXTERNAL · SPI DEVICE', from: 2, data: 'SCK · MOSI · MISO · CS', description: 'The external SPI device shares SCK/MOSI/MISO signaling and is selected by chip select; wiring and command format are device-specific.' },
+    'I2C register read': { label: 'I2C sensor + pull-ups', kind: 'EXTERNAL · I2C DEVICE', from: 2, data: 'SDA · SCL · ACK / data', description: 'The external sensor shares the open-drain bus. Pull-ups, address straps, voltage compatibility, and the sensor register map matter.' },
+    'ADC: analog to digital': { label: 'Sensor + analog front end', kind: 'EXTERNAL · ANALOG INPUT', from: 0, data: 'Voltage within ADC limits', description: 'The sensor and any divider/filter/conditioning circuit provide a safe, settled voltage referenced to the MCU analog ground.' },
+    'CAN: application to bus': { label: 'CAN transceiver + other ECUs', kind: 'EXTERNAL · CAN NETWORK', from: 4, data: 'Differential CANH / CANL frame', description: 'An external CAN transceiver converts MCU TX/RX logic into the differential bus signal; other ECUs and termination complete the network.' },
+    'CAN receive interrupt': { label: 'Other ECU + CAN transceiver', kind: 'EXTERNAL · CAN NETWORK', from: 0, data: 'Differential frame on CANH/CANL', description: 'A remote ECU transmits on the physical bus; the external transceiver converts the differential signal to MCU RX logic.' },
+    'ADC + DMA sensor pipeline': { label: 'Sensor + analog front end', kind: 'EXTERNAL · ANALOG INPUT', from: 0, data: 'Sampled sensor voltage', description: 'The external sensor and signal-conditioning circuit drive the ADC input; verify input range, source impedance, and grounding.' },
+    'Watchdog: timeout to reset': { label: 'Supply / reset observer', kind: 'EXTERNAL · BOARD MONITOR', from: 0, data: 'Reset pin / power status', description: 'Board-level supply supervision and reset wiring remain external; an internal watchdog timeout can also reset the MCU without external intervention.' },
+    'Fault: exception to diagnosis': { label: 'SWD debugger / host', kind: 'EXTERNAL · DEBUG', from: 5, data: 'Fault registers via SWD', description: 'A connected debug probe lets a host inspect the stacked exception frame and fault-status registers after a failure.' },
+    'Low-power entry and wake-up': { label: 'Wake pin / external source', kind: 'EXTERNAL · WAKE INPUT', from: 4, data: 'Configured wake signal', description: 'A board input, RTC source, or other configured event can wake the device; the available sources depend on the selected power mode.' },
+    'Complete data journey': { label: 'Sensor · host · CAN network', kind: 'EXTERNAL · CONNECTED SYSTEM', from: 7, data: 'Physical signals and telemetry', description: 'The MCU exchanges signals with sensors, a host, and network nodes through external board circuits and transceivers.' }
+  };
+
+  flows.forEach((item) => {
+    const external = externalContextByFlow[item.title];
+    if (!external) throw new Error(`Missing external-device context for flow: ${item.title}`);
+    const externalNodeIndex = item.nodes.length;
+    item.nodes.push(node(external.label, external.kind, external.description));
+    item.edges.push(edge(
+      external.data,
+      'This is a board-level or lab connection outside the MCU silicon. Electrical levels, wiring, and optional interface components must match the target board.',
+      external.description,
+      `External connection: ${external.label}`,
+      { from: external.from, to: externalNodeIndex }
+    ));
+    item.externalNodeIndex = externalNodeIndex;
+  });
+
   const architectureContextByFlow = {
     'Power-on and reset': { label: 'POWER · RESET · STARTUP', nodes: [0, 1, 3, 5, 6, 7], edges: [0, 1, 3, 7] },
     'Flash and SRAM layout': { label: 'FLASH · SRAM · MEMORY ACCESS', nodes: [0, 5, 6, 7, 8], edges: [1, 2, 3] },
@@ -662,14 +714,22 @@
     return '#39d9d2';
   }
 
-  function makePositions(count) {
+  function makePositions(count, item) {
     const centers = [170, 500, 830];
-    return Array.from({ length: count }, (_, index) => {
+    const positions = Array.from({ length: count }, (_, index) => {
       const row = Math.floor(index / centers.length);
       const column = index % centers.length;
       const col = row % 2 === 0 ? column : centers.length - 1 - column;
       return { x: centers[col], y: 98 + row * 145 };
     });
+    if (item.externalNodeIndex !== undefined) {
+      const internalCount = count - 1;
+      positions[item.externalNodeIndex] = {
+        x: 830,
+        y: 98 + Math.ceil(internalCount / centers.length) * 145
+      };
+    }
+    return positions;
   }
 
   function edgePath(from, to) {
@@ -760,7 +820,7 @@
   function renderDiagram(item) {
     svg.classList.remove('architecture-diagram');
     svg.classList.toggle('is-playing', isPlaying);
-    const positions = makePositions(item.nodes.length);
+    const positions = makePositions(item.nodes.length, item);
     const rowCount = Math.ceil(item.nodes.length / 3);
     const height = Math.max(410, 180 + rowCount * 145);
     const activeSignalColor = signalColor(item.type);
@@ -772,17 +832,17 @@
     const defs = el('defs', {}, svg);
     const marker = el('marker', {
       id: 'arrow-muted', viewBox: '0 0 10 10', refX: '8.5', refY: '5',
-      markerWidth: '6', markerHeight: '6', orient: 'auto-start-reverse'
+      markerWidth: '5', markerHeight: '5', markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse'
     }, defs);
     el('path', { d: 'M 0 0 L 10 5 L 0 10 z', fill: '#8ea1b9' }, marker);
     const currentMarker = el('marker', {
       id: 'arrow-current', viewBox: '0 0 10 10', refX: '8.5', refY: '5',
-      markerWidth: '8', markerHeight: '8', orient: 'auto-start-reverse'
+      markerWidth: '5', markerHeight: '5', markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse'
     }, defs);
     el('path', { d: 'M 0 0 L 10 5 L 0 10 z', fill: activeSignalColor }, currentMarker);
     const completeMarker = el('marker', {
       id: 'arrow-complete', viewBox: '0 0 10 10', refX: '8.5', refY: '5',
-      markerWidth: '8', markerHeight: '8', orient: 'auto-start-reverse'
+      markerWidth: '5', markerHeight: '5', markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse'
     }, defs);
     el('path', { d: 'M 0 0 L 10 5 L 0 10 z', fill: '#55d69e' }, completeMarker);
 
@@ -808,13 +868,38 @@
         motion.setAttribute('begin', '0s');
       }
       if (index < stepIndex) path.setAttribute('stroke-linecap', 'round');
+
+      const point = path.getPointAtLength(path.getTotalLength() / 2);
+      const stepMarker = el('g', {
+        class: `step-marker${isCurrent ? ' is-current' : ''}${index < stepIndex ? ' is-complete' : ''}`,
+        transform: `translate(${point.x} ${point.y})`,
+        tabindex: '0',
+        role: 'button',
+        'aria-label': `Show step ${index + 1}: ${step.title || step.data}`
+      }, svg);
+      el('circle', { r: '11' }, stepMarker);
+      text(stepMarker, String(index + 1), { x: '0', y: '0' });
+      stepMarker.addEventListener('click', () => {
+        stopPlayback();
+        stepIndex = index + 1;
+        selectedNode = null;
+        selectedArchitectureNode = null;
+        render();
+        byId('step-title').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+      stepMarker.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          stepMarker.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        }
+      });
     });
 
     const nodeGroup = el('g', {}, svg);
     item.nodes.forEach((part, index) => {
       const pos = positions[index];
       const group = el('g', {
-        class: `diagram-node${index < stepIndex ? ' is-complete' : ''}${index === Math.min(stepIndex, item.nodes.length - 1) ? ' is-active' : ''}${selectedNode === index ? ' is-selected' : ''}`,
+        class: `diagram-node${index < stepIndex ? ' is-complete' : ''}${index === Math.min(stepIndex, item.nodes.length - 1) ? ' is-active' : ''}${selectedNode === index ? ' is-selected' : ''}${part.kind.startsWith('EXTERNAL') ? ' is-external' : ''}`,
         transform: `translate(${pos.x - 105} ${pos.y - 36})`,
         tabindex: '0',
         role: 'button',
@@ -860,7 +945,7 @@
     Object.entries(markerColors).forEach(([kind, color]) => {
       const marker = el('marker', {
         id: `arrow-${kind}`, viewBox: '0 0 10 10', refX: '8.5', refY: '5',
-        markerWidth: '8', markerHeight: '8', orient: 'auto-start-reverse'
+        markerWidth: '5', markerHeight: '5', markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse'
       }, defs);
       el('path', { d: 'M 0 0 L 10 5 L 0 10 z', fill: color }, marker);
     });
@@ -869,14 +954,15 @@
     el('rect', { x: 25, y: 28, width: 1430, height: 842, rx: 16, class: 'mcu-boundary' }, enclosure);
     text(enclosure, 'STM32L476RG · CORTEX-M4F SYSTEM', { x: 52, y: 58, class: 'mcu-boundary-label' });
     text(enclosure, 'LOGICAL ON-CHIP PATHS · NOT EXTERNAL ADDRESS/DATA PINS', { x: 852, y: 58, class: 'bus-caption' });
+    text(enclosure, 'EXTERNAL BOARD / LAB EQUIPMENT', { x: 1490, y: 58, class: 'external-board-label' });
 
     const wiresGroup = el('g', { 'aria-hidden': 'true' }, architectureSvg);
     diagram.wires.forEach((wire) => {
       const points = wire.points.map(([x, y]) => `${x},${y}`).join(' ');
-      const active = selectedFlowContext.edges.includes(wire.edge);
+      const active = wire.external || selectedFlowContext.edges.includes(wire.edge);
       const path = el('polyline', {
         points,
-        class: `bus-wire ${wire.kind}${active ? ' is-context' : ''}`,
+        class: `bus-wire ${wire.kind}${active ? ' is-context' : ''}${wire.external ? ' is-external' : ''}`,
         'marker-end': `url(#arrow-${wire.kind})`,
         'data-edge': wire.edge
       }, wiresGroup);
@@ -894,7 +980,7 @@
       const current = selectedFlowContext.nodes.includes(component.node);
       const selected = selectedArchitectureNode === component.node;
       const group = el('g', {
-        class: `arch-block${current ? ' is-context' : ''}${selected ? ' is-selected' : ''}`,
+        class: `arch-block${current ? ' is-context' : ''}${selected ? ' is-selected' : ''}${component.external ? ' is-external' : ''}`,
         transform: `translate(${component.x} ${component.y})`,
         tabindex: '0',
         role: 'button',
@@ -982,14 +1068,18 @@
   function updateStep(item) {
     const finished = stepIndex >= item.edges.length;
     const displayedEdge = stepIndex > 0 ? item.edges[stepIndex - 1] : null;
-    const currentSource = displayedEdge ? item.nodes[item.edges.indexOf(displayedEdge)] : item.nodes[0];
+    const displayedEdgeIndex = displayedEdge ? item.edges.indexOf(displayedEdge) : -1;
+    const currentSource = displayedEdge
+      ? item.nodes[displayedEdge.from ?? displayedEdgeIndex]
+      : item.nodes[0];
     const currentDestination = displayedEdge
-      ? item.nodes[item.edges.indexOf(displayedEdge) + 1]
+      ? item.nodes[displayedEdge.to ?? displayedEdgeIndex + 1]
       : item.nodes[0];
     const visibleStep = finished ? item.edges.length : stepIndex;
 
     byId('flow-number').textContent = `FLOW ${String(selectedFlow + 2).padStart(2, '0')} / ${flows.length + 1}`;
     byId('flow-title').textContent = item.title;
+    byId('detailed-flow-title').textContent = item.title;
     byId('flow-summary').textContent = item.summary;
     byId('flow-type').textContent = item.type;
     byId('step-count').textContent = finished
@@ -1019,7 +1109,7 @@
     const percent = item.edges.length ? Math.round((stepIndex / item.edges.length) * 100) : 100;
     byId('step-progress-fill').style.width = `${percent}%`;
     progressBar.setAttribute('aria-valuenow', String(percent));
-    byId('diagram-description').textContent = `${item.nodes.map((part) => part.label).join(' to ')}. ${finished ? 'Flow complete.' : `Step ${visibleStep} of ${item.edges.length}.`}`;
+    byId('diagram-description').textContent = `${item.nodes.map((part) => part.label).join(' to ')}. Numbered circles select steps. ${finished ? 'Flow complete.' : `Step ${visibleStep} of ${item.edges.length}.`}`;
     document.querySelectorAll('.flow-link').forEach((button) => {
       button.setAttribute('aria-current', Number(button.dataset.flowIndex) === selectedFlow ? 'page' : 'false');
     });
@@ -1036,6 +1126,7 @@
     renderFlowPrompt(item);
     renderArchitectureDiagram(architectureFlow);
     renderDiagram(item);
+    byId('memory-image-panel').hidden = item.title !== 'Flash and SRAM layout';
     updateStep(item);
     if (selectedNode !== null) inspectNode(selectedNode);
     else if (selectedArchitectureNode !== null) inspectArchitectureNode(selectedArchitectureNode);
