@@ -1,0 +1,294 @@
+{% extends 'tailwind_base.html' %}
+{% load static %}
+
+{% block title %}{{ group_title }} | Apt Computing Labs{% endblock %}
+
+{% block meta %}
+<meta name="description" content="STM32, embedded C, Cortex-M, Rust and automotive engineering learning path at Apt Computing Labs.">
+{% endblock %}
+
+{% block content %}
+<main>
+    <section class="relative overflow-hidden bg-brand-navy pt-36 pb-20 text-white">
+        <div class="absolute inset-0 opacity-20" aria-hidden="true"
+             style="background: radial-gradient(circle at 80% 20%, #FF5B5B, transparent 34%), radial-gradient(circle at 20% 90%, #48B7D8, transparent 32%);"></div>
+        <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <p class="mb-4 text-sm font-bold uppercase tracking-[.2em] text-cyan-200">ACL Embedded Engineering Path</p>
+            <h1 class="max-w-4xl text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">{{ group_title }}</h1>
+            <p class="mt-6 max-w-3xl text-lg leading-8 text-blue-100">
+                A connected learning path from Cortex-M architecture and STM32 firmware to embedded Rust,
+                visual system flows and substantial engineering projects.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3">
+                <a href="#courses" class="rounded-full bg-white px-6 py-3 font-bold text-brand-navy hover:bg-cyan-100">Explore the four courses</a>
+                <a href="#projects" class="rounded-full border border-white/40 px-6 py-3 font-bold text-white hover:bg-white/10">See ACL project tracks</a>
+            </div>
+        </div>
+    </section>
+
+    {% if messages %}
+    <div class="mx-auto max-w-7xl space-y-3 px-4 pt-6 sm:px-6 lg:px-8" aria-live="polite">
+        {% for message in messages %}
+        <div class="rounded-xl border px-4 py-3 text-sm {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-900{% elif message.tags == 'warning' %}border-amber-200 bg-amber-50 text-amber-900{% else %}border-red-200 bg-red-50 text-red-900{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="mx-auto max-w-7xl space-y-20 px-4 py-16 sm:px-6 lg:px-8">
+        <section id="courses" aria-labelledby="courses-heading">
+            <div class="mb-8 max-w-3xl">
+                <p class="font-bold uppercase tracking-widest text-brand-coral">The learning path</p>
+                <h2 id="courses-heading" class="mt-2 text-3xl font-extrabold text-brand-navy">Four connected courses</h2>
+                <p class="mt-3 leading-7 text-brand-textSecondary">Start with the processor model, build firmware in C, compare safe systems programming in Rust, and use visualisation to reason about how the MCU works.</p>
+            </div>
+            <div class="grid gap-6 md:grid-cols-2">
+                {% for course in group_courses %}
+                <article class="flex h-full flex-col rounded-3xl border border-gray-100 bg-white p-7 shadow-premium">
+                    <div class="mb-4 flex items-center gap-3">
+                        <span class="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-xl text-blue-700" aria-hidden="true">
+                            {% if course.slug == 'embedded-rust-with-stm32' %}<i class="fas fa-cube"></i>
+                            {% elif course.slug == 'visualise-stm32' %}<i class="fas fa-diagram-project"></i>
+                            {% elif course.slug == 'arm-cortex-m-architecture' %}<i class="fas fa-microchip"></i>
+                            {% else %}<i class="fas fa-code"></i>{% endif %}
+                        </span>
+                        <span class="text-xs font-bold uppercase tracking-widest text-brand-coral">Course</span>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-brand-navy">{{ course.group_display_title }}</h3>
+                    <p class="mt-3 flex-grow leading-7 text-brand-textSecondary">{{ course.short_description|default:course.description|truncatewords:28 }}</p>
+                    <div class="mt-6 flex flex-wrap gap-3">
+                        <a href="{% url 'courses:detail' course.slug %}" class="rounded-full bg-brand-navy px-5 py-2.5 text-sm font-bold text-white hover:bg-brand-coral">Course overview</a>
+                        {% if course.slug == 'arm-cortex-m-architecture' %}
+                        <a href="{% url 'courses:cortexm_book_index' %}" class="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Open manual</a>
+                        {% elif course.slug == 'stm32-firmware-development-with-c' %}
+                        <a href="{% url 'courses:stm32_c_book_index' %}" class="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Open manual</a>
+                        {% elif course.slug == 'embedded-rust-with-stm32' %}
+                        <a href="{% url 'courses:stm32_rust_book_index' %}" class="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Open manual</a>
+                        {% elif course.slug == 'visualise-stm32' %}
+                        <a href="{% url 'courses:visualise_stm32_book_index' %}" class="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Open visualiser</a>
+                        {% endif %}
+                    </div>
+                </article>
+                {% empty %}
+                <p class="rounded-2xl bg-white p-6 text-brand-textSecondary">The group course pages are being prepared. Please check the main <a class="font-bold text-brand-navy underline" href="{% url 'courses:list' %}">course list</a>.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section id="install" aria-labelledby="install-heading">
+            <div class="mb-8 max-w-3xl">
+                <p class="font-bold uppercase tracking-widest text-brand-coral">Prepare your workstation</p>
+                <h2 id="install-heading" class="mt-2 text-3xl font-extrabold text-brand-navy">What to install</h2>
+                <p class="mt-3 leading-7 text-brand-textSecondary">Follow the steps for your operating system. The visualiser and manuals need only a modern browser; install the C or Rust toolchain when you are ready to build firmware. Commands below are run in Terminal (macOS/Linux) or PowerShell (Windows), unless noted.</p>
+            </div>
+            <div class="grid gap-6 lg:grid-cols-3">
+                <article class="rounded-3xl border border-gray-100 bg-white p-6 shadow-premium">
+                    <h3 class="text-xl font-extrabold text-brand-navy"><i class="fab fa-apple mr-2" aria-hidden="true"></i>macOS</h3>
+                    <ol class="mt-4 list-decimal space-y-4 pl-5 leading-6 text-brand-textSecondary">
+                        <li><strong>Install Apple's command-line tools.</strong> Open Terminal and run:
+                            <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>xcode-select --install
+xcode-select -p
+git --version</code></pre>
+                            Accept the installer prompt. Git should print a version; the developer directory should be printed by the second command.
+                        </li>
+                        <li><strong>Install VS Code.</strong> Download it from <a class="font-semibold text-brand-navy underline" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">code.visualstudio.com</a>, move it to Applications, then in VS Code open the Command Palette and run <em>Shell Command: Install 'code' command in PATH</em>. Open a new Terminal and verify:
+                            <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>code --version</code></pre>
+                        </li>
+                        <li><strong>Install ST's C, configuration, and flash tools.</strong> Download and install <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeide.html" target="_blank" rel="noopener noreferrer">STM32CubeIDE</a> and <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeprog.html" target="_blank" rel="noopener noreferrer">STM32CubeProgrammer</a> for your macOS version. STM32CubeIDE includes the STM32CubeMX graphical configuration/code-generation workflow, so a separate CubeMX install is not needed for this course. Create a project in CubeIDE, open its <code>.ioc</code> configuration, generate code, and build; the Console should report <em>Build Finished</em> with no errors. Follow any ST-LINK or macOS security prompts. If you use another IDE/toolchain instead, install standalone <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubemx.html" target="_blank" rel="noopener noreferrer">STM32CubeMX</a> separately.
+                        </li>
+                        <li><strong>Optional: set up Rust.</strong> Install Rust with rustup, then add the course target and probe tools:
+                            <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
+rustup default stable
+rustup target add thumbv7em-none-eabihf
+cargo install probe-rs-tools --locked
+rustc --version
+rustup target list --installed
+probe-rs --version</code></pre>
+                            The installed-target list must include <code>thumbv7em-none-eabihf</code>.
+                        </li>
+                    </ol>
+                </article>
+                <article class="rounded-3xl border border-gray-100 bg-white p-6 shadow-premium">
+                    <h3 class="text-xl font-extrabold text-brand-navy"><i class="fab fa-linux mr-2" aria-hidden="true"></i>Linux</h3>
+                    <ol class="mt-4 list-decimal space-y-4 pl-5 leading-6 text-brand-textSecondary">
+                        <li><strong>Install the common command-line tools</strong> (Debian/Ubuntu):
+                            <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>sudo apt update
+sudo apt install -y git build-essential cmake ninja-build pkg-config libudev-dev usbutils
+git --version
+gcc --version</code></pre>
+                            For another distribution, use its package manager to install the equivalent packages. Install <a class="font-semibold text-brand-navy underline" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">VS Code</a> using the official package/instructions for that distribution, then verify with <code>code --version</code>.
+                        </li>
+                        <li><strong>Install ST's C, configuration, and flash tools.</strong> Download <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeide.html" target="_blank" rel="noopener noreferrer">STM32CubeIDE</a> and <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeprog.html" target="_blank" rel="noopener noreferrer">STM32CubeProgrammer</a> for your distribution and follow ST's installer instructions. CubeIDE includes the STM32CubeMX graphical configuration/code-generation workflow; you do not need to install CubeMX separately when using CubeIDE. Create a project, open its <code>.ioc</code> configuration, generate code, then build and confirm <em>Build Finished</em> with no errors. If you use another IDE/toolchain, install standalone <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubemx.html" target="_blank" rel="noopener noreferrer">STM32CubeMX</a>.
+                        </li>
+                        <li><strong>Allow normal USB access to ST-LINK.</strong> Apply ST's udev rules as directed by the installed ST package/documentation, then reload rules and reconnect the board:
+                            <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>sudo udevadm control --reload-rules
+sudo udevadm trigger
+lsusb</code></pre>
+                            With the board connected, check that it appears in <code>lsusb</code>. Do not run CubeIDE or probe-rs with <code>sudo</code> to bypass permissions.
+                        </li>
+                        <li><strong>Optional: set up Rust.</strong> Install rustup from <a class="font-semibold text-brand-navy underline" href="https://rustup.rs/" target="_blank" rel="noopener noreferrer">rustup.rs</a>, then run:
+                            <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>rustup default stable
+rustup target add thumbv7em-none-eabihf
+cargo install probe-rs-tools --locked
+rustc --version
+rustup target list --installed
+probe-rs --version
+probe-rs list</code></pre>
+                            The target must appear in the installed-target list; with a connected board, <code>probe-rs list</code> should find its probe.
+                        </li>
+                    </ol>
+                </article>
+                <article class="rounded-3xl border border-gray-100 bg-white p-6 shadow-premium">
+                    <h3 class="text-xl font-extrabold text-brand-navy"><i class="fab fa-windows mr-2" aria-hidden="true"></i>Windows</h3>
+                    <ol class="mt-4 list-decimal space-y-4 pl-5 leading-6 text-brand-textSecondary">
+                        <li><strong>Install Git and VS Code.</strong> Use the official <a class="font-semibold text-brand-navy underline" href="https://git-scm.com/download/win" target="_blank" rel="noopener noreferrer">Git for Windows</a> and <a class="font-semibold text-brand-navy underline" href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">VS Code</a> installers. Open a new PowerShell window and verify:
+                            <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>git --version
+code --version</code></pre>
+                        </li>
+                        <li><strong>Install ST's C, configuration, and flash tools.</strong> Download and install <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeide.html" target="_blank" rel="noopener noreferrer">STM32CubeIDE</a> and <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubeprog.html" target="_blank" rel="noopener noreferrer">STM32CubeProgrammer</a> using their Windows installers. CubeIDE includes the STM32CubeMX graphical configuration/code-generation workflow, so a separate CubeMX install is not needed for this course. Create a project, open its <code>.ioc</code> configuration, generate code, and build; confirm <em>Build Finished</em> with no errors. If you use another IDE/toolchain, install standalone <a class="font-semibold text-brand-navy underline" href="https://www.st.com/en/development-tools/stm32cubemx.html" target="_blank" rel="noopener noreferrer">STM32CubeMX</a>.
+                        </li>
+                        <li><strong>Optional: set up Rust.</strong> Install rustup for the MSVC host from <a class="font-semibold text-brand-navy underline" href="https://rustup.rs/" target="_blank" rel="noopener noreferrer">rustup.rs</a>. When prompted, install the Visual Studio C++ Build Tools and Windows SDK prerequisites, then open a new PowerShell window and run:
+                            <pre class="mt-2 overflow-x-auto rounded-xl bg-slate-950 p-3 font-mono text-xs text-white"><code>rustup default stable
+rustup target add thumbv7em-none-eabihf
+cargo install probe-rs-tools --locked
+rustc --version
+rustup target list --installed
+probe-rs --version</code></pre>
+                            The installed-target list must include <code>thumbv7em-none-eabihf</code>.
+                        </li>
+                        <li><strong>Check the ST-LINK driver.</strong> Connect the board and open Device Manager. Confirm the ST-LINK device appears without a warning icon; install the driver from ST's CubeProgrammer package if Windows does not recognise it.
+                        </li>
+                    </ol>
+                </article>
+            </div>
+            <div class="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-5 text-sm leading-6 text-blue-950">
+                <strong>What success looks like:</strong> Git and VS Code print version numbers, CubeIDE builds a sample project without errors, Rust's installed-target list includes <code>thumbv7em-none-eabihf</code>, and (when a board is connected) CubeProgrammer or <code>probe-rs list</code> detects ST-LINK. Restart the terminal after installing command-line tools if a command is not found. Install Zephyr SDK, <code>west</code>, and simulator dependencies only when beginning a Zephyr project; follow that project's README for the supported versions.
+            </div>
+        </section>
+
+        <section id="hardware" aria-labelledby="hardware-heading">
+            <div class="mb-8 max-w-3xl">
+                <p class="font-bold uppercase tracking-widest text-brand-coral">Bench setup</p>
+                <h2 id="hardware-heading" class="mt-2 text-3xl font-extrabold text-brand-navy">Hardware list</h2>
+                <p class="mt-3 leading-7 text-brand-textSecondary">The manuals use the NUCLEO-F446RE as the main C/Cortex-M/Rust board. Visualise STM32 identifies an STM32L476RG-style target; treat that visualiser as a conceptual architecture guide unless you also have an L476 board.</p>
+            </div>
+            <div class="grid gap-6 md:grid-cols-2">
+                <article class="rounded-3xl bg-white p-7 shadow-premium">
+                    <h3 class="text-lg font-extrabold text-brand-navy">Required to follow board exercises</h3>
+                    <ul class="mt-4 space-y-3 text-brand-textSecondary">
+                        <li><i class="fas fa-check mr-2 text-green-600" aria-hidden="true"></i>NUCLEO-F446RE development board with its integrated ST-LINK debugger.</li>
+                        <li><i class="fas fa-check mr-2 text-green-600" aria-hidden="true"></i>USB data cable compatible with the board connector, plus a computer that can run the toolchains.</li>
+                        <li><i class="fas fa-check mr-2 text-green-600" aria-hidden="true"></i>Web browser for the architecture visualiser and course manuals.</li>
+                    </ul>
+                </article>
+                <article class="rounded-3xl bg-white p-7 shadow-premium">
+                    <h3 class="text-lg font-extrabold text-brand-navy">Recommended for project work</h3>
+                    <ul class="mt-4 space-y-3 text-brand-textSecondary">
+                        <li><i class="fas fa-plus mr-2 text-blue-600" aria-hidden="true"></i>Breadboard, jumper wires and basic LEDs/resistors.</li>
+                        <li><i class="fas fa-plus mr-2 text-blue-600" aria-hidden="true"></i>3.3 V-compatible button/sensor modules; check board pin limits before wiring.</li>
+                        <li><i class="fas fa-plus mr-2 text-blue-600" aria-hidden="true"></i>Optional USB-UART adapter, logic analyser and CAN transceiver for projects that need them.</li>
+                        <li><i class="fas fa-plus mr-2 text-blue-600" aria-hidden="true"></i>For matching Visualise STM32's target, an STM32L476RG board such as NUCLEO-L476RG is optional; it is not required to use the visualiser.</li>
+                    </ul>
+                </article>
+            </div>
+            <p class="mt-4 text-sm leading-6 text-brand-textSecondary">Do not connect 5 V signals directly to MCU pins unless the specific pin's electrical limits and interface circuit explicitly allow it. Automotive and CAN projects require a separate CAN transceiver; the MCU's CAN controller pins are not a vehicle bus interface.</p>
+        </section>
+
+        <section id="expectations" aria-labelledby="expectations-heading">
+            <div class="mb-8 max-w-3xl">
+                <p class="font-bold uppercase tracking-widest text-brand-coral">How we work</p>
+                <h2 id="expectations-heading" class="mt-2 text-3xl font-extrabold text-brand-navy">Expectations from the group</h2>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <article class="rounded-2xl border border-gray-100 bg-white p-5"><h3 class="font-bold text-brand-navy">Build, don't just watch</h3><p class="mt-2 text-sm leading-6 text-brand-textSecondary">Follow the course material, run the code, and keep a working repository of your own.</p></article>
+                <article class="rounded-2xl border border-gray-100 bg-white p-5"><h3 class="font-bold text-brand-navy">Show engineering evidence</h3><p class="mt-2 text-sm leading-6 text-brand-textSecondary">Bring logs, diagrams, commits, test results and short design notes when asking for review.</p></article>
+                <article class="rounded-2xl border border-gray-100 bg-white p-5"><h3 class="font-bold text-brand-navy">Collaborate respectfully</h3><p class="mt-2 text-sm leading-6 text-brand-textSecondary">Share useful feedback, explain assumptions, and help peers reason through faults without sharing credentials or private data.</p></article>
+                <article class="rounded-2xl border border-gray-100 bg-white p-5"><h3 class="font-bold text-brand-navy">Own your setup</h3><p class="mt-2 text-sm leading-6 text-brand-textSecondary">Install tools before project sessions, check board connectivity, and report OS/tool versions when debugging.</p></article>
+                <article class="rounded-2xl border border-gray-100 bg-white p-5"><h3 class="font-bold text-brand-navy">Think about safety and security</h3><p class="mt-2 text-sm leading-6 text-brand-textSecondary">Prototype responsibly. Do not connect experimental firmware to real vehicles, industrial equipment, or safety-critical systems.</p></article>
+                <article class="rounded-2xl border border-gray-100 bg-white p-5"><h3 class="font-bold text-brand-navy">Complete a project outcome</h3><p class="mt-2 text-sm leading-6 text-brand-textSecondary">Work toward a documented, demonstrated engineering deliverable—not only a collection of isolated lab exercises.</p></article>
+            </div>
+        </section>
+
+        <section id="projects" aria-labelledby="projects-heading">
+            <div class="mb-8 max-w-3xl">
+                <p class="font-bold uppercase tracking-widest text-brand-coral">ACL project tracks</p>
+                <h2 id="projects-heading" class="mt-2 text-3xl font-extrabold text-brand-navy">Engineering projects, not just lab sessions</h2>
+                <p class="mt-3 leading-7 text-brand-textSecondary">Each track is framed around a system, an engineering question and reviewable deliverables. Work with simulated systems or bench prototypes; these are educational prototypes, not production or safety certifications.</p>
+            </div>
+            <div class="grid gap-6 lg:grid-cols-2">
+                <article class="rounded-3xl border border-gray-100 bg-white p-7 shadow-premium">
+                    <span class="text-sm font-bold uppercase tracking-widest text-brand-coral">Automotive cybersecurity</span>
+                    <h3 class="mt-3 text-xl font-extrabold text-brand-navy">Secure CAN gateway and intrusion monitor</h3>
+                    <p class="mt-3 leading-7 text-brand-textSecondary">Design a simulated ECU network, define a threat model, validate message IDs and rates, detect replay/anomalous traffic, and record security events. Exercise diagnostic and update-integrity ideas in a contained simulation.</p>
+                    <p class="mt-4 text-sm font-semibold text-brand-navy">Deliverables: architecture and threat model, testable gateway firmware, attack/defence test cases, and a measured security report.</p>
+                </article>
+                <article class="rounded-3xl border border-gray-100 bg-white p-7 shadow-premium">
+                    <span class="text-sm font-bold uppercase tracking-widest text-brand-coral">Zephyr + industrial automation</span>
+                    <h3 class="mt-3 text-xl font-extrabold text-brand-navy">Simulated production cell controller</h3>
+                    <p class="mt-3 leading-7 text-brand-textSecondary">Build a Zephyr-based control node for a simulated conveyor/process. Model sensors and actuators, schedule independent tasks, implement a fault-aware state machine, and exchange telemetry with a host-side simulation.</p>
+                    <p class="mt-4 text-sm font-semibold text-brand-navy">Deliverables: system model, Zephyr application, simulation interface, timing/fault tests, and an operator-facing demonstration.</p>
+                </article>
+                <article class="rounded-3xl border border-gray-100 bg-white p-7 shadow-premium">
+                    <span class="text-sm font-bold uppercase tracking-widest text-brand-coral">Simulation + embedded systems</span>
+                    <h3 class="mt-3 text-xl font-extrabold text-brand-navy">Virtual ECU network and diagnostics bench</h3>
+                    <p class="mt-3 leading-7 text-brand-textSecondary">Create multiple simulated nodes and a gateway, exercise startup, timeouts, diagnostics and bus faults, then compare observable traces with the firmware's expected state transitions.</p>
+                    <p class="mt-4 text-sm font-semibold text-brand-navy">Deliverables: executable simulation, protocol/sequence documentation, automated regression tests, and trace-based fault analysis.</p>
+                </article>
+                <article class="rounded-3xl border border-gray-100 bg-white p-7 shadow-premium">
+                    <span class="text-sm font-bold uppercase tracking-widest text-brand-coral">Industrial condition monitoring</span>
+                    <h3 class="mt-3 text-xl font-extrabold text-brand-navy">Sensor-to-edge monitoring node</h3>
+                    <p class="mt-3 leading-7 text-brand-textSecondary">Acquire simulated or bench sensor samples using timer-triggered ADC and DMA, calculate health indicators, handle missing/out-of-range data, and publish structured telemetry.</p>
+                    <p class="mt-4 text-sm font-semibold text-brand-navy">Deliverables: acquisition pipeline, fault-injection plan, repeatable tests, and a dashboard or CLI demonstration.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="feedback" aria-labelledby="feedback-heading" class="rounded-3xl bg-brand-navy p-7 text-white sm:p-10">
+            <div class="grid gap-10 lg:grid-cols-[.8fr_1.2fr]">
+                <div>
+                    <p class="font-bold uppercase tracking-widest text-cyan-200">Help improve the group</p>
+                    <h2 id="feedback-heading" class="mt-2 text-3xl font-extrabold">Feedback &amp; suggestions</h2>
+                    <p class="mt-4 leading-7 text-blue-100">Tell us what is useful, what is missing, or which project you would like to pursue. We verify your email before saving a submission. Feedback is not displayed publicly.</p>
+                    <p class="mt-4 text-sm text-blue-100">A short verification code is emailed to you and expires after 10 minutes. Verified submissions are available to ACL staff in the site administration.</p>
+                </div>
+                <form method="post" action="{% url feedback_form_action %}" class="space-y-4 rounded-2xl bg-white p-6 text-brand-navy sm:p-7">
+                    {% csrf_token %}
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="feedback-name" class="mb-1 block text-sm font-bold">Name *</label>
+                            <input id="feedback-name" name="name" type="text" maxlength="100" autocomplete="name" required class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-brand-navy">
+                        </div>
+                        <div>
+                            <label for="feedback-email" class="mb-1 block text-sm font-bold">Email for verification *</label>
+                            <input id="feedback-email" name="email" type="email" maxlength="254" autocomplete="email" required class="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-brand-navy">
+                        </div>
+                    </div>
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label for="feedback-course" class="mb-1 block text-sm font-bold">Course (optional)</label>
+                            <select id="feedback-course" name="course" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:border-brand-navy">
+                                <option value="">Whole group</option>
+                                {% for value, label in feedback_courses %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="feedback-topic" class="mb-1 block text-sm font-bold">Topic *</label>
+                            <select id="feedback-topic" name="topic" required class="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:border-brand-navy">
+                                {% for value, label in feedback_topics %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="feedback-message" class="mb-1 block text-sm font-bold">Feedback or suggestion *</label>
+                        <textarea id="feedback-message" name="message" rows="5" maxlength="3000" required class="w-full resize-y rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-brand-navy" placeholder="Describe your suggestion, project idea, or setup issue. Please do not include passwords, tokens, or other secrets."></textarea>
+                    </div>
+                    <p class="text-xs leading-5 text-gray-500">By submitting, you agree that ACL may use this feedback to improve the group and contact you about your submission. Your email is verified before the feedback is stored.</p>
+                    <button type="submit" class="rounded-full bg-brand-coral px-6 py-3 font-bold text-white hover:bg-red-600">Email me a verification code</button>
+                </form>
+            </div>
+        </section>
+    </div>
+</main>
+{% endblock %}

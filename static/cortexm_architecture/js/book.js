@@ -87,6 +87,72 @@
     const toggleBtn = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('book-sidebar');
     if (!sidebar) return;
+    const sidebarNav = sidebar.querySelector('.sidebar-nav');
+    const chapterPath = window.location.pathname.split('/chapters/')[0].replace(/\/+$/, '') || '/';
+    const sidebarStateKey = `acl_book_sidebar_state:${chapterPath}`;
+
+    function saveNavigationState(link = null) {
+      if (!sidebarNav) return;
+      try {
+        const previousState = JSON.parse(sessionStorage.getItem(sidebarStateKey) || 'null');
+        const navRect = sidebarNav.getBoundingClientRect();
+        const linkOffset = link
+          ? link.getBoundingClientRect().top - navRect.top
+          : null;
+        sessionStorage.setItem(sidebarStateKey, JSON.stringify({
+          scrollTop: sidebarNav.scrollTop,
+          anchorHref: link?.getAttribute('href') || previousState?.anchorHref || null,
+          anchorOffset: link ? linkOffset : previousState?.anchorOffset ?? null,
+          collapsedGroups: Array.from(sidebarNav.querySelectorAll('.nav-module-group'))
+            .map((group, index) => group.classList.contains('collapsed') ? index : null)
+            .filter(index => index !== null)
+        }));
+      } catch (error) {
+        console.warn('Could not preserve course navigation state', error);
+      }
+    }
+
+    function syncModuleButton(group) {
+      const button = group.querySelector('.module-title-btn');
+      if (button) button.setAttribute('aria-expanded', String(!group.classList.contains('collapsed')));
+    }
+
+    if (sidebarNav) {
+      try {
+        const savedState = JSON.parse(sessionStorage.getItem(sidebarStateKey) || 'null');
+        if (savedState) {
+          const collapsedGroups = new Set(savedState.collapsedGroups || []);
+          sidebarNav.querySelectorAll('.nav-module-group').forEach((group, index) => {
+            group.classList.toggle('collapsed', collapsedGroups.has(index));
+            syncModuleButton(group);
+          });
+          const activeGroup = sidebarNav.querySelector('.chapter-nav-item.active')?.closest('.nav-module-group');
+          if (activeGroup) {
+            activeGroup.classList.remove('collapsed');
+            syncModuleButton(activeGroup);
+          }
+          requestAnimationFrame(() => {
+            sidebarNav.scrollTop = Number(savedState.scrollTop) || 0;
+            requestAnimationFrame(() => {
+              if (!savedState.anchorHref || savedState.anchorOffset === null) return;
+              const anchor = Array.from(sidebarNav.querySelectorAll('a.chapter-nav-item, a.subtopic-link'))
+                .find(link => link.getAttribute('href') === savedState.anchorHref);
+              if (!anchor) return;
+              const navTop = sidebarNav.getBoundingClientRect().top;
+              const anchorOffset = anchor.getBoundingClientRect().top - navTop;
+              sidebarNav.scrollTop += anchorOffset - Number(savedState.anchorOffset);
+            });
+          });
+        }
+      } catch (error) {
+        console.warn('Could not restore course navigation state', error);
+      }
+
+      sidebarNav.querySelectorAll('a.chapter-nav-item, a.subtopic-link').forEach(link => {
+        link.addEventListener('click', () => saveNavigationState(link));
+      });
+      window.addEventListener('pagehide', saveNavigationState);
+    }
 
     // Create floating unhide tab if not present
     let floatingTab = document.getElementById('sidebar-floating-tab');
@@ -184,11 +250,26 @@
 
     // Module collapse toggles
     document.querySelectorAll('.module-title-btn').forEach(btn => {
+      const group = btn.closest('.nav-module-group');
+      if (group) syncModuleButton(group);
       btn.addEventListener('click', () => {
-        const group = btn.closest('.nav-module-group');
-        if (group) group.classList.toggle('collapsed');
+        if (group) {
+          group.classList.toggle('collapsed');
+          syncModuleButton(group);
+          saveNavigationState();
+        }
       });
     });
+  }
+
+  function initPlatformNote() {
+    const main = document.querySelector('.main-content');
+    if (!main || main.querySelector('.platform-note')) return;
+    const note = document.createElement('aside');
+    note.className = 'platform-note';
+    note.setAttribute('role', 'note');
+    note.innerHTML = '<strong>Board portability:</strong> The NUCLEO-F446RE (Cortex-M4F) is a reference board for selected hands-on examples, not a requirement for every lesson. Cortex-M architecture concepts apply across Cortex-M processors; STM32 peripheral and RTOS examples transfer only where equivalent hardware and software support exist. Pins, clocks, memory maps, peripheral instances, interrupt numbering, startup files, board support/DeviceTree, and wiring vary; verify against your exact MCU reference manual, datasheet, RTOS/SDK documentation, and board schematic.';
+    main.prepend(note);
   }
 
   // --- Code Copy Buttons ---
@@ -997,6 +1078,7 @@
   // --- Global Initialization ---
   document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    initPlatformNote();
     const themeBtn = document.getElementById('theme-toggle-btn');
     if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 

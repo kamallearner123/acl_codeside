@@ -11,48 +11,69 @@
         </div>
     </div>
 
-    <!-- Courses Grid -->
-    <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for course in courses %}
-            <a href="{% url 'courses:detail' course.slug %}" class="block group">
-                <div class="bg-white rounded-3xl p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-2 border border-gray-50 h-full flex flex-col">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:bg-brand-navy transition-colors duration-300">
-                            <!-- Placeholder icon based on tech, could use image if available -->
-                            <i class="fas fa-book-open text-2xl text-blue-600 group-hover:text-white transition-colors duration-300"></i>
-                        </div>
-                        <span class="inline-block px-3 py-1 bg-gray-50 rounded-full text-xs font-bold text-brand-navy border border-gray-100">
-                            {% if course.duration_weeks %}{{ course.duration_weeks }} WEEKS{% else %}{{ course.duration_hours }} HOURS{% endif %}
-                        </span>
-                    </div>
-                    
-                    <h3 class="text-xl font-bold text-brand-navy mb-3 group-hover:text-brand-coral transition-colors">{{ course.title }}</h3>
-                    
-                    <p class="text-sm text-brand-textSecondary mb-6 flex-grow">
-                        {{ course.short_description|default:course.description|truncatewords:20 }}
-                    </p>
-                    
-                    <div class="flex items-center justify-between mt-auto">
-                        <div class="flex flex-wrap gap-2">
-                            {% if course.skill_level %}
-                            <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">{{ course.skill_level }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="text-brand-coral opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </div>
+    <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen space-y-16">
+        {% for group in course_groups %}
+        <section aria-labelledby="course-group-{{ forloop.counter }}">
+            <div class="flex items-start gap-4 mb-8">
+                <div class="w-12 h-12 shrink-0 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center">
+                    <i class="fas {{ group.icon }} text-xl" aria-hidden="true"></i>
                 </div>
-            </a>
-            {% empty %}
-            <div class="col-span-3 text-center py-20">
-                <i class="fas fa-folder-open text-6xl text-gray-200 mb-4"></i>
-                <h3 class="text-2xl font-bold text-brand-navy">No courses available yet</h3>
-                <p class="text-brand-textSecondary mt-2">Check back later for exciting new programs.</p>
+                <div>
+                    <h2 id="course-group-{{ forloop.counter }}" class="text-2xl md:text-3xl font-extrabold text-brand-navy">
+                        {{ group.title }}
+                    </h2>
+                    <p class="text-brand-textSecondary mt-1">
+                        {{ group.courses|length }} course{{ group.courses|length|pluralize }}
+                    </p>
+                </div>
+                {% if group.url_name %}
+                <a href="{% url group.url_name %}" class="ml-auto inline-flex items-center gap-2 rounded-full bg-brand-navy px-5 py-3 text-sm font-bold text-white hover:bg-brand-coral transition-colors">
+                    Group resources <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </a>
+                {% endif %}
             </div>
-            {% endfor %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for course in group.courses %}
+                <a href="{% url 'courses:detail' course.slug %}" class="block group">
+                    <div class="bg-white rounded-3xl p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 transform hover:-translate-y-2 border border-gray-50 h-full flex flex-col">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:bg-brand-navy transition-colors duration-300">
+                                <i class="fas fa-book-open text-2xl text-blue-600 group-hover:text-white transition-colors duration-300" aria-hidden="true"></i>
+                            </div>
+                            <span class="inline-block px-3 py-1 bg-gray-50 rounded-full text-xs font-bold text-brand-navy border border-gray-100">
+                                {% if course.duration_weeks %}{{ course.duration_weeks }} WEEKS{% else %}{{ course.duration_hours }} HOURS{% endif %}
+                            </span>
+                        </div>
+
+                        <h3 class="text-xl font-bold text-brand-navy mb-3 group-hover:text-brand-coral transition-colors">{{ course.title }}</h3>
+
+                        <p class="text-sm text-brand-textSecondary mb-6 flex-grow">
+                            {{ course.short_description|default:course.description|truncatewords:20 }}
+                        </p>
+
+                        <div class="flex items-center justify-between mt-auto">
+                            <div class="flex flex-wrap gap-2">
+                                {% if course.skill_level %}
+                                <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">{{ course.skill_level }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="text-brand-coral opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 duration-300">
+                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% empty %}
+        <div class="text-center py-20">
+            <i class="fas fa-folder-open text-6xl text-gray-200 mb-4" aria-hidden="true"></i>
+            <h3 class="text-2xl font-bold text-brand-navy">No courses available yet</h3>
+            <p class="text-brand-textSecondary mt-2">Check back later for exciting new programs.</p>
         </div>
+        {% endfor %}
     </div>
 
 {% endblock %}

@@ -276,7 +276,7 @@ body {
 
 /* Board Selector */
 .board-select-container {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 0.4rem;
   background: var(--bg-tertiary);
@@ -345,7 +345,7 @@ body {
   width: var(--sidebar-width);
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border-subtle);
-  overflow-y: auto;
+  overflow: hidden;
   overscroll-behavior: contain;
   position: fixed;
   top: var(--header-height);
@@ -464,6 +464,10 @@ body.sidebar-hidden .sidebar-floating-tab {
 .sidebar-nav {
   padding: 0.75rem 0.5rem 2rem;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .nav-module-group {
@@ -1899,5 +1903,4 @@ section[id] {
     text-align: center;
   }
 }
-
 

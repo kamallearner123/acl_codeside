@@ -13,9 +13,50 @@ import time
 import logging
 from django.conf import settings
 from django.views.static import serve
-from .models import Course
+from .models import Course, GroupFeedback
 
 logger = logging.getLogger(__name__)
+
+COURSE_GROUPS = (
+    {
+        'title': 'STM32+C+Rust+Autmotive',
+        'icon': 'fa-microchip',
+        'url_name': 'courses:stm32_automotive_group',
+        'slugs': {
+            'arm-cortex-m-architecture',
+            'stm32-firmware-development-with-c',
+            'embedded-rust-with-stm32',
+            'visualise-stm32',
+        },
+    },
+    {
+        'title': 'Embedded Systems and IoT',
+        'icon': 'fa-microchip',
+        'slugs': {
+            'c-system-programming',
+            'exploring-zephyr-using-stm32',
+            'iot-devices',
+            'linux-os-concepts',
+            'rust-programming',
+        },
+    },
+    {
+        'title': 'AI/ML and Agentic AI',
+        'icon': 'fa-brain',
+        'slugs': {
+            'agentic-ai',
+            'agentic-ai-learn-by-examples',
+            'agentic-ai-python-automation',
+            'ml-python',
+            'python-programming',
+        },
+    },
+    {
+        'title': 'Cyber security',
+        'icon': 'fa-shield-alt',
+        'slugs': {'networking-security'},
+    },
+)
 
 ZEPHYR_BOOK_DIR = os.path.join(settings.BASE_DIR, 'static', 'zephyr_stm32')
 
@@ -61,6 +102,20 @@ def cortexm_book_serve(request, subpath):
         subpath = os.path.join(subpath, 'index.html')
     return serve(request, subpath, document_root=CORTEXM_BOOK_DIR)
 
+VISUALISE_STM32_DIR = os.path.join(settings.BASE_DIR, 'static', 'visualise_stm32')
+
+def visualise_stm32_book_index(request):
+    """Serve the interactive STM32 data-flow visualiser."""
+    return serve(request, 'index.html', document_root=VISUALISE_STM32_DIR)
+
+def visualise_stm32_book_serve(request, subpath):
+    """Serve assets for the interactive STM32 data-flow visualiser."""
+    if not subpath:
+        subpath = 'index.html'
+    elif subpath.endswith('/'):
+        subpath = os.path.join(subpath, 'index.html')
+    return serve(request, subpath, document_root=VISUALISE_STM32_DIR)
+
 def zephyr_book_index(request):
     """Serve the root index of the Exploring Zephyr using STM32 digital book."""
     return serve(request, 'index.html', document_root=ZEPHYR_BOOK_DIR)
@@ -77,7 +132,7 @@ class CourseListView(ListView):
     model = Course
     template_name = 'courses/list.html'
     context_object_name = 'courses'
-    
+
     def get_queryset(self):
         """Return courses deduplicated by title (case-insensitive), keeping the first occurrence."""
         qs = list(super().get_queryset().order_by('title'))
@@ -90,10 +145,226 @@ class CourseListView(ListView):
                 unique.append(c)
         return unique
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        grouped_courses = [
+            {
+                'title': group['title'],
+                'icon': group['icon'],
+                'url_name': group.get('url_name'),
+                'courses': [],
+            }
+            for group in COURSE_GROUPS
+        ]
+        groups_by_slug = {
+            slug: group
+            for definition, group in zip(COURSE_GROUPS, grouped_courses)
+            for slug in definition['slugs']
+        }
+        other_courses = {
+            'title': 'Other Courses',
+            'icon': 'fa-book-open',
+            'courses': [],
+        }
+
+        for course in context['courses']:
+            group = groups_by_slug.get(course.slug, other_courses)
+            group['courses'].append(course)
+
+        context['course_groups'] = [
+            group for group in grouped_courses if group['courses']
+        ]
+        if other_courses['courses']:
+            context['course_groups'].append(other_courses)
+        return context
+
 class CourseDetailView(DetailView):
     model = Course
     template_name = 'courses/detail.html'
     context_object_name = 'course'
+
+
+STM32_AUTOMOTIVE_COURSE_SLUGS = (
+    'arm-cortex-m-architecture',
+    'stm32-firmware-development-with-c',
+    'embedded-rust-with-stm32',
+    'visualise-stm32',
+)
+
+FEEDBACK_SESSION_KEY = 'pending_stm32_group_feedback'
+FEEDBACK_CODE_TTL = 10 * 60
+FEEDBACK_MAX_ATTEMPTS = 5
+FEEDBACK_MAX_SENDS_PER_EMAIL_HOUR = 3
+FEEDBACK_MAX_SENDS_PER_IP_HOUR = 10
+
+STM32_GROUP_COURSES = (
+    ('arm-cortex-m-architecture', 'ARM Cortex-M Architecture for Embedded Engineers'),
+    ('stm32-firmware-development-with-c', 'Programming STM32 with C'),
+    ('embedded-rust-with-stm32', 'Embedded Rust with STM32'),
+    ('visualise-stm32', 'Visualise STM32'),
+)
+
+
+def stm32_automotive_group(request):
+    courses_by_slug = {
+        course.slug: course
+        for course in Course.objects.filter(slug__in=STM32_AUTOMOTIVE_COURSE_SLUGS)
+    }
+    courses = [
+        courses_by_slug[slug]
+        for slug, _title in STM32_GROUP_COURSES
+        if slug in courses_by_slug
+    ]
+    display_titles = dict(STM32_GROUP_COURSES)
+    for course in courses:
+        course.group_display_title = display_titles[course.slug]
+    return render(request, 'courses/stm32_automotive_group.html', {
+        'group_title': 'STM32+C+Rust+Autmotive',
+        'group_courses': courses,
+        'feedback_topics': GroupFeedback.Topic.choices,
+        'feedback_courses': tuple((title, title) for _slug, title in STM32_GROUP_COURSES),
+        'feedback_form_action': 'courses:stm32_group_feedback',
+    })
+
+
+def stm32_group_feedback(request):
+    if request.method != 'POST':
+        return redirect('courses:stm32_automotive_group')
+
+    name = request.POST.get('name', '').strip()
+    email = request.POST.get('email', '').strip().lower()
+    course = request.POST.get('course', '').strip()
+    topic = request.POST.get('topic', '').strip()
+    message = request.POST.get('message', '').strip()
+
+    try:
+        validate_email(email)
+    except ValidationError:
+        messages.error(request, 'Please enter a valid email address.')
+        return redirect('courses:stm32_automotive_group')
+
+    valid_courses = {title for _slug, title in STM32_GROUP_COURSES}
+    valid_topics = {value for value, _label in GroupFeedback.Topic.choices}
+    if not name or len(name) > 100 or not message or len(message) > 3000:
+        messages.error(request, 'Please provide your name and a message of no more than 3,000 characters.')
+        return redirect('courses:stm32_automotive_group')
+    if course and course not in valid_courses:
+        messages.error(request, 'Please select a course from this group.')
+        return redirect('courses:stm32_automotive_group')
+    if topic not in valid_topics:
+        messages.error(request, 'Please choose a feedback topic.')
+        return redirect('courses:stm32_automotive_group')
+
+    ip = request.META.get('REMOTE_ADDR', 'unknown')
+    if (
+        _over_limit(f'stm32_feedback_ip_{ip}', FEEDBACK_MAX_SENDS_PER_IP_HOUR)
+        or _over_limit(f'stm32_feedback_email_{email}', FEEDBACK_MAX_SENDS_PER_EMAIL_HOUR)
+    ):
+        messages.error(request, 'Too many verification requests. Please try again later.')
+        return redirect('courses:stm32_automotive_group')
+
+    pending = {
+        'name': name,
+        'email': email,
+        'course': course,
+        'topic': topic,
+        'message': message,
+        'code': f'{secrets.randbelow(10**6):06d}',
+        'expires': time.time() + FEEDBACK_CODE_TTL,
+        'attempts': 0,
+    }
+    try:
+        send_mail(
+            'Verify your Apt Computing Labs group feedback',
+            f'Hi {name},\n\nYour verification code is {pending["code"]}. '
+            'It expires in 10 minutes. Your feedback is saved only after you verify this code.\n\n'
+            'If you did not request this, you can ignore this email.\n\n— Apt Computing Labs',
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception('Error sending STM32 group feedback verification email')
+        messages.error(request, 'We could not send a verification email. Please check the address and try again.')
+        return redirect('courses:stm32_automotive_group')
+
+    request.session[FEEDBACK_SESSION_KEY] = pending
+    messages.success(request, f'We sent a verification code to {email}. Your feedback is saved after verification.')
+    return redirect('courses:stm32_group_feedback_verify')
+
+
+def stm32_group_feedback_verify(request):
+    pending = request.session.get(FEEDBACK_SESSION_KEY)
+    if not pending:
+        messages.error(request, 'There is no feedback awaiting verification. Please submit the form again.')
+        return redirect('courses:stm32_automotive_group')
+
+    if request.method == 'POST':
+        if time.time() > pending['expires']:
+            del request.session[FEEDBACK_SESSION_KEY]
+            messages.error(request, 'The verification code expired. Please submit the feedback again.')
+            return redirect('courses:stm32_automotive_group')
+
+        pending['attempts'] += 1
+        if pending['attempts'] > FEEDBACK_MAX_ATTEMPTS:
+            del request.session[FEEDBACK_SESSION_KEY]
+            messages.error(request, 'Too many incorrect attempts. Please submit the feedback again.')
+            return redirect('courses:stm32_automotive_group')
+
+        code = request.POST.get('code', '').strip()
+        if not hmac.compare_digest(code, pending['code']):
+            request.session[FEEDBACK_SESSION_KEY] = pending
+            messages.error(request, 'That code did not match. Please try again.')
+            return redirect('courses:stm32_group_feedback_verify')
+
+        del request.session[FEEDBACK_SESSION_KEY]
+        feedback = GroupFeedback.objects.create(
+            name=pending['name'],
+            email=pending['email'],
+            course=pending['course'],
+            topic=pending['topic'],
+            message=pending['message'],
+        )
+        email_delivery_failed = False
+        try:
+            send_mail(
+                'Verified feedback for STM32+C+Rust+Autmotive',
+                f'Topic: {feedback.get_topic_display()}\n'
+                f'Course: {feedback.course or "Whole group"}\n'
+                f'Name: {feedback.name}\n'
+                f'Email: {feedback.email} (verified)\n\n'
+                f'{feedback.message}',
+                settings.DEFAULT_FROM_EMAIL,
+                ['kamal@aptcomputinglabs.com'],
+                fail_silently=False,
+            )
+        except Exception:
+            email_delivery_failed = True
+            logger.exception('Verified STM32 group feedback was saved but ACL notification failed')
+
+        try:
+            send_mail(
+                'We received your Apt Computing Labs feedback',
+                f'Hi {feedback.name},\n\nYour email is verified and we have saved your feedback '
+                f'about the STM32+C+Rust+Autmotive group.\n\n— Apt Computing Labs',
+                settings.DEFAULT_FROM_EMAIL,
+                [feedback.email],
+                fail_silently=False,
+            )
+        except Exception:
+            email_delivery_failed = True
+            logger.exception('Verified STM32 group feedback was saved but confirmation email failed')
+
+        if email_delivery_failed:
+            messages.warning(request, 'Your verified feedback was saved, but an email notification could not be delivered.')
+        else:
+            messages.success(request, 'Email verified. Your feedback has been sent to Apt Computing Labs.')
+        return redirect('courses:stm32_automotive_group')
+
+    return render(request, 'courses/group_feedback_verify.html', {
+        'email': pending['email'],
+        'group_title': 'STM32+C+Rust+Autmotive',
+    })
 
 def removed_course(request):
     raise Http404

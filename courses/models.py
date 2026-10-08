@@ -47,3 +47,25 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.rating}/5 by {self.reviewer_name} for {self.course.title}"
+
+
+class GroupFeedback(models.Model):
+    class Topic(models.TextChoices):
+        COURSE = 'course', 'Course content'
+        HARDWARE = 'hardware', 'Hardware and setup'
+        PROJECTS = 'projects', 'Projects'
+        SUGGESTION = 'suggestion', 'Suggestion'
+        OTHER = 'other', 'Other'
+
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    course = models.CharField(max_length=200, blank=True)
+    topic = models.CharField(max_length=20, choices=Topic.choices, default=Topic.SUGGESTION)
+    message = models.TextField(max_length=3000)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.get_topic_display()} from {self.email} ({self.created_at:%Y-%m-%d})'

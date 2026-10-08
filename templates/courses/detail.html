@@ -1,12 +1,104 @@
 {% extends 'tailwind_base.html' %}
 {% load static course_tags %}
 
+{% block title %}{{ course.title }} | Course Manual - Apt Computing Labs{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    @media print {
+        @page {
+            size: A4;
+            margin: 16mm;
+        }
+
+        html,
+        body {
+            background: #fff !important;
+            color: #1f2937 !important;
+            font-size: 10.5pt;
+            line-height: 1.55;
+        }
+
+        nav,
+        footer,
+        .course-print-hide,
+        #reviews,
+        #enrollModal {
+            display: none !important;
+        }
+
+        .course-manual-header {
+            background: #fff !important;
+            border-bottom: 1px solid #d1d5db;
+            color: #111827 !important;
+            overflow: visible !important;
+            padding: 0 0 1.5rem !important;
+        }
+
+        .course-manual-header * {
+            color: #111827 !important;
+        }
+
+        .course-manual-header p {
+            color: #374151 !important;
+        }
+
+        .course-manual-content {
+            max-width: none !important;
+            padding: 1.5rem 0 !important;
+        }
+
+        .course-manual-content .grid {
+            display: block !important;
+        }
+
+        .course-manual-content .sticky {
+            position: static !important;
+            top: auto !important;
+        }
+
+        .course-manual-content .bg-white {
+            background: #fff !important;
+        }
+
+        .course-manual-content [class*="shadow"] {
+            box-shadow: none !important;
+        }
+
+        .course-manual-content .rounded-3xl {
+            border-radius: 0 !important;
+        }
+
+        .course-manual-content a {
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+
+        .course-manual-content h1,
+        .course-manual-content h2,
+        .course-manual-content h3,
+        .course-manual-content h4 {
+            break-after: avoid-page;
+        }
+
+        .course-manual-content p,
+        .course-manual-content li,
+        .course-manual-content pre,
+        .course-manual-content blockquote,
+        .course-manual-content table {
+            break-inside: avoid-page;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Course Header -->
-    <div class="pt-32 pb-16 bg-brand-navy text-white relative overflow-hidden">
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-white opacity-5 blur-3xl"></div>
+    <div class="course-manual-header pt-32 pb-16 bg-brand-navy text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-white opacity-5 blur-3xl course-print-hide"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <a href="{% url 'courses:list' %}" class="inline-flex items-center text-gray-400 hover:text-white transition-colors mb-8 text-sm font-medium">
+            <a href="{% url 'courses:list' %}" class="course-print-hide inline-flex items-center text-gray-400 hover:text-white transition-colors mb-8 text-sm font-medium">
                 <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
             </a>
             
@@ -36,10 +128,18 @@
                     <p class="text-lg text-gray-300 mb-8 max-w-xl">
                         {{ course.short_description|default:course.description|truncatewords:40 }}
                     </p>
-                    <div class="flex flex-wrap items-center gap-4 mb-6">
+                    <div class="course-print-hide flex flex-wrap items-center gap-4 mb-6">
                         <button onclick="document.getElementById('enrollModal').classList.remove('hidden')" class="bg-brand-coral hover:bg-opacity-90 text-white px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center">
                             <i class="fas fa-lock mr-2"></i> Enroll Now
                         </button>
+                        <button type="button" onclick="window.print()" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center backdrop-blur-sm">
+                            <i class="fas fa-print mr-2" aria-hidden="true"></i> Print Manual / Save as PDF
+                        </button>
+                        {% if course.slug == 'visualise-stm32' %}
+                        <a href="{% url 'courses:visualise_stm32_book_index' %}" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center backdrop-blur-sm">
+                            <i class="fas fa-diagram-project mr-2 text-brand-coral" aria-hidden="true"></i> Open Interactive Visualiser
+                        </a>
+                        {% endif %}
                         {% if course.slug == 'exploring-zephyr-using-stm32' %}
                         <a href="{% url 'courses:zephyr_book_index' %}" target="_blank" rel="noopener noreferrer" class="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3.5 rounded-full font-bold shadow-lg transition-transform hover:-translate-y-0.5 inline-flex items-center backdrop-blur-sm group">
                             <i class="fas fa-book-open mr-2 text-brand-coral"></i> Go to Course <i class="fas fa-arrow-right ml-2 text-xs transform group-hover:translate-x-1 transition-transform"></i>
@@ -63,7 +163,7 @@
                     </div>
 
                     {% if course.slug == 'agentic-ai-learn-by-examples' %}
-                    <div class="bg-white/10 border border-white/20 rounded-xl p-5 max-w-xl backdrop-blur-sm" aria-live="polite">
+                    <div class="course-print-hide bg-white/10 border border-white/20 rounded-xl p-5 max-w-xl backdrop-blur-sm" aria-live="polite">
                         <p class="text-sm text-gray-300 mb-3">Course starts 12 September at 4:00 PM IST</p>
                         <div id="course-countdown" class="grid grid-cols-4 gap-2 text-center" data-target="2026-09-12T16:00:00+05:30">
                             <div class="bg-white/10 rounded-lg py-2"><span data-unit="days" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Days</span></div>
@@ -107,7 +207,7 @@
     </div>
 
     <!-- Course Content & Reviews -->
-    <div class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="course-manual-content py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-3 gap-12">
             <!-- Left Col: Details -->
             <div class="lg:col-span-2">

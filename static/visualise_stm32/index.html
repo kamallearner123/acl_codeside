@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08111f">
+  <meta name="description" content="Interactive, step-by-step visualisations of STM32L476RG data and control flows.">
+  <title>Visualise STM32 | Apt Computing Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to visualisation</a>
+  <div class="app-shell">
+    <aside class="course-nav" id="course-nav" aria-label="Course flow navigation">
+      <a class="brand" href="/courses/visualise-stm32/" aria-label="Visualise STM32 course overview">
+        <span class="brand-mark" aria-hidden="true">V</span>
+        <span><strong>Visualise STM32</strong><small>APT COMPUTING LABS</small></span>
+      </a>
+      <div class="nav-caption">COURSE FLOWS <span id="flow-count"></span></div>
+      <nav id="flow-navigation" class="flow-navigation" aria-label="Choose an animation"></nav>
+      <div class="nav-footer">
+        <span class="status-dot" aria-hidden="true"></span>
+        STM32L476RG · Cortex-M4
+        <a href="/courses/visualise-stm32/">Course overview</a>
+      </div>
+    </aside>
+
+    <main id="main-content" class="main-content">
+      <header class="topbar">
+        <button id="nav-toggle" class="icon-button nav-toggle" type="button" aria-label="Show course navigation" aria-expanded="false">
+          <span aria-hidden="true">☰</span>
+        </button>
+        <div class="breadcrumb">EMBEDDED SYSTEMS <span>/</span> INTERACTIVE LAB</div>
+        <div class="topbar-actions">
+          <span class="target-chip"><span aria-hidden="true"></span> STM32L476RG</span>
+          <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to light theme" title="Switch theme">
+            <span aria-hidden="true">◐</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="lesson-heading" aria-labelledby="flow-title">
+        <div>
+          <p class="eyebrow" id="flow-number">FLOW 02 / 23</p>
+          <h1 id="flow-title">Power-on and reset</h1>
+          <p id="flow-summary" class="lesson-summary"></p>
+        </div>
+        <div class="flow-type" id="flow-type"></div>
+      </section>
+
+      <section id="flow-prompt-panel" class="flow-prompt-panel" aria-labelledby="flow-prompt-title" aria-live="polite" hidden>
+        <div class="flow-prompt-heading">
+          <div>
+            <p class="eyebrow" id="flow-prompt-number"></p>
+            <h2 id="flow-prompt-title"></h2>
+          </div>
+          <button id="flow-prompt-close" class="icon-button" type="button" aria-label="Close flow prompt">×</button>
+        </div>
+        <p id="flow-prompt-text" class="flow-prompt-text"></p>
+        <div class="flow-prompt-focus">
+          <span>CORE IDEA</span>
+          <p id="flow-prompt-focus"></p>
+        </div>
+      </section>
+
+      <section class="visualizer-card" aria-label="Interactive STM32 flow">
+        <div class="diagram-toolbar">
+          <div class="legend" aria-label="Flow legend">
+            <span><i class="legend-dot instruction"></i>Instruction fetch</span>
+            <span><i class="legend-dot address"></i>Address + control</span>
+            <span><i class="legend-dot data"></i>Read / write data</span>
+            <span><i class="legend-dot event"></i>Interrupt</span>
+            <span><i class="legend-dot clock"></i>Clock / reset</span>
+          </div>
+          <span class="diagram-hint">Shared architecture map · highlighted path matches this lesson</span>
+        </div>
+        <section class="architecture-context" aria-labelledby="architecture-context-title">
+          <div class="architecture-context-heading">
+            <div>
+              <p class="eyebrow">01 · MASTER ARCHITECTURE</p>
+              <h2 id="architecture-context-title">Cortex-M4 STM32 block diagram</h2>
+              <p>Keep the address, control, data, interrupt, and clock paths in view while exploring each lesson.</p>
+            </div>
+            <span id="architecture-context-label" class="context-path-label">PATH: POWER / RESET</span>
+          </div>
+          <div class="diagram-viewport architecture-context-viewport" id="architecture-context-viewport">
+            <svg id="architecture-diagram" class="architecture-diagram" role="img" aria-labelledby="architecture-title architecture-description">
+              <title id="architecture-title">STM32L476RG Cortex-M4 bus and component block diagram</title>
+              <desc id="architecture-description">Logical on-chip instruction, address, control, read/write data, DMA, interrupt, clock, and reset paths. Select a component for details.</desc>
+            </svg>
+          </div>
+          <div class="architecture-caption">
+            <span>Highlighted route locates the selected lesson in the MCU.</span>
+            <span>Internal logical paths · not external address/data pins</span>
+          </div>
+        </section>
+        <div class="flow-diagram-heading">
+          <span class="eyebrow">LESSON WALKTHROUGH</span>
+          <span id="detailed-flow-title"></span>
+        </div>
+        <div class="diagram-viewport" id="diagram-viewport">
+          <svg id="flow-diagram" role="img" aria-labelledby="diagram-title diagram-description">
+            <title id="diagram-title">STM32 data-flow diagram</title>
+            <desc id="diagram-description"></desc>
+          </svg>
+        </div>
+        <div class="diagram-caption">
+          <span><i class="legend-dot active"></i> Active path</span>
+          <span id="path-status" aria-live="polite">Ready</span>
+        </div>
+      </section>
+
+      <section class="lesson-grid">
+        <article class="step-card" aria-live="polite" aria-atomic="true">
+          <div class="step-card-top">
+            <span class="step-count" id="step-count">STEP 0</span>
+            <span class="step-mode" id="step-mode-label">MANUAL</span>
+          </div>
+          <h2 id="step-title">Start the flow</h2>
+          <p id="step-description" class="step-description"></p>
+          <div class="transfer-row">
+            <div><span class="field-label">FROM</span><strong id="step-source">—</strong></div>
+            <span class="transfer-arrow" aria-hidden="true">→</span>
+            <div><span class="field-label">TO</span><strong id="step-destination">—</strong></div>
+          </div>
+          <div class="data-chip"><span class="field-label">EVENT / DATA</span><code id="step-data">Ready when you are</code></div>
+          <div class="why-row"><span class="why-icon" aria-hidden="true">?</span><p id="step-why"></p></div>
+          <div class="step-progress" role="progressbar" aria-label="Flow progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <span id="step-progress-fill"></span>
+          </div>
+          <div class="player-controls">
+            <button id="reset-button" class="control-button secondary" type="button" title="Reset flow">↺ <span>Reset</span></button>
+            <div class="step-controls">
+              <button id="previous-button" class="control-button secondary" type="button" title="Previous step">← <span>Previous</span></button>
+              <button id="next-button" class="control-button primary" type="button" title="Next step"><span>Next</span> →</button>
+            </div>
+            <div class="autoplay-controls">
+              <label class="select-label" for="mode-select">MODE</label>
+              <select id="mode-select" aria-label="Playback mode">
+                <option value="manual">Manual</option>
+                <option value="auto">Auto play</option>
+              </select>
+              <label class="select-label" for="speed-select">SPEED</label>
+              <select id="speed-select" aria-label="Animation speed">
+                <option value="1800">0.5×</option>
+                <option value="1200" selected>1×</option>
+                <option value="650">2×</option>
+              </select>
+              <button id="play-button" class="control-button play" type="button" aria-label="Play animation" disabled>▶</button>
+              <button id="pause-button" class="control-button secondary" type="button" aria-label="Pause animation" disabled>Ⅱ</button>
+            </div>
+          </div>
+        </article>
+
+        <aside class="inspector-card" aria-labelledby="inspector-heading">
+          <div class="inspector-heading">
+            <span class="inspector-icon" aria-hidden="true">⌕</span>
+            <div><p class="eyebrow">COMPONENT INSPECTOR</p><h2 id="inspector-heading">Explore a block</h2></div>
+          </div>
+          <p id="inspector-description">Click a component in the diagram to see its role in this flow.</p>
+          <div id="inspector-facts" class="inspector-facts"></div>
+          <div class="concept-callout">
+            <span>CORE IDEA</span>
+            <p id="core-idea"></p>
+          </div>
+        </aside>
+      </section>
+
+      <footer class="lesson-footer">
+        <span>Visual model · Not a transistor-level timing diagram</span>
+        <span><kbd>←</kbd> <kbd>→</kbd> step through the flow</span>
+      </footer>
+    </main>
+  </div>
+  <div id="nav-backdrop" class="nav-backdrop" hidden></div>
+</body>
+</html>

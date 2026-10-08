@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body data-chapter-id="index">
   <div id="reading-progress-bar"></div>
@@ -33,10 +33,6 @@
       </div>
     </div>
     <div class="header-right">
-      <div class="board-select-container">
-        <span class="board-select-label">Board:</span>
-        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
-      </div>
       <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
       <a href="/courses/stm32-firmware-development-with-c/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -246,6 +242,7 @@
         <div class="chapter-actions"><a href="chapters/ch01-embedded-c-stm32-architecture.html" class="btn-primary">Start Chapter 1 →</a></div>
       </div>
       <article class="prose">
+        <aside class="platform-note" role="note"><strong>Board portability:</strong> Hands-on board examples use the NUCLEO-F446RE as the reference target; the course also teaches general embedded-C and STM32 concepts used across compatible boards. Pin assignments, clocks, registers, interrupt/DMA mappings, memory sizes, and board wiring vary by exact MCU and board. Check the target datasheet, reference manual, and schematic before reusing hardware-specific code.</aside>
         <div class="chapter-hero">
           <span class="chapter-module-tag">Digital Book &amp; Laboratory Course</span>
           <h1 class="chapter-h1">Programming STM32 with C: From CubeMX to Hardware Debugging</h1>
@@ -253,7 +250,7 @@
           <div class="chapter-meta-bar">
             <div class="meta-item">🎯 Level: Beginner to Intermediate</div>
             <div class="meta-item">⏱️ 9 chapters • 9 labs • 5 mini projects + capstone</div>
-            <div class="meta-item">⚡ Reference board: NUCLEO-F446RE</div>
+            <div class="meta-item">⚡ Example target: NUCLEO-F446RE (adapt hardware details for other boards)</div>
           </div>
         </div>
         <h2 id="sec-0-1">What You Will Learn</h2>
@@ -354,6 +351,6 @@
       <ul id="search-results" class="search-results-list"></ul>
     </div>
   </div>
-  <script src="js/book.js?v=2"></script>
+  <script src="js/book.js?v=3"></script>
 </body>
 </html>

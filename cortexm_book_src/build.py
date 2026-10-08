@@ -370,7 +370,7 @@ def head(prefix, title, desc):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{prefix}css/style.css?v=2">
+  <link rel="stylesheet" href="{prefix}css/style.css?v=3">
 </head>
 '''
 
@@ -503,7 +503,7 @@ def tail(prefix):
       <ul id="search-results" class="search-results-list"></ul>
     </div>
   </div>
-  <script src="{prefix}js/book.js?v=2"></script>
+  <script src="{prefix}js/book.js?v=3"></script>
 </body>
 </html>
 '''
