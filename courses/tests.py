@@ -71,6 +71,13 @@ class CoursePageTests(TestCase):
         self.assertContains(response, 'STM32+C+Rust+Autmotive')
         self.assertContains(response, 'ARM Cortex-M Architecture for Embedded Engineers')
         self.assertContains(response, 'Programming STM32 with C')
+        self.assertContains(
+            response,
+            reverse(
+                'courses:stm32_c_book_serve',
+                args=['chapters/stm32cubeide-shortcuts.html'],
+            ),
+        )
         self.assertContains(response, 'Embedded Rust with STM32')
         self.assertContains(response, 'Visualise STM32')
         self.assertContains(response, 'NUCLEO-F446RE')
@@ -91,6 +98,21 @@ class CoursePageTests(TestCase):
         self.assertContains(response, 'Automotive cybersecurity')
         self.assertContains(response, 'Zephyr + industrial automation')
         self.assertContains(response, 'Email me a verification code')
+
+    def test_stm32cubeide_shortcuts_page_is_served_and_links_to_group(self):
+        response = self.client.get(
+            reverse(
+                'courses:stm32_c_book_serve',
+                args=['chapters/stm32cubeide-shortcuts.html'],
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+        content = b''.join(response.streaming_content).decode()
+        self.assertIn('Keyboard Shortcuts for Code Traversal', content)
+        self.assertIn('Ctrl + Shift + T', content)
+        self.assertIn('F5 / F6 / F7', content)
+        self.assertIn(reverse('courses:stm32_automotive_group'), content)
 
     @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_group_feedback_is_saved_only_after_email_verification(self):

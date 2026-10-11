@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A practical STM32CubeIDE keyboard shortcut guide for navigating, editing, building and debugging STM32 firmware.">
+  <title>STM32CubeIDE Shortcuts for Code Traversal | STM32 + C</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css?v=3">
+</head>
+<body class="sidebar-hidden" data-chapter-id="stm32cubeide-shortcuts">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">STM32 + C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-right">
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/stm32-c-rust-automotive/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <span>STM32+C+RUST+Autmotive</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs">
+          <a href="../index.html">STM32 + C manual</a>
+          <span>/</span>
+          <span>IDE shortcuts</span>
+        </div>
+        <div class="chapter-actions">
+          <a href="../index.html" class="btn-secondary">← Manual</a>
+          <a href="/courses/stm32-c-rust-automotive/" class="btn-primary">C, Rust &amp; Automotive →</a>
+        </div>
+      </div>
+
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Quick reference · STM32CubeIDE</span>
+          <h1 class="chapter-h1">Keyboard Shortcuts for Code Traversal</h1>
+          <p class="chapter-lead">Move through STM32 HAL code, find declarations and types, and step through firmware without losing your place.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⌨️ Linux key bindings</div>
+            <div class="meta-item">🧭 Navigation, editing &amp; debugging</div>
+          </div>
+        </div>
+
+        <h2>Code navigation</h2>
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+            <thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+              <th style="padding:0.7rem;">Shortcut</th><th style="padding:0.7rem;">Action</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>F3</code></td><td style="padding:0.7rem;">Open the declaration of the selected function, variable or symbol.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + Click</code></td><td style="padding:0.7rem;">Navigate to a symbol's definition or declaration.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + Shift + R</code></td><td style="padding:0.7rem;">Open a resource or file by name.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + Shift + T</code></td><td style="padding:0.7rem;">Open a type, such as a struct or HAL definition.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Alt + ← / →</code></td><td style="padding:0.7rem;">Go back or forward through editor navigation history.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + O</code></td><td style="padding:0.7rem;">Show the current file's outline and jump to a member.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + L</code></td><td style="padding:0.7rem;">Jump to a specific line number.</td></tr>
+              <tr><td style="padding:0.7rem;"><code>Ctrl + H</code></td><td style="padding:0.7rem;">Search across files and projects.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Editing and finding code</h2>
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+            <thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+              <th style="padding:0.7rem;">Shortcut</th><th style="padding:0.7rem;">Action</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + Space</code></td><td style="padding:0.7rem;">Show code completion and suggestions.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + Shift + F</code></td><td style="padding:0.7rem;">Format the current source file.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + D</code></td><td style="padding:0.7rem;">Delete the current line.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + /</code></td><td style="padding:0.7rem;">Toggle a line comment.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + F</code></td><td style="padding:0.7rem;">Find text in the current file.</td></tr>
+              <tr><td style="padding:0.7rem;"><code>Ctrl + Z / Ctrl + Y</code></td><td style="padding:0.7rem;">Undo / redo the last edit.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Build and debug</h2>
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+            <thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+              <th style="padding:0.7rem;">Shortcut</th><th style="padding:0.7rem;">Action</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + B</code></td><td style="padding:0.7rem;">Build the project.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>F11</code></td><td style="padding:0.7rem;">Start debugging the selected project or launch configuration.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>Ctrl + F11</code></td><td style="padding:0.7rem;">Run the selected project, when supported by its launch configuration.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>F5 / F6 / F7</code></td><td style="padding:0.7rem;">Step into / step over / step return while debugging.</td></tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);"><td style="padding:0.7rem;"><code>F8</code></td><td style="padding:0.7rem;">Resume execution.</td></tr>
+              <tr><td style="padding:0.7rem;"><code>Ctrl + F2</code></td><td style="padding:0.7rem;">Terminate the active debug session.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Quick HAL debugging workflow</h2>
+        <ol>
+          <li>Double-click the editor gutter beside a line to set a breakpoint.</li>
+          <li>Press <code>F11</code> to launch a debug session and wait for the target to halt.</li>
+          <li>Use <code>F6</code> to execute one source line at a time, or <code>F5</code> to enter a function when debug symbols and source are available.</li>
+          <li>Inspect values in the Variables view, then press <code>F8</code> to resume.</li>
+        </ol>
+        <p>For example, place a breakpoint on <code>HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);</code> to inspect the program immediately before the LED output changes.</p>
+
+        <div class="callout callout-tip">
+          <div class="callout-header">Key bindings can vary</div>
+          <div class="callout-body"><p>STM32CubeIDE versions, Linux desktop shortcuts and custom key schemes may change these bindings. Check or change them under <strong>Window → Preferences → General → Keys</strong>.</p></div>
+        </div>
+
+        <div class="chapter-actions" style="justify-content:flex-end;margin-top:2rem;">
+          <a href="/courses/stm32-c-rust-automotive/" class="btn-primary">Explore STM32 + C + Rust + Automotive →</a>
+        </div>
+      </article>
+    </main>
+  </div>
+  <script src="../js/book.js?v=3"></script>
+</body>
+</html>

@@ -63,6 +63,7 @@
                         <a href="{% url 'courses:cortexm_book_index' %}" class="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Open manual</a>
                         {% elif course.slug == 'stm32-firmware-development-with-c' %}
                         <a href="{% url 'courses:stm32_c_book_index' %}" class="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Open manual</a>
+                        <a href="{% url 'courses:stm32_c_book_serve' 'chapters/stm32cubeide-shortcuts.html' %}" class="rounded-full border border-cyan-200 bg-cyan-50 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">STM32CubeIDE shortcuts</a>
                         {% elif course.slug == 'embedded-rust-with-stm32' %}
                         <a href="{% url 'courses:stm32_rust_book_index' %}" class="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Open manual</a>
                         {% elif course.slug == 'visualise-stm32' %}
