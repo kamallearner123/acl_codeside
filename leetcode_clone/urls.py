@@ -39,6 +39,8 @@ urlpatterns = [
     path('services/', include('services.urls')),
     path('blogs/', include('blogs.urls')),
     path('accounts/', include('accounts.urls')),
+    # Google sign-in (allauth). Listed after accounts.urls so our login/logout win.
+    path('accounts/', include('allauth.urls')),
     path('courses/', include('courses.urls')),
     path('questions/', include('questions.urls')),
     path('submissions/', include('submissions.urls')),

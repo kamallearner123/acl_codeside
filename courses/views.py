@@ -1,6 +1,7 @@
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import Http404
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
@@ -13,6 +14,7 @@ import time
 import logging
 from django.conf import settings
 from django.views.static import serve
+from django.contrib.auth.decorators import login_required
 from .models import Course, GroupFeedback
 
 logger = logging.getLogger(__name__)
@@ -58,14 +60,19 @@ COURSE_GROUPS = (
     },
 )
 
-ZEPHYR_BOOK_DIR = os.path.join(settings.BASE_DIR, 'static', 'zephyr_stm32')
+# Course books require a Google sign-in before they can be opened.
+course_login_required = login_required(login_url='courses:google_signin')
 
-STM32_C_BOOK_DIR = os.path.join(settings.BASE_DIR, 'static', 'stm32_c_firmware')
+ZEPHYR_BOOK_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'zephyr_stm32')
 
+STM32_C_BOOK_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'stm32_c_firmware')
+
+@course_login_required
 def stm32_c_book_index(request):
     """Serve the root index of the Programming STM32 with C digital book."""
     return serve(request, 'index.html', document_root=STM32_C_BOOK_DIR)
 
+@course_login_required
 def stm32_c_book_serve(request, subpath):
     """Serve chapters, stylesheets, scripts and assets for the Programming STM32 with C book."""
     if not subpath:
@@ -74,12 +81,14 @@ def stm32_c_book_serve(request, subpath):
         subpath = os.path.join(subpath, 'index.html')
     return serve(request, subpath, document_root=STM32_C_BOOK_DIR)
 
-STM32_RUST_BOOK_DIR = os.path.join(settings.BASE_DIR, 'static', 'stm32_rust_firmware')
+STM32_RUST_BOOK_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'stm32_rust_firmware')
 
+@course_login_required
 def stm32_rust_book_index(request):
     """Serve the root index of the Embedded Rust with STM32 digital book."""
     return serve(request, 'index.html', document_root=STM32_RUST_BOOK_DIR)
 
+@course_login_required
 def stm32_rust_book_serve(request, subpath):
     """Serve chapters, stylesheets, scripts and assets for the Embedded Rust with STM32 book."""
     if not subpath:
@@ -88,12 +97,14 @@ def stm32_rust_book_serve(request, subpath):
         subpath = os.path.join(subpath, 'index.html')
     return serve(request, subpath, document_root=STM32_RUST_BOOK_DIR)
 
-CORTEXM_BOOK_DIR = os.path.join(settings.BASE_DIR, 'static', 'cortexm_architecture')
+CORTEXM_BOOK_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'cortexm_architecture')
 
+@course_login_required
 def cortexm_book_index(request):
     """Serve the root index of the ARM Cortex-M Architecture digital book."""
     return serve(request, 'index.html', document_root=CORTEXM_BOOK_DIR)
 
+@course_login_required
 def cortexm_book_serve(request, subpath):
     """Serve chapters, stylesheets, scripts and assets for the ARM Cortex-M Architecture book."""
     if not subpath:
@@ -102,12 +113,14 @@ def cortexm_book_serve(request, subpath):
         subpath = os.path.join(subpath, 'index.html')
     return serve(request, subpath, document_root=CORTEXM_BOOK_DIR)
 
-VISUALISE_STM32_DIR = os.path.join(settings.BASE_DIR, 'static', 'visualise_stm32')
+VISUALISE_STM32_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'visualise_stm32')
 
+@course_login_required
 def visualise_stm32_book_index(request):
     """Serve the interactive STM32 data-flow visualiser."""
     return serve(request, 'index.html', document_root=VISUALISE_STM32_DIR)
 
+@course_login_required
 def visualise_stm32_book_serve(request, subpath):
     """Serve assets for the interactive STM32 data-flow visualiser."""
     if not subpath:
@@ -116,10 +129,12 @@ def visualise_stm32_book_serve(request, subpath):
         subpath = os.path.join(subpath, 'index.html')
     return serve(request, subpath, document_root=VISUALISE_STM32_DIR)
 
+@course_login_required
 def zephyr_book_index(request):
     """Serve the root index of the Exploring Zephyr using STM32 digital book."""
     return serve(request, 'index.html', document_root=ZEPHYR_BOOK_DIR)
 
+@course_login_required
 def zephyr_book_serve(request, subpath):
     """Serve chapters, stylesheets, scripts, images and assets for the Zephyr digital book."""
     if not subpath:
@@ -127,6 +142,16 @@ def zephyr_book_serve(request, subpath):
     elif subpath.endswith('/'):
         subpath = os.path.join(subpath, 'index.html')
     return serve(request, subpath, document_root=ZEPHYR_BOOK_DIR)
+
+def google_signin(request):
+    """Landing page with the 'Continue with Google' button shown before a course opens."""
+    next_url = request.GET.get('next', '')
+    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+        next_url = ''
+    if request.user.is_authenticated:
+        return redirect(next_url or 'courses:list')
+    return render(request, 'courses/google_signin.html', {'next': next_url})
+
 
 class CourseListView(ListView):
     model = Course

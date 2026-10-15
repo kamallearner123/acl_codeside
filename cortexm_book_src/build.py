@@ -16,8 +16,8 @@ import shutil
 
 SRC = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(SRC)
-ZEPHYR = os.path.join(ROOT, 'static', 'zephyr_stm32')
-OUT = os.path.join(ROOT, 'static', 'cortexm_architecture')
+ZEPHYR = os.path.join(ROOT, 'private_books', 'zephyr_stm32')
+OUT = os.path.join(ROOT, 'private_books', 'cortexm_architecture')
 COURSE_URL = '/courses/arm-cortex-m-architecture/'
 BOOK_TITLE = 'ARM Cortex-M Architecture'
 BOOK_SUB = 'From CPU Core to STM32 Firmware'

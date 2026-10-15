@@ -1,4 +1,4 @@
-"""Builds the static digital book 'Programming STM32 with C' into static/stm32_c_firmware/.
+"""Builds the static digital book 'Programming STM32 with C' into private_books/stm32_c_firmware/.
 
 Chapters are written in a small markdown dialect (see stm32_c_book_src/*.md):
   ## 3.1 Title            -> section heading (id sec-3-1)
@@ -16,8 +16,8 @@ import shutil
 
 SRC = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(SRC)
-ZEPHYR = os.path.join(ROOT, 'static', 'zephyr_stm32')
-OUT = os.path.join(ROOT, 'static', 'stm32_c_firmware')
+ZEPHYR = os.path.join(ROOT, 'private_books', 'zephyr_stm32')
+OUT = os.path.join(ROOT, 'private_books', 'stm32_c_firmware')
 COURSE_URL = '/courses/stm32-firmware-development-with-c/'
 BOOK_TITLE = 'Programming STM32 with C'
 BOOK_SUB = 'From CubeMX to Hardware Debugging'

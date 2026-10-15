@@ -5,6 +5,7 @@ app_name = 'courses'
 
 urlpatterns = [
     path('', views.CourseListView.as_view(), name='list'),
+    path('signin/', views.google_signin, name='google_signin'),
     path('stm32-c-rust-automotive/', views.stm32_automotive_group, name='stm32_automotive_group'),
     path('stm32-c-rust-automotive/feedback/', views.stm32_group_feedback, name='stm32_group_feedback'),
     path('stm32-c-rust-automotive/feedback/verify/', views.stm32_group_feedback_verify, name='stm32_group_feedback_verify'),

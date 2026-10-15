@@ -32,6 +32,11 @@ DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "www.aptcomputinglabs.com", "testserver"]
 
 
+# The site runs behind Azure's HTTPS proxy: trust its header so Google sign-in
+# builds https:// callback URLs, and accept form posts from the live domain.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_TRUSTED_ORIGINS = ["https://www.aptcomputinglabs.com", "https://aptcomputinglabs.com"]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +46,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     "crispy_forms",
     "crispy_bootstrap4",
     "accounts",
@@ -66,6 +75,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "leetcode_clone.urls"
@@ -169,6 +179,34 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Crispy forms
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# Google sign-in (django-allauth). Used to gate course content only; the
+# username/password login in the accounts app keeps working for the rest of the site.
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+ACCOUNT_ADAPTER = "accounts.adapters.NoLocalSignupAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "accounts.adapters.GoogleSocialAccountAdapter"
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_LOGIN_ON_GET = False
+SOCIALACCOUNT_AUTO_SIGNUP = True
+# Link a Google sign-in to an existing user that has the same verified email.
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": os.getenv("GOOGLE_CLIENT_ID", ""),
+            "secret": os.getenv("GOOGLE_CLIENT_SECRET", ""),
+            "key": "",
+        },
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    }
+}
 
 # Login/Logout URLs
 LOGIN_URL = 'accounts:login'

@@ -23,3 +23,6 @@ tqdm==4.68.3
 typing_extensions==4.15.0
 urllib3==2.7.0
 whitenoise==6.9.0
+django-allauth[socialaccount]==65.19.7
+PyJWT==2.15.1
+cryptography==50.0.2

@@ -1,6 +1,7 @@
 from django.test import TestCase
 import re
 
+from django.contrib.auth.models import User
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -100,6 +101,7 @@ class CoursePageTests(TestCase):
         self.assertContains(response, 'Email me a verification code')
 
     def test_stm32cubeide_shortcuts_page_is_served_and_links_to_group(self):
+        self.client.force_login(User.objects.create_user('reader', 'reader@example.com'))
         response = self.client.get(
             reverse(
                 'courses:stm32_c_book_serve',
@@ -169,6 +171,7 @@ class CoursePageTests(TestCase):
         )
 
     def test_visualise_stm32_book_and_assets_are_served(self):
+        self.client.force_login(User.objects.create_user('reader', 'reader@example.com'))
         book_response = self.client.get(
             reverse('courses:visualise_stm32_book_index')
         )
@@ -209,3 +212,39 @@ class CoursePageTests(TestCase):
         self.assertIn('Show prompt for flow', js_content)
         self.assertIn('renderFlowPrompt', js_content)
         self.assertIn('Power-on and reset', js_content)
+
+
+class CourseBookSignInTests(TestCase):
+    BOOK_URL_NAMES = [
+        ('courses:cortexm_book_index', []),
+        ('courses:stm32_c_book_index', []),
+        ('courses:stm32_rust_book_index', []),
+        ('courses:visualise_stm32_book_index', []),
+        ('courses:zephyr_book_index', []),
+        ('courses:cortexm_book_serve', ['chapters/ch01.html']),
+    ]
+
+    def test_signed_out_visitor_is_sent_to_google_signin_and_back(self):
+        for name, args in self.BOOK_URL_NAMES:
+            url = reverse(name, args=args)
+            response = self.client.get(url)
+            self.assertRedirects(
+                response,
+                f"{reverse('courses:google_signin')}?next={url}",
+                fetch_redirect_response=False,
+            )
+
+    def test_signed_in_user_can_open_book(self):
+        self.client.force_login(User.objects.create_user('reader', 'reader@example.com'))
+        response = self.client.get(reverse('courses:cortexm_book_index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_books_are_not_reachable_through_static_urls(self):
+        for folder in ('cortexm_architecture', 'stm32_c_firmware', 'stm32_rust_firmware',
+                       'visualise_stm32', 'zephyr_stm32'):
+            self.assertEqual(self.client.get(f'/static/{folder}/index.html').status_code, 404)
+
+    def test_signin_page_offers_google_and_ignores_offsite_next(self):
+        response = self.client.get(reverse('courses:google_signin'), {'next': 'https://evil.example/'})
+        self.assertContains(response, 'Continue with Google')
+        self.assertNotContains(response, 'name="next"')

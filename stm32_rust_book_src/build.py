@@ -16,8 +16,8 @@ import shutil
 
 SRC = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(SRC)
-ZEPHYR = os.path.join(ROOT, 'static', 'zephyr_stm32')
-OUT = os.path.join(ROOT, 'static', 'stm32_rust_firmware')
+ZEPHYR = os.path.join(ROOT, 'private_books', 'zephyr_stm32')
+OUT = os.path.join(ROOT, 'private_books', 'stm32_rust_firmware')
 COURSE_URL = '/courses/embedded-rust-with-stm32/'
 BOOK_TITLE = 'Embedded Rust with STM32'
 BOOK_SUB = 'From Bare-Metal Firmware to Safe Embedded Products'
