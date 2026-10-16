@@ -119,6 +119,7 @@ class CoursePageTests(TestCase):
         self.assertContains(response, 'Email me a verification code')
 
     def test_linux_c_foundations_chapter_is_served_from_the_book(self):
+        self.client.force_login(User.objects.create_user('c_reader', 'c_reader@example.com'))
         response = self.client.get(
             reverse(
                 'courses:stm32_c_book_serve',
@@ -250,9 +251,9 @@ class CoursePageTests(TestCase):
         self.assertEqual(css_response.status_code, 200)
         self.assertEqual(js_response.status_code, 200)
         css_content = b''.join(css_response.streaming_content).decode()
-        self.assertIn('.bus-wire.is-context { stroke-width: 7', css_content)
+        self.assertIn('.bus-wire.is-context { stroke-width: 1.5', css_content)
         self.assertIn('.diagram-edge.is-current { stroke:', css_content)
-        self.assertIn('stroke-width: 6', css_content)
+        self.assertIn('stroke-width: 1.6', css_content)
         js_content = b''.join(js_response.streaming_content).decode()
         self.assertIn('Power-on and reset', js_content)
         self.assertIn('AHB bus matrix', js_content)
