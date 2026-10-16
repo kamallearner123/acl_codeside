@@ -23,6 +23,14 @@ class CoursePageTests(TestCase):
             title='Networking and Security',
             slug='networking-security',
         )
+        self.rust_from_c_course = Course.objects.create(
+            title='Realization of Rust from C',
+            slug='realization-of-rust-from-c',
+        )
+        self.electronics_course = Course.objects.create(
+            title='Basic Electronics with Sensors and Actuators',
+            slug='basic-electronics-sensors-actuators',
+        )
         self.other_course = Course.objects.create(
             title='New Training Program',
             slug='new-training-program',
@@ -55,6 +63,8 @@ class CoursePageTests(TestCase):
         self.assertIn(self.embedded_course, groups['Embedded Systems and IoT'])
         self.assertIn(self.ai_course, groups['AI/ML and Agentic AI'])
         self.assertIn(self.security_course, groups['Cyber security'])
+        self.assertIn(self.rust_from_c_course, groups['Embedded Systems and IoT'])
+        self.assertIn(self.electronics_course, groups['Embedded Systems and IoT'])
         self.assertIn(self.other_course, groups['Other Courses'])
         self.assertEqual(
             set(groups['STM32+C+Rust+Autmotive']),
@@ -181,6 +191,24 @@ class CoursePageTests(TestCase):
         self.assertContains(response, 'Print Manual / Save as PDF')
         self.assertContains(response, 'window.print()')
 
+    def test_new_courses_link_to_their_complete_readers(self):
+        rust_response = self.client.get(
+            reverse('courses:detail', args=[self.rust_from_c_course.slug])
+        )
+        electronics_response = self.client.get(
+            reverse('courses:detail', args=[self.electronics_course.slug])
+        )
+
+        self.assertContains(
+            rust_response,
+            reverse('courses:rust_from_c_book_index'),
+        )
+        self.assertContains(
+            electronics_response,
+            reverse('courses:electronics_sensors_book_index'),
+        )
+        self.assertContains(rust_response, 'DURATION TO BE ANNOUNCED')
+
     def test_visualise_stm32_course_links_to_interactive_book(self):
         course = Course.objects.get(slug='visualise-stm32')
         response = self.client.get(reverse('courses:detail', args=[course.slug]))
@@ -243,6 +271,8 @@ class CourseBookSignInTests(TestCase):
         ('courses:cortexm_book_index', []),
         ('courses:stm32_c_book_index', []),
         ('courses:stm32_rust_book_index', []),
+        ('courses:rust_from_c_book_index', []),
+        ('courses:electronics_sensors_book_index', []),
         ('courses:visualise_stm32_book_index', []),
         ('courses:zephyr_book_index', []),
         ('courses:cortexm_book_serve', ['chapters/ch01.html']),
@@ -263,9 +293,39 @@ class CourseBookSignInTests(TestCase):
         response = self.client.get(reverse('courses:cortexm_book_index'))
         self.assertEqual(response.status_code, 200)
 
+    def test_new_course_readers_serve_supplied_and_created_materials(self):
+        self.client.force_login(User.objects.create_user('reader', 'reader@example.com'))
+        rust_response = self.client.get(reverse('courses:rust_from_c_book_index'))
+        rust_chapter = self.client.get(
+            reverse(
+                'courses:rust_from_c_book_serve',
+                args=['session_2_ownership.html'],
+            )
+        )
+        electronics_response = self.client.get(
+            reverse('courses:electronics_sensors_book_index')
+        )
+
+        self.assertEqual(rust_response.status_code, 200)
+        self.assertEqual(rust_chapter.status_code, 200)
+        self.assertIn(
+            'The Rust Cybersecurity Book',
+            b''.join(rust_response.streaming_content).decode(),
+        )
+        self.assertIn(
+            'Ownership',
+            b''.join(rust_chapter.streaming_content).decode(),
+        )
+        self.assertEqual(electronics_response.status_code, 200)
+        electronics_content = b''.join(electronics_response.streaming_content).decode()
+        self.assertIn('Basic Electronics with Sensors and Actuators', electronics_content)
+        self.assertIn('Wheatstone bridge', electronics_content)
+        self.assertIn('No microcontroller or software is required', electronics_content)
+
     def test_books_are_not_reachable_through_static_urls(self):
         for folder in ('cortexm_architecture', 'stm32_c_firmware', 'stm32_rust_firmware',
-                       'visualise_stm32', 'zephyr_stm32'):
+                       'visualise_stm32', 'zephyr_stm32', 'realization_rust_from_c',
+                       'basic_electronics_sensors_actuators'):
             self.assertEqual(self.client.get(f'/static/{folder}/index.html').status_code, 404)
 
     def test_signin_page_offers_google_and_ignores_offsite_next(self):

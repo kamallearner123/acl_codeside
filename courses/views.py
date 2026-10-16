@@ -40,6 +40,8 @@ COURSE_GROUPS = (
             'iot-devices',
             'linux-os-concepts',
             'rust-programming',
+            'realization-of-rust-from-c',
+            'basic-electronics-sensors-actuators',
         },
     },
     {
@@ -96,6 +98,31 @@ def stm32_rust_book_serve(request, subpath):
     elif subpath.endswith('/'):
         subpath = os.path.join(subpath, 'index.html')
     return serve(request, subpath, document_root=STM32_RUST_BOOK_DIR)
+
+RUST_FROM_C_BOOK_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'realization_rust_from_c')
+
+@course_login_required
+def rust_from_c_book_index(request):
+    """Serve the Rust course materials for C/C++ developers."""
+    return serve(request, 'index.html', document_root=RUST_FROM_C_BOOK_DIR)
+
+@course_login_required
+def rust_from_c_book_serve(request, subpath):
+    """Serve pages and assets for the Rust course materials."""
+    if not subpath:
+        subpath = 'index.html'
+    elif subpath.endswith('/'):
+        subpath = os.path.join(subpath, 'index.html')
+    return serve(request, subpath, document_root=RUST_FROM_C_BOOK_DIR)
+
+ELECTRONICS_SENSORS_BOOK_DIR = os.path.join(
+    settings.BASE_DIR, 'private_books', 'basic_electronics_sensors_actuators'
+)
+
+@course_login_required
+def electronics_sensors_book_index(request):
+    """Serve the standalone electronics, sensors and actuators handbook."""
+    return serve(request, 'index.html', document_root=ELECTRONICS_SENSORS_BOOK_DIR)
 
 CORTEXM_BOOK_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'cortexm_architecture')
 

@@ -1,4 +1,5 @@
 {% load static %}
+{% load account_tags %}
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -107,14 +108,31 @@
                 </div>
 
                 <div class="hidden lg:flex items-center gap-4">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}" aria-label="View {{ user.get_full_name|default:user.username }}'s profile"
+                       class="flex items-center gap-2 text-brand-textSecondary hover:text-brand-navy font-medium transition-colors text-sm">
+                        {% user_avatar user %}
+                        <span>{{ user.get_full_name|default:user.username }}</span>
+                    </a>
+                    <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="text-brand-textSecondary hover:text-brand-navy font-medium transition-colors text-sm">Logout</button>
+                    </form>
+                    {% else %}
                     <a href="{% url 'accounts:login' %}" class="text-brand-textSecondary hover:text-brand-navy font-medium transition-colors text-sm">Login</a>
+                    {% endif %}
                     <a href="{% url 'contact:contact' %}" class="bg-brand-navy text-white px-6 py-2.5 rounded-full font-medium text-sm hover:bg-opacity-90 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
                         Contact
                     </a>
                 </div>
                 
                 <!-- Mobile Menu Button -->
-                <div class="lg:hidden flex items-center">
+                <div class="lg:hidden flex items-center gap-3">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}" aria-label="View {{ user.get_full_name|default:user.username }}'s profile">
+                        {% user_avatar user %}
+                    </a>
+                    {% endif %}
                     <button id="mobile-menu-button" class="text-brand-navy focus:outline-none">
                         <i class="fas fa-bars text-2xl"></i>
                     </button>
@@ -134,7 +152,15 @@
                 <a href="{{ practice_url }}" class="block px-3 py-3 rounded-md text-base font-medium {% if request.path == practice_url or '/practice/' in request.path %}bg-blue-50 text-brand-navy{% else %}text-gray-700 hover:bg-gray-50{% endif %}">Practice</a>
                 <a href="{{ blogs_url }}" class="block px-3 py-3 rounded-md text-base font-medium {% if request.path == blogs_url or '/blogs/' in request.path %}bg-blue-50 text-brand-navy{% else %}text-gray-700 hover:bg-gray-50{% endif %}">Blogs</a>
                 <div class="border-t border-gray-200 pt-4 mt-2">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}" class="block px-3 py-3 text-base font-medium text-gray-700 hover:bg-gray-50">Profile</a>
+                    <form method="post" action="{% url 'accounts:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="block w-full text-left px-3 py-3 text-base font-medium text-gray-700 hover:bg-gray-50">Logout</button>
+                    </form>
+                    {% else %}
                     <a href="{% url 'accounts:login' %}" class="block px-3 py-3 text-base font-medium text-gray-700 hover:bg-gray-50">Login</a>
+                    {% endif %}
                     <a href="{% url 'contact:contact' %}" class="block px-3 py-3 text-base font-medium text-brand-coral hover:bg-red-50">Contact Us</a>
                 </div>
             </div>

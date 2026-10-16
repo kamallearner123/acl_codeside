@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2.1 Variables - Rust Security Course</title>
+    <link rel="stylesheet" href="styles.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+    <script>
+        const savedTheme = localStorage.getItem('rust-book-theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+</head>
+
+<body>
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Rust Security Course</h2>
+            </div>
+            <div class="sidebar-content">
+                                                                                <ul class="toc">
+                    <li><a href="index.html">Introduction</a></li>
+                    <li><a href="pre_workshop.html">Pre-Workshop</a></li>
+                    <li><a href="pre_workshop_cves.html">Common CVEs & Stats</a></li>
+
+                    <li class="toc-main"><a href="session_1_intro.html">Session 1: Core concepts and C/C++ limitations</a></li>
+                    <li><a href="session_1_1.html">1.1 Memory structure</a></li>
+                    <li><a href="session_1_2.html">1.2 Data sharing</a></li>
+                    <li><a href="session_1_3.html">1.3 C/C++ in the wild</a></li>
+                    <li><a href="session_1_4.html">1.4 Tools and practices</a></li>
+
+                    <li class="toc-main"><a href="session_2_intro.html">Session 2: Basics of Rust programming</a></li>
+                    <li><a href="session_2_variables.html">2.1 Variables</a></li>
+                    <li><a href="session_2_types.html">2.2 Data Types</a></li>
+                    <li><a href="session_2_control.html">2.3 Control Flow</a></li>
+                    <li><a href="session_2_functions.html">2.4 Functions</a></li>
+                    <li><a href="session_2_ownership.html">2.5 Ownership</a></li>
+                    <li><a href="session_2_borrowing.html">2.6 Borrowing</a></li>
+                    <li><a href="session_2_references.html">2.7 References</a></li>
+                    <li><a href="session_2_mutability.html">2.8 Mutable vs Immutable</a></li>
+                    <li><a href="session_2_error.html">2.9 Error Handling</a></li>
+                    <li><a href="session_2_cargo.html">2.10 Cargo Basics</a></li>
+
+                    <li class="toc-main"><a href="session_3_intro.html">Session 3: Lab Exercises</a></li>
+                    <li><a href="session_3_1.html">Exercise 1: Hello Rust</a></li>
+                    <li><a href="session_3_2.html">Exercise 2: Ownership in Action</a></li>
+                    <li><a href="session_3_3.html">Exercise 3: Prevent Buffer Overflow</a></li>
+                    <li><a href="session_3_4.html">Exercise 4: Input Validation</a></li>
+                    <li><a href="session_3_5.html">Exercise 5: Safe File Handling</a></li>
+                    <li><a href="session_3_6.html">Exercise 6: Thread-safe Counter</a></li>
+                    <li><a href="session_3_bonus.html">Bonus: Password Generator</a></li>
+
+                    <li class="toc-main"><a href="session_4_intro.html">Session 4: Future of Rust & Career</a></li>
+                    <li><a href="session_4_1.html">4.1 Automotive & SDVs</a></li>
+                    <li><a href="session_4_2.html">4.2 Embedded & IoT</a></li>
+                    <li><a href="session_4_3.html">4.3 Linux & Cloud</a></li>
+                    <li><a href="session_4_4.html">4.4 AI Infrastructure</a></li>
+                    <li><a href="session_4_5.html">4.5 Career Roadmap</a></li>
+                    <li><a href="session_4_6.html">4.6 Automotive Cybersecurity</a></li>
+                    <li class="toc-main"><a href="session_5_test.html">SESSION 5: Test your skills (50 MCQs)</a></li>
+                    <li class="toc-main"><a href="session_library.html">LIBRARY: Standard Library</a></li>
+                    <li><a href="session_library_containers.html">Containers & Collections</a></li>
+                    <li><a href="session_library_io.html">I/O & File System</a></li>
+                    <li><a href="session_library_network.html">Network & Threads</a></li>
+                    <li><a href="session_library_sys.html">System & Env</a></li>
+                    <li class="toc-main"><a href="session_references.html">References</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-nav" id="top-nav">
+                <div class="nav-actions" style="margin-left: auto;">
+                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme">
+                        <svg id="theme-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <article class="book-page">
+                <span class="chapter-number">Session 2.1</span>
+                <h1>Variables in Rust</h1>
+
+                <h2>Overview & Syntax</h2>
+                <p>In Rust, variables are declared using the <code>let</code> keyword. By default, variables in Rust are <strong>immutable</strong>, meaning once a value is bound to a name, you cannot change that value. This is a core feature that drives safety and concurrency in Rust.</p>
+                <p><strong>Syntax:</strong> <code>let variable_name = value;</code></p>
+                <p>To make a variable mutable, you must explicitly use the <code class="keyword-hl">mut</code> keyword: <code>let mut variable_name = value;</code></p>
+
+                <h2>Example 1: Immutable Variables</h2>
+
+                <details style="background: var(--sidebar-bg); padding: 1rem; border-radius: 8px; border-left: 4px solid #f44336; cursor: pointer; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <summary style="font-weight: 600; font-size: 1.1rem; outline: none; color: #f44336;">View C/C++ Buggy Code</summary>
+                    <div style="margin-top: 1rem;">
+                        <pre><code class="language-c">
+// In C, variables are mutable by default.
+// It is very easy to accidentally overwrite a critical configuration value.
+#include <stdio.h>
+
+int main() {
+    int max_retries = 3;
+
+    // ... hundreds of lines later ...
+    max_retries = -1; // Accidental logic bug, no compiler warning!
+
+    printf("Max retries: %d\n", max_retries);
+    return 0;
+}
+                        </code></pre>
+                        <div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem;">Program 2.1-1: C Immutable Vulnerability</div>
+                    </div>
+                </details>
+<pre><code class="language-rust">fn main() {
+    let x = 5;
+    println!("The value of x is: {}", x);
+}</code></pre>
+<div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem;">Program 2.1-2: Immutable Variables</div>
+                <p><strong>Why:</strong> We bind the value 5 to <code>x</code>. The compiler infers the type (i32 by default) and prints it successfully.</p>
+
+                <h2>Example 2: Compiler Error on Mutation</h2>
+                <pre><code class="language-rust">fn main() {
+    let x = 5;
+    println!("The value of x is: {}", x);
+    x = 6; // ERROR: cannot assign twice to immutable variable `x`
+    println!("The value of x is: {}", x);
+}</code></pre>
+<div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem;">Program 2.1-3: Compiler Error on Mutation</div>
+                <p><strong>Error Explanation:</strong> The Rust compiler will throw an error <code>cannot assign twice to immutable variable</code>. Rust prevents unintended data modification. This guarantees that if a variable is not marked <code class="keyword-hl">mut</code>, you can be 100% sure it will never change unexpectedly, which eliminates many bugs related to state modification.</p>
+
+                <h2>Example 3: Mutable Variables</h2>
+                <pre><code class="language-rust">fn main() {
+    let mut x = 5;
+    println!("The initial value of x is: {}", x);
+    x = 6;
+    println!("The new value of x is: {}", x);
+}</code></pre>
+<div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem;">Program 2.1-4: Mutable Variables</div>
+                <p><strong>Output:</strong></p>
+                <pre><code class="language-rust">The initial value of x is: 5
+The new value of x is: 6</code></pre>
+                <p><strong>Why:</strong> By adding <code class="keyword-hl">mut</code>, we explicitly tell the compiler (and other developers) that this variable's value will change in the future. The assignment <code>x = 6</code> is now completely valid.</p>
+
+                <hr style="margin: 3rem 0; border: 0; border-top: 1px solid var(--border-color);">
+
+                <h2>Printing Output with <code>println!</code></h2>
+                <p>Throughout these examples, you've seen <code>println!</code>. The exclamation mark (<code>!</code>) means it's a <strong>macro</strong>, not a standard function. It is Rust's primary way to format and print text to the standard output (your terminal).</p>
+
+                <h3>Example 4: Basic Formatting</h3>
+                <p>You can print variables by placing empty curly braces <code>{}</code> inside the string. Rust will replace them with the value of the variable you pass next.</p>
+                <pre><code class="language-rust">fn main() {
+    let username = "admin";
+    // The `{}` acts as a placeholder
+    println!("Welcome to the system, {}!", username);
+}</code></pre>
+<div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem;">Program 2.1-5: Basic Formatting</div>
+
+                <h3>Example 5: Multiple Variables & Inline Formatting</h3>
+                <p>You can use multiple placeholders, or even place the variable names directly inside the curly braces (a feature added in Rust 1.58).</p>
+                <pre><code class="language-rust">fn main() {
+    let score = 100;
+    let lives = 3;
+
+    // Traditional multi-variable approach
+    println!("Score: {}, Lives: {}", score, lives);
+
+    // Modern inline approach (cleaner!)
+    println!("Score: {score}, Lives: {lives}");
+}</code></pre>
+<div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem;">Program 2.1-6: Multiple Variables</div>
+
+                <h3>Example 6: Debug Formatting <code>{:?}</code></h3>
+                <p>Some complex data types (like Arrays or Tuples) cannot be printed using standard <code>{}</code> because they don't have a simple text representation. For these, we use the Debug formatter <code>{:?}</code> (or <code>{:#?}</code> for pretty-printing).</p>
+                <pre><code class="language-rust">fn main() {
+    let active_ports = [80, 443, 22];
+
+    // Using {} here would cause a compiler error!
+    // We use {:?} to print the entire array for debugging.
+    println!("Active network ports: {:?}", active_ports);
+}</code></pre>
+<div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem;">Program 2.1-7: Debug Formatting</div>
+
+                <hr style="margin: 3rem 0; border: 0; border-top: 1px solid var(--border-color);">
+
+                <h2>Knowledge Check (MCQ)</h2>
+                <div class="info-callout" style="background-color: var(--sidebar-bg); border-left-color: var(--text-muted);">
+                    <p><strong>Question:</strong> What is the default state of a variable declared with <code>let</code> in Rust?</p>
+                    <ol type="A">
+                        <li>Mutable</li>
+                        <li>Immutable</li>
+                        <li>Global</li>
+                        <li>Untyped</li>
+                    </ol>
+                    <p><em>Answer: B. Immutable. This default forces you to think carefully about which data needs to change and which doesn't, enhancing security and safety.</em></p>
+                </div>
+            </article>
+
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color);"><h2>Topic Quiz (5 Questions)</h2>
+        <div class="mcq-container">
+            <div class="mcq-question">1. By default, are variables in Rust mutable or immutable?</div>
+            <ul class="mcq-options">
+                <li class="mcq-option" data-correct="false">Variables don't exist in Rust</li>
+                <li class="mcq-option" data-correct="false">Mutable</li>
+                <li class="mcq-option" data-correct="false">It depends on the type</li>
+                <li class="mcq-option" data-correct="true">Immutable</li>
+            </ul>
+            <button class="mcq-submit" disabled>Submit</button>
+            <div class="mcq-feedback">Correct answer! Great job!</div>
+        </div>
+
+        <div class="mcq-container">
+            <div class="mcq-question">2. Which keyword is used to declare a variable in Rust?</div>
+            <ul class="mcq-options">
+                <li class="mcq-option" data-correct="false">const</li>
+                <li class="mcq-option" data-correct="true">let</li>
+                <li class="mcq-option" data-correct="false">var</li>
+                <li class="mcq-option" data-correct="false">int</li>
+            </ul>
+            <button class="mcq-submit" disabled>Submit</button>
+            <div class="mcq-feedback">Correct answer! Great job!</div>
+        </div>
+
+        <div class="mcq-container">
+            <div class="mcq-question">3. How do you make a variable mutable in Rust?</div>
+            <ul class="mcq-options">
+                <li class="mcq-option" data-correct="true">Using the 'mut' keyword</li>
+                <li class="mcq-option" data-correct="false">All variables are mutable</li>
+                <li class="mcq-option" data-correct="false">Using the 'var' keyword</li>
+                <li class="mcq-option" data-correct="false">Using pointer arithmetic</li>
+            </ul>
+            <button class="mcq-submit" disabled>Submit</button>
+            <div class="mcq-feedback">Correct answer! Great job!</div>
+        </div>
+
+        <div class="mcq-container">
+            <div class="mcq-question">4. What is shadowing in Rust?</div>
+            <ul class="mcq-options">
+                <li class="mcq-option" data-correct="true">Declaring a new variable with the same name as a previous one</li>
+                <li class="mcq-option" data-correct="false">Hiding code from the compiler</li>
+                <li class="mcq-option" data-correct="false">A type of memory leak</li>
+                <li class="mcq-option" data-correct="false">Creating a private function</li>
+            </ul>
+            <button class="mcq-submit" disabled>Submit</button>
+            <div class="mcq-feedback">Correct answer! Great job!</div>
+        </div>
+
+        <div class="mcq-container">
+            <div class="mcq-question">5. What is the difference between 'let' and 'const'?</div>
+            <ul class="mcq-options">
+                <li class="mcq-option" data-correct="false">'let' can never be reassigned</li>
+                <li class="mcq-option" data-correct="false">'const' is for strings only</li>
+                <li class="mcq-option" data-correct="false">They are exactly the same</li>
+                <li class="mcq-option" data-correct="true">'const' requires explicit type annotation and is evaluated at compile time</li>
+            </ul>
+            <button class="mcq-submit" disabled>Submit</button>
+            <div class="mcq-feedback">Correct answer! Great job!</div>
+        </div>
+        </div>
+<footer class="page-navigation">
+                <a href="session_1_4.html" class="nav-button prev">
+                    <span class="nav-label">Previous</span>
+                    <span class="nav-title">1.4 Tools and practices</span>
+                </a>
+
+                <a href="session_2_types.html" class="nav-button next">
+                    <span class="nav-label">Next</span>
+                    <span class="nav-title">2.2 Data Types</span>
+                </a>
+            </footer>
+
+            <div style="text-align: center; padding: 2rem 0; margin-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem;">
+                Prepared by <a href="https://www.aptcomputinglabs.com/" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: bold;">Apt Computing Labs</a>
+                <br><span style="font-size: 0.8rem; opacity: 0.7;">&copy; 2026 Apt Computing Labs. This material may be distributed freely provided that credit is given to Apt Computing Labs.</span>
+            </div>
+</main>
+    </div>
+    <script src="script.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session 1: Core concepts and C/C++ limitations - Rust Security Course</title>
+    <link rel="stylesheet" href="styles.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+    <script>
+        const savedTheme = localStorage.getItem('rust-book-theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+</head>
+
+<body>
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Rust Security Course</h2>
+            </div>
+            <div class="sidebar-content">
+                                                                                <ul class="toc">
+                    <li><a href="index.html">Introduction</a></li>
+                    <li><a href="pre_workshop.html">Pre-Workshop</a></li>
+                    <li><a href="pre_workshop_cves.html">Common CVEs & Stats</a></li>
+
+                    <li class="toc-main"><a href="session_1_intro.html">Session 1: Core concepts and C/C++ limitations</a></li>
+                    <li><a href="session_1_1.html">1.1 Memory structure</a></li>
+                    <li><a href="session_1_2.html">1.2 Data sharing</a></li>
+                    <li><a href="session_1_3.html">1.3 C/C++ in the wild</a></li>
+                    <li><a href="session_1_4.html">1.4 Tools and practices</a></li>
+
+                    <li class="toc-main"><a href="session_2_intro.html">Session 2: Basics of Rust programming</a></li>
+                    <li><a href="session_2_variables.html">2.1 Variables</a></li>
+                    <li><a href="session_2_types.html">2.2 Data Types</a></li>
+                    <li><a href="session_2_control.html">2.3 Control Flow</a></li>
+                    <li><a href="session_2_functions.html">2.4 Functions</a></li>
+                    <li><a href="session_2_ownership.html">2.5 Ownership</a></li>
+                    <li><a href="session_2_borrowing.html">2.6 Borrowing</a></li>
+                    <li><a href="session_2_references.html">2.7 References</a></li>
+                    <li><a href="session_2_mutability.html">2.8 Mutable vs Immutable</a></li>
+                    <li><a href="session_2_error.html">2.9 Error Handling</a></li>
+                    <li><a href="session_2_cargo.html">2.10 Cargo Basics</a></li>
+
+                    <li class="toc-main"><a href="session_3_intro.html">Session 3: Lab Exercises</a></li>
+                    <li><a href="session_3_1.html">Exercise 1: Hello Rust</a></li>
+                    <li><a href="session_3_2.html">Exercise 2: Ownership in Action</a></li>
+                    <li><a href="session_3_3.html">Exercise 3: Prevent Buffer Overflow</a></li>
+                    <li><a href="session_3_4.html">Exercise 4: Input Validation</a></li>
+                    <li><a href="session_3_5.html">Exercise 5: Safe File Handling</a></li>
+                    <li><a href="session_3_6.html">Exercise 6: Thread-safe Counter</a></li>
+                    <li><a href="session_3_bonus.html">Bonus: Password Generator</a></li>
+
+                    <li class="toc-main"><a href="session_4_intro.html">Session 4: Future of Rust & Career</a></li>
+                    <li><a href="session_4_1.html">4.1 Automotive & SDVs</a></li>
+                    <li><a href="session_4_2.html">4.2 Embedded & IoT</a></li>
+                    <li><a href="session_4_3.html">4.3 Linux & Cloud</a></li>
+                    <li><a href="session_4_4.html">4.4 AI Infrastructure</a></li>
+                    <li><a href="session_4_5.html">4.5 Career Roadmap</a></li>
+                    <li><a href="session_4_6.html">4.6 Automotive Cybersecurity</a></li>
+                    <li class="toc-main"><a href="session_5_test.html">SESSION 5: Test your skills (50 MCQs)</a></li>
+                    <li class="toc-main"><a href="session_library.html">LIBRARY: Standard Library</a></li>
+                    <li><a href="session_library_containers.html">Containers & Collections</a></li>
+                    <li><a href="session_library_io.html">I/O & File System</a></li>
+                    <li><a href="session_library_network.html">Network & Threads</a></li>
+                    <li><a href="session_library_sys.html">System & Env</a></li>
+                    <li class="toc-main"><a href="session_references.html">References</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-nav" id="top-nav">
+                <div class="nav-actions" style="margin-left: auto;">
+                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme">
+                        <svg id="theme-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <article class="book-page">
+
+    <span class="chapter-number">Session 4.1</span>
+    <h1>Rust in Automotive & SDVs</h1>
+
+    <h2>The Software-Defined Vehicle (SDV) Era</h2>
+    <p>The automotive industry is undergoing a massive transformation. Modern cars are rolling datacenters. With features like Advanced Driver Assistance Systems (ADAS), infotainment, and autonomous driving algorithms running concurrently, a single memory corruption bug in a braking system or CAN bus parser can literally cost lives.</p>
+
+    <h3>Why C/C++ is No Longer Enough</h3>
+    <p>Historically, ECUs (Electronic Control Units) were programmed in C using MISRA guidelines. However, as compute architecture shifts from 100+ isolated microcontrollers to a few high-powered centralized servers (Zone Controllers), the complexity of data sharing skyrockets. MISRA C cannot mathematically guarantee the absence of race conditions in highly concurrent SDV platforms—but Rust can.</p>
+
+    <div class="mermaid" style="background: var(--sidebar-bg); padding: 1.5rem; border-radius: 8px; margin: 2rem 0; text-align: center;">
+graph TD
+    subgraph Traditional["Traditional Architecture (C/C++)"]
+        E1[Brake ECU]
+        E2[Engine ECU]
+        E3[Steering ECU]
+    end
+    subgraph SDV["Modern SDV Central Compute (Rust)"]
+        CC[High-Performance Central Node]
+        CC -->|Ethernet/CAN| Z1[Zone Controller Front]
+        CC -->|Ethernet/CAN| Z2[Zone Controller Rear]
+    end
+    style CC fill:#ed8936,stroke:#dd6b20,color:#fff,stroke-width:2px;
+    </div>
+    <div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem;">Figure 4.1: ECU vs Centralized SDV Architecture</div>
+
+    <div class="info-callout" style="border-left-color: #ff9800;">
+        <strong>Industry Adoption & Safety Certification</strong>
+        <ul>
+            <li><strong>Ferrocene (ISO 26262):</strong> Ferrous Systems successfully qualified the Ferrocene Rust compiler for ASIL-D (Automotive Safety Integrity Level D), the highest classification of injury risk.</li>
+            <li><strong>AUTOSAR Integration:</strong> The standard automotive software architecture (AUTOSAR) is officially adding Rust support to replace legacy C/C++ safety critical components.</li>
+            <li><strong>Major OEMs:</strong> Volvo, GM, and Ford are actively transitioning new vehicle architectures to Rust to ensure memory safety at 120mph.</li>
+        </ul>
+    </div>
+
+    <h2>Breaking News: How OEMs are Moving to Rust</h2>
+    <p>The transition to Rust in the automotive sector is not just a future concept; it is happening right now. Original Equipment Manufacturers (OEMs) and Tier 1 suppliers are rapidly integrating Rust into their next-generation Software-Defined Vehicles to improve time-to-market, reduce warranty recalls caused by memory bugs, and meet stringent safety requirements.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+        <div style="background: var(--sidebar-bg); padding: 1.5rem; border-radius: 8px; border-top: 4px solid var(--accent); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin-top: 0; color: var(--text-color);">Renault's Ampere</h3>
+            <p style="font-size: 0.95rem; margin-bottom: 0;">Ampere, Renault Group's dedicated EV and software brand, has integrated Rust into its core SDV platform. They have already trained over 200 developers in Rust to ensure memory-safe, highly concurrent operations, drastically improving code quality.</p>
+        </div>
+        <div style="background: var(--sidebar-bg); padding: 1.5rem; border-radius: 8px; border-top: 4px solid var(--accent); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin-top: 0; color: var(--text-color);">Bosch & ETAS</h3>
+            <p style="font-size: 0.95rem; margin-bottom: 0;">Bosch and its subsidiary ETAS have committed to using Rust for future embedded software. To drive industry-wide standardization, they co-founded the <strong>Eclipse SDV Rust SIG</strong>, fostering open-source collaboration for automotive-grade Rust components.</p>
+        </div>
+        <div style="background: var(--sidebar-bg); padding: 1.5rem; border-radius: 8px; border-top: 4px solid var(--accent); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin-top: 0; color: var(--text-color);">Incremental Adoption</h3>
+            <p style="font-size: 0.95rem; margin-bottom: 0;">OEMs aren't throwing away decades of C/C++ overnight. They are utilizing Rust's powerful <strong>Foreign Function Interface (FFI)</strong> to write new, high-risk modules (like OTA update parsers) in Rust, seamlessly linking them with legacy C code.</p>
+        </div>
+    </div>
+
+    <div style="background: var(--sidebar-bg); padding: 1.5rem; border-radius: 8px; margin-top: 2rem;">
+        <h3 style="margin-top:0; color:var(--accent);">Tutorial Highlight: Secure CAN Bus Parser</h3>
+        <p>Writing a safe CAN frame parser in Rust ensures that malformed packets injected by hackers via Bluetooth or OBD-II ports cannot cause a buffer overflow in the vehicle's telemetry unit.</p>
+        <pre><code class="language-rust">struct CanFrame { id: u32, data: [u8; 8] }
+
+// Rust guarantees we can never read past the 8th byte!
+// Returns Option::None if the ID is incorrect, preventing undefined behavior.
+fn parse_engine_temp(frame: &CanFrame) -> Option&lt;u8&gt; {
+    if frame.id == 0x1A4 {
+        Some(frame.data[2]) // Safe array access
+    } else {
+        None
+    }
+}</code></pre>
+        <div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">Program 4.1: Zero-cost abstraction CAN parsing</div>
+    </div>
+
+    <h3 style="margin-top: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">External References & Further Reading</h3>
+    <ul style="font-size: 0.9rem; color: var(--text-muted);">
+        <li><a href="https://ferrous-systems.com/ferrocene/" target="_blank" style="color: var(--accent);">Ferrocene ASIL-D Qualified Compiler documentation</a> (Ferrous Systems, 2023)</li>
+        <li><a href="https://www.autosar.org/" target="_blank" style="color: var(--accent);">AUTOSAR Specifications for Rust</a> (AUTOSAR Consortium, 2024)</li>
+        <li><em>"Volvo Cars invests in Rust for next-gen SDV architecture"</em> - Automotive Software Daily (2025)</li>
+    </ul>
+
+</article>
+
+            <footer class="page-navigation">
+                <a href="pre_workshop.html" class="nav-button prev">
+                    <span class="nav-label">Previous</span>
+                    <span class="nav-title">Pre-Workshop</span>
+                </a>
+
+                <a href="session_4_2.html" class="nav-button next">
+                    <span class="nav-label">Next</span>
+                    <span class="nav-title">1.1 Memory Structure</span>
+                </a>
+            </footer>
+
+            <div style="text-align: center; padding: 2rem 0; margin-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem;">
+                Prepared by <a href="https://www.aptcomputinglabs.com/" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: bold;">Apt Computing Labs</a>
+                <br><span style="font-size: 0.8rem; opacity: 0.7;">&copy; 2026 Apt Computing Labs. This material may be distributed freely provided that credit is given to Apt Computing Labs.</span>
+            </div>
+</main>
+    </div>
+    <script src="script.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    });
+</script>
+</body>
+</html>

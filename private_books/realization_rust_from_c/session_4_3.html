@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session 1: Core concepts and C/C++ limitations - Rust Security Course</title>
+    <link rel="stylesheet" href="styles.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+    <script>
+        const savedTheme = localStorage.getItem('rust-book-theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+</head>
+
+<body>
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Rust Security Course</h2>
+            </div>
+            <div class="sidebar-content">
+                                                                                <ul class="toc">
+                    <li><a href="index.html">Introduction</a></li>
+                    <li><a href="pre_workshop.html">Pre-Workshop</a></li>
+                    <li><a href="pre_workshop_cves.html">Common CVEs & Stats</a></li>
+
+                    <li class="toc-main"><a href="session_1_intro.html">Session 1: Core concepts and C/C++ limitations</a></li>
+                    <li><a href="session_1_1.html">1.1 Memory structure</a></li>
+                    <li><a href="session_1_2.html">1.2 Data sharing</a></li>
+                    <li><a href="session_1_3.html">1.3 C/C++ in the wild</a></li>
+                    <li><a href="session_1_4.html">1.4 Tools and practices</a></li>
+
+                    <li class="toc-main"><a href="session_2_intro.html">Session 2: Basics of Rust programming</a></li>
+                    <li><a href="session_2_variables.html">2.1 Variables</a></li>
+                    <li><a href="session_2_types.html">2.2 Data Types</a></li>
+                    <li><a href="session_2_control.html">2.3 Control Flow</a></li>
+                    <li><a href="session_2_functions.html">2.4 Functions</a></li>
+                    <li><a href="session_2_ownership.html">2.5 Ownership</a></li>
+                    <li><a href="session_2_borrowing.html">2.6 Borrowing</a></li>
+                    <li><a href="session_2_references.html">2.7 References</a></li>
+                    <li><a href="session_2_mutability.html">2.8 Mutable vs Immutable</a></li>
+                    <li><a href="session_2_error.html">2.9 Error Handling</a></li>
+                    <li><a href="session_2_cargo.html">2.10 Cargo Basics</a></li>
+
+                    <li class="toc-main"><a href="session_3_intro.html">Session 3: Lab Exercises</a></li>
+                    <li><a href="session_3_1.html">Exercise 1: Hello Rust</a></li>
+                    <li><a href="session_3_2.html">Exercise 2: Ownership in Action</a></li>
+                    <li><a href="session_3_3.html">Exercise 3: Prevent Buffer Overflow</a></li>
+                    <li><a href="session_3_4.html">Exercise 4: Input Validation</a></li>
+                    <li><a href="session_3_5.html">Exercise 5: Safe File Handling</a></li>
+                    <li><a href="session_3_6.html">Exercise 6: Thread-safe Counter</a></li>
+                    <li><a href="session_3_bonus.html">Bonus: Password Generator</a></li>
+
+                    <li class="toc-main"><a href="session_4_intro.html">Session 4: Future of Rust & Career</a></li>
+                    <li><a href="session_4_1.html">4.1 Automotive & SDVs</a></li>
+                    <li><a href="session_4_2.html">4.2 Embedded & IoT</a></li>
+                    <li><a href="session_4_3.html">4.3 Linux & Cloud</a></li>
+                    <li><a href="session_4_4.html">4.4 AI Infrastructure</a></li>
+                    <li><a href="session_4_5.html">4.5 Career Roadmap</a></li>
+                    <li><a href="session_4_6.html">4.6 Automotive Cybersecurity</a></li>
+                    <li class="toc-main"><a href="session_5_test.html">SESSION 5: Test your skills (50 MCQs)</a></li>
+                    <li class="toc-main"><a href="session_library.html">LIBRARY: Standard Library</a></li>
+                    <li><a href="session_library_containers.html">Containers & Collections</a></li>
+                    <li><a href="session_library_io.html">I/O & File System</a></li>
+                    <li><a href="session_library_network.html">Network & Threads</a></li>
+                    <li><a href="session_library_sys.html">System & Env</a></li>
+                    <li class="toc-main"><a href="session_references.html">References</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-nav" id="top-nav">
+                <div class="nav-actions" style="margin-left: auto;">
+                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme">
+                        <svg id="theme-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <article class="book-page">
+
+    <span class="chapter-number">Session 4.3</span>
+    <h1>Linux Kernel & Cloud Infrastructure</h1>
+
+    <h2>Rust in the Linux Kernel</h2>
+    <p>For over 30 years, the Linux Kernel was written exclusively in C and Assembly. In Linux 6.1 (2022), history was made when Rust was officially accepted as the second language of the kernel. This initiative, known as <strong>Rust-for-Linux</strong>, allows developers to write kernel modules (like device drivers and file systems) that are memory-safe by default.</p>
+
+    <div class="mermaid" style="background: var(--sidebar-bg); padding: 1.5rem; border-radius: 8px; margin: 2rem 0; text-align: center;">
+graph LR
+    subgraph UserSpace["User Space"]
+        App[Applications]
+    end
+    subgraph KernelSpace["Kernel Space"]
+        C[Core Kernel (C)]
+        RC[Rust Abstraction Layer]
+        RM[Rust Device Driver]
+
+        C <--> RC
+        RC <--> RM
+    end
+    App <--> KernelSpace
+    style RM fill:#ed8936,stroke:#dd6b20,color:#fff,stroke-width:2px;
+    </div>
+    <div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem;">Figure 4.3: Rust integration architecture in Linux</div>
+
+    <h2>Cloud Computing at Scale</h2>
+    <p>Cloud providers are obsessed with two things: <strong>Security</strong> (tenant isolation) and <strong>Performance</strong> (CPU/Memory overhead). Rust delivers both, making it the premier choice for modern cloud infrastructure.</p>
+
+    <div class="info-callout" style="border-left-color: #2196f3;">
+        <strong>Cloud Infrastructure Rewrites:</strong>
+        <ul>
+            <li><strong>AWS Firecracker:</strong> Amazon wrote the microVM hypervisor that powers AWS Lambda and Fargate entirely in Rust, guaranteeing tenant isolation with microsecond boot times.</li>
+            <li><strong>Cloudflare Pingora:</strong> Cloudflare rewrote their NGINX-based proxy infrastructure in Rust, handling trillions of requests a day while drastically reducing CPU and memory usage, and eliminating memory leaks.</li>
+            <li><strong>Discord:</strong> Transitioned their core microservices from Go to Rust to eliminate garbage collection latency spikes, achieving flat millisecond response times.</li>
+        </ul>
+    </div>
+
+    <h2>Breaking News: Industry Trends in Cloud & OS</h2>
+    <p>Major operating systems and hyperscale cloud providers are mandating shifts to memory-safe languages at an unprecedented scale, solidifying Rust's position in core infrastructure.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+        <div style="background: var(--sidebar-bg); padding: 1.5rem; border-radius: 8px; border-top: 4px solid var(--accent); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin-top: 0; color: var(--text-color);">Microsoft Windows Adoption</h3>
+            <p style="font-size: 0.95rem; margin-bottom: 0;">Microsoft has rewritten core components of the Windows operating system kernel (specifically GDI font parsing) in Rust. The Director of OS Security at Microsoft publicly stated they aim to drastically reduce the volume of CVEs patched each month using Rust.</p>
+        </div>
+        <div style="background: var(--sidebar-bg); padding: 1.5rem; border-radius: 8px; border-top: 4px solid var(--accent); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin-top: 0; color: var(--text-color);">Linux Kernel 6.8+ Expansion</h3>
+            <p style="font-size: 0.95rem; margin-bottom: 0;">Following its initial introduction in 6.1, Rust support in the Linux Kernel is rapidly expanding. Recent kernel releases have merged the first fully Rust-based network PHY drivers and Binder implementations (for Android), proving Rust is ready for high-performance IO.</p>
+        </div>
+        <div style="background: var(--sidebar-bg); padding: 1.5rem; border-radius: 8px; border-top: 4px solid var(--accent); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin-top: 0; color: var(--text-color);">AWS Recommends Rust</h3>
+            <p style="font-size: 0.95rem; margin-bottom: 0;">AWS continues to push Rust aggressively, stating it is critical for sustainable computing. By rewriting core services (like Amazon S3's ShardStore) in Rust, they achieved massive reductions in energy consumption and server footprint across their datacenters.</p>
+        </div>
+    </div>
+
+    <div style="background: var(--sidebar-bg); padding: 1.5rem; border-radius: 8px; margin-top: 2rem;">
+        <h3 style="margin-top:0; color:var(--accent);">Tutorial Highlight: Tokio Async TCP Server</h3>
+        <p>The foundation of all Rust cloud tooling is <code>tokio</code>, an asynchronous runtime capable of handling millions of concurrent connections on a single server.</p>
+        <pre><code class="language-rust">use tokio::net::TcpListener;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+
+#[tokio::main]
+async fn main() -> Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let listener = TcpListener::bind("127.0.0.1:8080").await?;
+
+    loop {
+        let (mut socket, _) = listener.accept().await?;
+
+        // Spawn a lightweight green-thread for each connection
+        tokio::spawn(async move {
+            let mut buf = [0; 1024];
+            let n = socket.read(&mut buf).await.unwrap();
+            socket.write_all(&buf[0..n]).await.unwrap();
+        });
+    }
+}</code></pre>
+        <div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">Program 4.3: Highly concurrent Tokio Echo Server</div>
+    </div>
+
+    <h3 style="margin-top: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">External References & Further Reading</h3>
+    <ul style="font-size: 0.9rem; color: var(--text-muted);">
+        <li><a href="https://kernel.org/" target="_blank" style="color: var(--accent);">Rust for Linux Official Documentation</a> (kernel.org)</li>
+        <li><a href="https://blog.cloudflare.com/pingora-opensource" target="_blank" style="color: var(--accent);">How we built Pingora, the proxy that connects Cloudflare to the Internet</a> (Cloudflare Engineering Blog)</li>
+        <li><a href="https://aws.amazon.com/blogs/opensource/firecracker-open-source-secure-fast-microvm-serverless/" target="_blank" style="color: var(--accent);">Firecracker: Secure and fast microVMs for serverless computing</a> (AWS Open Source Blog)</li>
+    </ul>
+
+</article>
+
+            <footer class="page-navigation">
+                <a href="pre_workshop.html" class="nav-button prev">
+                    <span class="nav-label">Previous</span>
+                    <span class="nav-title">Pre-Workshop</span>
+                </a>
+
+                <a href="session_4_4.html" class="nav-button next">
+                    <span class="nav-label">Next</span>
+                    <span class="nav-title">1.1 Memory Structure</span>
+                </a>
+            </footer>
+
+            <div style="text-align: center; padding: 2rem 0; margin-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem;">
+                Prepared by <a href="https://www.aptcomputinglabs.com/" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: bold;">Apt Computing Labs</a>
+                <br><span style="font-size: 0.8rem; opacity: 0.7;">&copy; 2026 Apt Computing Labs. This material may be distributed freely provided that credit is given to Apt Computing Labs.</span>
+            </div>
+</main>
+    </div>
+    <script src="script.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    });
+</script>
+</body>
+</html>

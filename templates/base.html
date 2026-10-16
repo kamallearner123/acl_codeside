@@ -462,8 +462,10 @@
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown">
-                            <i class="fas fa-user"></i> {{ user.username }}
+                            data-bs-toggle="dropdown" aria-label="Account menu for {{ user.get_full_name|default:user.username }}">
+                            {% load account_tags %}
+                            {% user_avatar user %}
+                            {{ user.get_full_name|default:user.username }}
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">

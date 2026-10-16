@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1.2 Data Sharing - Rust Security Course</title>
+    <link rel="stylesheet" href="styles.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+    <script>
+        const savedTheme = localStorage.getItem('rust-book-theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+</head>
+
+<body>
+    <div class="app-container">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Rust Security Course</h2>
+            </div>
+            <div class="sidebar-content">
+                                                                                <ul class="toc">
+                    <li><a href="index.html">Introduction</a></li>
+                    <li><a href="pre_workshop.html">Pre-Workshop</a></li>
+                    <li><a href="pre_workshop_cves.html">Common CVEs & Stats</a></li>
+
+                    <li class="toc-main"><a href="session_1_intro.html">Session 1: Core concepts and C/C++ limitations</a></li>
+                    <li><a href="session_1_1.html">1.1 Memory structure</a></li>
+                    <li><a href="session_1_2.html">1.2 Data sharing</a></li>
+                    <li><a href="session_1_3.html">1.3 C/C++ in the wild</a></li>
+                    <li><a href="session_1_4.html">1.4 Tools and practices</a></li>
+
+                    <li class="toc-main"><a href="session_2_intro.html">Session 2: Basics of Rust programming</a></li>
+                    <li><a href="session_2_variables.html">2.1 Variables</a></li>
+                    <li><a href="session_2_types.html">2.2 Data Types</a></li>
+                    <li><a href="session_2_control.html">2.3 Control Flow</a></li>
+                    <li><a href="session_2_functions.html">2.4 Functions</a></li>
+                    <li><a href="session_2_ownership.html">2.5 Ownership</a></li>
+                    <li><a href="session_2_borrowing.html">2.6 Borrowing</a></li>
+                    <li><a href="session_2_references.html">2.7 References</a></li>
+                    <li><a href="session_2_mutability.html">2.8 Mutable vs Immutable</a></li>
+                    <li><a href="session_2_error.html">2.9 Error Handling</a></li>
+                    <li><a href="session_2_cargo.html">2.10 Cargo Basics</a></li>
+
+                    <li class="toc-main"><a href="session_3_intro.html">Session 3: Lab Exercises</a></li>
+                    <li><a href="session_3_1.html">Exercise 1: Hello Rust</a></li>
+                    <li><a href="session_3_2.html">Exercise 2: Ownership in Action</a></li>
+                    <li><a href="session_3_3.html">Exercise 3: Prevent Buffer Overflow</a></li>
+                    <li><a href="session_3_4.html">Exercise 4: Input Validation</a></li>
+                    <li><a href="session_3_5.html">Exercise 5: Safe File Handling</a></li>
+                    <li><a href="session_3_6.html">Exercise 6: Thread-safe Counter</a></li>
+                    <li><a href="session_3_bonus.html">Bonus: Password Generator</a></li>
+
+                    <li class="toc-main"><a href="session_4_intro.html">Session 4: Future of Rust & Career</a></li>
+                    <li><a href="session_4_1.html">4.1 Automotive & SDVs</a></li>
+                    <li><a href="session_4_2.html">4.2 Embedded & IoT</a></li>
+                    <li><a href="session_4_3.html">4.3 Linux & Cloud</a></li>
+                    <li><a href="session_4_4.html">4.4 AI Infrastructure</a></li>
+                    <li><a href="session_4_5.html">4.5 Career Roadmap</a></li>
+                    <li><a href="session_4_6.html">4.6 Automotive Cybersecurity</a></li>
+                    <li class="toc-main"><a href="session_5_test.html">SESSION 5: Test your skills (50 MCQs)</a></li>
+                    <li class="toc-main"><a href="session_library.html">LIBRARY: Standard Library</a></li>
+                    <li><a href="session_library_containers.html">Containers & Collections</a></li>
+                    <li><a href="session_library_io.html">I/O & File System</a></li>
+                    <li><a href="session_library_network.html">Network & Threads</a></li>
+                    <li><a href="session_library_sys.html">System & Env</a></li>
+                    <li class="toc-main"><a href="session_references.html">References</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-nav" id="top-nav">
+                <div class="nav-actions" style="margin-left: auto;">
+                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle Theme">
+                        <svg id="theme-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <article class="book-page">
+                <span class="chapter-number">Session 1.2</span>
+                <h1>Data Sharing and Threads</h1>
+
+                <h2>The Danger of Concurrency</h2>
+                <p>Modern processors have many cores. To maximize performance, we use multithreading. However, when multiple threads run simultaneously and share the same memory, they can easily step on each other's toes.</p>
+                <p>If Thread A and Thread B both attempt to read and write to the same variable at the exact same moment without coordination, the data becomes corrupted. This is called a <strong class="keyword-hl">Data Race</strong>.</p>
+
+
+                <div class="mermaid" style="background: var(--sidebar-bg); padding: 1rem; border-radius: 8px; margin: 2rem 0; text-align: center;">
+sequenceDiagram
+    participant TA as Thread A
+    participant M as Shared Memory (Balance: 1000)
+    participant TB as Thread B
+
+    TA->>M: READ Balance (Gets 1000)
+    TB->>M: READ Balance (Gets 1000)
+    TA->>TA: Calculate Add 1 (1001)
+    TB->>TB: Calculate Add 1 (1001)
+    TA->>M: WRITE Balance (Sets 1001)
+    TB->>M: WRITE Balance (Sets 1001)
+    Note over TA,TB: Both increments executed,<br/>but the final total is 1001 instead of 1002!<br/>This is a Data Race.
+                </div>
+<div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem;">Figure 5: The Danger of Concurrency</div>
+
+                <h2>A Classic C Data Race</h2>
+                <p>In C/C++, there is nothing preventing you from causing a data race. The compiler will happily compile the code below, and the bug will only show up occasionally at runtime (making it notoriously hard to debug).</p>
+
+                <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;pthread.h&gt;
+
+// Shared global data
+int account_balance = 1000;
+
+void* process_transaction(void* arg) {
+    // Both threads try to modify the balance simultaneously
+    for(int i = 0; i &lt; 100000; i++) {
+        // This is NOT an atomic operation!
+        // It consists of: READ, MODIFY, WRITE
+        account_balance = account_balance + 1;
+    }
+    return NULL;
+}
+
+int main() {
+    pthread_t thread1, thread2;
+
+    // Start two threads that share the account_balance
+    pthread_create(&amp;thread1, NULL, process_transaction, NULL);
+    pthread_create(&amp;thread2, NULL, process_transaction, NULL);
+
+    // Wait for both to finish
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
+
+    // We expect 1000 + 100000 + 100000 = 201000
+    printf("Final Balance: %d\n", account_balance);
+
+    return 0;
+}</code></pre>
+<div class="element-caption" style="text-align: center; font-style: italic; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 1.5rem; font-size: 0.9rem;">Program 4: A Classic C Data Race</div>
+
+                <div style="background: var(--sidebar-bg); padding: 1rem; border-radius: 6px; margin: 1.5rem 0; font-family: 'Fira Code', monospace; font-size: 0.9em; border-left: 4px solid var(--accent);">
+                    <div style="color: var(--text-muted); font-size: 0.8em; margin-bottom: 0.5rem; font-family: 'Inter', sans-serif;">HOW TO RUN THIS CODE</div>
+                    <span style="color: #4CAF50;">$</span> gcc data_race.c -lpthread -o data_race<br>
+                    <span style="color: #4CAF50;">$</span> ./data_race
+                </div>
+
+                <h2>The Result</h2>
+                <p>If you run this code, the output will almost never be <code>201000</code>. It might be <code>145293</code>, or <code>198302</code>. The operations overlap.</p>
+                <div class="info-callout">
+                    <strong>Why this is a Security Vulnerability:</strong> Data races in critical logic (like checking if a user is authenticated, or validating a bank transfer) can allow attackers to bypass security checks entirely by exploiting the tiny timing window between a thread reading a value and acting on it (known as a Time-of-Check to Time-of-Use or <em>TOCTOU</em> vulnerability).
+                </div>
+
+                <h2>The Solution?</h2>
+                <p>In C/C++, the developer must remember to use <strong>Mutexes</strong> (Mutual Exclusion locks) or semaphores to manually block other threads while reading/writing. Forgetting to lock, locking in the wrong order (Deadlocks), or forgetting to unlock will instantly break the application.</p>
+                <p>As we'll see later, Rust prevents data races entirely at compile time. If your Rust code compiles, data races are mathematically impossible.</p>
+
+            </article>
+
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border-color);"><h2>Topic Quiz (5 Questions)</h2>
+        <div class="mcq-container">
+            <div class="mcq-question">1. What is a data race?</div>
+            <ul class="mcq-options">
+                <li class="mcq-option" data-correct="false">A fast memory access operation</li>
+                <li class="mcq-option" data-correct="true">Two threads accessing same memory simultaneously with at least one writing</li>
+                <li class="mcq-option" data-correct="false">Two threads reading from the same memory</li>
+                <li class="mcq-option" data-correct="false">Data corruption from disk failure</li>
+            </ul>
+            <button class="mcq-submit" disabled>Submit</button>
+            <div class="mcq-feedback">Correct answer! Great job!</div>
+        </div>
+
+        <div class="mcq-container">
+            <div class="mcq-question">2. Why are raw pointers dangerous in concurrent C/C++ code?</div>
+            <ul class="mcq-options">
+                <li class="mcq-option" data-correct="true">They bypass compiler safety checks for concurrent access</li>
+                <li class="mcq-option" data-correct="false">They slow down thread execution</li>
+                <li class="mcq-option" data-correct="false">They consume too much memory</li>
+                <li class="mcq-option" data-correct="false">They automatically lock variables</li>
+            </ul>
+            <button class="mcq-submit" disabled>Submit</button>
+            <div class="mcq-feedback">Correct answer! Great job!</div>
+        </div>
+
+        <div class="mcq-container">
+            <div class="mcq-question">3. What is a common bug associated with shared heap memory?</div>
+            <ul class="mcq-options">
+                <li class="mcq-option" data-correct="false">Stack overflow</li>
+                <li class="mcq-option" data-correct="false">Divide by zero</li>
+                <li class="mcq-option" data-correct="true">Use-after-free</li>
+                <li class="mcq-option" data-correct="false">Syntax error</li>
+            </ul>
+            <button class="mcq-submit" disabled>Submit</button>
+            <div class="mcq-feedback">Correct answer! Great job!</div>
+        </div>
+
+        <div class="mcq-container">
+            <div class="mcq-question">4. How does Rust prevent data races at compile time?</div>
+            <ul class="mcq-options">
+                <li class="mcq-option" data-correct="false">Disabling multithreading</li>
+                <li class="mcq-option" data-correct="false">Automatic garbage collection</li>
+                <li class="mcq-option" data-correct="true">Ownership and Borrowing rules</li>
+                <li class="mcq-option" data-correct="false">Global Interpreter Lock (GIL)</li>
+            </ul>
+            <button class="mcq-submit" disabled>Submit</button>
+            <div class="mcq-feedback">Correct answer! Great job!</div>
+        </div>
+
+        <div class="mcq-container">
+            <div class="mcq-question">5. What happens if you forget to use a mutex in C++ for shared data?</div>
+            <ul class="mcq-options">
+                <li class="mcq-option" data-correct="false">The OS prevents execution</li>
+                <li class="mcq-option" data-correct="true">Undefined behavior and possible data races</li>
+                <li class="mcq-option" data-correct="false">The program automatically locks it</li>
+                <li class="mcq-option" data-correct="false">The compiler throws an error</li>
+            </ul>
+            <button class="mcq-submit" disabled>Submit</button>
+            <div class="mcq-feedback">Correct answer! Great job!</div>
+        </div>
+        </div>
+<footer class="page-navigation">
+                <a href="session_1_1.html" class="nav-button prev">
+                    <span class="nav-label">Previous</span>
+                    <span class="nav-title">1.1 Memory Structure</span>
+                </a>
+
+                <a href="session_1_3.html" class="nav-button next">
+                    <span class="nav-label">Next</span>
+                    <span class="nav-title">1.3 C/C++ in the wild</span>
+                </a>
+            </footer>
+
+            <div style="text-align: center; padding: 2rem 0; margin-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.9rem;">
+                Prepared by <a href="https://www.aptcomputinglabs.com/" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: bold;">Apt Computing Labs</a>
+                <br><span style="font-size: 0.8rem; opacity: 0.7;">&copy; 2026 Apt Computing Labs. This material may be distributed freely provided that credit is given to Apt Computing Labs.</span>
+            </div>
+</main>
+    </div>
+    <script src="script.js"></script>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    });
+</script>
+
+</body>
+</html>

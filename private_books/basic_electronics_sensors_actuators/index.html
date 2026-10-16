@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical, microcontroller-free guide to sensors, actuators and analog circuits.">
+  <title>Basic Electronics with Sensors and Actuators</title>
+  <style>
+    :root { color-scheme: light; --ink:#182b45; --muted:#52657d; --accent:#d74747; --line:#dbe3ec; --paper:#f4f7fb; --blue:#eaf2fc; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    header { background:linear-gradient(125deg,#182b45,#315c82); color:white; padding:3rem max(1rem,calc((100% - 1100px)/2)); }
+    header h1 { max-width:850px; margin:.3rem 0 1rem; font-size:clamp(2rem,5vw,3.6rem); line-height:1.1; }
+    header p { max-width:780px; color:#e3edf8; font-size:1.12rem; }
+    .eyebrow { color:#ffd18a; text-transform:uppercase; letter-spacing:.12em; font-size:.78rem; font-weight:800; }
+    .layout { width:min(1100px,calc(100% - 2rem)); margin:2rem auto; display:grid; grid-template-columns:245px minmax(0,1fr); gap:1.5rem; align-items:start; }
+    nav { position:sticky; top:1rem; background:white; padding:1rem; border:1px solid var(--line); border-radius:14px; box-shadow:0 6px 24px #182b4510; }
+    nav strong { display:block; margin:.2rem .6rem .5rem; }
+    nav a { display:block; padding:.35rem .6rem; color:#315c82; text-decoration:none; font-size:.91rem; border-radius:7px; }
+    nav a:hover, nav a:focus { background:var(--blue); text-decoration:underline; }
+    main { min-width:0; }
+    section, .notice { background:white; padding:clamp(1.1rem,3vw,2rem); margin-bottom:1.2rem; border:1px solid var(--line); border-radius:14px; box-shadow:0 6px 24px #182b4509; scroll-margin-top:1rem; }
+    h2 { margin:.1rem 0 1rem; font-size:1.75rem; line-height:1.25; }
+    h3 { margin:1.4rem 0 .5rem; font-size:1.18rem; }
+    p { margin:.55rem 0; }
+    .muted { color:var(--muted); }
+    .callout { border-left:4px solid var(--accent); padding:.8rem 1rem; background:#fff5f3; border-radius:0 8px 8px 0; margin:1rem 0; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:.8rem; margin:1rem 0; }
+    .card { padding:1rem; background:#f7f9fc; border:1px solid var(--line); border-radius:10px; }
+    .card h3 { margin:.1rem 0 .35rem; }
+    .picture-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:.8rem; margin:1rem 0; }
+    .picture-card { text-align:center; padding:.75rem; background:#fbfcfe; border:1px solid var(--line); border-radius:10px; }
+    .picture-card svg { width:100%; max-width:150px; height:100px; display:block; margin:0 auto .4rem; }
+    .picture-card svg text { font-size:11px; }
+    .pill { display:inline-block; margin:.15rem .2rem .15rem 0; padding:.1rem .55rem; background:var(--blue); color:#24496c; border-radius:99px; font-size:.82rem; font-weight:650; }
+    figure { margin:1.2rem 0; padding:.8rem; overflow-x:auto; background:#fbfcfe; border:1px solid var(--line); border-radius:10px; }
+    figure svg { display:block; width:100%; min-width:520px; height:auto; }
+    figcaption { margin:.5rem .2rem 0; color:var(--muted); font-size:.9rem; }
+    svg text { font-family:system-ui,-apple-system,"Segoe UI",sans-serif; fill:#182b45; font-size:15px; }
+    svg .wire { stroke:#26384d; stroke-width:3; fill:none; }
+    svg .part { stroke:#d74747; stroke-width:3; fill:#fff; }
+    svg .node { fill:#d74747; }
+    svg .label { font-size:13px; fill:#52657d; }
+    table { width:100%; border-collapse:collapse; margin:1rem 0; }
+    th,td { padding:.65rem; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:#edf3f9; }
+    code { padding:.1rem .3rem; border-radius:4px; background:#edf1f6; }
+    footer { text-align:center; padding:2rem 1rem; color:var(--muted); }
+    @media (max-width:760px) { .layout { grid-template-columns:1fr; } nav { position:static; } nav .links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media print { body { background:white; } nav { display:none; } .layout { display:block; width:auto; } section,.notice { box-shadow:none; break-inside:avoid; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">A practical circuit-first handbook</div>
+  <h1>Basic Electronics with Sensors and Actuators</h1>
+  <p>Understand what sensors measure, how their electrical signals behave, and how to turn those signals into useful action—using passive components, op-amps, comparators, timers and transistor drivers. No microcontroller or software is required.</p>
+  <p><span class="pill">Read a circuit</span><span class="pill">Measure with a multimeter</span><span class="pill">Build on a breadboard</span><span class="pill">Explain the physics</span></p>
+</header>
+<div class="layout">
+  <nav aria-label="Handbook contents">
+    <strong>Course contents</strong>
+    <div class="links">
+      <a href="#start">Start here</a><a href="#signals">Signals and circuits</a>
+      <a href="#sensor-families">Sensor families</a><a href="#resistive">Resistive sensors</a>
+      <a href="#light">Light and optical</a><a href="#temperature">Temperature</a>
+      <a href="#magnetic">Magnetic and position</a><a href="#motion">Motion and distance</a>
+      <a href="#sound-pressure">Sound and pressure</a><a href="#chemical">Chemical and moisture</a>
+      <a href="#circuits">Circuit cookbook</a><a href="#actuators">Actuators</a>
+      <a href="#projects">Build projects</a><a href="#safety">Safety and glossary</a>
+    </div>
+  </nav>
+  <main>
+    <section id="start">
+      <h2>Start here: a sensor is a physical-to-electrical translator</h2>
+      <p>A sensor responds to a physical quantity—light, heat, force, position or a chemical—and changes a resistance, voltage, current, charge or digital contact. A circuit conditions that change into a signal that can be measured, displayed, compared with a threshold or used to switch an actuator.</p>
+      <div class="grid">
+        <div class="card"><h3>1. The quantity</h3><p>Decide what is measured and its range: for example, temperature in °C or light level relative to a reference.</p></div>
+        <div class="card"><h3>2. The transducer</h3><p>Identify the sensor's output: resistance, a tiny current, generated voltage, capacitance or open/closed contact.</p></div>
+        <div class="card"><h3>3. The conditioning</h3><p>Use a divider, bridge, amplifier, filter or comparator to make a useful and stable signal.</p></div>
+        <div class="card"><h3>4. The action</h3><p>Use a properly rated transistor, MOSFET, relay or driver to operate a load; never ask a sensor to drive it directly.</p></div>
+      </div>
+      <div class="callout"><strong>Learning promise:</strong> every practical exercise can be completed with a breadboard, a safe low-voltage supply, basic components and a multimeter. The sensor-to-action circuits in this handbook do not use an MCU.</div>
+    </section>
+
+    <section id="signals">
+      <h2>Read signals before building circuits</h2>
+      <p>Voltage is measured between two points; current flows through a path; resistance describes how strongly a component opposes current. A voltage divider turns a changing resistance into a changing voltage.</p>
+      <figure>
+        <svg viewBox="0 0 720 230" role="img" aria-labelledby="divtitle divdesc">
+          <title id="divtitle">Basic sensor voltage divider</title><desc id="divdesc">A supply connects through a fixed resistor and a variable sensor resistor to ground. The midpoint is the measured output.</desc>
+          <path class="wire" d="M100 35H300 M300 35V65 M300 130V165 M300 165H500 M300 95H470"/>
+          <path class="wire" d="M300 35V65 M300 130V165"/>
+          <rect class="part" x="270" y="65" width="60" height="30" rx="3"/><text x="340" y="86">R fixed</text>
+          <path class="part" d="M280 130h40m-35-7 30 14m-28-18 20 9"/><text x="340" y="145">Sensor resistance</text>
+          <circle class="node" cx="300" cy="110" r="5"/><text x="475" y="101">Vout to meter / amplifier</text>
+          <text x="60" y="42">+V</text><text x="475" y="172">0 V</text>
+          <path class="wire" d="M500 165v18m-22 0h44m-36 8h28m-20 8h12"/>
+        </svg>
+        <figcaption>Divider output depends on which side contains the sensor. Measure it at the midpoint; calculate it using Ohm's law before adding a load.</figcaption>
+      </figure>
+      <p>For the drawing above, <code>Vout = Vs × Rsensor / (Rfixed + Rsensor)</code>. Swapping the fixed resistor and sensor makes the output move in the opposite direction. This circuit produces a signal; it is not a precision instrument until calibrated.</p>
+    </section>
+
+    <section id="sensor-families">
+      <h2>Sensor families: what they detect and what they output</h2>
+      <p>There are many specialised sensors; the following map covers the major transducer families and common parts students encounter. Choose by measurand, range, accuracy, environment, output type and calibration requirements.</p>
+      <div class="grid">
+        <div class="card"><h3>Resistive</h3><p>Temperature (thermistor, RTD), illumination (LDR), force (FSR, strain gauge), position (potentiometer), humidity and soil moisture probes.</p><span class="pill">Resistance changes</span></div>
+        <div class="card"><h3>Capacitive</h3><p>Touch, proximity, liquid level, humidity and position; the dielectric or distance changes capacitance.</p><span class="pill">Capacitance changes</span></div>
+        <div class="card"><h3>Inductive and magnetic</h3><p>Metal proximity (inductive), magnetic field/current/rotation (Hall), door position (reed), angular position (magnetoresistive).</p><span class="pill">Field / impedance</span></div>
+        <div class="card"><h3>Optical</h3><p>Photodiodes, phototransistors, IR reflectance and break-beam sensors, colour sensors, flame detectors and optical encoders.</p><span class="pill">Light → current / switch</span></div>
+        <div class="card"><h3>Piezoelectric and acoustic</h3><p>Vibration, impact, knock, sound and ultrasonic transducers; mechanical stress generates charge or a voltage.</p><span class="pill">Charge / AC signal</span></div>
+        <div class="card"><h3>Thermoelectric</h3><p>Thermocouples generate a small voltage from a temperature difference; RTDs change resistance predictably.</p><span class="pill">Voltage / resistance</span></div>
+        <div class="card"><h3>Pressure, force and flow</h3><p>Diaphragm strain bridges, load cells, pressure switches, turbine/reed flow meters and differential-pressure sensors.</p><span class="pill">Bridge / pulse / switch</span></div>
+        <div class="card"><h3>Chemical and electrochemical</h3><p>Gas-sensitive metal-oxide sensors, electrochemical gas cells, pH probes, conductivity probes and oxidation/reduction electrodes.</p><span class="pill">Resistance / tiny current</span></div>
+        <div class="card"><h3>Inertial and orientation</h3><p>Accelerometers, gyroscopes and tilt switches; many modern units are digital, but a tilt switch is a simple contact sensor.</p><span class="pill">Analog / digital / contact</span></div>
+        <div class="card"><h3>Temperature, humidity and water</h3><p>Thermistors, RTDs, thermocouples, capacitive humidity elements, float switches, leak strips and conductive probes.</p><span class="pill">Several output types</span></div>
+      </div>
+      <h3>Illustrated sensor and transducer gallery</h3>
+      <p class="muted">These simplified vector pictures show typical component forms; real package shapes vary by manufacturer. The circuit diagrams below show how to connect representative devices.</p>
+      <div class="picture-grid">
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of a photoresistor with two leads and a zigzag light-sensitive track">
+            <path d="M45 62V95M105 62V95" stroke="#26384d" stroke-width="4"/><circle cx="75" cy="48" r="29" fill="#fff4ce" stroke="#26384d" stroke-width="4"/><path d="M60 48h10l7-11 8 22 7-11" fill="none" stroke="#d74747" stroke-width="4"/><path d="M34 15l14 10M45 5l12 16M22 28l18 7" stroke="#e99b27" stroke-width="4"/>
+          </svg><strong>LDR / photoresistor</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of a bead thermistor with two metal leads">
+            <path d="M30 53H58M92 53h28" stroke="#26384d" stroke-width="5"/><ellipse cx="75" cy="53" rx="20" ry="25" fill="#d74747" stroke="#26384d" stroke-width="3"/><path d="M68 32q14 20 0 42M78 29q14 24 0 48" fill="none" stroke="#ffd18a" stroke-width="3"/><text x="54" y="94">NTC / PTC</text>
+          </svg><strong>Thermistor bead</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of a metal-sheathed temperature probe">
+            <rect x="24" y="40" width="80" height="22" rx="10" fill="#cbd5df" stroke="#26384d" stroke-width="3"/><path d="M104 45h25M104 57h25" stroke="#d74747" stroke-width="3"/><path d="M30 45h60M30 56h60" stroke="#fff" stroke-width="2"/><text x="32" y="85">RTD / thermocouple</text>
+          </svg><strong>RTD / thermocouple probe</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of a strain-gauge load cell beam with mounting holes and foil gauge">
+            <path d="M20 35h110v32H20z" fill="#cbd5df" stroke="#26384d" stroke-width="3"/><circle cx="31" cy="51" r="5" fill="white" stroke="#26384d" stroke-width="2"/><circle cx="119" cy="51" r="5" fill="white" stroke="#26384d" stroke-width="2"/><path d="M52 42h44v18H52z" fill="#fff4ce" stroke="#d74747" stroke-width="2"/><path d="M57 51h7l4-6 5 12 5-12 5 12 5-6h5" fill="none" stroke="#26384d" stroke-width="2"/><text x="48" y="89">strain gauge</text>
+          </svg><strong>Strain gauge / load cell</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of a three-pin Hall-effect sensor package">
+            <path d="M49 31h52v42H49z" fill="#222f3e" stroke="#111827" stroke-width="3"/><path d="M58 73v21M75 73v21M92 73v21" stroke="#c38b35" stroke-width="4"/><text x="59" y="57" fill="#fff">HALL</text><path d="M18 43h17m-17 14h17m-17 14h17" stroke="#d74747" stroke-width="3"/><text x="12" y="25">magnetic field</text>
+          </svg><strong>Hall-effect switch</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of a reed switch glass capsule and a nearby magnet">
+            <rect x="25" y="43" width="100" height="20" rx="10" fill="#e7f5fa" stroke="#26384d" stroke-width="3"/><path d="M10 53h39l19-8M140 53h-39l-19 8" fill="none" stroke="#c38b35" stroke-width="3"/><rect x="45" y="23" width="45" height="10" rx="3" fill="#d74747"/><text x="43" y="88">sealed contacts</text>
+          </svg><strong>Reed switch</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of an infrared emitter and phototransistor facing each other across a beam">
+            <path d="M32 34v38m-10-28h20m-20 18h20M118 34v38m-20-28 20 12-20 12" fill="none" stroke="#26384d" stroke-width="4"/><path d="M54 45l30 8-30 8M57 35l25 14M57 70l25-14" fill="none" stroke="#d74747" stroke-width="3"/><text x="14" y="92">IR LED</text><text x="90" y="92">receiver</text>
+          </svg><strong>Optical pair</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of a metal-can gas sensor with mesh cap and six pins">
+            <path d="M42 28h66v44H42z" fill="#cbd5df" stroke="#26384d" stroke-width="3"/><path d="M47 38h56m-56 8h56m-56 8h56m-56 8h56" stroke="#52657d" stroke-width="2"/><path d="M53 72v22m15-22v22m15-22v22m15-22v22" stroke="#c38b35" stroke-width="4"/><text x="52" y="20">heated element</text>
+          </svg><strong>Metal-oxide gas sensor</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of an electret microphone capsule with sound waves">
+            <rect x="48" y="27" width="54" height="48" rx="10" fill="#d6dde6" stroke="#26384d" stroke-width="3"/><path d="M58 35h34M58 42h34" stroke="#52657d" stroke-width="2"/><path d="M62 75v18m26-18v18M26 39q-14 12 0 24m98-24q14 12 0 24" fill="none" stroke="#d74747" stroke-width="3"/><text x="52" y="18">electret</text>
+          </svg><strong>Electret microphone</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of a float switch attached to a water tank wall">
+            <path d="M24 18v65h102" fill="none" stroke="#26384d" stroke-width="4"/><path d="M28 55h94v25H28" fill="#d8f0fa" stroke="#4a9cb8" stroke-width="2"/><circle cx="77" cy="51" r="15" fill="#fff" stroke="#26384d" stroke-width="3"/><path d="M77 36V22h32" fill="none" stroke="#d74747" stroke-width="3"/><text x="44" y="96">float + switch</text>
+          </svg><strong>Float level switch</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of a pair of ultrasonic transmitter and receiver transducers">
+            <path d="M22 31h42v43H22zM86 31h42v43H86z" fill="#cbd5df" stroke="#26384d" stroke-width="3"/><path d="M28 40h30m-30 8h30m-30 8h30M92 40h30m-30 8h30m-30 8h30" stroke="#52657d" stroke-width="2"/><path d="M66 41q10 12 0 24m18-24q-10 12 0 24" fill="none" stroke="#d74747" stroke-width="3"/><text x="26" y="92">transmit</text><text x="94" y="92">receive</text>
+          </svg><strong>Ultrasonic pair</strong>
+        </div>
+        <div class="picture-card">
+          <svg viewBox="0 0 150 100" role="img" aria-label="Illustration of a pH glass electrode with a bulb and cable">
+            <path d="M68 12h18v48q0 8 12 16v10H56V76q12-8 12-16z" fill="#e8f4fa" stroke="#26384d" stroke-width="3"/><path d="M65 77h24" stroke="#d74747" stroke-width="4"/><path d="M77 12V3h44" fill="none" stroke="#52657d" stroke-width="3"/><text x="55" y="98">glass electrode</text>
+          </svg><strong>pH electrode</strong>
+        </div>
+      </div>
+    </section>
+
+    <section id="resistive">
+      <h2>Resistive sensors: the simplest circuits to explore</h2>
+      <h3>Potentiometer and position</h3>
+      <p>A potentiometer is a three-terminal adjustable divider. Its wiper voltage represents shaft or slider position. It is useful for position feedback, but loading the wiper changes the reading. A rotary potentiometer is not the same as a precision rotary encoder, which reports discrete movement.</p>
+      <h3>Force-sensitive resistor and strain gauge</h3>
+      <p>An FSR's resistance usually falls as applied force increases; it is suitable for qualitative pressure and presence, not calibrated weighing. A strain gauge changes resistance by a tiny amount and is normally placed in a Wheatstone bridge, then amplified by an instrumentation amplifier. A load cell is a bridge-based force transducer.</p>
+      <h3>Soil and liquid conductivity</h3>
+      <p>Two electrodes in wet soil or liquid form a crude conductivity sensor. Readings vary with salts, temperature, electrode spacing and corrosion. Do not leave DC across bare electrodes: use brief measurements or alternating excitation. For durable soil measurement prefer a capacitive probe.</p>
+      <figure>
+        <svg viewBox="0 0 720 270" role="img" aria-labelledby="brid.title brid.desc">
+          <title id="brid.title">Wheatstone bridge for strain or resistance sensors</title><desc id="brid.desc">Four resistive arms form a bridge. The excitation is applied top to bottom and the differential signal is measured across the middle nodes.</desc>
+          <path class="wire" d="M360 35L190 105L360 175L530 105Z M360 35V20 M360 175V200 M190 105H120 M530 105H600"/>
+          <rect class="part" x="155" y="57" width="62" height="28" transform="rotate(-22 186 71)"/><rect class="part" x="235" y="143" width="62" height="28" transform="rotate(22 266 157)"/>
+          <rect class="part" x="425" y="143" width="62" height="28" transform="rotate(-22 456 157)"/><rect class="part" x="505" y="57" width="62" height="28" transform="rotate(22 536 71)"/>
+          <text x="97" y="115">Vout−</text><text x="604" y="115">Vout+</text><text x="376" y="31">Excitation +</text><text x="377" y="207">0 V</text>
+          <text class="label" x="133" y="47">R1</text><text class="label" x="224" y="192">R2 (active gauge)</text><text class="label" x="430" y="192">R3</text><text class="label" x="567" y="47">R4</text>
+        </svg>
+        <figcaption>A bridge turns a small resistance imbalance into a differential voltage. It normally needs a low-noise instrumentation amplifier; do not expect a multimeter to show a large voltage.</figcaption>
+      </figure>
+    </section>
+
+    <section id="light">
+      <h2>Light and optical sensors</h2>
+      <p><strong>LDR:</strong> resistance generally decreases in brighter light. Use a divider for a threshold or light-level experiment; response is slow and part-to-part tolerance is large.</p>
+      <p><strong>Photodiode:</strong> produces photocurrent, often tiny and approximately proportional to illumination. A reverse-biased photodiode with a transimpedance amplifier gives a fast, measurable voltage. <strong>Phototransistor:</strong> offers more output current but is generally slower and more variable.</p>
+      <p><strong>IR reflective / break-beam:</strong> pair an IR LED with a phototransistor. Modulate or shield from ambient light for better reliability. <strong>Colour sensors</strong> use filtered photodiodes; flame detectors respond to a spectral band and must not be treated as safety-rated fire alarms.</p>
+      <figure>
+        <svg viewBox="0 0 720 245" role="img" aria-labelledby="photo.title photo.desc">
+          <title id="photo.title">Photodiode transimpedance amplifier</title><desc id="photo.desc">A photodiode feeds the inverting input of an op amp, with a feedback resistor across output and inverting input. The non-inverting input is grounded.</desc>
+          <path class="wire" d="M80 100H260 M260 100L410 55V155L260 110 M260 150V190 M410 105H610 M610 105V55 M610 55H470"/>
+          <text x="248" y="105">−</text><text x="248" y="151">+</text><text x="425" y="112">OUT</text>
+          <path class="wire" d="M610 105V185H515 M515 185V55"/>
+          <rect class="part" x="536" y="104" width="54" height="28" rx="2"/><text x="536" y="153">Rf</text>
+          <path class="wire" d="M70 83V117 M55 90L70 100L55 110 M45 74L67 91 M35 65L57 82"/>
+          <text x="20" y="140">Light</text><text class="label" x="76" y="70">photodiode</text>
+          <path class="wire" d="M260 190v12m-20 0h40m-32 8h24m-17 8h10"/>
+          <text class="label" x="440" y="40">Op amp (e.g., LM358 on suitable supply)</text>
+        </svg>
+        <figcaption>Illustrative transimpedance topology. Select feedback resistance and compensation for the photodiode and bandwidth; observe the op-amp input/output limits in its datasheet.</figcaption>
+      </figure>
+    </section>
+
+    <section id="temperature">
+      <h2>Temperature and environmental sensors</h2>
+      <div class="grid">
+        <div class="card"><h3>NTC thermistor</h3><p>Resistance falls as temperature rises. In a divider it produces a nonlinear voltage; use a lookup table or calibration for accurate temperature.</p></div>
+        <div class="card"><h3>PTC and RTD</h3><p>PTC resistance rises sharply or predictably over a range. Platinum RTDs such as Pt100/Pt1000 are stable and require careful lead and excitation design.</p></div>
+        <div class="card"><h3>Thermocouple</h3><p>Two dissimilar metals create a tiny voltage related to a temperature difference. Amplification and cold-junction compensation are essential.</p></div>
+        <div class="card"><h3>Humidity</h3><p>Capacitive humidity elements change capacitance; resistive types change impedance. Most require a specified AC or electronic interface.</p></div>
+      </div>
+      <figure>
+        <svg viewBox="0 0 720 240" role="img" aria-labelledby="ntc.title ntc.desc">
+          <title id="ntc.title">Thermistor threshold indicator with comparator</title><desc id="ntc.desc">An NTC thermistor and resistor form a divider feeding a comparator. A potentiometer sets the reference; output drives a transistor stage.</desc>
+          <path class="wire" d="M90 35H220V65 M220 125V165H90 M220 95H300 M300 95H365 M365 70L475 45V145L365 120Z M475 95H575"/>
+          <rect class="part" x="190" y="65" width="60" height="30"/><text x="260" y="87">NTC</text><rect class="part" x="190" y="125" width="60" height="30"/><text x="260" y="148">R fixed</text>
+          <text x="333" y="82">+</text><text x="333" y="124">−</text><text x="385" y="101">Comparator</text>
+          <path class="wire" d="M300 95V190H385 M385 190V135 M385 190V210 M365 210h40"/>
+          <text x="82" y="42">+5 V</text><text x="80" y="171">0 V</text><text x="485" y="88">to LED / driver</text>
+          <path class="wire" d="M575 95H610V75 M610 95V155 M610 155h-24m24 0h24m-24 0v25"/>
+          <text class="label" x="548" y="61">current-limited load</text>
+        </svg>
+        <figcaption>Comparator-based thermostat concept. Add positive feedback (hysteresis) to prevent rapid switching near the threshold; use a driver for any substantial load.</figcaption>
+      </figure>
+      <p>For an NTC divider, calculate a safe excitation current and avoid self-heating. Calibrate against a known thermometer. A bare thermistor is not a fire-protection device.</p>
+    </section>
+
+    <section id="magnetic">
+      <h2>Magnetic, proximity and position sensors</h2>
+      <p><strong>Reed switch:</strong> a sealed contact operated by a magnet. Simple door, float and rotation pickup; bounce can be filtered with an RC network or Schmitt trigger. <strong>Hall switch:</strong> an electronic output changes when magnetic field crosses a threshold; check whether it is open-collector and add a pull-up if required.</p>
+      <p><strong>Inductive proximity:</strong> an oscillator coil detects metal through a change in losses; common industrial sensors contain their own oscillator and provide a switched output. <strong>Magnetoresistive:</strong> resistance changes with magnetic field and can measure angle or field with a suitable bridge/interface.</p>
+      <p><strong>Position and level:</strong> potentiometers provide continuous position; float and tilt switches provide discrete states; capacitive and ultrasonic arrangements can sense a level without a moving contact.</p>
+      <figure>
+        <svg viewBox="0 0 720 235" role="img" aria-labelledby="reed.title reed.desc">
+          <title id="reed.title">Reed switch alarm input with transistor and buzzer</title><desc id="reed.desc">A pull-up resistor biases a reed-switch input, which drives an NPN transistor. The transistor switches a low-voltage buzzer; a diode protects an inductive buzzer.</desc>
+          <path class="wire" d="M90 35H245V65 M245 125V170H90 M245 95H340 M340 95H405"/>
+          <rect class="part" x="215" y="65" width="60" height="30"/><text x="280" y="87">Pull-up</text>
+          <path class="part" d="M210 125h70m-60-9 15 9-15 9m40-18-15 9 15 9"/><text x="286" y="145">Reed switch</text>
+          <circle class="part" cx="450" cy="120" r="30"/><path class="wire" d="M405 95l45 25 40-25 M450 150V185 M480 95V55H575"/>
+          <text x="438" y="126">Q1</text><text class="label" x="414" y="218">NPN low-side switch</text>
+          <path class="wire" d="M575 55V95m-22 0h44m-44 8h44m-44 8h44m-22 0v69h-125"/>
+          <text x="586" y="94">Buzzer</text><text x="89" y="43">+5 V</text><text x="82" y="185">0 V</text><text x="338" y="82">Base resistor</text>
+        </svg>
+        <figcaption>Door alarm concept; choose the pull-up, base resistor and buzzer current from the component datasheets. A normally-closed contact can make some broken-wire faults easier to detect.</figcaption>
+      </figure>
+    </section>
+
+    <section id="motion">
+      <h2>Motion, distance, vibration and rotation</h2>
+      <ul>
+        <li><strong>Accelerometer / gyroscope:</strong> MEMS sensors measure acceleration or angular rate, often as a digital serial output. A simple tilt-ball switch instead closes when its orientation changes.</li>
+        <li><strong>Ultrasonic ranging:</strong> a transmitter emits a sound burst and a receiver detects the echo. A discrete implementation needs a burst oscillator, receiver amplifier, blanking/time measurement and threshold logic; many ready-made modules package these circuits but still do not require an MCU to experiment with their analog signals.</li>
+        <li><strong>Vibration / piezo disc:</strong> mechanical stress produces a bipolar pulse. Use a high-value input resistor, clamp/protection and an amplifier/comparator; do not connect a piezo directly to a sensitive input without checking peak voltage.</li>
+        <li><strong>Speed / rotation:</strong> a slotted optical interrupter, Hall sensor with a magnet, or reed switch can generate pulses. A 555/CMOS counter or frequency-to-voltage circuit can indicate rate without firmware.</li>
+        <li><strong>Flow:</strong> turbine meters produce pulses; differential pressure and thermal flow sensors need their specified analog conditioning. Calibrate in the actual fluid and pipe configuration.</li>
+      </ul>
+      <figure>
+        <svg viewBox="0 0 720 240" role="img" aria-labelledby="pulse.title pulse.desc">
+          <title id="pulse.title">Optical break-beam sensor with Schmitt comparator output</title><desc id="pulse.desc">An infrared LED shines across a gap to a phototransistor. A comparator with a reference and hysteresis produces a clean logic-level transition for a counter or relay circuit.</desc>
+          <path class="wire" d="M65 55H180V85 M180 135V185H65 M180 110H300 M300 110H375 M375 80L480 55V165L375 140Z M480 110H610"/>
+          <path class="part" d="M145 85v50m-26-37h26m-26 24h26"/><text x="95" y="162">IR LED</text>
+          <path class="wire" d="M205 68l35 22-35 22 M240 90v36 M205 112v35 M205 147h35"/>
+          <text x="202" y="170">Phototransistor</text>
+          <path class="wire" d="M270 110v-65h-55 M270 110v80h-55 M215 45h-30 M215 190h-30"/>
+          <text x="345" y="100">+</text><text x="345" y="140">−</text><text x="390" y="119">Schmitt comparator</text>
+          <path class="wire" d="M480 110V198H430V145 M430 198H520V110 M520 110"/>
+          <text x="500" y="101">clean pulse</text><text x="55" y="62">+5 V</text><text x="55" y="199">0 V</text>
+          <text class="label" x="282" y="30">Opaque object interrupts beam</text>
+        </svg>
+        <figcaption>Optical interrupter teaching circuit. Use an appropriate series resistor for the IR LED and a pull-up for the phototransistor; shield the receiver from room light.</figcaption>
+      </figure>
+    </section>
+
+    <section id="sound-pressure">
+      <h2>Sound, pressure, force and weight</h2>
+      <p><strong>Electret microphone:</strong> requires a bias resistor and produces a small AC signal. A transistor or op-amp preamplifier raises it to a useful level. Add a coupling capacitor and keep the input wiring short to reduce hum.</p>
+      <p><strong>Piezo microphone / knock sensor:</strong> behaves as a high-impedance charge source. Use a buffer or high-input-impedance amplifier, protection, and a threshold stage for event detection.</p>
+      <p><strong>Pressure transducers:</strong> piezoresistive diaphragm sensors commonly output a bridge signal. Capacitive pressure cells change capacitance; piezoelectric pressure sensors are better for dynamic events than static pressure.</p>
+      <p><strong>Load cells:</strong> usually four strain gauges in a bridge, with a very small differential output. Stable excitation, instrumentation amplification, mechanical mounting and calibration weights are all important. Do not promise accurate weight from one resistor divider.</p>
+      <figure>
+        <svg viewBox="0 0 720 220" role="img" aria-labelledby="mic.title mic.desc">
+          <title id="mic.title">Electret microphone bias and single-transistor preamplifier</title><desc id="mic.desc">A bias resistor feeds an electret capsule. A coupling capacitor sends the audio signal to a common-emitter transistor amplifier with collector and emitter resistors.</desc>
+          <path class="wire" d="M85 35H180V80 M180 125V170H85 M180 100H260 M260 100H330"/>
+          <circle class="part" cx="180" cy="103" r="24"/><text x="155" y="108">MIC</text><text x="100" y="50">+9 V</text><text x="105" y="178">0 V</text>
+          <rect class="part" x="150" y="55" width="60" height="25"/><text x="218" y="73">2.2k bias</text>
+          <path class="wire" d="M330 100h35 M385 100h38 M423 100v24 M423 124l33 24 0-48z M456 100V55H565 M456 148V180H410"/>
+          <rect class="part" x="358" y="84" width="28" height="32"/><text x="348" y="75">C1</text>
+          <text x="468" y="101">Q1</text><text class="label" x="466" y="164">NPN</text>
+          <path class="wire" d="M565 55v30m-20 0h40m-40 8h40m-20 0v17 M456 180v12m-20 0h40m-32 8h24"/>
+          <text x="565" y="105">R collector</text><text x="476" y="206">R emitter</text><text x="578" y="59">audio out (couple)</text>
+        </svg>
+        <figcaption>Single-stage microphone preamplifier concept. Bias points and gain depend on the transistor and load. Use a second stage or an op-amp for stronger gain; this circuit is for learning, not calibrated sound measurement.</figcaption>
+      </figure>
+    </section>
+
+    <section id="chemical">
+      <h2>Chemical, gas, humidity and moisture sensors</h2>
+      <p><strong>Metal-oxide gas sensors (for example, MQ family):</strong> a heated element and sensing resistance respond to gases. They draw heater current, need warm-up, calibration and compensation; their broad response is not a selective or safety-certified gas alarm.</p>
+      <p><strong>Electrochemical gas cells:</strong> can be selective and low-power, but their output is typically a very small current and the manufacturer specifies the bias and potentiostat circuit. <strong>pH electrodes</strong> have high impedance and need a very high-input-impedance amplifier; ordinary divider circuits are inappropriate.</p>
+      <p><strong>Conductivity / soil probes:</strong> measure ionic conduction and are sensitive to contamination, temperature and electrode polarisation. Use AC excitation for long-term operation and calibrate against the target medium.</p>
+      <p><strong>Humidity:</strong> capacitive elements require an AC measurement method; a bare capacitive element cannot be read as a DC resistor. Digital humidity modules include their own signal conditioning, but the underlying capacitance principle can be explored with an oscillator and frequency meter.</p>
+      <div class="callout"><strong>Safety note:</strong> never use a hobby gas sensor or this handbook's threshold circuits as the sole protection for people, buildings, combustion equipment or toxic-gas exposure.</div>
+    </section>
+
+    <section id="circuits">
+      <h2>Circuit cookbook: sensor signal to a useful decision</h2>
+      <h3>Comparator with an adjustable threshold</h3>
+      <p>An LM393/LM358 comparator stage compares a sensor voltage to a reference made with a potentiometer. The output changes state when the sensor crosses the threshold. The LM393 output is open collector and needs a pull-up; check the part's supply and common-mode limits. Add positive feedback for hysteresis.</p>
+      <h3>555 timer as oscillator, one-shot or pulse detector</h3>
+      <p>A 555 can create a tone, periodic pulse, delay or PWM waveform. A sensor can alter its timing capacitor/resistor or trigger input. Use a CMOS 555 where low power or higher input impedance helps, and decouple the supply close to the IC. It is a timer, not a general-purpose analog-to-digital converter.</p>
+      <h3>RC filter and noise control</h3>
+      <p>For a first-order RC low-pass, the approximate cutoff is <code>fc = 1 / (2πRC)</code>. Filtering can suppress contact bounce or electrical noise, but excessive filtering makes the response slow. Route sensor signals away from motor wires; use a common return thoughtfully.</p>
+      <h3>Sensor-driven transistor switch</h3>
+      <p>A comparator output or divider can drive a transistor through a resistor. Calculate base/gate drive and load current. For a coil, place a flyback diode across the coil; for a DC motor, use a suitably rated MOSFET/driver, diode and supply decoupling.</p>
+      <table>
+        <thead><tr><th>Sensor output</th><th>First circuit to try</th><th>What to measure</th></tr></thead>
+        <tbody>
+          <tr><td>Changing resistance</td><td>Divider, then comparator threshold</td><td>Sensor resistance and midpoint voltage</td></tr>
+          <tr><td>Small bridge difference</td><td>Instrumentation amplifier</td><td>Each bridge midpoint and differential output</td></tr>
+          <tr><td>Photodiode current</td><td>Transimpedance amplifier</td><td>Output voltage versus known light changes</td></tr>
+          <tr><td>Open/closed contact</td><td>Pull-up/pull-down and RC debounce</td><td>Logic voltage in both contact states</td></tr>
+          <tr><td>Pulse output</td><td>Schmitt trigger / counter / 555</td><td>Pulse frequency, width and amplitude</td></tr>
+          <tr><td>High-impedance electrode</td><td>Very-high-input-impedance buffer</td><td>Input loading and drift</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="actuators">
+      <h2>Actuators: turn a circuit decision into physical action</h2>
+      <div class="grid">
+        <div class="card"><h3>Indicator LED and lamp</h3><p>LEDs need a series current-limiting resistor. Select resistor from supply voltage, LED forward voltage and desired current.</p></div>
+        <div class="card"><h3>Buzzer and speaker</h3><p>Active buzzers sound from DC; passive piezo buzzers need an alternating drive. A speaker needs an audio amplifier, not a sensor output pin.</p></div>
+        <div class="card"><h3>Relay</h3><p>A coil moves isolated contacts. Switch the coil with a transistor and flyback diode. Check coil voltage, contact ratings, isolation and inductive-load derating.</p></div>
+        <div class="card"><h3>Solenoid and valve</h3><p>Electromagnetic motion is usually on/off. Provide a correctly rated driver and suppression; a valve must match fluid, pressure and duty cycle.</p></div>
+        <div class="card"><h3>DC motor and fan</h3><p>Use a power MOSFET or motor driver, flyback path, current-rated supply and decoupling. A 555 can provide PWM speed control with no MCU.</p></div>
+        <div class="card"><h3>Stepper motor</h3><p>Needs a sequenced winding-current driver. Discrete logic or a dedicated stepper-driver IC can generate the sequence without firmware.</p></div>
+        <div class="card"><h3>RC servo</h3><p>Responds to repeated control pulses; a 555-based pulse generator can demonstrate position control. Supply the servo separately when required.</p></div>
+        <div class="card"><h3>Heater / Peltier</h3><p>Use a rated power switch, thermal fuse/limit, heatsinking and correctly rated supply. A Peltier device needs polarity and hot-side heat management.</p></div>
+      </div>
+      <figure>
+        <svg viewBox="0 0 720 255" role="img" aria-labelledby="motor.title motor.desc">
+          <title id="motor.title">Low-side MOSFET driver with flyback diode</title><desc id="motor.desc">A low-voltage motor connects to positive supply. An N-channel MOSFET switches its return to ground, with a diode across the motor and a gate resistor from a control circuit.</desc>
+          <path class="wire" d="M105 40H505V80 M505 155V210H105 M105 40V90 M105 135V210 M505 210H620"/>
+          <circle class="part" cx="105" cy="112" r="23"/><text x="90" y="118">M</text><text x="78" y="33">+Vmotor</text>
+          <path class="wire" d="M80 80h50m-42 9 34 0m-34 8h34m-34 8h34m-34 8h34m-34 8h34m-42 8h50"/>
+          <text class="label" x="132" y="106">flyback diode</text>
+          <path class="wire" d="M505 80v25m-20 0h40m-40 15h40m-20 0v45 M395 140H475 M395 125V155 M395 140V180"/>
+          <text x="462" y="100">D</text><text x="493" y="141">Q1</text><text class="label" x="430" y="183">N-MOSFET</text>
+          <path class="wire" d="M285 140h110"/><rect class="part" x="300" y="127" width="55" height="26"/><text x="292" y="119">gate resistor</text>
+          <text x="205" y="133">from comparator / 555</text><text x="540" y="205">0 V</text>
+        </svg>
+        <figcaption>Low-side DC motor driver topology. The diode is reverse-biased during normal running and conducts the motor's inductive current when switching off. Choose components for stall current, supply transients and thermal limits.</figcaption>
+      </figure>
+      <figure>
+        <svg viewBox="0 0 720 225" role="img" aria-labelledby="relay.title relay.desc">
+          <title id="relay.title">Relay coil driver with flyback diode and isolated contacts</title><desc id="relay.desc">A transistor switches a relay coil to ground, with a flyback diode across the coil. A separate contact pair switches a low-voltage load.</desc>
+          <path class="wire" d="M115 35H300V75 M300 125V185H115 M300 100H405 M405 100V150 M405 150H470"/>
+          <path class="part" d="M278 75q22 12 0 25t0 25"/><text x="310" y="107">Relay coil</text>
+          <path class="wire" d="M280 68h40m-40 6 40 0m-40 6 40 0m-40 6 40 0"/>
+          <path class="wire" d="M405 80V50H485 M405 150V180H485 M485 50h70m-70 0 55 20"/>
+          <text x="503" y="46">COM / NO contacts</text><text x="490" y="199">isolated load circuit</text>
+          <circle class="part" cx="405" cy="155" r="25"/><text x="396" y="161">Q1</text>
+          <path class="wire" d="M380 155H330 M405 180V195H115 M115 35H84"/>
+          <path class="part" d="M80 48v36m-12-27 12 12 12-12"/><text x="58" y="104">D1</text>
+          <text x="78" y="31">+Vcoil</text><text x="83" y="203">0 V</text><text x="238" y="153">base resistor</text>
+        </svg>
+        <figcaption>The coil circuit and contact circuit are electrically distinct in an electromechanical relay, but observe the relay's isolation, contact voltage/current, creepage and enclosure requirements.</figcaption>
+      </figure>
+    </section>
+
+    <section id="projects">
+      <h2>Guided bench projects (no microcontroller)</h2>
+      <ol>
+        <li><strong>Dark-activated lamp:</strong> LDR divider → comparator with hysteresis → transistor → low-voltage LED lamp. Record switching thresholds in both directions.</li>
+        <li><strong>Thermostat and fan:</strong> NTC divider → adjustable comparator → MOSFET-driven small DC fan with flyback diode. Measure setpoint and hysteresis.</li>
+        <li><strong>Door-open alarm:</strong> reed contact → pull-up → 555 one-shot or oscillator → buzzer transistor. Compare normally-open and normally-closed wiring.</li>
+        <li><strong>Break-beam counter demonstrator:</strong> IR LED/phototransistor → Schmitt trigger → CMOS counter/display. Count objects by interrupting the beam; no firmware involved.</li>
+        <li><strong>Knock/vibration indicator:</strong> piezo disc → protected high-impedance amplifier → comparator → LED. Compare light and hard taps without treating it as a calibrated accelerometer.</li>
+        <li><strong>Water-level alarm:</strong> float switch → transistor/555 → buzzer. Build at safe extra-low voltage and keep the electronics physically separated from water.</li>
+      </ol>
+      <p>For each build: draw the schematic, list the current path, calculate resistor values, simulate or breadboard, record expected versus measured voltages, identify failure modes, and explain how the sensor's physical property created the signal.</p>
+    </section>
+
+    <section id="safety">
+      <h2>Safety, good measurement and glossary</h2>
+      <ul>
+        <li>Use a current-limited, isolated, extra-low-voltage bench supply (typically 3–12 V) for student breadboards. Never prototype mains circuits on a solderless breadboard.</li>
+        <li>Disconnect power before changing wiring. Check electrolytic capacitor polarity and LED/transistor pinouts. A motor can draw several times its running current at startup or stall.</li>
+        <li>Use the multimeter current range only in series; placing it directly across a supply can short the supply. Never measure resistance on a powered circuit.</li>
+        <li>Use a flyback diode for DC relay/solenoid coils and appropriate suppression for AC loads. Verify polarity and ratings; some drivers need a different clamp arrangement.</li>
+        <li>Do not expose students to unknown chemicals, gases, hot surfaces, laser beams or rotating machinery. Use benign classroom demonstrations and appropriate eye/thermal protection.</li>
+        <li>For this course, “without microcontrollers” means sensor experiments and actuation are built from analog/discrete circuits, timer ICs and dedicated driver ICs—not software-controlled MCU boards.</li>
+      </ul>
+      <table>
+        <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Transducer</td><td>A device that converts one form of energy or physical quantity into another.</td></tr>
+          <tr><td>Conditioning</td><td>Amplifying, filtering, biasing, linearising or comparing a sensor signal.</td></tr>
+          <tr><td>Hysteresis</td><td>Different switch-on and switch-off thresholds that prevent noisy rapid toggling.</td></tr>
+          <tr><td>Bridge</td><td>A network of resistors that detects small resistance changes as differential voltage.</td></tr>
+          <tr><td>Flyback diode</td><td>A diode that provides a path for current when an inductive DC load is switched off.</td></tr>
+          <tr><td>Calibration</td><td>Comparing an instrument against known references and documenting its error.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+<footer>Basic Electronics with Sensors and Actuators · Circuit-first learning · Use safe low-voltage experiments</footer>
+</body>
+</html>
