@@ -72,6 +72,14 @@ class CoursePageTests(TestCase):
         self.assertContains(response, 'STM32+C+Rust+Autmotive')
         self.assertContains(response, 'ARM Cortex-M Architecture for Embedded Engineers')
         self.assertContains(response, 'Programming STM32 with C')
+        self.assertContains(response, 'Art of Programming using C')
+        self.assertContains(
+            response,
+            reverse(
+                'courses:stm32_c_book_serve',
+                args=['chapters/ch00-art-of-programming-using-c.html'],
+            ),
+        )
         self.assertContains(
             response,
             reverse(
@@ -99,6 +107,22 @@ class CoursePageTests(TestCase):
         self.assertContains(response, 'Automotive cybersecurity')
         self.assertContains(response, 'Zephyr + industrial automation')
         self.assertContains(response, 'Email me a verification code')
+
+    def test_linux_c_foundations_chapter_is_served_from_the_book(self):
+        response = self.client.get(
+            reverse(
+                'courses:stm32_c_book_serve',
+                args=['chapters/ch00-art-of-programming-using-c.html'],
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+        content = b''.join(response.streaming_content).decode()
+        self.assertIn('Art of Programming using C', content)
+        self.assertIn('gcc -std=c17', content)
+        self.assertIn('readelf -h', content)
+        self.assertIn('gdb ./average', content)
+        self.assertIn('CAN signal', content)
 
     def test_stm32cubeide_shortcuts_page_is_served_and_links_to_group(self):
         self.client.force_login(User.objects.create_user('reader', 'reader@example.com'))

@@ -63,6 +63,7 @@
                         <a href="{% url 'courses:cortexm_book_index' %}" class="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Open manual</a>
                         {% elif course.slug == 'stm32-firmware-development-with-c' %}
                         <a href="{% url 'courses:stm32_c_book_index' %}" class="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Open manual</a>
+                        <a href="{% url 'courses:stm32_c_book_serve' 'chapters/ch00-art-of-programming-using-c.html' %}" class="rounded-full border border-cyan-200 bg-cyan-50 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Art of Programming using C</a>
                         <a href="{% url 'courses:stm32_c_book_serve' 'chapters/stm32cubeide-shortcuts.html' %}" class="rounded-full border border-cyan-200 bg-cyan-50 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">STM32CubeIDE shortcuts</a>
                         {% elif course.slug == 'embedded-rust-with-stm32' %}
                         <a href="{% url 'courses:stm32_rust_book_index' %}" class="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-bold text-brand-navy hover:border-brand-navy">Open manual</a>
@@ -215,6 +216,94 @@ probe-rs --version</code></pre>
                 </article>
             </div>
             <p class="mt-4 text-sm leading-6 text-brand-textSecondary">Do not connect 5 V signals directly to MCU pins unless the specific pin's electrical limits and interface circuit explicitly allow it. Automotive and CAN projects require a separate CAN transceiver; the MCU's CAN controller pins are not a vehicle bus interface.</p>
+        </section>
+
+        <section id="boards" aria-labelledby="boards-heading">
+            <div class="mb-8 max-w-3xl">
+                <p class="font-bold uppercase tracking-widest text-brand-coral">Board reference</p>
+                <h2 id="boards-heading" class="mt-2 text-3xl font-extrabold text-brand-navy">Supported STM32 Nucleo-64 boards</h2>
+                <p class="mt-3 leading-7 text-brand-textSecondary">All three boards share the Nucleo-64 layout (Arduino Uno V3 headers plus ST morpho headers) and an on-board ST-LINK/V2-1. Pin assignments below are common to all three; verify against the official datasheet and user manual UM1724 before wiring.</p>
+            </div>
+            <div class="grid gap-6 lg:grid-cols-3">
+                <article class="rounded-3xl bg-white p-7 shadow-premium">
+                    <h3 class="text-xl font-extrabold text-brand-navy">NUCLEO-F446RE</h3>
+                    <p class="mt-1 text-sm font-semibold text-brand-coral">STM32F446RET6 &middot; main course board</p>
+                    <ul class="mt-4 space-y-2 text-sm leading-6 text-brand-textSecondary">
+                        <li>Cortex-M4F up to 180 MHz, FPU, DSP</li>
+                        <li>512 KB Flash, 128 KB SRAM</li>
+                        <li>2&times; bxCAN (CAN 2.0B), 4&times; USART + 2&times; UART, 4&times; SPI, 3&times; I2C, 3&times; ADC (12-bit)</li>
+                        <li>Used for the C and Rust firmware manuals</li>
+                    </ul>
+                    <a href="https://www.st.com/resource/en/datasheet/stm32f446re.pdf" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-bold text-blue-700 hover:underline"><i class="fas fa-file-pdf mr-1" aria-hidden="true"></i>Datasheet (PDF)</a>
+                    <a href="https://www.st.com/en/evaluation-tools/nucleo-f446re.html" target="_blank" rel="noopener" class="mt-2 block text-sm font-bold text-blue-700 hover:underline"><i class="fas fa-link mr-1" aria-hidden="true"></i>Board page</a>
+                    <p class="mt-3 text-xs text-gray-500">CAN1: PA11 (RX) / PA12 (TX)</p>
+                </article>
+                <article class="rounded-3xl bg-white p-7 shadow-premium">
+                    <h3 class="text-xl font-extrabold text-brand-navy">NUCLEO-L476RG</h3>
+                    <p class="mt-1 text-sm font-semibold text-brand-coral">STM32L476RGT6 &middot; Visualise STM32 target</p>
+                    <ul class="mt-4 space-y-2 text-sm leading-6 text-brand-textSecondary">
+                        <li>Cortex-M4F up to 80 MHz, FPU, ultra-low-power</li>
+                        <li>1 MB Flash, 128 KB SRAM</li>
+                        <li>1&times; bxCAN, 3&times; USART + 2&times; UART + LPUART, 3&times; SPI, 3&times; I2C, 3&times; ADC (12-bit)</li>
+                        <li>Good for low-power and sensor-node projects</li>
+                    </ul>
+                    <a href="https://www.st.com/resource/en/datasheet/stm32l476rg.pdf" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-bold text-blue-700 hover:underline"><i class="fas fa-file-pdf mr-1" aria-hidden="true"></i>Datasheet (PDF)</a>
+                    <a href="https://www.st.com/en/evaluation-tools/nucleo-l476rg.html" target="_blank" rel="noopener" class="mt-2 block text-sm font-bold text-blue-700 hover:underline"><i class="fas fa-link mr-1" aria-hidden="true"></i>Board page</a>
+                    <p class="mt-3 text-xs text-gray-500">CAN1: PA11 (RX) / PA12 (TX)</p>
+                </article>
+                <article class="rounded-3xl bg-white p-7 shadow-premium">
+                    <h3 class="text-xl font-extrabold text-brand-navy">NUCLEO-G474RE</h3>
+                    <p class="mt-1 text-sm font-semibold text-brand-coral">STM32G474RET6 &middot; mixed-signal / motor control</p>
+                    <ul class="mt-4 space-y-2 text-sm leading-6 text-brand-textSecondary">
+                        <li>Cortex-M4F up to 170 MHz, FPU, DSP, CORDIC/FMAC accelerators</li>
+                        <li>512 KB Flash, 128 KB SRAM</li>
+                        <li>3&times; FDCAN (CAN FD), 5&times; ADC, 4&times; DAC, 7&times; comparators, HRTIM</li>
+                        <li>Good for CAN FD, motor control and power electronics</li>
+                    </ul>
+                    <a href="https://www.st.com/resource/en/datasheet/stm32g474re.pdf" target="_blank" rel="noopener" class="mt-4 inline-block text-sm font-bold text-blue-700 hover:underline"><i class="fas fa-file-pdf mr-1" aria-hidden="true"></i>Datasheet (PDF)</a>
+                    <a href="https://www.st.com/en/evaluation-tools/nucleo-g474re.html" target="_blank" rel="noopener" class="mt-2 block text-sm font-bold text-blue-700 hover:underline"><i class="fas fa-link mr-1" aria-hidden="true"></i>Board page</a>
+                    <p class="mt-3 text-xs text-gray-500">FDCAN1: PA11 (RX) / PA12 (TX)</p>
+                </article>
+            </div>
+
+            <div class="mt-8 overflow-x-auto rounded-3xl bg-white p-7 shadow-premium">
+                <h3 class="text-lg font-extrabold text-brand-navy">Common pin configuration (all three boards)</h3>
+                <table class="mt-4 w-full text-left text-sm text-brand-textSecondary">
+                    <thead class="text-brand-navy"><tr><th class="py-2 pr-4">Function</th><th class="py-2 pr-4">Pin</th><th class="py-2">Notes</th></tr></thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <tr><td class="py-2 pr-4">User LED LD2</td><td class="pr-4 font-mono">PA5</td><td>Also Arduino D13 / SPI1 SCK</td></tr>
+                        <tr><td class="py-2 pr-4">User button B1</td><td class="pr-4 font-mono">PC13</td><td>Active low</td></tr>
+                        <tr><td class="py-2 pr-4">ST-LINK virtual COM (USART2)</td><td class="pr-4 font-mono">PA2 (TX), PA3 (RX)</td><td>Arduino D1 / D0</td></tr>
+                        <tr><td class="py-2 pr-4">SWD debug</td><td class="pr-4 font-mono">PA13 (SWDIO), PA14 (SWCLK)</td><td>Used by ST-LINK</td></tr>
+                        <tr><td class="py-2 pr-4">I2C1 (Arduino)</td><td class="pr-4 font-mono">PB8 (SCL), PB9 (SDA)</td><td>Arduino D15 / D14</td></tr>
+                        <tr><td class="py-2 pr-4">SPI1 (Arduino)</td><td class="pr-4 font-mono">PA5 SCK, PA6 MISO, PA7 MOSI</td><td>Arduino D13 / D12 / D11</td></tr>
+                        <tr><td class="py-2 pr-4">Arduino analog A0&ndash;A5</td><td class="pr-4 font-mono">PA0, PA1, PA4, PB0, PC1, PC0</td><td>ADC-capable</td></tr>
+                        <tr><td class="py-2 pr-4">Arduino digital D2&ndash;D10</td><td class="pr-4 font-mono">D2 PA10, D3 PB3, D4 PB5, D5 PB4, D6 PB10</td><td>D7 PA8, D8 PA9, D9 PC7, D10 PB6</td></tr>
+                        <tr><td class="py-2 pr-4">CAN / FDCAN1</td><td class="pr-4 font-mono">PA11 (RX), PA12 (TX)</td><td>Needs an external CAN transceiver</td></tr>
+                    </tbody>
+                </table>
+                <p class="mt-4 text-xs leading-5 text-gray-500">Reference: ST user manual UM1724 (STM32 Nucleo-64 boards, MB1136) &mdash; <a href="https://www.st.com/resource/en/user_manual/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf" target="_blank" rel="noopener" class="font-bold text-blue-700 hover:underline">PDF</a>. Reference manuals: RM0390 (F446), RM0351 (L476), RM0440 (G474).</p>
+            </div>
+            <div class="mt-8 rounded-3xl bg-white p-7 shadow-premium">
+                <h3 class="text-lg font-extrabold text-brand-navy">Pinout diagrams</h3>
+                <p class="mt-1 text-xs text-gray-500">Images from the Zephyr Project documentation (Apache-2.0).</p>
+                <h4 class="mt-5 font-bold text-brand-navy">NUCLEO-F446RE</h4>
+                <div class="mt-3 grid gap-4 sm:grid-cols-2">
+<figure class="rounded-2xl border border-gray-100 p-3"><img src="{% static 'img/boards/nucleo_f446re_arduino_top_left.jpg' %}" alt="F446RE Arduino header (left)" class="h-auto w-full" loading="lazy"><figcaption class="mt-2 text-xs text-gray-500">F446RE Arduino header (left)</figcaption></figure>
+<figure class="rounded-2xl border border-gray-100 p-3"><img src="{% static 'img/boards/nucleo_f446re_arduino_top_right.jpg' %}" alt="F446RE Arduino header (right)" class="h-auto w-full" loading="lazy"><figcaption class="mt-2 text-xs text-gray-500">F446RE Arduino header (right)</figcaption></figure>
+<figure class="rounded-2xl border border-gray-100 p-3"><img src="{% static 'img/boards/nucleo_f446re_morpho_top_left.jpg' %}" alt="F446RE ST morpho (left)" class="h-auto w-full" loading="lazy"><figcaption class="mt-2 text-xs text-gray-500">F446RE ST morpho (left)</figcaption></figure>
+<figure class="rounded-2xl border border-gray-100 p-3"><img src="{% static 'img/boards/nucleo_f446re_morpho_top_right.jpg' %}" alt="F446RE ST morpho (right)" class="h-auto w-full" loading="lazy"><figcaption class="mt-2 text-xs text-gray-500">F446RE ST morpho (right)</figcaption></figure>
+                </div>
+                <h4 class="mt-5 font-bold text-brand-navy">NUCLEO-L476RG</h4>
+                <div class="mt-3 grid gap-4 sm:grid-cols-2">
+<figure class="rounded-2xl border border-gray-100 p-3"><img src="{% static 'img/boards/nucleo_l476rg_arduino.jpg' %}" alt="L476RG Arduino header pinout" class="h-auto w-full" loading="lazy"><figcaption class="mt-2 text-xs text-gray-500">L476RG Arduino header pinout</figcaption></figure>
+<figure class="rounded-2xl border border-gray-100 p-3"><img src="{% static 'img/boards/nucleo_l476rg_morpho.jpg' %}" alt="L476RG ST morpho pinout" class="h-auto w-full" loading="lazy"><figcaption class="mt-2 text-xs text-gray-500">L476RG ST morpho pinout</figcaption></figure>
+                </div>
+                <h4 class="mt-5 font-bold text-brand-navy">NUCLEO-G474RE</h4>
+                <div class="mt-3 grid gap-4 sm:grid-cols-2">
+<figure class="rounded-2xl border border-gray-100 p-3"><img src="{% static 'img/boards/nucleo_g474re.jpg' %}" alt="G474RE board layout (use the common Nucleo-64 pin table above for header pins)" class="h-auto w-full" loading="lazy"><figcaption class="mt-2 text-xs text-gray-500">G474RE board layout (use the common Nucleo-64 pin table above for header pins)</figcaption></figure>
+                </div>
+            </div>
         </section>
 
         <section id="expectations" aria-labelledby="expectations-heading">

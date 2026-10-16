@@ -80,6 +80,16 @@
     });
   }
 
+  function initPlatformNote() {
+    const main = document.querySelector('.main-content');
+    if (!main || main.querySelector('.platform-note')) return;
+    const note = document.createElement('aside');
+    note.className = 'platform-note';
+    note.setAttribute('role', 'note');
+    note.innerHTML = '<strong>Board portability:</strong> The NUCLEO-F446RE (Cortex-M4F) is a reference board for selected hands-on examples, not a requirement for every lesson. Cortex-M architecture concepts apply across Cortex-M processors; STM32 peripheral and RTOS examples transfer only where equivalent hardware and software support exist. Pins, clocks, memory maps, peripheral instances, interrupt numbering, startup files, board support/DeviceTree, and wiring vary; verify against your exact MCU reference manual, datasheet, RTOS/SDK documentation, and board schematic.';
+    main.prepend(note);
+  }
+
   // --- Sidebar & Vertical Tab Toggle Management ---
   const SIDEBAR_COLLAPSED_KEY = 'stm32c_sidebar_hidden';
 
@@ -95,14 +105,13 @@
       if (!sidebarNav) return;
       try {
         const previousState = JSON.parse(sessionStorage.getItem(sidebarStateKey) || 'null');
-        const navRect = sidebarNav.getBoundingClientRect();
-        const linkOffset = link
-          ? link.getBoundingClientRect().top - navRect.top
-          : null;
+        const navTop = sidebarNav.getBoundingClientRect().top;
         sessionStorage.setItem(sidebarStateKey, JSON.stringify({
           scrollTop: sidebarNav.scrollTop,
           anchorHref: link?.getAttribute('href') || previousState?.anchorHref || null,
-          anchorOffset: link ? linkOffset : previousState?.anchorOffset ?? null,
+          anchorOffset: link
+            ? link.getBoundingClientRect().top - navTop
+            : previousState?.anchorOffset ?? null,
           collapsedGroups: Array.from(sidebarNav.querySelectorAll('.nav-module-group'))
             .map((group, index) => group.classList.contains('collapsed') ? index : null)
             .filter(index => index !== null)
@@ -139,8 +148,7 @@
                 .find(link => link.getAttribute('href') === savedState.anchorHref);
               if (!anchor) return;
               const navTop = sidebarNav.getBoundingClientRect().top;
-              const anchorOffset = anchor.getBoundingClientRect().top - navTop;
-              sidebarNav.scrollTop += anchorOffset - Number(savedState.anchorOffset);
+              sidebarNav.scrollTop += anchor.getBoundingClientRect().top - navTop - Number(savedState.anchorOffset);
             });
           });
         }
@@ -151,7 +159,7 @@
       sidebarNav.querySelectorAll('a.chapter-nav-item, a.subtopic-link').forEach(link => {
         link.addEventListener('click', () => saveNavigationState(link));
       });
-      window.addEventListener('pagehide', saveNavigationState);
+      window.addEventListener('pagehide', () => saveNavigationState());
     }
 
     // Create floating unhide tab if not present
@@ -262,16 +270,6 @@
     });
   }
 
-  function initPlatformNote() {
-    const main = document.querySelector('.main-content');
-    if (!main || main.querySelector('.platform-note')) return;
-    const note = document.createElement('aside');
-    note.className = 'platform-note';
-    note.setAttribute('role', 'note');
-    note.innerHTML = '<strong>Board portability:</strong> The NUCLEO-F446RE (Cortex-M4F) is a reference board for selected hands-on examples, not a requirement for every lesson. Cortex-M architecture concepts apply across Cortex-M processors; STM32 peripheral and RTOS examples transfer only where equivalent hardware and software support exist. Pins, clocks, memory maps, peripheral instances, interrupt numbering, startup files, board support/DeviceTree, and wiring vary; verify against your exact MCU reference manual, datasheet, RTOS/SDK documentation, and board schematic.';
-    main.prepend(note);
-  }
-
   // --- Code Copy Buttons ---
   function initCodeCopy() {
     document.querySelectorAll('.code-copy-btn').forEach(btn => {
@@ -365,6 +363,7 @@
   // --- Search System Across All Chapters ---
   const CHAPTERS_INDEX = [
     { title: "Course Overview & Learning Roadmap", url: "index.html", tags: "intro overview roadmap stm32 c firmware" },
+    { title: "Linux C Foundations: Art of Programming using C", url: "chapters/ch00-art-of-programming-using-c.html", tags: "c programming ubuntu linux gcc compilation preprocessing linking elf binary gdb pointers memory debugging make" },
     { title: "Chapter 1: Embedded C & STM32 Architecture", url: "chapters/ch01-embedded-c-stm32-architecture.html", tags: "embedded c volatile bitwise registers memory map cortex-m4 bus clock reset startup linker" },
     { title: "Chapter 2: STM32CubeMX & STM32CubeIDE Workflow", url: "chapters/ch02-cubemx-cubeide.html", tags: "cubemx cubeide hal project ioc clock tree pinout code generation user code begin end" },
     { title: "Chapter 3: GPIO & External Interrupts", url: "chapters/ch03-gpio-interrupts.html", tags: "gpio led button debounce exti nvic interrupt isr priority pull-up push-pull open-drain" },

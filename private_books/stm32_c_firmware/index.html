@@ -33,6 +33,10 @@
       </div>
     </div>
     <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
       <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
       <a href="/courses/stm32-firmware-development-with-c/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -55,6 +59,25 @@
             <span class="chapter-check-icon">📖</span>
             <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
           </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C</span>
+              <span>Linux &amp; C Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="chapters/ch00-art-of-programming-using-c.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 0: Art of Programming using C</span>
+                <span class="chapter-read-time">75m</span>
+              </a>
+              <ul class="subtopic-list"></ul>
+            </li>
+          </ul>
         </div>
         <div class="nav-module-group">
           <button class="module-title-btn">
@@ -239,22 +262,21 @@
     <main class="main-content">
       <div class="content-top-bar">
         <div class="breadcrumbs"><a href="index.html">Home</a><span>/</span><span>Course Roadmap</span></div>
-        <div class="chapter-actions"><a href="chapters/ch01-embedded-c-stm32-architecture.html" class="btn-primary">Start Chapter 1 →</a></div>
+        <div class="chapter-actions"><a href="chapters/ch00-art-of-programming-using-c.html" class="btn-primary">Start Linux C Foundations →</a></div>
       </div>
       <article class="prose">
-        <aside class="platform-note" role="note"><strong>Board portability:</strong> Hands-on board examples use the NUCLEO-F446RE as the reference target; the course also teaches general embedded-C and STM32 concepts used across compatible boards. Pin assignments, clocks, registers, interrupt/DMA mappings, memory sizes, and board wiring vary by exact MCU and board. Check the target datasheet, reference manual, and schematic before reusing hardware-specific code.</aside>
         <div class="chapter-hero">
           <span class="chapter-module-tag">Digital Book &amp; Laboratory Course</span>
           <h1 class="chapter-h1">Programming STM32 with C: From CubeMX to Hardware Debugging</h1>
           <p class="chapter-lead">The foundation book for STM32 firmware engineers. Start from embedded C and CubeMX, drive every common peripheral and bus, then debug like a professional with ST-LINK, SWD, GDB and a logic analyzer - and finish with a capstone you can show in an interview.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">🎯 Level: Beginner to Intermediate</div>
-            <div class="meta-item">⏱️ 9 chapters • 9 labs • 5 mini projects + capstone</div>
-            <div class="meta-item">⚡ Example target: NUCLEO-F446RE (adapt hardware details for other boards)</div>
+            <div class="meta-item">⏱️ 10 chapters • 10 labs • 5 mini projects + capstone</div>
+            <div class="meta-item">⚡ Reference board: NUCLEO-F446RE</div>
           </div>
         </div>
         <h2 id="sec-0-1">What You Will Learn</h2>
-        <div style="margin:1rem 0;"><span class="progress-pill" style="margin:0.2rem;">Embedded C</span><span class="progress-pill" style="margin:0.2rem;">STM32 architecture</span><span class="progress-pill" style="margin:0.2rem;">STM32CubeMX</span><span class="progress-pill" style="margin:0.2rem;">STM32CubeIDE</span><span class="progress-pill" style="margin:0.2rem;">GPIO</span><span class="progress-pill" style="margin:0.2rem;">Interrupts</span><span class="progress-pill" style="margin:0.2rem;">Timers</span><span class="progress-pill" style="margin:0.2rem;">PWM</span><span class="progress-pill" style="margin:0.2rem;">ADC</span><span class="progress-pill" style="margin:0.2rem;">USART/UART</span><span class="progress-pill" style="margin:0.2rem;">I²C</span><span class="progress-pill" style="margin:0.2rem;">SPI</span><span class="progress-pill" style="margin:0.2rem;">CAN</span><span class="progress-pill" style="margin:0.2rem;">DMA</span><span class="progress-pill" style="margin:0.2rem;">Sensors</span><span class="progress-pill" style="margin:0.2rem;">Displays</span><span class="progress-pill" style="margin:0.2rem;">Motors/actuators</span><span class="progress-pill" style="margin:0.2rem;">ST-LINK</span><span class="progress-pill" style="margin:0.2rem;">SWD</span><span class="progress-pill" style="margin:0.2rem;">GDB debugging</span><span class="progress-pill" style="margin:0.2rem;">Logic analyzer</span><span class="progress-pill" style="margin:0.2rem;">Fault diagnosis</span><span class="progress-pill" style="margin:0.2rem;">Mini projects</span><span class="progress-pill" style="margin:0.2rem;">Capstone</span></div>
+        <div style="margin:1rem 0;"><span class="progress-pill" style="margin:0.2rem;">Linux C foundations</span><span class="progress-pill" style="margin:0.2rem;">GCC compilation</span><span class="progress-pill" style="margin:0.2rem;">ELF binaries</span><span class="progress-pill" style="margin:0.2rem;">GDB debugging</span><span class="progress-pill" style="margin:0.2rem;">Pointers and memory</span><span class="progress-pill" style="margin:0.2rem;">Embedded C</span><span class="progress-pill" style="margin:0.2rem;">STM32 architecture</span><span class="progress-pill" style="margin:0.2rem;">STM32CubeMX</span><span class="progress-pill" style="margin:0.2rem;">STM32CubeIDE</span><span class="progress-pill" style="margin:0.2rem;">GPIO</span><span class="progress-pill" style="margin:0.2rem;">Interrupts</span><span class="progress-pill" style="margin:0.2rem;">Timers</span><span class="progress-pill" style="margin:0.2rem;">PWM</span><span class="progress-pill" style="margin:0.2rem;">ADC</span><span class="progress-pill" style="margin:0.2rem;">USART/UART</span><span class="progress-pill" style="margin:0.2rem;">I²C</span><span class="progress-pill" style="margin:0.2rem;">SPI</span><span class="progress-pill" style="margin:0.2rem;">CAN</span><span class="progress-pill" style="margin:0.2rem;">DMA</span><span class="progress-pill" style="margin:0.2rem;">Sensors</span><span class="progress-pill" style="margin:0.2rem;">Displays</span><span class="progress-pill" style="margin:0.2rem;">Motors/actuators</span><span class="progress-pill" style="margin:0.2rem;">ST-LINK</span><span class="progress-pill" style="margin:0.2rem;">SWD</span><span class="progress-pill" style="margin:0.2rem;">GDB debugging</span><span class="progress-pill" style="margin:0.2rem;">Logic analyzer</span><span class="progress-pill" style="margin:0.2rem;">Fault diagnosis</span><span class="progress-pill" style="margin:0.2rem;">Mini projects</span><span class="progress-pill" style="margin:0.2rem;">Capstone</span></div>
         <h2 id="sec-0-2">Hardware You Need</h2>
         <ul>
           <li>NUCLEO-F446RE board (on-board ST-LINK/V2-1, user LED on PA5, user button on PC13).</li>
@@ -271,6 +293,11 @@
         </ul>
         <h2 id="sec-0-4">Chapter Roadmap</h2>
         <div class="chapter-bottom-nav" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <a href="chapters/ch00-art-of-programming-using-c.html" class="nav-card" style="text-decoration:none;">
+            <span class="nav-card-dir">Linux C Foundations • 75 min</span>
+            <span class="nav-card-title">Art of Programming using C</span>
+            <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">Learn to write, build, inspect and debug portable C programs on Ubuntu Linux before moving on to STM32 firmware. Follow a source file through GCC, inspect its ELF executable, use GDB, and apply the same disciplined habits to embedded and automotive code.</span>
+          </a>
           <a href="chapters/ch01-embedded-c-stm32-architecture.html" class="nav-card" style="text-decoration:none;">
             <span class="nav-card-dir">Chapter 1 • 40 min</span>
             <span class="nav-card-title">Embedded C &amp; STM32 Architecture</span>

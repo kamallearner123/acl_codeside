@@ -23,6 +23,12 @@ BOOK_TITLE = 'Programming STM32 with C'
 BOOK_SUB = 'From CubeMX to Hardware Debugging'
 
 CHAPTERS = [
+    dict(n=0, file='ch00-art-of-programming-using-c', md='ch00.md',
+         badge='Linux & C Foundations', module='C', chapter_label='Linux C Foundations',
+         short='Art of Programming using C', title='Art of Programming using C', time=75,
+         tags='c programming ubuntu linux gcc compilation preprocessing linking elf binary gdb pointers memory debugging make',
+         lead='Learn to write, build, inspect and debug portable C programs on Ubuntu Linux before moving on to STM32 firmware. Follow a source file through GCC, inspect its ELF executable, use GDB, and apply the same disciplined habits to embedded and automotive code.',
+         lab='Build, inspect and debug a C program', topics='C, GCC, ELF, GDB, Linux'),
     dict(n=1, file='ch01-embedded-c-stm32-architecture', md='ch01.md', badge='Foundations', short='Embedded C & Architecture',
          title='Embedded C & STM32 Architecture', time=40, tags='embedded c volatile bitwise registers memory map cortex-m4 bus clock reset startup linker',
          lead='Build the C skills that firmware demands - fixed-width types, bit manipulation, volatile, memory-mapped registers - and learn the parts of the STM32 architecture you actually need: Cortex-M core, memory map, buses, clocks and the boot sequence.',
@@ -323,7 +329,7 @@ def sidebar(prefix, current, all_secs):
         <div class="nav-module-group">
           <button class="module-title-btn">
             <div class="module-title-left">
-              <span class="module-badge">C{c['n']}</span>
+              <span class="module-badge">{esc(c.get('module', f"C{c['n']}"))}</span>
               <span>{esc(c['badge'])}</span>
             </div>
             <span class="module-chevron">▼</span>
@@ -427,7 +433,8 @@ def setup_assets():
     end = js.index('];', start) + 2
     entries = ['    { title: "Course Overview & Learning Roadmap", url: "index.html", tags: "intro overview roadmap stm32 c firmware" }']
     for c in CHAPTERS:
-        entries.append('    { title: "Chapter %d: %s", url: "chapters/%s.html", tags: "%s" }' % (c['n'], c['title'].replace('"', "'"), c['file'], c['tags']))
+        label = c.get('chapter_label', f'Chapter {c["n"]}')
+        entries.append('    { title: "%s: %s", url: "chapters/%s.html", tags: "%s" }' % (label, c['title'].replace('"', "'"), c['file'], c['tags']))
     entries.append('    { title: "References & Further Reading", url: "chapters/references.html", tags: "references datasheet reference manual rm0390 hal user manual um1725 arm" }')
     js = js[:start] + 'const CHAPTERS_INDEX = [\n' + ',\n'.join(entries) + '\n  ];' + js[end:]
     hal = ("    code = code.replace(/\\b(?:__HAL_\\w+|HAL_\\w+|LL_\\w+|NVIC_\\w+|__NVIC_\\w+|__disable_irq|__enable_irq|__WFI|__NOP|SysTick_Config)\\b/g, "
@@ -452,22 +459,25 @@ def build():
     for k, c in enumerate(CHAPTERS):
         prev = CHAPTERS[k - 1] if k else None
         nxt = CHAPTERS[k + 1] if k + 1 < len(CHAPTERS) else None
+        chapter_label = c.get('chapter_label', f'Chapter {c["n"]}')
+        prev_label = prev.get('chapter_label', f'Chapter {prev["n"]}') if prev else 'Overview'
+        next_label = nxt.get('chapter_label', f'Chapter {nxt["n"]}') if nxt else 'References'
         prev_href = f'{prev["file"]}.html' if prev else '../index.html'
         nxt_href = f'{nxt["file"]}.html' if nxt else f'{REFERENCES["file"]}.html'
         topbar = f'''      <div class="content-top-bar">
-        <div class="breadcrumbs"><a href="../index.html">Home</a><span>/</span><span>Chapter {c['n']}</span><span>/</span><span>{esc(c['short'])}</span></div>
+        <div class="breadcrumbs"><a href="../index.html">Home</a><span>/</span><span>{esc(chapter_label)}</span><span>/</span><span>{esc(c['short'])}</span></div>
         <div class="chapter-actions">
-          <a href="{prev_href}" class="btn-secondary">← {'Chapter %d' % prev['n'] if prev else 'Overview'}</a>
-          <a href="{nxt_href}" class="btn-primary">{'Chapter %d' % nxt['n'] if nxt else 'References'} →</a>
+          <a href="{prev_href}" class="btn-secondary">← {esc(prev_label)}</a>
+          <a href="{nxt_href}" class="btn-primary">{esc(next_label)} →</a>
         </div>
       </div>'''
         bottom = f'''
         <div class="chapter-bottom-nav">
-          <a href="{prev_href}" class="nav-card"><span class="nav-card-dir">← Previous</span><span class="nav-card-title">{esc(('Chapter %d: %s' % (prev['n'], prev['title'])) if prev else 'Course Overview')}</span></a>
-          <a href="{nxt_href}" class="nav-card" style="text-align:right;"><span class="nav-card-dir">Next →</span><span class="nav-card-title">{esc(('Chapter %d: %s' % (nxt['n'], nxt['title'])) if nxt else REFERENCES['title'])}</span></a>
+          <a href="{prev_href}" class="nav-card"><span class="nav-card-dir">← Previous</span><span class="nav-card-title">{esc((prev_label + ': ' + prev['title']) if prev else 'Course Overview')}</span></a>
+          <a href="{nxt_href}" class="nav-card" style="text-align:right;"><span class="nav-card-dir">Next →</span><span class="nav-card-title">{esc((next_label + ': ' + nxt['title']) if nxt else REFERENCES['title'])}</span></a>
         </div>'''
         article = f'''        <div class="chapter-hero">
-          <span class="chapter-module-tag">Chapter {c['n']:02d} • {esc(c['badge'])}</span>
+          <span class="chapter-module-tag">{esc(chapter_label)} • {esc(c['badge'])}</span>
           <h1 class="chapter-h1">{esc(c['title'])}</h1>
           <p class="chapter-lead">{esc(c['lead'])}</p>
           <div class="chapter-meta-bar">
@@ -478,7 +488,7 @@ def build():
         </div>
 {rendered[c['n']]}
 {bottom}'''
-        out = page('../', c['file'], c['title'], c['lead'], f'Ch {c["n"]} of {len(CHAPTERS)}', all_secs, topbar, article)
+        out = page('../', c['file'], c['title'], c['lead'], chapter_label, all_secs, topbar, article)
         open(os.path.join(OUT, 'chapters', c['file'] + '.html'), 'w', encoding='utf-8').write(out)
 
     # references
@@ -501,15 +511,15 @@ def build():
     # index
     cards = ''.join(f'''
           <a href="chapters/{c['file']}.html" class="nav-card" style="text-decoration:none;">
-            <span class="nav-card-dir">Chapter {c['n']} • {c['time']} min</span>
+            <span class="nav-card-dir">{esc(c.get('chapter_label', f"Chapter {c['n']}"))} • {c['time']} min</span>
             <span class="nav-card-title">{esc(c['title'])}</span>
             <span style="display:block;font-size:0.8rem;margin-top:0.5rem;color:var(--text-muted);">{esc(c['lead'])}</span>
           </a>''' for c in CHAPTERS)
-    topbar = '''      <div class="content-top-bar">
+    topbar = f'''      <div class="content-top-bar">
         <div class="breadcrumbs"><a href="index.html">Home</a><span>/</span><span>Course Roadmap</span></div>
-        <div class="chapter-actions"><a href="chapters/ch01-embedded-c-stm32-architecture.html" class="btn-primary">Start Chapter 1 →</a></div>
+        <div class="chapter-actions"><a href="chapters/{CHAPTERS[0]['file']}.html" class="btn-primary">Start Linux C Foundations →</a></div>
       </div>'''
-    covers = ['Embedded C', 'STM32 architecture', 'STM32CubeMX', 'STM32CubeIDE', 'GPIO', 'Interrupts', 'Timers', 'PWM', 'ADC', 'USART/UART', 'I²C', 'SPI', 'CAN', 'DMA',
+    covers = ['Linux C foundations', 'GCC compilation', 'ELF binaries', 'GDB debugging', 'Pointers and memory', 'Embedded C', 'STM32 architecture', 'STM32CubeMX', 'STM32CubeIDE', 'GPIO', 'Interrupts', 'Timers', 'PWM', 'ADC', 'USART/UART', 'I²C', 'SPI', 'CAN', 'DMA',
               'Sensors', 'Displays', 'Motors/actuators', 'ST-LINK', 'SWD', 'GDB debugging', 'Logic analyzer', 'Fault diagnosis', 'Mini projects', 'Capstone']
     pills = ''.join(f'<span class="progress-pill" style="margin:0.2rem;">{c}</span>' for c in covers)
     article = f'''        <div class="chapter-hero">
@@ -518,7 +528,7 @@ def build():
           <p class="chapter-lead">The foundation book for STM32 firmware engineers. Start from embedded C and CubeMX, drive every common peripheral and bus, then debug like a professional with ST-LINK, SWD, GDB and a logic analyzer - and finish with a capstone you can show in an interview.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">🎯 Level: Beginner to Intermediate</div>
-            <div class="meta-item">⏱️ {len(CHAPTERS)} chapters • 9 labs • 5 mini projects + capstone</div>
+            <div class="meta-item">⏱️ {len(CHAPTERS)} chapters • {len(CHAPTERS)} labs • 5 mini projects + capstone</div>
             <div class="meta-item">⚡ Reference board: NUCLEO-F446RE</div>
           </div>
         </div>

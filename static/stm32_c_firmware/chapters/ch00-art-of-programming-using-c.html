@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Learn to write, build, inspect and debug portable C programs on Ubuntu Linux before moving on to STM32 firmware. Follow a source file through GCC, inspect its ELF executable, use GDB, and apply the same disciplined habits to embedded and automotive code.">
+  <title>Art of Programming using C | Programming STM32 with C</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css?v=3">
+</head>
+<body data-chapter-id="ch00-art-of-programming-using-c">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">STM32 + C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search chapters, GPIO, DMA, GDB..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/stm32-firmware-development-with-c/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Chapters</span>
+          <span class="progress-pill">Linux C Foundations</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
+          </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C</span>
+              <span>Linux &amp; C Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch00-art-of-programming-using-c.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 0: Art of Programming using C</span>
+                <span class="chapter-read-time">75m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch00-art-of-programming-using-c.html#sec-0-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.1 The C Programmer's Toolkit</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.2 Set Up C on Ubuntu</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.3 What Happens When GCC Compil…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.4 Useful Compiler Flags</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.5 Inspect the Executable and E…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.6 Debug a C Program with GDB</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.7 Types, Expressions, Control…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.8 Arrays, Pointers and Strings</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.9 Structures, Enums and Bitwis…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-10" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.10 Memory, Ownership, Files an…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-11" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.11 Build a Small Project with…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-12" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.12 Testing, Diagnostics and Sa…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-13" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.13 C in Embedded and Automotiv…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C1</span>
+              <span>Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch01-embedded-c-stm32-architecture.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 1: Embedded C &amp; Architecture</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 Why C, and Why "Embedded" C…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 Fixed-Width Types and Intege…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Bit Manipulation - The Every…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 `volatile`, `const` and `sta…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Pointers and Memory-Mapped R…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 STM32 Family and the Cortex-…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Memory Map and Bus Matrix</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.8 Clocks, Reset and the Boot S…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.9 Hands-On Lab 1: Register-Lev…</a></li><li><a href="ch01-embedded-c-stm32-architecture.html#sec-1-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C2</span>
+              <span>Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch02-cubemx-cubeide.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 2: CubeMX &amp; CubeIDE</span>
+                <span class="chapter-read-time">35m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch02-cubemx-cubeide.html#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 The ST Software Stack</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Creating a Project in STM32C…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 CubeMX: Pinout, Clock Tree a…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Anatomy of the Generated Pro…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 The USER CODE Rule</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.6 HAL Conventions You Will See…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.7 Build, Flash and Run</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.8 Hands-On Lab 2: First CubeMX…</a></li><li><a href="ch02-cubemx-cubeide.html#sec-2-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C3</span>
+              <span>Digital I/O</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch03-gpio-interrupts.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 3: GPIO &amp; Interrupts</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch03-gpio-interrupts.html#sec-3-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.1 Anatomy of a GPIO Pin</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.2 Using GPIO with HAL</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.3 Polling a Button - and Why I…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.4 Interrupts: The Concept</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.5 EXTI and the NVIC</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.6 Writing Good ISRs</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.7 Debouncing</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.8 Hands-On Lab 3: Interrupt-Dr…</a></li><li><a href="ch03-gpio-interrupts.html#sec-3-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 3.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C4</span>
+              <span>Analog &amp; Timing</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch04-timers-pwm-adc.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 4: Timers, PWM &amp; ADC</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch04-timers-pwm-adc.html#sec-4-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.1 What a Hardware Timer Does</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.2 Periodic Interrupts and Accu…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.3 PWM: Analog Control from a D…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.4 Input Capture: Measuring Tim…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.5 The ADC: Measuring Voltage</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.6 Triggering the ADC with a Ti…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.7 Hands-On Lab 4: Potentiomete…</a></li><li><a href="ch04-timers-pwm-adc.html#sec-4-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 4.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C5</span>
+              <span>Serial &amp; Transfers</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch05-uart-dma.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 5: USART/UART &amp; DMA</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch05-uart-dma.html#sec-5-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.1 Serial Communication Basics</a></li><li><a href="ch05-uart-dma.html#sec-5-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.2 Three Ways to Transfer Data</a></li><li><a href="ch05-uart-dma.html#sec-5-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.3 Interrupt-Driven Reception</a></li><li><a href="ch05-uart-dma.html#sec-5-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.4 Retargeting printf</a></li><li><a href="ch05-uart-dma.html#sec-5-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.5 DMA: Moving Data Without the…</a></li><li><a href="ch05-uart-dma.html#sec-5-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.6 DMA RX with Idle-Line Detect…</a></li><li><a href="ch05-uart-dma.html#sec-5-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.7 DMA with the ADC</a></li><li><a href="ch05-uart-dma.html#sec-5-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.8 A Command Console</a></li><li><a href="ch05-uart-dma.html#sec-5-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.9 Hands-On Lab 5: DMA UART Com…</a></li><li><a href="ch05-uart-dma.html#sec-5-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 5.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C6</span>
+              <span>Buses</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch06-i2c-spi-can.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 6: I2C, SPI &amp; CAN</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch06-i2c-spi-can.html#sec-6-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.1 Choosing a Bus</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.2 I2C Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.3 SPI Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.4 CAN Fundamentals</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.5 Hands-On Lab 6: Three-Bus Br…</a></li><li><a href="ch06-i2c-spi-can.html#sec-6-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 6.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C7</span>
+              <span>Peripherals</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch07-sensors-displays-motors.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 7: Sensors, Displays &amp; Motors</span>
+                <span class="chapter-read-time">55m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch07-sensors-displays-motors.html#sec-7-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.1 Interfacing Sensors: A Method</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.2 BME280 over I2C</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.3 MPU6050 Accelerometer and Gy…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.4 Analog Sensors: NTC Thermistor</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.5 Displays</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.6 Actuators: Servos</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.7 Actuators: DC Motors with an…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.8 Actuators: Stepper Motors</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.9 Hands-On Lab 7: Weather Stat…</a></li><li><a href="ch07-sensors-displays-motors.html#sec-7-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 7.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C8</span>
+              <span>Debugging</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch08-debugging-fault-diagnosis.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 8: Debugging &amp; Fault Diagnosis</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.1 The Debug Chain: ST-LINK and…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.2 GDB from the Command Line</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.3 Watching the Wires: Logic An…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.4 Fault Diagnosis: Decoding a…</a></li><li><a href="ch08-debugging-fault-diagnosis.html#sec-8-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 8.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C9</span>
+              <span>Projects</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch09-projects-capstone.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 9: Mini Projects &amp; Capstone</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch09-projects-capstone.html#sec-9-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.1 From Exercises to Products</a></li><li><a href="ch09-projects-capstone.html#sec-9-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.2 Five Mini Projects</a></li><li><a href="ch09-projects-capstone.html#sec-9-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.3 Capstone: CAN-Connected Envi…</a></li><li><a href="ch09-projects-capstone.html#sec-9-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.4 Test Plan and Definition of…</a></li><li><a href="ch09-projects-capstone.html#sec-9-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 9.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-module-group">
+          <a href="references.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">References & Further Reading</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs"><a href="../index.html">Home</a><span>/</span><span>Linux C Foundations</span><span>/</span><span>Art of Programming using C</span></div>
+        <div class="chapter-actions">
+          <a href="../index.html" class="btn-secondary">← Overview</a>
+          <a href="ch01-embedded-c-stm32-architecture.html" class="btn-primary">Chapter 1 →</a>
+        </div>
+      </div>
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Linux C Foundations • Linux &amp; C Foundations</span>
+          <h1 class="chapter-h1">Art of Programming using C</h1>
+          <p class="chapter-lead">Learn to write, build, inspect and debug portable C programs on Ubuntu Linux before moving on to STM32 firmware. Follow a source file through GCC, inspect its ELF executable, use GDB, and apply the same disciplined habits to embedded and automotive code.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 75 minutes</div>
+            <div class="meta-item">🛠️ Lab: Build, inspect and debug a C program</div>
+            <div class="meta-item">🎯 Topics: C, GCC, ELF, GDB, Linux</div>
+          </div>
+        </div>
+<h2 id="sec-0-1">0.1 The C Programmer's Toolkit</h2>
+<p>C is a small, compiled language that gives you direct control over data representation and resource use. On Ubuntu, GCC turns source code into Linux executables; the same core language skills transfer to cross-compilers and microcontrollers. Learn to reason about types, memory, interfaces and failures rather than relying on code that only happens to work on one machine.</p>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Priority</th>
+<th style="padding:0.6rem;">Topic</th>
+<th style="padding:0.6rem;">Why it matters</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Essential</td>
+<td style="padding:0.6rem;vertical-align:top;">Source files, headers, functions and the compile/link process</td>
+<td style="padding:0.6rem;vertical-align:top;">Lets you build programs larger than one file and understand build errors</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Essential</td>
+<td style="padding:0.6rem;vertical-align:top;">Types, expressions, control flow, functions and scope</td>
+<td style="padding:0.6rem;vertical-align:top;">The everyday tools for expressing correct behavior</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Essential</td>
+<td style="padding:0.6rem;vertical-align:top;">Arrays, strings, pointers and <code>const</code></td>
+<td style="padding:0.6rem;vertical-align:top;">C APIs and data structures depend on understanding addresses and bounds</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Essential</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>struct</code>, <code>enum</code>, bitwise operations and fixed-width integers</td>
+<td style="padding:0.6rem;vertical-align:top;">Models protocols, registers, messages and state machines</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Essential</td>
+<td style="padding:0.6rem;vertical-align:top;">Stack, static storage, heap ownership and object lifetime</td>
+<td style="padding:0.6rem;vertical-align:top;">Prevents invalid access, leaks, double frees and unpredictable behavior</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Essential</td>
+<td style="padding:0.6rem;vertical-align:top;">Warnings, GDB, tests and sanitizers</td>
+<td style="padding:0.6rem;vertical-align:top;">Finds mistakes before they become field failures</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Important</td>
+<td style="padding:0.6rem;vertical-align:top;">Files, command-line arguments, return codes and <code>errno</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Makes tools and services reliable on Linux</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Important</td>
+<td style="padding:0.6rem;vertical-align:top;">Make, libraries, ELF files, symbols and linking</td>
+<td style="padding:0.6rem;vertical-align:top;">Explains what the toolchain produces and how to inspect it</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Embedded focus</td>
+<td style="padding:0.6rem;vertical-align:top;"><code>volatile</code>, interrupt-shared data, endianness and timing</td>
+<td style="padding:0.6rem;vertical-align:top;">Connects C fundamentals to firmware and automotive interfaces</td>
+</tr>
+</tbody></table></div>
+
+        <div class="callout callout-tip">
+          <div class="callout-header">A productive learning loop</div>
+          <div class="callout-body">Read a small piece of code, predict what it does, compile with warnings, run it, inspect it in GDB, then change one thing and repeat.</div>
+        </div>
+
+<h2 id="sec-0-2">0.2 Set Up C on Ubuntu</h2>
+<p>Open a terminal and install the compiler toolchain and debugger:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Install GCC, Make and GDB</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>sudo apt update
+sudo apt install build-essential gdb binutils
+gcc --version
+gdb --version
+make --version</code></pre>
+          </div>
+        </div>
+
+<p><code>build-essential</code> installs GCC, the C library development files, <code>make</code> and related tools. <code>binutils</code> supplies utilities such as <code>readelf</code>, <code>objdump</code>, <code>nm</code> and <code>size</code>. These commands build and inspect native programs for your Ubuntu computer; an STM32 needs a separate ARM cross-compiler such as <code>arm-none-eabi-gcc</code>.</p>
+<p>Create a working directory and a source file:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Create and build hello.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>mkdir -p ~/c-labs/hello
+cd ~/c-labs/hello</code></pre>
+          </div>
+        </div>
+
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>hello.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    const char *name = "Ubuntu";
+    printf("Hello, %s!\n", name);
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+<p>Line by line:</p>
+<ul><li><code>#include &lt;stdio.h&gt;</code> asks the preprocessor to make the standard input/output declarations, including <code>printf</code>, available.</li><li>The blank line separates the include from the program; it has no effect on compilation.</li><li><code>int main(void)</code> defines the program entry point. It returns an integer status to the operating system and takes no arguments.</li><li><code>{</code> begins the function body.</li><li><code>const char *name = "Ubuntu";</code> defines a pointer to a string literal. <code>const</code> prevents this code from modifying the literal through <code>name</code>.</li><li><code>printf("Hello, %s!\n", name);</code> prints formatted text. <code>%s</code> expects a pointer to a null-terminated character string; <code>\n</code> ends the line.</li><li><code>return 0;</code> reports successful completion to the operating system.</li><li><code>}</code> ends the function body.</li></ul>
+<p>Build and run it:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Compile and run hello.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>gcc -std=c17 -Wall -Wextra -Wpedantic -g3 -O0 hello.c -o hello
+./hello
+echo $?</code></pre>
+          </div>
+        </div>
+
+<p>The expected output is <code>Hello, Ubuntu!</code>; the exit status printed by <code>echo $?</code> is <code>0</code>. <code>-o hello</code> names the executable. If you omit it, GCC normally writes an executable named <code>a.out</code>.</p>
+<h2 id="sec-0-3">0.3 What Happens When GCC Compiles C</h2>
+<p>The command <code>gcc</code> is a driver: it coordinates the preprocessor, compiler, assembler and linker. A normal build runs these stages in order:</p>
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Stage</th>
+<th style="padding:0.6rem;">Input and work</th>
+<th style="padding:0.6rem;">Typical output</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Preprocessing</td>
+<td style="padding:0.6rem;vertical-align:top;">Expands <code>#include</code>, macros and conditional compilation</td>
+<td style="padding:0.6rem;vertical-align:top;">Preprocessed C source</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Compilation</td>
+<td style="padding:0.6rem;vertical-align:top;">Checks C syntax and types, then translates C into assembly</td>
+<td style="padding:0.6rem;vertical-align:top;">Assembly source</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Assembly</td>
+<td style="padding:0.6rem;vertical-align:top;">Converts assembly instructions into machine-code sections</td>
+<td style="padding:0.6rem;vertical-align:top;">Relocatable object file such as <code>hello.o</code></td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;">Linking</td>
+<td style="padding:0.6rem;vertical-align:top;">Combines object files and libraries, resolves symbols and lays out an executable</td>
+<td style="padding:0.6rem;vertical-align:top;">ELF executable such as <code>hello</code></td>
+</tr>
+</tbody></table></div>
+<p>Run each stage separately to see its output:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Inspect each GCC stage</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>gcc -std=c17 -E hello.c -o hello.i
+gcc -std=c17 -S hello.i -o hello.s
+gcc -c hello.s -o hello.o
+gcc hello.o -o hello</code></pre>
+          </div>
+        </div>
+
+<p><code>-E</code> stops after preprocessing, <code>-S</code> stops after compiling to assembly, and <code>-c</code> stops after assembling to an object file. The final command links the object into an executable. You can also ask GCC to keep intermediate files during a normal build:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Keep intermediate files</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>gcc -std=c17 -save-temps=obj -Wall -Wextra -g3 hello.c -o hello</code></pre>
+          </div>
+        </div>
+
+<p>In a multi-file project, each <code>.c</code> file is compiled independently and the resulting object files are linked together. Headers declare interfaces; they are included by source files, not normally compiled into separate object files.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>include/app.h</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#ifndef APP_H
+#define APP_H
+
+int app_message(void);
+
+#endif</code></pre>
+          </div>
+        </div>
+
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>src/app.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stdio.h&gt;
+#include "app.h"
+
+int app_message(void)
+{
+    return puts("Application started");
+}</code></pre>
+          </div>
+        </div>
+
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>src/main.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include "app.h"
+
+int main(void)
+{
+    return app_message() &lt; 0;
+}</code></pre>
+          </div>
+        </div>
+
+<p>Compile and link the project from its root directory:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Build a two-file program</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>gcc -std=c17 -Wall -Wextra -Wpedantic -g3 -Iinclude \
+    src/main.c src/app.c -o app
+./app</code></pre>
+          </div>
+        </div>
+
+<p><code>-Iinclude</code> adds the project header directory to the include search path. A missing declaration often produces a compiler diagnostic; a declared function with no definition usually produces an undefined-reference error from the linker. Keep declarations in headers and provide each external function definition in one source file.</p>
+<h2 id="sec-0-4">0.4 Useful Compiler Flags</h2>
+<p>Use a consistent warning and debug baseline while learning:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Recommended learning build</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>gcc -std=c17 -Wall -Wextra -Wpedantic -Wformat=2 \
+    -Wstrict-prototypes -g3 -O0 hello.c -o hello</code></pre>
+          </div>
+        </div>
+
+<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+<thead><tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+<th style="padding:0.6rem;">Flag</th>
+<th style="padding:0.6rem;">Purpose</th>
+</tr></thead><tbody>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-std=c17</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Selects the C17 language standard instead of a compiler-specific default</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-Wall -Wextra -Wpedantic</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Enables a broad set of useful diagnostics; the names do not literally mean every possible warning</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-Wformat=2</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Checks <code>printf</code>/<code>scanf</code>-style format strings more strictly</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-Wstrict-prototypes</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Warns about old-style function declarations without a parameter prototype</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-g3</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Adds detailed source-level debug information and macro information</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-O0</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Disables most optimization, making early GDB stepping easier</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-O2</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Optimizes a release build; source stepping and variable visibility may differ</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-c</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Compiles/assembles a source file without linking</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-Ipath</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Adds a directory to the header search path</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-DNAME=value</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Defines a preprocessor macro for this build</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-Lpath -lname</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Adds a library search directory and links a library</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-Werror</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Treats warnings as errors; useful in controlled CI after the warning baseline is understood</td>
+</tr>
+<tr style="border-bottom:1px solid var(--border-subtle);">
+<td style="padding:0.6rem;vertical-align:top;"><code>-fsanitize=address,undefined</code></td>
+<td style="padding:0.6rem;vertical-align:top;">Adds runtime checks for many memory errors and undefined operations in test builds</td>
+</tr>
+</tbody></table></div>
+<p>For a debug build, use <code>-g3 -O0</code>. For an optimized build, use <code>-O2</code> and retain useful warnings. Do not assume that <code>-O0</code> makes undefined behavior safe, or that a clean build proves the program is correct. Sanitizers are testing tools; they do not replace tests or fix design errors.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Build with AddressSanitizer and UndefinedBehaviorSanitizer</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>gcc -std=c17 -Wall -Wextra -Wpedantic -g3 -O1 \
+    -fsanitize=address,undefined -fno-omit-frame-pointer \
+    hello.c -o hello-sanitize
+./hello-sanitize</code></pre>
+          </div>
+        </div>
+
+<p>Add hardening options when building a Linux application, after checking compatibility with the target system:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Linux application hardening example</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>gcc -std=c17 -O2 -D_FORTIFY_SOURCE=2 -fstack-protector-strong \
+    -Wall -Wextra -Wpedantic hello.c -o hello</code></pre>
+          </div>
+        </div>
+
+<p><code>_FORTIFY_SOURCE</code> depends on the C library and optimization settings; it is not a substitute for bounds checks. Embedded cross-compilers, bootloaders and bare-metal projects use target-specific flags and linker scripts, so do not copy Linux hardening or library flags blindly into a firmware build.</p>
+<h2 id="sec-0-5">0.5 Inspect the Executable and ELF Format</h2>
+<p>On Ubuntu, a native executable is commonly an ELF (Executable and Linkable Format) file. ELF describes a file's target architecture, entry point, loadable segments, sections, symbols and optional debug information. Object files are also ELF files, but they are relocatable and still need linking.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Inspect an executable and its object file</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>file hello hello.o
+readelf -h hello
+readelf -S hello
+readelf -l hello
+nm hello
+size hello
+objdump -d -Mintel hello</code></pre>
+          </div>
+        </div>
+
+<ul><li><code>file</code> gives a quick identification, such as 64-bit x86-64 ELF executable or relocatable object.</li><li><code>readelf -h</code> displays the ELF header: class, byte order, machine architecture, type and entry point.</li><li><code>readelf -S</code> lists sections such as <code>.text</code> (program instructions), <code>.rodata</code> (read-only data), <code>.data</code> (initialized writable data), <code>.bss</code> (zero-initialized storage) and <code>.debug_*</code> (debug information when present).</li><li><code>readelf -l</code> lists loadable segments used by the loader; sections are an organization for linking and inspection, while segments describe what is mapped at runtime.</li><li><code>nm</code> lists symbols. A symbol marked <code>U</code> is undefined in that file and must be supplied elsewhere during linking or dynamic loading.</li><li><code>size</code> summarizes text, data and BSS storage. For firmware, the cross-toolchain's <code>size</code> output helps estimate Flash and RAM use.</li><li><code>objdump -d</code> disassembles machine instructions. <code>objdump -d -S hello</code> can interleave source lines when debug information is available.</li></ul>
+<p>To inspect a dynamic executable's shared-library dependencies, use <code>ldd hello</code>. Use <code>ldd</code> only on trusted executables; for untrusted files, inspect metadata with <code>readelf -d</code> instead. These commands report a host Linux binary. An STM32 <code>.elf</code> has a different machine architecture, and should be inspected with the matching <code>arm-none-eabi-*</code> tools.</p>
+<h2 id="sec-0-6">0.6 Debug a C Program with GDB</h2>
+<p>GDB is the GNU debugger. Compile with debug information (<code>-g</code>) and a low optimization level (<code>-O0</code>) to make the source easier to follow. This small program has a helper function we can stop inside:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>average.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stdio.h&gt;
+
+static int average(int total, int count)
+{
+    return total / count;
+}
+
+int main(void)
+{
+    int result = average(84, 4);
+    printf("Average: %d\n", result);
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+<p>Build and launch the debugger:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Start GDB</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>gcc -std=c17 -Wall -Wextra -Wpedantic -g3 -O0 average.c -o average
+gdb ./average</code></pre>
+          </div>
+        </div>
+
+<p>At the <code>(gdb)</code> prompt, work through the program:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">GDB</span>
+              <span>Inspect program execution</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>break average
+run
+list
+print total
+print count
+next
+print result
+continue
+quit</code></pre>
+          </div>
+        </div>
+
+<p><code>break average</code> sets a breakpoint at the function, and <code>run</code> starts the program. <code>list</code> shows nearby source. <code>print total</code> and <code>print count</code> inspect function parameters. <code>next</code> executes the current source line without entering another function; after it returns to <code>main</code>, <code>print result</code> inspects the value assigned by the call. <code>continue</code> runs to the next breakpoint or program exit, and <code>quit</code> leaves GDB.</p>
+<p>Other commands worth knowing:</p>
+<ul><li><code>start</code> begins execution and stops at the start of <code>main</code>.</li><li><code>step</code> enters a function called on the current line; <code>next</code> steps over it.</li><li><code>finish</code> runs until the current function returns; <code>backtrace</code> (or <code>bt</code>) prints the call stack.</li><li><code>frame 1</code> selects a stack frame; <code>info locals</code> lists local variables in that frame.</li><li><code>display value</code> prints an expression after each stop; <code>undisplay</code> removes it.</li><li><code>watch value</code> stops when a variable changes; hardware watchpoint availability and size are limited.</li><li><code>x/16bx address</code> examines 16 bytes in hexadecimal; inspect <code>help x</code> for GDB's memory examination syntax.</li><li><code>catch throw</code>, <code>info breakpoints</code> and <code>delete 1</code> help with exceptions in C++ or breakpoint management; ordinary C programs mainly use <code>break</code>, <code>watch</code> and <code>catch signal</code>.</li></ul>
+<p>For an interactive source view, start GDB with <code>gdb -tui ./average</code>. If a program crashes, run it in GDB and use <code>backtrace</code> to find the call path. On Ubuntu, core dumps may be enabled for a shell session with <code>ulimit -c unlimited</code>; a core file can be opened with <code>gdb ./average core</code>.</p>
+<h2 id="sec-0-7">0.7 Types, Expressions, Control Flow and Functions</h2>
+<p>Choose a type that represents the data and its valid range. <code>int</code> is useful for ordinary calculations; use <code>size_t</code> for object sizes and array indexes, and types from <code>&lt;stdint.h&gt;</code> such as <code>uint32_t</code> when an exact-width representation is part of an interface. Check conversions at boundaries: a value that fits in one type may overflow or change meaning when converted to another.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>classify.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stdbool.h&gt;
+#include &lt;stdio.h&gt;
+
+static bool is_in_range(int value, int low, int high)
+{
+    return value &gt;= low &amp;&amp; value &lt;= high;
+}
+
+int main(void)
+{
+    int temperature_c = 24;
+    if (is_in_range(temperature_c, -40, 85)) {
+        puts("Temperature is within the example range.");
+    } else {
+        puts("Temperature is outside the example range.");
+    }
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+<p>This example uses a function with explicit parameter types and a <code>bool</code> result. The <code>if</code>/<code>else</code> branches make the control flow visible, and <code>&amp;&amp;</code> means both comparisons must be true. The range is only an example; a real sensor or product must use its own documented operating limits.</p>
+<p>Core language topics to practice:</p>
+<ul><li>Operators and precedence; use parentheses when they improve clarity.</li><li><code>if</code>/<code>else</code>, <code>switch</code>, <code>for</code>, <code>while</code> and early <code>return</code>.</li><li>Function declarations, definitions, parameters, return values and local scope.</li><li><code>enum</code> for a fixed set of named states, and <code>struct</code> for related fields.</li><li><code>const</code> to express read-only access; <code>static</code> to limit a file-scope name or retain a local value between calls.</li><li><code>sizeof</code> for object sizes, not assumptions about the sizes of pointers or <code>int</code>.</li></ul>
+<h2 id="sec-0-8">0.8 Arrays, Pointers and Strings</h2>
+<p>An array stores elements next to each other; a pointer stores an address. C does not automatically check that an index or pointer stays within a valid object. Always carry a length with a buffer, and do not read or write past its bounds.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>array_sum.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stddef.h&gt;
+#include &lt;stdio.h&gt;
+
+static int sum(const int values[], size_t count)
+{
+    int total = 0;
+    for (size_t i = 0; i &lt; count; ++i) {
+        total += values[i];
+    }
+    return total;
+}
+
+int main(void)
+{
+    const int readings[] = { 12, 15, 13 };
+    size_t count = sizeof readings / sizeof readings[0];
+    printf("Total: %d\n", sum(readings, count));
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+<p>In a function parameter, <code>const int values[]</code> is adjusted to a pointer parameter; it does not carry the array length. <code>count</code> supplies that length explicitly. <code>sizeof readings / sizeof readings[0]</code> computes the number of elements here because <code>readings</code> is still an array in <code>main</code>.</p>
+<p>Strings are character arrays terminated by the null character <code>'\0'</code>. A destination string needs room for that terminator as well as its visible characters. Prefer bounded interfaces, check return values, and avoid unsafe copies such as <code>strcpy</code> when the input length is not known.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>string_length.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main(void)
+{
+    char label[16] = { 0 };
+    const char source[] = "engine";
+    int written = snprintf(label, sizeof label, "%s", source);
+    if (written &lt; 0 || (size_t)written &gt;= sizeof label) {
+        fputs("Label did not fit\n", stderr);
+        return 1;
+    }
+    printf("%s has %zu characters\n", label, strlen(label));
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+<p><code>snprintf</code> writes no more than the destination size, including the terminator. Its return value tells you how many characters it wanted to write, so checking it detects truncation. Never pass an untrusted format string as the first argument to <code>printf</code>; use <code>printf("%s", text)</code> or <code>fputs(text, stdout)</code>.</p>
+<h2 id="sec-0-9">0.9 Structures, Enums and Bitwise Operations</h2>
+<p>Use a <code>struct</code> to keep fields that describe one value together; use an <code>enum</code> to make a state machine's states readable. Bitwise operators manipulate individual bits and are common in hardware registers and protocol flags.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>status.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+
+enum drive_state {
+    DRIVE_OFF,
+    DRIVE_READY,
+    DRIVE_FAULT
+};
+
+typedef struct {
+    uint32_t identifier;
+    enum drive_state state;
+    uint8_t fault_flags;
+} drive_status_t;
+
+int main(void)
+{
+    drive_status_t status = { .identifier = 7, .state = DRIVE_READY, .fault_flags = 0 };
+    status.fault_flags |= (uint8_t)(1u &lt;&lt; 2);
+    if ((status.fault_flags &amp; (uint8_t)(1u &lt;&lt; 2)) != 0u) {
+        puts("Over-temperature flag is set.");
+    }
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+<p><code>1u &lt;&lt; 2</code> creates a mask with bit 2 set. <code>|=</code> sets those bits without changing other bits; <code>&amp;</code> tests whether a bit is set. On a real device, consult the reference manual for register semantics: write-one-to-clear and read-only bits cannot be handled like ordinary RAM.</p>
+<h2 id="sec-0-10">0.10 Memory, Ownership, Files and Errors</h2>
+<p>Automatic local variables usually live for the duration of their block; static objects live for the whole program; dynamically allocated objects remain valid until released. Give every allocated object one clear owner and a defined release point. Check allocation and I/O results, and never use a pointer after its object has ended or been freed.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>read_file.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    FILE *file = fopen("input.txt", "r");
+    if (file == NULL) {
+        perror("input.txt");
+        return 1;
+    }
+
+    char line[128];
+    if (fgets(line, sizeof line, file) != NULL) {
+        fputs(line, stdout);
+    }
+    if (ferror(file)) {
+        perror("reading input.txt");
+        fclose(file);
+        return 1;
+    }
+    if (fclose(file) == EOF) {
+        perror("closing input.txt");
+        return 1;
+    }
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+<p><code>fopen</code> can fail, so check for <code>NULL</code> before using the stream. <code>fgets</code> reads at most the buffer size and null-terminates data it successfully reads. <code>perror</code> reports the operation with the system error description. Production code should also decide how to handle long lines and whether the file must contain exactly one line.</p>
+<p>Dynamic allocation uses <code>malloc</code>/<code>calloc</code> and must be paired with <code>free</code>; check for allocation failure and avoid arithmetic overflow when calculating allocation sizes. Prefer automatic or static storage when their lifetime and size are appropriate.</p>
+<h2 id="sec-0-11">0.11 Build a Small Project with Make</h2>
+<p>As programs grow, split them into modules with a header for the public interface. A Makefile records the build command and dependencies so you can rebuild consistently:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">MAKEFILE</span>
+              <span>Makefile</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>CC = gcc
+CFLAGS = -std=c17 -Wall -Wextra -Wpedantic -g3 -O0
+CPPFLAGS = -Iinclude
+SOURCES = src/main.c src/app.c
+OBJECTS = $(SOURCES:.c=.o)
+
+app: $(OBJECTS)
+	$(CC) $(OBJECTS) -o $@
+
+src/%.o: src/%.c include/app.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $&lt; -o $@
+
+.PHONY: clean
+clean:
+	rm -f $(OBJECTS) app</code></pre>
+          </div>
+        </div>
+
+<p>Run <code>make</code> to build and <code>make clean</code> to remove generated objects and the executable. Make recipes must begin with a tab. Add headers to prerequisites so changes to an interface rebuild dependent files. For larger projects, learn automatic dependency generation, separate debug/release configurations and a build system appropriate to the product; keep compiler options visible and repeatable.</p>
+<h2 id="sec-0-12">0.12 Testing, Diagnostics and Safer C</h2>
+<p>Treat compiler warnings as actionable feedback. Use small functions with clear inputs and outputs, validate external input before using it, and make error cases explicit. A test should check both normal behavior and boundary cases.</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>test_range.c</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;assert.h&gt;
+#include &lt;stdbool.h&gt;
+
+static bool is_in_range(int value, int low, int high)
+{
+    return value &gt;= low &amp;&amp; value &lt;= high;
+}
+
+int main(void)
+{
+    assert(is_in_range(0, 0, 10));
+    assert(is_in_range(10, 0, 10));
+    assert(!is_in_range(-1, 0, 10));
+    assert(!is_in_range(11, 0, 10));
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+<p>Compile and run the test with sanitizers during development:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">BASH</span>
+              <span>Compile and run a test</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>gcc -std=c17 -Wall -Wextra -Wpedantic -g3 -O1 \
+    -fsanitize=address,undefined test_range.c -o test_range
+./test_range</code></pre>
+          </div>
+        </div>
+
+<p>AddressSanitizer can identify many out-of-bounds accesses and use-after-free errors; UndefinedBehaviorSanitizer detects selected undefined operations. <code>assert</code> is useful for internal test expectations, but it may be disabled by <code>NDEBUG</code> and should not be used as runtime validation of untrusted input. Also consider Valgrind (<code>valgrind --leak-check=full ./program</code>) when installed, and static-analysis tools such as <code>cppcheck</code> or GCC's <code>-fanalyzer</code>.</p>
+<p>Habits that prevent common defects:</p>
+<ul><li>Initialize variables and check all function results that can fail.</li><li>Match each allocation with one owner and one <code>free</code>; do not return pointers to expired local variables.</li><li>Check array lengths and integer ranges before indexing, converting or allocating.</li><li>Use <code>size_t</code> for sizes, and avoid signed/unsigned comparisons without checking the conversion.</li><li>Keep functions small, prefer explicit interfaces, and compile every source file with the same warning policy.</li><li>Do not assume <code>volatile</code> makes shared data atomic or thread-safe. It mainly tells the compiler that accesses are observable; synchronization needs the correct atomic or interrupt-safe design.</li></ul>
+<h2 id="sec-0-13">0.13 C in Embedded and Automotive Systems</h2>
+<p>The same C fundamentals are used in firmware, control units, test tools and Linux-based vehicle gateways. Embedded code must additionally account for hardware timing, interrupts, memory limits, watchdogs, startup code, linker scripts and the exact peripheral/reference-manual behavior. Automotive software also needs documented requirements, defensive error handling, traceable tests and safety/security processes appropriate to its product.</p>
+<p>For protocol data, do not cast an arbitrary byte pointer to a multi-byte integer pointer: it can violate alignment and aliasing rules, and the wire byte order may differ from the processor. Decode each byte explicitly according to the protocol:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Decode a signed little-endian CAN signal</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>#include &lt;stdbool.h&gt;
+#include &lt;stdint.h&gt;
+
+static bool decode_temperature_tenths(const uint8_t data[2], int16_t *result)
+{
+    if (data == 0 || result == 0) {
+        return false;
+    }
+
+    uint16_t raw = (uint16_t)data[0] | (uint16_t)((uint16_t)data[1] &lt;&lt; 8);
+    int32_t signed_value = raw &lt;= INT16_MAX ? (int32_t)raw : (int32_t)raw - 65536;
+    *result = (int16_t)signed_value;
+    return true;
+}</code></pre>
+          </div>
+        </div>
+
+<p>This example assumes a two-byte, little-endian, signed two's-complement signal whose unit is 0.1 degrees C; that assumption must come from the message specification. The intermediate <code>int32_t</code> makes sign extension explicit before the value is narrowed to <code>int16_t</code>. A real CAN receiver must first verify the frame identifier, payload length, signal scaling, timeout and validity rules.</p>
+<p>A small explicit state machine is often safer to review than deeply nested conditionals:</p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title">
+              <span class="code-lang-badge">C</span>
+              <span>Simple controller state machine</span>
+            </div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code>enum controller_state {
+    STATE_INIT,
+    STATE_ACTIVE,
+    STATE_FAULT
+};
+
+static enum controller_state next_state(enum controller_state state, bool input_valid)
+{
+    if (!input_valid) {
+        return STATE_FAULT;
+    }
+    if (state == STATE_INIT) {
+        return STATE_ACTIVE;
+    }
+    return state;
+}</code></pre>
+          </div>
+        </div>
+
+<p>This is only a teaching example, not production automotive control logic. Real systems need requirements-defined state transitions, timing analysis, diagnostics, safe-state behavior, hardware protection and verification. On STM32, later chapters apply these C concepts to registers, GPIO, timers, interrupts, buses, sensors and debugging.</p>
+
+        <div class="lab-checklist-card">
+          <div class="lab-title-row">
+            <h3>📋 Lab 0: Build, Inspect and Debug</h3>
+            <span class="progress-pill">Local Storage Tracked</span>
+          </div>
+          <ul class="checklist-items">
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l0-step1">
+              <label for="l0-step1" class="checklist-text">Install GCC, GDB and binutils on Ubuntu, then record their version output.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l0-step2">
+              <label for="l0-step2" class="checklist-text">Type the <code>hello.c</code> example into a file; build it with C17, warnings and debug symbols, then run it.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l0-step3">
+              <label for="l0-step3" class="checklist-text">Produce <code>.i</code>, <code>.s</code> and <code>.o</code> files using <code>-E</code>, <code>-S</code> and <code>-c</code>; identify which tool stage created each.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l0-step4">
+              <label for="l0-step4" class="checklist-text">Use <code>file</code>, <code>readelf -h</code>, <code>readelf -S</code>, <code>nm</code>, <code>size</code> and <code>objdump</code> to inspect the executable.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l0-step5">
+              <label for="l0-step5" class="checklist-text">Build <code>average.c</code>, set a breakpoint in <code>average</code>, inspect both parameters and continue to normal exit.</label>
+            </li>
+            <li class="checklist-item">
+              <input type="checkbox" class="checklist-checkbox" id="l0-step6">
+              <label for="l0-step6" class="checklist-text">Add a boundary test or deliberately introduce an out-of-bounds access in a throwaway program; observe how a sanitizer reports it, then remove the defect.</label>
+            </li>
+          </ul>
+        </div>
+
+
+        <div class="quiz-container" id="sec-0-quiz">
+          <div class="quiz-header"><span>🧠 Knowledge Check</span></div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">1. Which GCC option stops after producing a relocatable object file without linking?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="This stops after preprocessing.">
+                A) <code>-E</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="This stops after producing assembly source.">
+                B) <code>-S</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct. GCC compiles and assembles but does not link.">
+                C) <code>-c</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="This selects the output filename.">
+                D) <code>-o</code>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">2. What does <code>-g3</code> provide?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) It enables the highest optimization level.
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct. Pair it with a suitable optimization level; `-O0` is easiest for beginners.">
+                B) It adds debug information for source-level debugging.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) It links GDB into the executable.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) It checks every array access at runtime.
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">3. Which command shows the ELF header, including architecture and file type?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                A) <code>nm program</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct. The header identifies the ELF class, machine and type.">
+                B) <code>readelf -h program</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) <code>size program</code>
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) <code>make program</code>
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+          <div class="quiz-question-box">
+            <div class="quiz-question-text">4. Why should an array's length be passed to a C function that receives a pointer?</div>
+            <div class="quiz-options">
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct. Keep the buffer and its length together and validate indexes.">
+                A) A pointer does not carry the array's element count.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                B) The compiler cannot pass pointers to functions.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                C) <code>sizeof</code> always returns the pointed-to array length.
+              </button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect.">
+                D) Pointers automatically prevent out-of-bounds access.
+              </button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </div>
+
+
+        <div class="chapter-bottom-nav">
+          <a href="../index.html" class="nav-card"><span class="nav-card-dir">← Previous</span><span class="nav-card-title">Course Overview</span></a>
+          <a href="ch01-embedded-c-stm32-architecture.html" class="nav-card" style="text-align:right;"><span class="nav-card-dir">Next →</span><span class="nav-card-title">Chapter 1: Embedded C &amp; STM32 Architecture</span></a>
+        </div>
+
+        <footer class="site-footer">
+          <div class="footer-container">
+            <div class="footer-left">
+              <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs Logo" class="footer-logo">
+              <div class="footer-brand-text">
+                <span class="footer-brand-name">Apt Computing Labs</span>
+                <span class="footer-tagline">Where Knowledge Meets Innovation</span>
+              </div>
+            </div>
+            <div class="footer-right">
+              <div>© 2026 <strong>Apt Computing Labs</strong>. All Rights Reserved.</div>
+              <div style="font-size:0.75rem;margin-top:0.25rem;">Programming STM32 with C • Confidential &amp; Proprietary Educational Material</div>
+            </div>
+          </div>
+        </footer>
+
+      </article>
+    </main>
+  </div>
+  <div class="modal-overlay" id="search-modal-overlay">
+    <div class="search-modal">
+      <div class="modal-search-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="modal-search-input" class="modal-search-input" placeholder="Search chapters, GPIO, DMA, GDB...">
+        <button id="close-search-modal" class="icon-btn" style="border:none;">✕</button>
+      </div>
+      <ul id="search-results" class="search-results-list"></ul>
+    </div>
+  </div>
+  <script src="../js/book.js?v=3"></script>
+</body>
+</html>

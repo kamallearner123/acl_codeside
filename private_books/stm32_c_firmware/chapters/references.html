@@ -33,6 +33,10 @@
       </div>
     </div>
     <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Board:</span>
+        <span class="board-select-label" style="font-weight:700;">NUCLEO-F446RE (Cortex-M4F)</span>
+      </div>
       <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
       <a href="/courses/stm32-firmware-development-with-c/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -55,6 +59,25 @@
             <span class="chapter-check-icon">📖</span>
             <span class="chapter-title-text">Course Overview &amp; Syllabus</span>
           </a>
+        </div>
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">C</span>
+              <span>Linux &amp; C Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="ch00-art-of-programming-using-c.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Ch 0: Art of Programming using C</span>
+                <span class="chapter-read-time">75m</span>
+              </a>
+              <ul class="subtopic-list"><li><a href="ch00-art-of-programming-using-c.html#sec-0-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.1 The C Programmer's Toolkit</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.2 Set Up C on Ubuntu</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.3 What Happens When GCC Compil…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.4 Useful Compiler Flags</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.5 Inspect the Executable and E…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.6 Debug a C Program with GDB</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.7 Types, Expressions, Control…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.8 Arrays, Pointers and Strings</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-9" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.9 Structures, Enums and Bitwis…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-10" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.10 Memory, Ownership, Files an…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-11" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.11 Build a Small Project with…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-12" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.12 Testing, Diagnostics and Sa…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-13" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.13 C in Embedded and Automotiv…</a></li><li><a href="ch00-art-of-programming-using-c.html#sec-0-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 0.Q Knowledge Check</a></li></ul>
+            </li>
+          </ul>
         </div>
         <div class="nav-module-group">
           <button class="module-title-btn">
@@ -242,7 +265,6 @@
         <div class="chapter-actions"><a href="ch09-projects-capstone.html" class="btn-secondary">← Chapter 9</a></div>
       </div>
       <article class="prose">
-        <aside class="platform-note" role="note"><strong>Board portability:</strong> Hands-on board examples use the NUCLEO-F446RE as the reference target; the course also teaches general embedded-C and STM32 concepts used across compatible boards. Pin assignments, clocks, registers, interrupt/DMA mappings, memory sizes, and board wiring vary by exact MCU and board. Check the target datasheet, reference manual, and schematic before reusing hardware-specific code.</aside>
         <div class="chapter-hero">
           <span class="chapter-module-tag">Appendix</span>
           <h1 class="chapter-h1">References & Further Reading</h1>

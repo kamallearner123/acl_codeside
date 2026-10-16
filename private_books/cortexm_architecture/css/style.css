@@ -470,22 +470,6 @@ body.sidebar-hidden .sidebar-floating-tab {
   scrollbar-gutter: stable;
 }
 
-.platform-note {
-  margin: 1rem 0;
-  padding: 0.85rem 1rem;
-  border: 1px solid var(--border-subtle);
-  border-left: 3px solid var(--accent-primary);
-  border-radius: var(--radius-md);
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  font-size: 0.82rem;
-  line-height: 1.65;
-}
-
-.platform-note strong {
-  color: var(--text-primary);
-}
-
 .nav-module-group {
   margin-bottom: 1.25rem;
 }
@@ -1919,3 +1903,4 @@ section[id] {
     text-align: center;
   }
 }
+
