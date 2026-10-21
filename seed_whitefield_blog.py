@@ -11,36 +11,35 @@ from django.utils import timezone
 from blogs.models import Post
 
 SLUG = "whitefield-framework-large-scale-iot-simulation"
-TITLE = "Whitefield: Overcoming the Scalability and Fidelity Crisis in Large-Scale IoT & Wireless Mesh Networks"
+TITLE = "Whitefield Framework: Architecture, Setup, and Supported Configurations"
 AUTHOR = "Kamal Kumar Mukiri"
 EXCERPT = (
-    "As global smart grid and IoT deployments expand to hundreds of millions of nodes, physical testbeds "
-    "and conventional simulators collapse under scale or fail in RF physical realism. Enter Whitefield — "
-    "a revolutionary hybrid simulation framework bridging ns-3 physical RF propagation with unmodified production "
-    "IoT operating system stacks (Contiki-NG, RIOT, Zephyr, OpenThread). Explore its architecture, macroeconomic business drivers, "
-    "and 10 high-demand industrial use cases, with tribute to its architect, Rahul Jadhav."
+    "Whitefield connects a wireless PHY/MAC simulation engine with native network-stack implementations "
+    "from IoT operating systems through Airline, Commline, and Stackline. This guide follows the project's "
+    "documented build and configuration workflow and distinguishes documented limits from performance claims."
 )
-COVER_IMAGE = "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=1200"
+COVER_IMAGE = "/static/blogs/whitefield/whitefield-framework-cover.png"
 
 HTML_CONTENT = r"""
 <p class="lead" style="font-size: 1.25rem; font-weight: 500; color: #1E3557; line-height: 1.8;">
-    The modern Internet of Things (IoT) is undergoing an unprecedented inflection point. Across the globe, governments and industrial conglomerates are deploying hundreds of millions of constrained wireless nodes for smart electric grids, autonomous city lighting, precision agriculture, and military tactical mesh networks. Yet, embedded systems engineers and firmware architects face a notorious, multi-million-dollar dilemma: <em>How do you validate the scalability, stability, and protocol convergence of a 10,000-node wireless mesh before rolling out physical hardware in the field?</em>
+    Whitefield is an open-source simulation framework for wireless sensor networks. It combines a PHY/MAC simulation engine with network stacks from supported IoT operating systems, allowing the stack implementation to be tested with a simulated wireless environment. The project's configuration documentation lists a node-count range of 2–5,000; this is a documented configuration range, not a performance guarantee or benchmark for every scenario.
 </p>
 
 <div class="toc-box mt-8 mb-10 p-6 bg-brand-light border border-gray-100 rounded-2xl shadow-sm">
     <p class="font-bold text-brand-navy mb-3 text-lg"><i class="fas fa-list-ol mr-2 text-brand-coral"></i> In this Comprehensive Technical Whitepaper &amp; Analysis</p>
     <ol class="space-y-1.5" style="margin:0; padding-left: 1.5rem; line-height: 1.9; font-size: 0.95rem; list-style-type: decimal;">
-        <li><a href="#executive-summary" class="hover:text-brand-coral transition-colors font-medium">Executive Summary &amp; The Grand IoT Simulation Dilemma</a></li>
-        <li><a href="#architectural-breakdown" class="hover:text-brand-coral transition-colors font-medium">Deep Architecture of Whitefield: Decoupling PHY/MAC from Stack Execution</a></li>
-        <li><a href="#airline-subsystem" class="hover:text-brand-coral transition-colors font-medium">The Airline Subsystem: High-Throughput Inter-Process Communication (IPC) &amp; Live OAM Telemetry</a></li>
-        <li><a href="#native-firmware-execution" class="hover:text-brand-coral transition-colors font-medium">True Native Firmware Execution: Zephyr, Contiki-NG, RIOT, OpenThread &amp; FreeRTOS</a></li>
+        <li><a href="#executive-summary" class="hover:text-brand-coral transition-colors font-medium">Executive Summary and Scope</a></li>
+        <li><a href="#architectural-breakdown" class="hover:text-brand-coral transition-colors font-medium">Core Architecture: Airline, Commline, and Stackline</a></li>
+        <li><a href="#airline-subsystem" class="hover:text-brand-coral transition-colors font-medium">Airline and Commline</a></li>
+        <li><a href="#native-firmware-execution" class="hover:text-brand-coral transition-colors font-medium">Documented Module Support</a></li>
         <li><a href="#credits-rahul-jadhav" class="hover:text-brand-coral transition-colors font-medium">Architectural Visionary: Tribute &amp; Credits to Rahul Jadhav</a></li>
         <li><a href="#current-news-business-drivers" class="hover:text-brand-coral transition-colors font-medium">Current Global News &amp; Macroeconomic Business Drivers (With Exact Dates &amp; Policy Milestones)</a></li>
-        <li><a href="#ten-high-demand-use-cases" class="hover:text-brand-coral transition-colors font-medium">10 High-Demand Commercial &amp; Industrial Use Cases</a></li>
-        <li><a href="#technical-walkthrough" class="hover:text-brand-coral transition-colors font-medium">Practical Engineering Walkthrough: Compiling &amp; Orchestrating a Whitefield Testbed</a></li>
-        <li><a href="#comparative-analysis" class="hover:text-brand-coral transition-colors font-medium">Comparative Matrix: Whitefield vs. Alternative Evaluation Frameworks</a></li>
-        <li><a href="#business-roi" class="hover:text-brand-coral transition-colors font-medium">Quantifying Enterprise ROI: Capital Expenditure vs. Digital Twin Velocity</a></li>
-        <li><a href="#future-roadmap" class="hover:text-brand-coral transition-colors font-medium">Looking Ahead: Digital Twins, AI-Driven Routing &amp; 5G RedCap / Wi-SUN</a></li>
+        <li><a href="#ten-high-demand-use-cases" class="hover:text-brand-coral transition-colors font-medium">Illustrative Wireless-Network Scenarios</a></li>
+        <li><a href="#technical-walkthrough" class="hover:text-brand-coral transition-colors font-medium">Documented Build and Configuration Walkthrough</a></li>
+        <li><a href="#comparative-analysis" class="hover:text-brand-coral transition-colors font-medium">Configuration Range and Performance Caveats</a></li>
+        <li><a href="#business-roi" class="hover:text-brand-coral transition-colors font-medium">Evaluating Cost and Performance</a></li>
+        <li><a href="#career-opportunities" class="hover:text-brand-coral transition-colors font-medium">Career Opportunities in Wireless IoT Simulation</a></li>
+        <li><a href="#future-roadmap" class="hover:text-brand-coral transition-colors font-medium">Possible Future Directions</a></li>
         <li><a href="#conclusion-resources" class="hover:text-brand-coral transition-colors font-medium">Conclusion &amp; Open Source Access</a></li>
     </ol>
 </div>
@@ -48,38 +47,38 @@ HTML_CONTENT = r"""
 ---
 
 <h2 id="executive-summary" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
-    <i class="fas fa-layer-group text-brand-coral mr-3"></i> 1. Executive Summary &amp; The Grand IoT Simulation Dilemma
+    <i class="fas fa-layer-group text-brand-coral mr-3"></i> 1. Executive Summary and Scope
 </h2>
 
 <p>
-    Building software for low-power, lossy wireless networks (LLNs) presents engineering challenges fundamentally distinct from traditional cloud or mobile application development. Constrained embedded nodes operate on milliwatts of energy, possess tens of kilobytes of RAM, and communicate over unstable, interference-prone radio channels (IEEE 802.15.4, Sub-GHz Wi-SUN, Power Line Communication, and BLE Mesh). In these environments, higher-layer protocols such as <strong>RPL (IPv6 Routing Protocol for Low-Power and Lossy Networks, RFC 6550)</strong>, <strong>6LoWPAN (RFC 6282)</strong>, <strong>Thread</strong>, and <strong>CoAP (RFC 7252)</strong> must dynamically construct routing topologies without overwhelming nodes with control plane broadcast storms.
+    Whitefield separates the PHY/MAC simulation from the higher-layer network stack. Its documented setup supports NS-3 LR-WPAN (802.15.4) and PLC as Airline options, while supported Stackline implementations include Contiki, Contiki-NG, and RIOT. See the project's module-support table for current status; OpenThread is listed as future/incomplete, and Zephyr is listed as future.
 </p>
 
 <div class="my-8 p-6 bg-red-50 border-l-4 border-red-500 rounded-r-xl">
     <h4 class="font-bold text-red-900 mb-2 text-lg"><i class="fas fa-exclamation-triangle mr-2"></i> The "Paper vs. Reality" Crisis in IoT Engineering</h4>
     <p class="text-red-800 text-sm leading-relaxed mb-0">
-        In academic research and early prototyping, protocol designers frequently publish performance benchmarks demonstrating 99.9% packet delivery ratios and rapid routing convergence. However, when utility companies or industrial automation vendors deploy identical firmware binaries across a 50,000-meter district, systems frequently suffer catastrophic routing loops, severe parent-node churning, battery depletion within months instead of decades, and widespread packet dropoffs.
+        Whitefield can help investigate protocol behavior in a configured simulated network. Results depend on the selected stack, Airline implementation, scenario, and configuration; they should not be treated as evidence of field performance without validation against appropriate measurements.
     </p>
 </div>
 
 <p>
-    Historically, firmware teams were forced to choose between two fundamentally flawed evaluation methodologies:
+    Whitefield's documented purpose is to combine a simulated PHY/MAC with existing IoT network-stack implementations. It does not, by itself, establish how a system will perform on physical hardware or replace hardware testing.
 </p>
 
 <ul>
     <li>
-        <strong>The Physical Hardware Testbed Trap:</strong> Setting up an enterprise-grade testbed with 500 to 2,000 real microcontroller boards (e.g., STM32, TI CC2652, Nordic nRF52) mounted across office ceilings or warehouse racks costs between <strong>$250,000 and $2,000,000</strong> in hardware procurement, cabling, power supplies, and logic analyzers. More crucially, physical testbeds are notoriously non-deterministic: changes in ambient humidity, moving personnel, and transient microwave or Wi-Fi interference make scientific bug reproduction nearly impossible.
+        <strong>Physical hardware testing:</strong> Hardware tests remain important for validating radio behavior and device-specific effects that a software simulation does not represent. Their cost and repeatability vary by test setup.
     </li>
     <li>
-        <strong>The Pure Software Simulator Trap (e.g., ns-2, ns-3 in isolation, OMNeT++):</strong> Discrete-event network simulators excel at RF physics, antenna modeling, Rayleigh fading, and collision domains. However, they rely on <em>re-implemented, abstracted software models</em> of protocol stacks written in C++ or OTcl. The code running inside the simulator is NOT the code that gets flashed onto the STM32 or nRF52 microcontroller. Subtle memory allocation bugs, stack overflows, buffer pool exhaustion, RTOS timer jitter, and vendor-specific protocol quirks are completely invisible.
+        <strong>Network simulation:</strong> A network simulator can model configured network behavior, but results depend on the models and integrations selected. Whitefield's documented design connects an Airline PHY/MAC simulator to a Stackline implementation.
     </li>
     <li>
-        <strong>The Microcontroller Emulator Trap (e.g., Cooja / MSPSim):</strong> Tools like Cooja emulate physical instruction sets (such as MSP430) clock cycle by clock cycle. While highly accurate for single nodes, emulating instruction cycles across 1,000 concurrent nodes creates astronomical CPU and memory overhead, grinding simulation speeds down to a fraction of real-time (often taking 24 hours to simulate 10 minutes of network traffic) with extremely simplistic radio propagation models (Unit Disk Graph Model - UDGM).
+        <strong>Device emulation:</strong> Emulation and network simulation answer different questions. Whitefield's documented approach runs supported network stacks in native mode; it is not a claim of cycle-accurate microcontroller emulation.
     </li>
 </ul>
 
 <p>
-    This acute industry bottleneck inspired the creation of the <strong>Whitefield Framework</strong>: an open-source, dual-engine hybrid platform that seamlessly fuses the uncompromising RF physical-layer fidelity of <strong>ns-3</strong> with the raw, unmodified production C firmware binaries of modern IoT operating systems.
+    The <strong>Whitefield Framework</strong> loosely couples a PHY/MAC implementation from a simulator such as NS-3 with a network stack from a supported IoT operating system. The repository describes the stack as being used as-is with a Whitefield platform interface; this does not mean production device firmware runs unchanged or with bitwise equivalence to hardware.
 </p>
 
 <div class="my-8 p-6 bg-white border border-gray-200 rounded-2xl shadow-md text-center">
@@ -98,64 +97,57 @@ HTML_CONTENT = r"""
 </h2>
 
 <p>
-    The core architectural insight of Whitefield is elegant yet radical: <strong>decouple the network stack layers at the exact boundary between the physical/MAC radio hardware and the network link driver</strong>.
+    Whitefield separates the PHY/MAC simulation from the network stack. Its documented architecture has three named components: <strong>Airline</strong> provides the PHY/MAC simulation interface, <strong>Commline</strong> is the message queue and interface between the two sides, and <strong>Stackline</strong> provides the network layer and above from an integrated IoT operating system.
 </p>
 
 <p>
-    Instead of emulating microcontroller silicon (ALUs, registers, hardware timers) or re-implementing 6LoWPAN/RPL stacks in C++, Whitefield compiles the <em>exact same C firmware</em> running on your target devices into native Linux host binaries using POSIX hardware abstraction layers (such as Zephyr's <code>native_posix</code> or Contiki-NG's <code>native</code> target). Each simulated node runs as a lightning-fast, lightweight user-space process or thread on the host machine.
+    Stackline uses an operating system's network stack and application with a Whitefield interface. This is native stack execution, not microcontroller instruction-set emulation, and it does not establish bitwise equivalence with firmware running on production hardware.
 </p>
 
 <!-- FIGURE 1: Whitefield Tri-Tier Architecture -->
-<figure class="my-10 p-4 md:p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl text-center">
+<figure class="hidden">
     <img src="/static/blogs/whitefield/fig1-whitefield-architecture.svg" alt="Figure 1: Dual-Engine Architecture of the Whitefield Simulation Framework" class="w-full max-w-4xl mx-auto rounded-xl shadow-md border border-slate-700/50" />
     <figcaption class="mt-4 text-left text-sm text-slate-300 leading-relaxed border-t border-slate-800 pt-3">
         <span class="font-bold text-brand-coral uppercase tracking-wider text-xs block mb-1">Figure 1 &bull; Architectural Blueprint</span>
         <strong class="text-white text-base block mb-2">Figure 1: Tri-Tier Architectural Decoupling in the Whitefield Simulation Framework</strong>
         <span>
-            <strong>Explanation:</strong> This diagram illustrates the tri-tier division of responsibilities within Whitefield. At the top (Layer 1), multiple unmodified IoT operating systems (Zephyr RTOS, Contiki-NG, OpenThread, RIOT-OS) run as native host processes, executing exact production application logic, routing state machines (RPL RFC 6550), and network buffers. In the middle (Layer 2), the high-speed <em>Airline IPC Bus</em> uses shared memory and POSIX domain sockets to bridge firmware frames without emulation overhead while delivering centralized Wireshark packet tapping and CLI injection. At the bottom (Layer 3), the <em>ns-3 RF Simulation Engine</em> models physical electromagnetic wave behavior, calculating Log-Distance path loss, Nakagami-m fast fading, antenna radiation patterns, and CSMA/CA clear channel assessments with sub-microsecond precision.
+            The diagram is hidden pending correction against the documented Airline, Commline, and Stackline architecture.
         </span>
     </figcaption>
 </figure>
 
 <p>
-    This architectural separation delivers three transformative advantages:
+    The documented division of responsibilities is:
 </p>
 
 <ol>
     <li>
-        <strong>Zero-Abstraction Stack Fidelity:</strong> Because each node runs actual firmware code, every state machine transition, memory copy, packet buffer allocation (e.g., Zephyr <code>net_buf</code> or Contiki <code>packetbuf</code>), timer expiration, and cryptographic computation is executed with 100% bitwise fidelity to production hardware.
+        <strong>Airline:</strong> PHY/MAC implementation supplied by a simulator, such as NS-3.
     </li>
     <li>
-        <strong>State-of-the-Art Radio Physics:</strong> Instead of simplistic circular range models, RF propagation is computed by ns-3's battle-tested radio models. Path loss, obstacles, multipath scattering, thermal noise, adjacent-channel interference, and dynamic node mobility are calculated dynamically using rigorous electromagnetic math.
+        <strong>Commline:</strong> Message queue and interfaces that transport network payloads and OAM messages between Airline and Stackline.
     </li>
     <li>
-        <strong>Massive Scalability on Standard Hardware:</strong> Because CPU instruction emulation is eliminated, a single modern multi-core developer workstation (or a CI/CD cloud runner) can execute <strong>thousands of concurrent nodes</strong> at near real-time speeds without breaking a sweat.
+        <strong>Stackline:</strong> Network layer and above supplied by an integrated IoT operating system, with a platform interface for Whitefield.
     </li>
 </ol>
 
 ---
 
 <h2 id="airline-subsystem" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
-    <i class="fas fa-bolt text-brand-coral mr-3"></i> 3. The Airline Subsystem: High-Throughput Inter-Process Communication (IPC) &amp; Live OAM Telemetry
+    <i class="fas fa-bolt text-brand-coral mr-3"></i> 3. Airline and Commline
 </h2>
 
 <p>
-    At the mechanical heart of Whitefield sits <strong>Airline</strong>. Airline is the high-performance IPC transport and coordination fabric that connects the discrete-event loop of ns-3 with the distributed native firmware processes.
+    <strong>Airline</strong> refers to the physical and MAC layers provided by a third-party simulator, such as NS-3. <strong>Commline</strong> is the message queue and corresponding interfaces that decouple Airline and Stackline.
 </p>
 
 <p>
-    When an embedded OS prepares an IEEE 802.15.4 MAC frame for transmission, its network driver hands the byte stream to the Whitefield adapter rather than writing to physical SPI radio registers (such as an external CC2420 or an internal STM32 radio peripheral). The Whitefield adapter wraps the payload into an Airline protocol frame stamped with:
+    Commline transports messages between those components, including network payloads and OAM messages. The repository and documentation describe this separation; they do not document the shared-memory transport, timestamp format, synchronization interval, or packet aggregation mechanism described in the removed diagram.
 </p>
 
-<ul>
-    <li><strong>Node ID &amp; Radio Interface Index:</strong> Identifies transmitting entity and virtual antenna port.</li>
-    <li><strong>Channel &amp; Transmission Power (dBm):</strong> Specific RF frequency band and configured output wattage.</li>
-    <li><strong>Timestamp &amp; Time Barrier Token:</strong> Coordinates discrete-event clock synchronization between asynchronous Linux processes and the deterministic ns-3 discrete event schedule.</li>
-    <li><strong>Raw Frame Payload:</strong> Complete MAC header, network layer headers, and encrypted payload.</li>
-</ul>
-
 <!-- FIGURE 2: Airline IPC Subsystem -->
-<figure class="my-10 p-4 md:p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl text-center">
+<figure class="hidden">
     <img src="/static/blogs/whitefield/fig2-airline-ipc-subsystem.svg" alt="Figure 2: Airline IPC Subsystem, Frame Layout and Time-Barrier Sync" class="w-full max-w-4xl mx-auto rounded-xl shadow-md border border-slate-700/50" />
     <figcaption class="mt-4 text-left text-sm text-slate-300 leading-relaxed border-t border-slate-800 pt-3">
         <span class="font-bold text-brand-coral uppercase tracking-wider text-xs block mb-1">Figure 2 &bull; IPC &amp; Synchronization Mechanics</span>
@@ -167,15 +159,15 @@ HTML_CONTENT = r"""
 </figure>
 
 <p>
-    Airline routes this message to the ns-3 simulation thread via high-speed shared memory / Unix domain sockets. The ns-3 engine receives the transmission event, calculates which surrounding nodes in the 3D coordinate space can detect the preamble, applies the selected channel propagation model (e.g., Nakagami-m fading with building shadowing), determines whether collisions occurred with overlapping packets, and calculates the received Signal-to-Noise Ratio (SNR) and Bit Error Rate (BER).
+    Select the Airline implementation and its supported configuration options for the experiment. Whitefield's configuration documentation lists LR-WPAN and PLC PHY options; consult that documentation rather than assuming other radio standards or propagation features are available.
 </p>
 
 <p>
-    If the frame is successfully received by neighboring nodes without unrecoverable bit errors, ns-3 dispatches the frame back through Airline to the appropriate destination node processes, triggering their respective virtual RX interrupt handlers.
+    The project also documents logs, packet capture, a shell, and static and dynamic network visualization. These tools support inspection; their availability does not imply a particular packet-capture format or live Wireshark pipeline.
 </p>
 
 <!-- FIGURE 3: Wireshark OAM Telemetry Pipeline -->
-<figure class="my-10 p-4 md:p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl text-center">
+<figure class="hidden">
     <img src="/static/blogs/whitefield/fig3-wireshark-oam-telemetry.svg" alt="Figure 3: Live Wireshark Packet Tap and Protocol Dissection" class="w-full max-w-4xl mx-auto rounded-xl shadow-md border border-slate-700/50" />
     <figcaption class="mt-4 text-left text-sm text-slate-300 leading-relaxed border-t border-slate-800 pt-3">
         <span class="font-bold text-brand-coral uppercase tracking-wider text-xs block mb-1">Figure 3 &bull; Observability &amp; Deep Packet Inspection</span>
@@ -189,32 +181,30 @@ HTML_CONTENT = r"""
 ---
 
 <h2 id="native-firmware-execution" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
-    <i class="fas fa-microchip text-brand-coral mr-3"></i> 4. True Native Firmware Execution: Zephyr, Contiki-NG, RIOT, OpenThread &amp; FreeRTOS
+    <i class="fas fa-microchip text-brand-coral mr-3"></i> 4. Documented Module Support
 </h2>
 
 <p>
-    One of Whitefield's most remarkable innovations is its <strong>heterogeneous multi-stack interoperability</strong>. Because Whitefield's Airline interface operates at the standardized MAC/PHY boundary, it does not mandate that every node run the same operating system.
+    Support status below follows Whitefield's module-support documentation. A module marked "Future" should not be presented as a currently supported integration.
 </p>
 
 <div class="grid md:grid-cols-2 gap-6 my-8">
     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <h4 class="font-bold text-brand-navy mb-2 flex items-center"><i class="fas fa-check-circle text-brand-coral mr-2"></i> Supported Native Operating Systems</h4>
+        <h4 class="font-bold text-brand-navy mb-2 flex items-center"><i class="fas fa-check-circle text-brand-coral mr-2"></i> Stackline Status</h4>
         <ul class="text-sm text-gray-700 space-y-2">
-            <li><strong>Zephyr RTOS:</strong> The premier Linux Foundation RTOS for modern embedded and automotive systems. Uses Zephyr's <code>native_posix</code> target with custom radio shims.</li>
-            <li><strong>Contiki-NG:</strong> The industry standard for low-power IPv6/6LoWPAN research and RPL routing stack implementations.</li>
-            <li><strong>OpenThread:</strong> Google/Nest's certified open-source implementation of the Thread mesh protocol, used across consumer smart home devices.</li>
-            <li><strong>RIOT-OS:</strong> High-performance multi-threading microkernel OS for memory-constrained IoT devices.</li>
-            <li><strong>FreeRTOS / OT-RTOS:</strong> Widely deployed real-time operating system integrated with Thread network stacks.</li>
+            <li><strong>Supported:</strong> Contiki, Contiki-NG, and RIOT.</li>
+            <li><strong>Future / incomplete:</strong> OpenThread.</li>
+            <li><strong>Future:</strong> Zephyr.</li>
         </ul>
     </div>
 
     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <h4 class="font-bold text-brand-navy mb-2 flex items-center"><i class="fas fa-network-wired text-brand-coral mr-2"></i> Mixed Heterogeneous Mesh Testing</h4>
+        <h4 class="font-bold text-brand-navy mb-2 flex items-center"><i class="fas fa-network-wired text-brand-coral mr-2"></i> Airline Status</h4>
         <p class="text-sm text-gray-700 leading-relaxed">
-            In real-world smart cities and smart buildings, devices from different manufacturers run completely different operating systems. A street lamp might run Contiki-NG, while a smart meter runs Zephyr RTOS, and home sensors run OpenThread.
+            The support table lists 802.15.4 through the NS-3 LR-WPAN module and PLC as supported Airline modules. Castalia-Omnet++, 802.15.4e, LoRaWAN, and WAVE/DSRC are listed as future.
         </p>
         <p class="text-sm text-gray-700 leading-relaxed mb-0">
-            Whitefield allows developers to orchestrate a single simulation where Node 1 through 500 run Zephyr, Node 501 through 800 run Contiki-NG, and Border Routers run OpenThread. This validates standard compliance (RFC 6550, RFC 6775, RFC 6282) and cross-vendor interoperability long before committing to manufacturing silicon.
+            The documentation does not establish that arbitrary combinations of different stacks interoperate, or that protocol compliance is certified. Confirm the current module support and integration instructions before choosing a test scenario.
         </p>
     </div>
 </div>
@@ -275,7 +265,7 @@ HTML_CONTENT = r"""
         <strong>RFC 9010 ("Routing for Non-Storing Mode in RPL"):</strong> Refined downward routing, node registration, and memory conservation algorithms in ultra-constrained leaf nodes.
     </li>
     <li>
-        <strong>IETF Presentations &amp; RFC Benchmarking:</strong> In landmark presentations before the IETF (such as the IETF 106 Lightweight Implementation Guidance Working Group - LWIG), Rahul demonstrated how traditional simulations gave misleading results regarding RPL DAO signaling overhead, and how Whitefield was evaluated against a <strong>300-node physical hardware testbed</strong> to calibrate and guarantee absolute real-world routing convergence accuracy.
+        <strong>IETF presentations and benchmarking:</strong> The cited Whitefield repository and documentation do not substantiate the specific presentation, 300-node hardware comparison, or guaranteed real-world accuracy claims previously made here. Consult primary sources before making claims about external evaluations.
     </li>
 </ul>
 
@@ -307,7 +297,7 @@ HTML_CONTENT = r"""
             Approved by the Union Cabinet on <strong>July 20, 2021</strong> and formally notified by the Ministry of Power on <strong>July 30, 2021</strong>, India's ₹3.03 lakh crore ($36.4 Billion) RDSS initiative represents the largest contiguous Advanced Metering Infrastructure (AMI) program ever attempted. In an implementation milestone review released on <strong>August 22, 2024</strong>, the Ministry reported that over 110 million smart meters had been sanctioned across state Discoms, targeting complete nationwide rollout by <strong>March 31, 2026</strong>.
         </p>
         <p class="text-gray-700 text-sm leading-relaxed mb-0">
-            <strong>Business Opportunity for Whitefield:</strong> Because urban residential basements in Mumbai, Kolkata, and Delhi present severe cellular attenuation, utilities are deploying hybrid Sub-GHz Wi-SUN RF mesh (865–868 MHz) paired with G3-PLC powerline communication. When a single transformer zone encompasses 10,000 meters, firmware packet collisions during daily midnight billing uploads cause massive headend service crashes. Meter manufacturers (Genus, Secure Meters, HPL) and system integrators (EDF, Tata Power, Adani Electricity) utilize Whitefield as an indispensable digital twin to validate RPL Objective Functions and Trickle timer suppression prior to multi-million-unit rollouts.
+            <strong>Potential research question:</strong> A team could investigate a representative low-power network scenario, subject to the supported Airline, Stackline, and configuration options. This example is not evidence that the named utilities or manufacturers use Whitefield; the documentation does not list Wi-SUN as a supported Airline.
         </p>
     </div>
 
@@ -324,7 +314,7 @@ HTML_CONTENT = r"""
             Enacted on <strong>November 15, 2021</strong> by President Joe Biden, the $1.2 Trillion Infrastructure Investment and Jobs Act (IIJA) allocated over $65 billion directly to grid reliability and clean energy deployment. Under this authority, the U.S. Department of Energy (DOE) launched the $10.5 Billion Grid Resilience and Innovation Partnerships (GRIP) program. On <strong>October 18, 2023</strong>, DOE announced $3.46 billion in Round 1 awards for 58 projects across 44 states. Subsequently, on <strong>August 6, 2024</strong>, the DOE announced an additional $2.2 billion in Round 2 awards specifically designated to harden electrical distribution networks against extreme climate events and catastrophic wildfires.
         </p>
         <p class="text-gray-700 text-sm leading-relaxed mb-0">
-            <strong>Business Opportunity for Whitefield:</strong> Modern microgrids must operate in "islanded mode" when regional transmission links trip during severe weather. Local solar inverters, battery storage systems (BESS), and reclosers negotiate load-shedding over decentralized wireless mesh protocols without cloud or cellular dependencies. Whitefield allows utilities (such as PG&amp;E, Southern California Edison, and Duke Energy) to simulate cascading line trips and verify autonomous mesh resynchronization across thousands of native firmware nodes.
+            <strong>Potential research question:</strong> A simulated network could be used to explore a chosen traffic or connectivity scenario if it maps to supported modules. This example does not establish that the named utilities use Whitefield, nor does the documentation claim support for microgrid control or thousands of nodes in a particular experiment.
         </p>
     </div>
 
@@ -341,7 +331,7 @@ HTML_CONTENT = r"""
             Following the landmark release of the Matter 1.0 specification on <strong>October 4, 2022</strong> by the Connectivity Standards Alliance (CSA), the Thread Group launched <strong>Thread 1.3.0 in July 2022</strong>, introducing seamless IPv6 border routing across Apple, Google, and Amazon ecosystems. On <strong>January 8, 2024</strong>, the Thread Group announced <strong>Thread 1.4</strong>, standardizing standardized Thread credential sharing, cloud-independent boundary mesh synchronization, and enhanced diagnostics. On <strong>May 8, 2024</strong>, CSA ratified <strong>Matter 1.3</strong> (introducing energy management and EV chargers), followed swiftly by the release of <strong>Matter 1.4 on October 8, 2024</strong>, expanding home energy management and multi-admin network robustness.
         </p>
         <p class="text-gray-700 text-sm leading-relaxed mb-0">
-            <strong>Business Opportunity for Whitefield:</strong> With market analysts forecasting over 5.5 billion connected Matter-over-Thread devices in service by 2028, consumer complaints regarding unresponsive border routers, partition churn, and sluggish unicast commission handshakes threaten OEM brand reputations. Chipset giants (Silicon Labs, NXP, Nordic Semiconductor, Espressif) and device makers (Philips Hue, Eve Systems, Yale) utilize Whitefield to simulate 200+ OpenThread nodes across multi-story buildings, proving boundary failover resilience long before silicon production.
+            <strong>Support caveat:</strong> OpenThread is listed as future and incomplete in the module-support documentation. This scenario is not evidence that the named vendors use Whitefield or that it currently validates Thread deployments.
         </p>
     </div>
 
@@ -358,7 +348,7 @@ HTML_CONTENT = r"""
             Originally proposed by the European Commission on <strong>September 15, 2022</strong>, the EU Cyber Resilience Act was formally approved by the European Parliament on <strong>March 12, 2024</strong> with an overwhelming 517–12 vote. The Council of the European Union adopted the act on <strong>October 10, 2024</strong>, and it was published in the Official Journal of the European Union, entering into full legal force on <strong>November 20, 2024</strong>. The CRA mandates that all wireless hardware products with digital elements sold in the European single market implement mandatory vulnerability reporting, secure-by-default configurations, and cryptographically verified Over-The-Air (OTA) firmware updating capabilities.
         </p>
         <p class="text-gray-700 text-sm leading-relaxed mb-0">
-            <strong>Business Opportunity for Whitefield:</strong> Non-compliance penalties under the CRA reach up to €15 million or 2.5% of annual global turnover. In constrained 6LoWPAN mesh networks, broadcasting a 512 KB firmware update payload across 10,000 battery-operated devices without congesting the 250 kbps RF spectrum or bricking sleeping nodes represents a high-risk engineering challenge. Whitefield allows manufacturers to simulate massive multicast OTA distribution campaigns, proving rollback stability and energy consumption metrics under rigorous ns-3 channel models.
+            <strong>Potential research question:</strong> Firmware-update traffic may be an area to investigate in a supported configuration, but the cited documentation does not describe an OTA-update validation feature, a 10,000-node configuration, or rollback and energy-consumption guarantees. This example is not evidence that manufacturers use Whitefield.
         </p>
     </div>
 
@@ -375,7 +365,7 @@ HTML_CONTENT = r"""
             The catastrophic Maui wildfire disaster of <strong>August 8–11, 2023</strong> underscored the fatal vulnerability of commercial cellular towers during natural disasters, leaving first responders and residents completely severed from emergency communications. In response, on <strong>March 15, 2024</strong>, the European Commission upgraded its Copernicus Emergency Management System to integrate real-time satellite-linked IoT sensor meshes across high-risk Mediterranean forests. Simultaneously, on <strong>May 2, 2024</strong>, the California Department of Forestry and Fire Protection (CAL FIRE) and the US Forest Service announced major funding awards for autonomous early-warning smoke and heat-detection sensor meshes deployed across the wildland-urban interface (WUI).
         </p>
         <p class="text-gray-700 text-sm leading-relaxed mb-0">
-            <strong>Business Opportunity for Whitefield:</strong> In an active forest fire, sensors deployed along the flame front are physically incinerated one by one. Surviving perimeter nodes must execute RPL rank poisoning, prune dead parent links, and autonomously re-establish uplink paths to satellite relays within seconds. Whitefield simulates dynamic node annihilation events, verifying that safety-critical evacuation telemetry is delivered without loss.
+            <strong>Potential research question:</strong> Network behavior after node or link failures could be studied only where the selected modules provide a way to represent those changes. The cited documentation does not establish node-annihilation modeling, satellite relays, recovery timing, or loss-free safety-critical delivery.
         </p>
     </div>
 
@@ -392,7 +382,7 @@ HTML_CONTENT = r"""
             The U.S. Federal Highway Administration (FHWA) finalized its National Electric Vehicle Infrastructure (NEVI) formula program regulations on <strong>February 28, 2023</strong> (23 CFR Part 680), mandating 97% network uptime for public EV charging stations. Concurrently, the publication of <strong>ISO 15118-20 in April 2022</strong> established international protocols for bidirectional Vehicle-to-Grid (V2G) power transfer, which state fleets (such as California under Executive Order N-79-20) mandated across public transit and commercial delivery hubs by <strong>June 15, 2024</strong>.
         </p>
         <p class="text-gray-700 text-sm leading-relaxed mb-0">
-            <strong>Business Opportunity for Whitefield:</strong> When 200 electric semi-trucks or delivery vans plug into a distribution depot simultaneously, drawing tens of megawatts of instantaneous power, charging controllers must execute localized sub-second phase balancing over local wireless mesh to prevent substation transformer explosions if cloud cellular connections drop. Whitefield enables EV charging equipment OEMs to validate local mesh load-shedding firmware under intense RF interference.
+            <strong>Potential research question:</strong> A team could investigate a relevant network traffic pattern where its selected modules support the required scenario. The cited documentation does not establish EV charging support, a sub-second control guarantee, or use of Whitefield by EV equipment vendors.
         </p>
     </div>
 </div>
@@ -400,11 +390,11 @@ HTML_CONTENT = r"""
 ---
 
 <h2 id="ten-high-demand-use-cases" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
-    <i class="fas fa-briefcase text-brand-coral mr-3"></i> 7. 10 High-Demand Commercial &amp; Industrial Use Cases
+    <i class="fas fa-briefcase text-brand-coral mr-3"></i> 7. Illustrative Wireless-Network Evaluation Scenarios
 </h2>
 
 <p>
-    Where does Whitefield solve mission-critical, enterprise-grade business problems? Below are 10 real-world commercial scenarios where the combination of native firmware execution and ns-3 physical fidelity represents an indispensable business advantage:
+    The examples below are hypothetical problem statements, not documented deployments, measured results, or proof that Whitefield currently supports every technology mentioned. Check the module-support table and configuration reference before treating any scenario as runnable. Whitefield's documented node-count range is 2–5,000; this is not a performance benchmark.
 </p>
 
 <div class="space-y-8 my-8">
@@ -415,14 +405,14 @@ HTML_CONTENT = r"""
             <h3 class="text-xl md:text-2xl font-bold text-brand-navy">Advanced Metering Infrastructure (AMI) &amp; Smart Electricity Grids</h3>
         </div>
         <p class="text-gray-700 leading-relaxed mb-4">
-            <strong>The Challenge:</strong> A utility operator deploys 100,000 electricity meters across an urban district using hybrid Wi-SUN RF mesh and Powerline (PLC). Every midnight, all 100,000 meters attempt to upload interval billing data to local Data Concentrator Units (DCUs). Under standard RPL routing, nodes closest to the DCU suffer catastrophic buffer congestion, high duty cycles, and premature hardware failure.
+            <strong>Illustrative challenge:</strong> A utility may need to study traffic patterns in a large metering network. The 100,000-device figure describes a possible deployment context, not a Whitefield scenario; the documented configuration range is 2–5,000 nodes.
         </p>
         <p class="text-gray-700 leading-relaxed mb-4">
-            <strong>Whitefield Value:</strong> Simulates tens of thousands of actual metering firmware binaries running custom RPL Objective Functions (OF0 / MRHOF). Engineers can stress-test upload scheduling, backoff algorithms, and dynamic channel hopping under real RF interference, ensuring 99.99% meter billing delivery without costly field service calls.
+            <strong>Possible use:</strong> A team could investigate a smaller representative configuration using supported modules and documented options. No meter-delivery percentage, full-scale simulation capability, or field outcome is established by the cited documentation.
         </p>
 
         <!-- FIGURE 4: Smart Grid AMI Mesh Topology -->
-        <figure class="my-6 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-lg text-center">
+        <figure class="hidden">
             <img src="/static/blogs/whitefield/fig4-smart-grid-ami-mesh.svg" alt="Figure 4: Smart Grid AMI 100k-Node Mesh Topology" class="w-full max-w-3xl mx-auto rounded-lg shadow border border-slate-700/50" />
             <figcaption class="mt-3 text-left text-xs md:text-sm text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
                 <span class="font-bold text-brand-coral uppercase tracking-wider text-xs block mb-1">Figure 4 &bull; Industrial Infrastructure</span>
@@ -444,11 +434,11 @@ HTML_CONTENT = r"""
             <strong>The Challenge:</strong> Municipalities are replacing sodium lamps with smart LED luminaires equipped with 6LoWPAN mesh nodes spanning tens of kilometers. Urban canyons, vehicle reflections, and tree canopies cause dynamic RF attenuation. When emergency vehicles pass, the city command center issues multicast dimming/strobing commands that must propagate instantaneously across the entire arterial corridor.
         </p>
         <p class="text-gray-700 leading-relaxed mb-4">
-            <strong>Whitefield Value:</strong> Whitefield pairs 3D urban geographical GIS coordinates with ns-3 ray-tracing / shadowing models, verifying that emergency multicast broadcast packets reach 100% of luminaire firmware nodes in under 200 milliseconds.
+            <strong>Possible use:</strong> A team could formulate a wireless-network scenario with a supported Airline and inspect results for its chosen configuration. The project documentation does not substantiate the GIS, ray-tracing, delivery-percentage, or latency claims made for this example.
         </p>
 
         <!-- FIGURE 5: Smart City Lighting & Urban Canyon RF -->
-        <figure class="my-6 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-lg text-center">
+        <figure class="hidden">
             <img src="/static/blogs/whitefield/fig5-smart-city-lighting-canyon.svg" alt="Figure 5: Urban Canyon RF Multipath and Smart Street Lighting" class="w-full max-w-3xl mx-auto rounded-lg shadow border border-slate-700/50" />
             <figcaption class="mt-3 text-left text-xs md:text-sm text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
                 <span class="font-bold text-brand-coral uppercase tracking-wider text-xs block mb-1">Figure 5 &bull; Urban RF Propagation</span>
@@ -470,11 +460,11 @@ HTML_CONTENT = r"""
             <strong>The Challenge:</strong> Chemical refineries and offshore oil platforms require real-time pressure, toxic gas, and vibration monitoring in environments dense with steel pipes, rotating machinery, and explosive vapor zones. In these settings, cables cannot be installed due to ATEX safety regulations and massive wiring costs ($1,000+ per foot in hazardous zones).
         </p>
         <p class="text-gray-700 leading-relaxed mb-4">
-            <strong>Whitefield Value:</strong> Enables plant automation engineers to validate Time-Slotted Channel Hopping (TSCH / IEEE 802.15.4e) and WirelessHART deterministic schedule matrices across real Zephyr/Contiki firmware, guaranteeing zero data collisions in extreme multipath industrial environments.
+            <strong>Support caveat:</strong> The module-support page lists 802.15.4e and Zephyr as future, not currently supported. Whitefield's documentation therefore does not support the TSCH/WirelessHART validation or collision-free guarantee claimed for this example.
         </p>
 
         <!-- FIGURE 6: Industrial TSCH Slotframe Schedule -->
-        <figure class="my-6 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-lg text-center">
+        <figure class="hidden">
             <img src="/static/blogs/whitefield/fig6-industrial-plant-tsch.svg" alt="Figure 6: Industrial TSCH Slotframe Schedule Matrix" class="w-full max-w-3xl mx-auto rounded-lg shadow border border-slate-700/50" />
             <figcaption class="mt-3 text-left text-xs md:text-sm text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
                 <span class="font-bold text-brand-coral uppercase tracking-wider text-xs block mb-1">Figure 6 &bull; Deterministic Wireless Timing</span>
@@ -496,11 +486,11 @@ HTML_CONTENT = r"""
             <strong>The Challenge:</strong> A 40-story commercial skyscraper incorporates 20,000 smart building nodes (HVAC dampers, smart thermostats, occupancy sensors, access control badges) running OpenThread. If a primary Thread Border Router experiences a power failure, the mesh must self-heal and elect a secondary Leader within seconds without dropping HVAC control loops.
         </p>
         <p class="text-gray-700 leading-relaxed mb-4">
-            <strong>Whitefield Value:</strong> Simulates multi-border-router OpenThread meshes across reinforced concrete floor slabs, verifying that Leader partition mergers and MLE (Mesh Link Establishment) handshakes execute seamlessly without manual IT rebooting.
+            <strong>Support caveat:</strong> OpenThread is listed as future and partly implemented, not complete support. The documented status does not substantiate this multi-router failover scenario or its claimed behavior.
         </p>
 
         <!-- FIGURE 7: Matter over OpenThread Smart Building -->
-        <figure class="my-6 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-lg text-center">
+        <figure class="hidden">
             <img src="/static/blogs/whitefield/fig7-matter-thread-smart-building.svg" alt="Figure 7: Matter over OpenThread Smart Building Simulation" class="w-full max-w-3xl mx-auto rounded-lg shadow border border-slate-700/50" />
             <figcaption class="mt-3 text-left text-xs md:text-sm text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
                 <span class="font-bold text-brand-coral uppercase tracking-wider text-xs block mb-1">Figure 7 &bull; Smart Building Resilience</span>
@@ -522,7 +512,7 @@ HTML_CONTENT = r"""
             <strong>The Challenge:</strong> Sprawling industrial farms (such as almond orchards or vineyards) deploy battery-operated underground soil moisture probes and solar irrigation valves spanning thousands of acres. Devices sleep 99.8% of the time to survive 10 years on small batteries. When rain approaches, the entire network must synchronize wake cycles and relay telemetry over several multi-kilometer hops.
         </p>
         <p class="text-gray-700 leading-relaxed mb-0">
-            <strong>Whitefield Value:</strong> Simulates low-duty-cycle Radio Duty Cycling (RDC) and ContikiMAC/TSCH wake-up schedules across thousands of virtual agricultural nodes, identifying packet dropouts caused by dense crop foliage moisture attenuation.
+            <strong>Possible use:</strong> A team could investigate a relevant low-power networking question using supported Stackline and Airline modules. The specific wake-up schedules, foliage model, and thousands-node capability described here are not established by the cited documentation.
         </p>
     </div>
 
@@ -536,11 +526,11 @@ HTML_CONTENT = r"""
             <strong>The Challenge:</strong> Environmental agencies drop thousands of low-cost thermal, gas, and particulate sensor nodes across wilderness forests in California, Southern Europe, and Australia. When a wildfire sparks, fire-front sensors are rapidly incinerated. As critical parent nodes are destroyed by advancing flames, the surviving perimeter nodes must dynamically restructure the RPL DAG routing tree in seconds to deliver evacuation alarms.
         </p>
         <p class="text-gray-700 leading-relaxed mb-4">
-            <strong>Whitefield Value:</strong> Models dynamic node destruction events in ns-3 while verifying that surviving native firmware nodes avoid "poison routing" cycles and rapidly re-establish emergency telemetry uplinks to satellite gateway base stations.
+            <strong>Possible use:</strong> Evaluating node failures would require a supported way to model the failure and a suitable stack scenario. The cited documentation does not establish the node-destruction, satellite-gateway, or recovery behavior claimed here.
         </p>
 
         <!-- FIGURE 8: Wildfire Sensor Mesh & RPL Self-Healing -->
-        <figure class="my-6 p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-lg text-center">
+        <figure class="hidden">
             <img src="/static/blogs/whitefield/fig8-wildfire-disaster-resilience.svg" alt="Figure 8: Wildfire Sensor Mesh Dynamic Healing" class="w-full max-w-3xl mx-auto rounded-lg shadow border border-slate-700/50" />
             <figcaption class="mt-3 text-left text-xs md:text-sm text-slate-300 leading-relaxed border-t border-slate-800 pt-2">
                 <span class="font-bold text-brand-coral uppercase tracking-wider text-xs block mb-1">Figure 8 &bull; Emergency Disaster Recovery</span>
@@ -562,7 +552,7 @@ HTML_CONTENT = r"""
             <strong>The Challenge:</strong> Dismounted infantry squads, unmanned ground vehicles (UGVs), and micro-drones form Mobile Ad-hoc Networks (MANETs) in contested GPS-denied environments. Electronic warfare (EW) adversaries employ broadband noise jamming and spoofing attacks. Nodes constantly move at varying velocities, creating rapid topology changes.
         </p>
         <p class="text-gray-700 leading-relaxed mb-0">
-            <strong>Whitefield Value:</strong> Combines ns-3's sophisticated Gauss-Markov node mobility models and directional jamming interference sources with real military-grade encrypted communication firmware, validating that tactical voice and telemetry channels maintain link connectivity under adversarial jamming.
+            <strong>Support caveat:</strong> The cited Whitefield documentation does not establish mobility/jamming experiments, military-grade firmware integration, or reliable links under adversarial conditions. Runtime mobility is listed as future support.
         </p>
     </div>
 
@@ -576,7 +566,7 @@ HTML_CONTENT = r"""
             <strong>The Challenge:</strong> Commercial fleet depots with 500 electric delivery vans charging simultaneously can overwhelm local distribution transformers. Charging stations must communicate via Open Charge Point Protocol (OCPP) and ISO 15118 over localized wireless mesh to dynamically throttle charging currents and balance phase loads in sub-second intervals.
         </p>
         <p class="text-gray-700 leading-relaxed mb-0">
-            <strong>Whitefield Value:</strong> Verifies distributed peer-to-peer load-shedding algorithms across charging station controllers running Zephyr RTOS, proving that localized load-balancing signals converge reliably even during cellular backhaul outages.
+            <strong>Support caveat:</strong> Zephyr is listed as future support. The cited documentation does not establish this Zephyr-based load-shedding scenario or guarantee convergence during a backhaul outage.
         </p>
     </div>
 
@@ -590,7 +580,7 @@ HTML_CONTENT = r"""
             <strong>The Challenge:</strong> Shipping container terminals (like Rotterdam, Singapore, and Los Angeles) manage hundreds of thousands of steel containers stacked six high. Refrigerated "reefer" containers monitor sensitive pharmaceutical and food temperatures over wireless mesh. Stacks of solid corrugated steel create extreme multipath signal cancellation and deep RF dead zones that shift every time a gantry crane moves a container.
         </p>
         <p class="text-gray-700 leading-relaxed mb-0">
-            <strong>Whitefield Value:</strong> Allows container telemetry firmware vendors to simulate dynamic 3D obstacle relocation, testing whether container reefer nodes autonomously establish reliable multi-hop routing paths around newly erected container walls.
+            <strong>Possible use:</strong> A mobility or changing-obstacle experiment would need to be checked against the current Airline and mobility support. Runtime mobility is listed as future in the module-support documentation.
         </p>
     </div>
 
@@ -604,7 +594,7 @@ HTML_CONTENT = r"""
             <strong>The Challenge:</strong> Modern healthcare facilities feature hundreds of connected patient telemetry monitors (ECG patches, pulse oximeters, smart IV infusion pumps) communicating over low-power wireless networks. These signals must coexist in crowded 2.4 GHz spectrum congested with high-bandwidth hospital Wi-Fi, MRI interference, and visitor cellular devices. Packet loss can directly endanger patient lives.
         </p>
         <p class="text-gray-700 leading-relaxed mb-0">
-            <strong>Whitefield Value:</strong> Evaluates FDA-regulated medical device firmware under intense cross-technology interference injection in ns-3, certifying that life-critical physiological telemetry packets maintain strict latency budgets and failover redundancy.
+            <strong>Important limitation:</strong> A simulation is not medical-device validation or certification. The cited documentation does not establish cross-technology interference testing, latency guarantees, or failover certification for this scenario.
         </p>
     </div>
 </div>
@@ -616,123 +606,93 @@ HTML_CONTENT = r"""
 </h2>
 
 <p>
-    Setting up and executing an enterprise simulation with the Whitefield Framework is straightforward, modern, and developer-friendly. Below is an end-to-end technical walkthrough demonstrating how firmware engineers configure and launch a large-scale simulated mesh network on a standard Linux workstation.
+    This walkthrough follows the native-install and execution commands documented by the Whitefield repository. Check the repository and its documentation for current prerequisites and platform-specific details.
 </p>
 
 <h3 class="text-xl font-bold text-brand-navy mt-6 mb-3">Step 1: Cloning and Building Whitefield</h3>
 
 <p>
-    Clone the Whitefield framework and initialize its underlying ns-3 Airline simulation engine:
+    The repository's native-install instructions use the setup script followed by <code>make</code>:
 </p>
 
 <div class="bg-brand-navy text-white p-5 rounded-xl font-mono text-sm overflow-x-auto my-4 shadow">
 <pre>
-# Clone the Whitefield repository
-git clone --recurse-submodules https://github.com/whitefield-framework/whitefield.git
+git clone https://github.com/whitefield-framework/whitefield
 cd whitefield
-
-# Install build dependencies (Ubuntu/Debian)
-sudo apt-get update &amp;&amp; sudo apt-get install -y \\
-    build-essential cmake python3 pkg-config libzmq3-dev libpcap-dev
-
-# Build the Airline communication bus and ns-3 engine
-./build.sh -t all
+./scripts/setup.sh
+make
 </pre>
 </div>
 
-<h3 class="text-xl font-bold text-brand-navy mt-6 mb-3">Step 2: Compiling Firmware for the Whitefield Native Target</h3>
+<h3 class="text-xl font-bold text-brand-navy mt-6 mb-3">Step 2: Select Stackline Executables</h3>
 
 <p>
-    To illustrate how cleanly Whitefield integrates with production code, here is an example using an actual IoT operating system (Contiki-NG or Zephyr RTOS). Instead of targeting an ARM Cortex-M board target, compile for the Whitefield native virtual tap target:
+    The sample configuration assigns compiled Stackline executables with <code>nodeExec</code>. The repository's sample uses Contiki binaries; use the build instructions for the selected supported stack rather than assuming a generic Contiki-NG or Zephyr target path.
 </p>
 
 <div class="bg-brand-navy text-white p-5 rounded-xl font-mono text-sm overflow-x-auto my-4 shadow">
 <pre>
-# Navigate to the sample application in Whitefield
-cd examples/contiki-ng/rpl-udp
-
-# Compile the native node firmware binary linked against the Airline adapter
-make TARGET=whitefield all
-
-# The compilation produces:
-# -> udp-server.whitefield (RPL Root Border Router)
-# -> udp-client.whitefield (Mesh Sensor Node)
+# Examples from config/wf.cfg; paths are relative to the repository root.
+nodeExec=thirdparty/contiki/examples/ipv6/rpl-udp/udp-client.whitefield $NODEID UDPCLI_SEND_INT=30 AUTO_START=1 UDP_PAYLOAD_LEN=128
+nodeExec[0]=thirdparty/contiki/examples/ipv6/rpl-udp/udp-server.whitefield $NODEID
 </pre>
 </div>
 
-<h3 class="text-xl font-bold text-brand-navy mt-6 mb-3">Step 3: Defining the Simulation Topology &amp; Physical Channel</h3>
+<h3 class="text-xl font-bold text-brand-navy mt-6 mb-3">Step 3: Configure the Network in wf.cfg</h3>
 
 <p>
-    Whitefield configurations are defined in clean JSON or YAML files. Below is a production configuration defining a 50-node wireless mesh with Nakagami-m fading, LogDistance path loss, and automated PCAP packet capture:
+    Whitefield uses a line-oriented <code>.cfg</code> file with <code>key=value</code> entries. The repository's sample uses entries like these; consult the configuration reference for supported options and node-index overrides.
 </p>
 
 <div class="bg-brand-navy text-white p-5 rounded-xl font-mono text-sm overflow-x-auto my-4 shadow">
 <pre>
-{
-  "network": {
-    "phy": "IEEE802.15.4",
-    "channel": 26,
-    "tx_power_dbm": 0.0,
-    "propagation_model": "ns3::LogDistancePropagationLossModel",
-    "fading_model": "ns3::NakagamiPropagationLossModel",
-    "exponent": 3.0,
-    "reference_loss": 40.04
-  },
-  "oam": {
-    "pcap_enabled": true,
-    "pcap_file": "whitefield_mesh_traffic.pcap",
-    "log_level": "INFO"
-  },
-  "nodes": [
-    {
-      "id": 1,
-      "type": "root",
-      "binary": "examples/contiki-ng/rpl-udp/udp-server.whitefield",
-      "position": [0.0, 0.0, 1.5]
-    },
-    {
-      "id_range": [2, 50],
-      "type": "sensor",
-      "binary": "examples/contiki-ng/rpl-udp/udp-client.whitefield",
-      "placement": "grid",
-      "grid_spacing_meters": 25.0
-    }
-  ]
-}
+numOfNodes=10
+fieldX=400
+fieldY=400
+topologyType=grid
+gridWidth=5
+panID=0xabcd
+NS3_captureFile=pcap/pkt
+macPktQlen=20
+macMaxRetry=3
+
+# Assign the default executable and override node 0.
+nodeExec=thirdparty/contiki/examples/ipv6/rpl-udp/udp-client.whitefield $NODEID UDPCLI_SEND_INT=30 AUTO_START=1 UDP_PAYLOAD_LEN=128
+nodeExec[0]=thirdparty/contiki/examples/ipv6/rpl-udp/udp-server.whitefield $NODEID
 </pre>
 </div>
 
-<h3 class="text-xl font-bold text-brand-navy mt-6 mb-3">Step 4: Executing the Simulation &amp; Live Wireshark Analysis</h3>
+<h3 class="text-xl font-bold text-brand-navy mt-6 mb-3">Step 4: Start and Inspect Whitefield</h3>
 
 <p>
-    Launch the Whitefield simulation runner:
+    Start Whitefield with the repository's documented launcher. The repository also documents monitor, visualization, shell, and stop commands:
 </p>
 
 <div class="bg-brand-navy text-white p-5 rounded-xl font-mono text-sm overflow-x-auto my-4 shadow">
 <pre>
-# Launch the 50-node simulation runner
-whitefield-runner -c mesh_config.json
-
-# In another terminal window: inspect live network traffic in Wireshark
-tail -f whitefield_mesh_traffic.pcap | wireshark -k -i -
+./invoke_whitefield.sh config/wf.cfg
+./scripts/monitor.sh
+./canvas/canvas.py
+./scripts/wfshell help
+./scripts/wfshell stop_whitefield
 </pre>
 </div>
 
 <p>
-    Within seconds, all 50 firmware processes are instantiated. Engineers can observe real-time RPL DIO (DODAG Information Object) multicasts, DAO route registrations, and bi-directional UDP traffic converging deterministically across the virtual physical space.
+    The configuration range in the documentation is 2–5,000 nodes. That documented range should not be interpreted as a measured throughput, simulation-speed, or reliability result. Runtime depends on the selected modules, configuration, and host.
 </p>
 
 ---
 
 <h2 id="comparative-analysis" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
-    <i class="fas fa-balance-scale text-brand-coral mr-3"></i> 9. Comparative Matrix: Whitefield vs. Alternative Evaluation Frameworks
+    <i class="fas fa-balance-scale text-brand-coral mr-3"></i> 9. Configuration Range and Performance Caveats
 </h2>
 
 <p>
-    To understand why tier-1 industrial automation and smart grid firms adopt Whitefield, review this objective technical comparison matrix against alternative testing methodologies:
+    Whitefield's configuration reference lists <code>numOfNodes</code> in the range 2–5,000. This is a documented configuration range, not a benchmark proving that every setup can run efficiently at the upper end. The cited project documentation does not provide evidence for a specific node throughput, real-time factor, bitwise fidelity, or guaranteed packet delivery rate. Performance and results should be measured for the chosen host, modules, and scenario.
 </p>
 
-<div class="overflow-x-auto my-8">
+<div class="hidden">
     <table class="w-full text-left text-sm border-collapse border border-gray-200 rounded-xl overflow-hidden shadow-sm">
         <thead class="bg-brand-navy text-white uppercase text-xs font-bold">
             <tr>
@@ -808,14 +768,14 @@ tail -f whitefield_mesh_traffic.pcap | wireshark -k -i -
 ---
 
 <h2 id="business-roi" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
-    <i class="fas fa-chart-line text-brand-coral mr-3"></i> 10. Quantifying Enterprise ROI: Capital Expenditure vs. Digital Twin Velocity
+    <i class="fas fa-chart-line text-brand-coral mr-3"></i> 10. Evaluating Cost and Performance
 </h2>
 
 <p>
-    For engineering directors, VP of Embedded Systems, and Chief Technology Officers, adopting the Whitefield Framework represents a monumental return on investment (ROI). In high-volume IoT product development, the cost of discovering a firmware architectural bug post-deployment in the field is orders of magnitude higher than detecting it during sprint regression testing:
+    The repository and documentation do not quantify cost savings, CI speedups, or avoided recalls. Teams evaluating Whitefield should compare their own setup and measured results with their existing test process; a simulation is not a substitute for validating device-specific behavior on hardware.
 </p>
 
-<div class="grid md:grid-cols-3 gap-6 my-8">
+<div class="hidden">
     <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm text-center">
         <div class="text-4xl font-black text-brand-coral mb-2">95%</div>
         <p class="font-bold text-brand-navy mb-1">CapEx Reduction</p>
@@ -833,40 +793,74 @@ tail -f whitefield_mesh_traffic.pcap | wireshark -k -i -
     </div>
 </div>
 
----
-
-<h2 id="future-roadmap" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
-    <i class="fas fa-rocket text-brand-coral mr-3"></i> 11. Looking Ahead: Digital Twins, AI-Driven Routing &amp; 5G RedCap / Wi-SUN
+<h2 id="career-opportunities" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
+    <i class="fas fa-user-tie text-brand-coral mr-3"></i> 11. Career Opportunities in Wireless IoT Simulation
 </h2>
 
 <p>
-    The future evolution of Whitefield intersects with three monumental technological frontiers:
+    Work in this domain spans embedded networking, simulation, testing, and systems integration. Whitefield is one example of an open-source project in the area; learning or contributing to it can build relevant skills, but does not guarantee a role or employment outcome.
+</p>
+
+<div class="grid md:grid-cols-2 gap-6 my-8">
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <h3 class="font-bold text-brand-navy mb-3">Related roles</h3>
+        <ul class="text-sm text-gray-700 space-y-2">
+            <li><strong>Embedded networking engineer:</strong> integrate and debug IPv6, 6LoWPAN, RPL, and MAC-layer behavior in constrained devices.</li>
+            <li><strong>Network simulation engineer:</strong> build and validate PHY/MAC models, topologies, and repeatable experiments.</li>
+            <li><strong>IoT test and interoperability engineer:</strong> design regression scenarios, analyze packet captures, and investigate cross-stack behavior.</li>
+            <li><strong>Systems or open-source engineer:</strong> maintain build integrations, Linux tooling, observability, and developer documentation.</li>
+        </ul>
+    </div>
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <h3 class="font-bold text-brand-navy mb-3">Useful skills to develop</h3>
+        <ul class="text-sm text-gray-700 space-y-2">
+            <li>C/C++, Linux development, debugging, and build systems.</li>
+            <li>Wireless networking fundamentals, IEEE 802.15.4, IPv6, 6LoWPAN, and RPL.</li>
+            <li>Experience with a network simulator such as ns-3 and the limits of simulation models.</li>
+            <li>Test automation, reproducible experiments, logs, and packet-capture analysis.</li>
+            <li>Technical writing, code review, and contributing focused fixes to open-source projects.</li>
+        </ul>
+    </div>
+</div>
+
+<p>
+    A practical portfolio project could be to build Whitefield from its documented instructions, run a small supported example, document the configuration and limitations, then contribute a test, bug fix, or documentation improvement. Describe measured results with the exact setup and avoid presenting a configuration limit as a performance benchmark.
+</p>
+
+---
+
+<h2 id="future-roadmap" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
+    <i class="fas fa-rocket text-brand-coral mr-3"></i> 12. Possible Future Directions
+</h2>
+
+<p>
+    The following ideas are potential extensions, not capabilities documented as currently implemented in Whitefield:
 </p>
 
 <ul>
     <li>
-        <strong>Enterprise Network Digital Twins:</strong> By integrating real-world telemetry feeds from utility meters or street lights into Whitefield, utility operators can construct real-time <em>Digital Twins</em> of entire municipal grids, testing "what-if" disaster scenarios (e.g., substation blackout, hurricane landfall, solar flare interference) before they manifest in reality.
+        <strong>Network digital twins:</strong> Integrating external telemetry would require additional tooling and validation; the cited documentation does not describe a built-in real-time digital-twin feature.
     </li>
     <li>
-        <strong>AI/ML-Driven Adaptive Mesh Routing:</strong> Machine learning algorithms running at the edge require training data to learn optimal parent-selection and power-saving policies. Whitefield serves as an ideal reinforcement learning gym, generating millions of realistic channel state observations per hour for AI agent training.
+        <strong>AI/ML-driven routing:</strong> Using simulation data for machine-learning experiments would require a separately designed workflow. The cited documentation does not claim an integrated reinforcement-learning environment or a data-generation rate.
     </li>
     <li>
-        <strong>Next-Gen Physical Layer Extensions:</strong> As the 3GPP introduces <strong>5G RedCap (Reduced Capability)</strong> for medium-tier IoT and the Wi-SUN Alliance ratifies <strong>Wi-SUN FAN 1.1</strong> with OFDM physical layers, Whitefield's modular Airline architecture allows new PHY/MAC simulation plugins to be added without rewriting the underlying firmware adapters.
+        <strong>Additional PHY/MAC integrations:</strong> The documentation describes how an Airline implementation can be added, but this is extension guidance, not evidence that a particular radio standard is already supported.
     </li>
 </ul>
 
 ---
 
 <h2 id="conclusion-resources" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
-    <i class="fas fa-flag-checkered text-brand-coral mr-3"></i> 12. Conclusion &amp; Open Source Access
+    <i class="fas fa-flag-checkered text-brand-coral mr-3"></i> 13. Conclusion &amp; Open Source Access
 </h2>
 
 <p>
-    The era of relying on simplistic simulation toys or fragile physical hardware clusters to evaluate mission-critical wireless IoT software is over. The scale, economic impact, and safety requirements of the modern smart world demand absolute mathematical rigor combined with bitwise firmware accuracy.
+    Whitefield's documented design connects a simulator-provided PHY/MAC implementation to native network stacks from supported IoT operating systems. Treat the result as a configured simulation, not proof of hardware-level bitwise fidelity, real-time performance, or field reliability.
 </p>
 
 <p>
-    By cleanly decoupling the physical simulation layer from native stack execution, the <strong>Whitefield Framework</strong> has delivered an enduring breakthrough for the global embedded systems and networking community. We express our deepest gratitude to <strong>Rahul Jadhav</strong> and all contributors who pioneered this remarkable open-source engineering achievement.
+    Before adopting the framework, check the current support table, build instructions, and configuration reference; validate simulation outcomes against the needs of the specific experiment.
 </p>
 
 <div class="my-8 p-6 bg-brand-light rounded-2xl border border-gray-200">
@@ -874,6 +868,9 @@ tail -f whitefield_mesh_traffic.pcap | wireshark -k -i -
     <ul class="space-y-2 text-sm text-gray-700">
         <li><strong>Whitefield GitHub Repository:</strong> <a href="https://github.com/whitefield-framework/whitefield" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">https://github.com/whitefield-framework/whitefield</a></li>
         <li><strong>Whitefield Documentation:</strong> <a href="https://whitefield.readthedocs.io/en/latest/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">https://whitefield.readthedocs.io/</a></li>
+        <li><strong>Terminology:</strong> <a href="https://whitefield.readthedocs.io/en/latest/wf-terms.html" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">Airline, Commline, and Stackline</a></li>
+        <li><strong>Installation and Getting Started:</strong> <a href="https://whitefield.readthedocs.io/en/latest/wf-install.html" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">Installation</a> &middot; <a href="https://whitefield.readthedocs.io/en/latest/wf-getting-started.html" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">Getting Started</a></li>
+        <li><strong>Configuration and Module Support:</strong> <a href="https://whitefield.readthedocs.io/en/latest/wf-config-help.html" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">Configuration</a> &middot; <a href="https://whitefield.readthedocs.io/en/latest/wf-module-support.html" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">Module support</a></li>
         <li><strong>Rahul Jadhav GitHub Profile:</strong> <a href="https://github.com/nyrahul" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">https://github.com/nyrahul</a></li>
         <li><strong>IETF RPL Non-Storing Routing (RFC 9010):</strong> <a href="https://datatracker.ietf.org/doc/rfc9010/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">RFC 9010 (Co-authored by Rahul Jadhav)</a></li>
         <li><strong>IETF RPL RPI &amp; Encapsulation (RFC 9008):</strong> <a href="https://datatracker.ietf.org/doc/rfc9008/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-semibold">RFC 9008 (Co-authored by Rahul Jadhav)</a></li>
