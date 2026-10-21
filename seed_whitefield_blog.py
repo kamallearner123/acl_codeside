@@ -104,14 +104,14 @@ HTML_CONTENT = r"""
     Stackline uses an operating system's network stack and application with a Whitefield interface. This is native stack execution, not microcontroller instruction-set emulation, and it does not establish bitwise equivalence with firmware running on production hardware.
 </p>
 
-<!-- FIGURE 1: Whitefield Tri-Tier Architecture -->
-<figure class="hidden">
-    <img src="/static/blogs/whitefield/fig1-whitefield-architecture.svg" alt="Figure 1: Dual-Engine Architecture of the Whitefield Simulation Framework" class="w-full max-w-4xl mx-auto rounded-xl shadow-md border border-slate-700/50" />
+<!-- FIGURE 1: Conceptual Airline / Commline illustration -->
+<figure class="my-10 p-4 md:p-6 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl text-center">
+    <img src="/static/blogs/whitefield/whitefield-airline-commline-concept.png" alt="Conceptual illustration of communication between a native network-stack process and a PHY/MAC simulation engine" class="w-full max-w-4xl mx-auto rounded-xl shadow-md border border-slate-700/50" />
     <figcaption class="mt-4 text-left text-sm text-slate-300 leading-relaxed border-t border-slate-800 pt-3">
-        <span class="font-bold text-brand-coral uppercase tracking-wider text-xs block mb-1">Figure 1 &bull; Architectural Blueprint</span>
-        <strong class="text-white text-base block mb-2">Figure 1: Tri-Tier Architectural Decoupling in the Whitefield Simulation Framework</strong>
+        <span class="font-bold text-brand-coral uppercase tracking-wider text-xs block mb-1">Figure 1 &bull; Conceptual Illustration</span>
+        <strong class="text-white text-base block mb-2">Illustrative view of Airline, Commline, and Stackline</strong>
         <span>
-            The diagram is hidden pending correction against the documented Airline, Commline, and Stackline architecture.
+            This supplied illustration is conceptual, not an official implementation diagram. Whitefield documents Airline as the PHY/MAC side, Commline as the message queue and interfaces, and Stackline as the network stack. Specific IPC fields, shared-memory transport, and time-barrier details shown in the illustration are not verified by the cited project documentation.
         </span>
     </figcaption>
 </figure>
