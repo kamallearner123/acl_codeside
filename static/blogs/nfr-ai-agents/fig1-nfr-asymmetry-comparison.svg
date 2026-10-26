@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 660" width="100%" height="100%" style="background:#0b0f19; font-family:'Inter',system-ui,sans-serif;">
+  <defs>
+    <linearGradient id="nfr-card-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <filter id="shadow-asym" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Title & Subtitle -->
+  <text x="550" y="38" text-anchor="middle" fill="#38bdf8" font-size="20" font-weight="800" letter-spacing="1">FIGURE 1: THE ASYMMETRY OF NEGLECT — TRADITIONAL SDLC VS AI AGENT ADLC</text>
+  <text x="550" y="62" text-anchor="middle" fill="#94a3b8" font-size="13">Why Underestimating Non-Functional Requirements in Agentic Systems Leads to Existential Failure</text>
+
+  <!-- Column Headers -->
+  <rect x="50" y="90" width="470" height="36" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="285" y="113" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="700">TRADITIONAL SDLC (Forgiving Failure Modes)</text>
+
+  <rect x="580" y="90" width="470" height="36" rx="8" fill="#1e293b" stroke="#ef4444" stroke-width="1.2"/>
+  <text x="815" y="113" text-anchor="middle" fill="#f87171" font-size="13" font-weight="700">AI AGENT ADLC (Catastrophic Failure Modes)</text>
+
+  <!-- Row 1: Cost & Resource Consumption -->
+  <g transform="translate(50, 140)" filter="url(#shadow-asym)">
+    <rect width="470" height="85" rx="8" fill="url(#nfr-card-dark)" stroke="#3b82f6" stroke-width="1"/>
+    <text x="18" y="24" fill="#38bdf8" font-size="12" font-weight="700">1. Loop Failure &amp; Resource Consumption</text>
+    <text x="18" y="44" fill="#94a3b8" font-size="11">Infinite loop triggers <code>StackOverflowError</code> in 5 milliseconds.</text>
+    <text x="18" y="62" fill="#10b981" font-size="11" font-weight="600">Financial Impact: ~$0.0001 (Negligible CPU cycle cost)</text>
+    <text x="18" y="76" fill="#64748b" font-size="10">Bounded, localized crash caught by thread exception handler.</text>
+  </g>
+  <g transform="translate(580, 140)" filter="url(#shadow-asym)">
+    <rect width="470" height="85" rx="8" fill="url(#nfr-card-dark)" stroke="#ef4444" stroke-width="1.2"/>
+    <text x="18" y="24" fill="#f87171" font-size="12" font-weight="700">1. Runaway Stochastic Loop (Infinite Cash Burn)</text>
+    <text x="18" y="44" fill="#cbd5e1" font-size="11">Agent repeats hallucinated tool calls with expanding 50k context window.</text>
+    <text x="18" y="62" fill="#ef4444" font-size="11" font-weight="700">Financial Impact: $50 – $5,000+ per hour on frontier models</text>
+    <text x="18" y="76" fill="#fca5a5" font-size="10">Without token &amp; turn budget NFRs, single bugs drain monthly AWS/API credits.</text>
+  </g>
+
+  <!-- Row 2: Latency & Responsiveness -->
+  <g transform="translate(50, 240)" filter="url(#shadow-asym)">
+    <rect width="470" height="85" rx="8" fill="url(#nfr-card-dark)" stroke="#3b82f6" stroke-width="1"/>
+    <text x="18" y="24" fill="#38bdf8" font-size="12" font-weight="700">2. Latency Degradation</text>
+    <text x="18" y="44" fill="#94a3b8" font-size="11">Unoptimized SQL query slows page response from 200ms to 2.5 seconds.</text>
+    <text x="18" y="62" fill="#10b981" font-size="11" font-weight="600">User Experience Impact: Minor annoyance, easy index optimization</text>
+    <text x="18" y="76" fill="#64748b" font-size="10">Deterministic latency profile: parallelizable across microservices.</text>
+  </g>
+  <g transform="translate(580, 240)" filter="url(#shadow-asym)">
+    <rect width="470" height="85" rx="8" fill="url(#nfr-card-dark)" stroke="#ef4444" stroke-width="1.2"/>
+    <text x="18" y="24" fill="#f87171" font-size="12" font-weight="700">2. Multi-Hop Compounding Latency Collapse</text>
+    <text x="18" y="44" fill="#cbd5e1" font-size="11">Each cognitive turn requires 2s–4s LLM reasoning + tool I/O execution.</text>
+    <text x="18" y="62" fill="#ef4444" font-size="11" font-weight="700">User Experience Impact: 25s – 60s freeze &rarr; 80% user abandonment</text>
+    <text x="18" y="76" fill="#fca5a5" font-size="10">Without strict TTFT and per-turn latency ceilings, interactive UX is destroyed.</text>
+  </g>
+
+  <!-- Row 3: Security & Blast Radius -->
+  <g transform="translate(50, 340)" filter="url(#shadow-asym)">
+    <rect width="470" height="85" rx="8" fill="url(#nfr-card-dark)" stroke="#3b82f6" stroke-width="1"/>
+    <text x="18" y="24" fill="#38bdf8" font-size="12" font-weight="700">3. Security Vulnerability &amp; Ingress</text>
+    <text x="18" y="44" fill="#94a3b8" font-size="11">SQL injection and XSS protected by ORM parameterization and WAFs.</text>
+    <text x="18" y="62" fill="#10b981" font-size="11" font-weight="600">Risk Profile: Well-understood CVE signatures and static SAST tools</text>
+    <text x="18" y="76" fill="#64748b" font-size="10">Code executes exactly what is written in compiled binary.</text>
+  </g>
+  <g transform="translate(580, 340)" filter="url(#shadow-asym)">
+    <rect width="470" height="85" rx="8" fill="url(#nfr-card-dark)" stroke="#ef4444" stroke-width="1.2"/>
+    <text x="18" y="24" fill="#f87171" font-size="12" font-weight="700">3. Indirect Prompt Injection &amp; Autonomous Blast Radius</text>
+    <text x="18" y="44" fill="#cbd5e1" font-size="11">Malicious payload hidden in scraped document overrides system instructions.</text>
+    <text x="18" y="62" fill="#ef4444" font-size="11" font-weight="700">Risk Profile: Unauthorized tool execution, data theft, DB deletion</text>
+    <text x="18" y="76" fill="#fca5a5" font-size="10">Without least-privilege sandboxing, agent becomes an insider threat.</text>
+  </g>
+
+  <!-- Row 4: Correctness & Determinism -->
+  <g transform="translate(50, 440)" filter="url(#shadow-asym)">
+    <rect width="470" height="85" rx="8" fill="url(#nfr-card-dark)" stroke="#3b82f6" stroke-width="1"/>
+    <text x="18" y="24" fill="#38bdf8" font-size="12" font-weight="700">4. Correctness &amp; Verification</text>
+    <text x="18" y="44" fill="#94a3b8" font-size="11">Deterministic logic: <code>assert calculate_tax(100) == 108.25</code>.</text>
+    <text x="18" y="62" fill="#10b981" font-size="11" font-weight="600">Verification: 100% repeatable automated regression test suites</text>
+    <text x="18" y="76" fill="#64748b" font-size="10">Passes once, passes forever unless code is modified.</text>
+  </g>
+  <g transform="translate(580, 440)" filter="url(#shadow-asym)">
+    <rect width="470" height="85" rx="8" fill="url(#nfr-card-dark)" stroke="#ef4444" stroke-width="1.2"/>
+    <text x="18" y="24" fill="#f87171" font-size="12" font-weight="700">4. Stochastic Drift &amp; Silent Hallucination</text>
+    <text x="18" y="44" fill="#cbd5e1" font-size="11">Probabilistic compute: same prompt yields different tool choices across runs.</text>
+    <text x="18" y="62" fill="#ef4444" font-size="11" font-weight="700">Verification: Requires statistical Evals (pass@k) &amp; ground-truth judges</text>
+    <text x="18" y="76" fill="#fca5a5" font-size="10">Without accuracy &amp; faithfulness NFRs, errors go unnoticed until legal audit.</text>
+  </g>
+
+  <!-- Row 5: Availability & Upstream Quotas -->
+  <g transform="translate(50, 540)" filter="url(#shadow-asym)">
+    <rect width="470" height="85" rx="8" fill="url(#nfr-card-dark)" stroke="#3b82f6" stroke-width="1"/>
+    <text x="18" y="24" fill="#38bdf8" font-size="12" font-weight="700">5. Scalability &amp; Provider Dependencies</text>
+    <text x="18" y="44" fill="#94a3b8" font-size="11">Database connection pools scale horizontally on internal VPC.</text>
+    <text x="18" y="62" fill="#10b981" font-size="11" font-weight="600">Availability: Controlled internally via Kubernetes pod replicas</text>
+    <text x="18" y="76" fill="#64748b" font-size="10">Graceful degradation handled by standard Redis caching.</text>
+  </g>
+  <g transform="translate(580, 540)" filter="url(#shadow-asym)">
+    <rect width="470" height="85" rx="8" fill="url(#nfr-card-dark)" stroke="#ef4444" stroke-width="1.2"/>
+    <text x="18" y="24" fill="#f87171" font-size="12" font-weight="700">5. Hard Upstream Quotas &amp; Cascading 429 Collapse</text>
+    <text x="18" y="44" fill="#cbd5e1" font-size="11">Foundation model APIs enforce rigid TPM (Tokens/Min) rate caps.</text>
+    <text x="18" y="62" fill="#ef4444" font-size="11" font-weight="700">Availability: Sudden global 429 lockouts take down 100% of traffic</text>
+    <text x="18" y="76" fill="#fca5a5" font-size="10">Without multi-provider fallback &amp; queueing NFRs, system availability hits zero.</text>
+  </g>
+
+  <!-- Center Warning Arrow -->
+  <line x1="520" y1="365" x2="580" y2="365" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="6,4"/>
+</svg>

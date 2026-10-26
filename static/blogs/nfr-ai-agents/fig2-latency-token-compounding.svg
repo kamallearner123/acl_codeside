@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" width="100%" height="100%" style="background:#0b0f19; font-family:'Inter',system-ui,sans-serif;">
+  <defs>
+    <linearGradient id="bar-blue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="bar-red" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#b91c1c"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+    <linearGradient id="card-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <filter id="shadow-comp" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Title & Subtitle -->
+  <text x="550" y="38" text-anchor="middle" fill="#38bdf8" font-size="20" font-weight="800" letter-spacing="1">FIGURE 2: THE COMPOUNDING LATENCY &amp; TOKEN COST EXPLOSION IN AGENT LOOPS</text>
+  <text x="550" y="62" text-anchor="middle" fill="#94a3b8" font-size="13">Mathematical Reality: Without Strict Turn Ceiling NFRs, Cumulative Resources Scale Super-Linearly</text>
+
+  <!-- Left: Progression Table / Visualization (Turns 1 to 5) -->
+  <g transform="translate(50, 95)" filter="url(#shadow-comp)">
+    <rect width="650" height="490" rx="12" fill="url(#card-grad)" stroke="#334155" stroke-width="1.2"/>
+    <text x="25" y="32" fill="#fff" font-size="14" font-weight="700">Trajectory of an Unbounded ReAct Agent Session</text>
+    <line x1="25" y1="45" x2="625" y2="45" stroke="#334155" stroke-width="1"/>
+
+    <!-- Turn 1 -->
+    <g transform="translate(25, 60)">
+      <text x="0" y="20" fill="#38bdf8" font-size="12" font-weight="700">Turn 1: Initial Reasoning &amp; Tool 1 Dispatch</text>
+      <text x="460" y="20" fill="#94a3b8" font-size="11">Tokens: <strong style="fill:#38bdf8;">2,500</strong> | Latency: <strong style="fill:#10b981;">1.8s</strong> | Cost: $0.008</text>
+      <rect x="0" y="28" width="120" height="14" rx="3" fill="url(#bar-blue)"/>
+      <rect x="0" y="44" width="60" height="8" rx="2" fill="#10b981"/>
+    </g>
+
+    <!-- Turn 2 -->
+    <g transform="translate(25, 135)">
+      <text x="0" y="20" fill="#38bdf8" font-size="12" font-weight="700">Turn 2: Ingest Tool 1 Result &amp; Tool 2 Query</text>
+      <text x="460" y="20" fill="#94a3b8" font-size="11">Tokens: <strong style="fill:#38bdf8;">7,200</strong> | Latency: <strong style="fill:#10b981;">4.2s</strong> | Cost: $0.024</text>
+      <rect x="0" y="28" width="220" height="14" rx="3" fill="url(#bar-blue)"/>
+      <rect x="0" y="44" width="140" height="8" rx="2" fill="#10b981"/>
+    </g>
+
+    <!-- Turn 3 (Warning Threshold) -->
+    <g transform="translate(25, 210)">
+      <text x="0" y="20" fill="#fbbf24" font-size="12" font-weight="700">Turn 3: Ambiguous Result &rarr; Alternative Search Strategy</text>
+      <text x="440" y="20" fill="#fde68a" font-size="11">Tokens: <strong style="fill:#fbbf24;">16,800</strong> | Latency: <strong style="fill:#fbbf24;">9.5s</strong> | Cost: $0.062</text>
+      <rect x="0" y="28" width="340" height="14" rx="3" fill="#f59e0b"/>
+      <rect x="0" y="44" width="240" height="8" rx="2" fill="#f59e0b"/>
+      <text x="350" y="40" fill="#f59e0b" font-size="10" font-weight="600">&larr; RECOMMENDED NFR CEILING (Max 3 Turns)</text>
+    </g>
+
+    <!-- Turn 4 (Critical Zone) -->
+    <g transform="translate(25, 285)">
+      <text x="0" y="20" fill="#f87171" font-size="12" font-weight="700">Turn 4: Repeated Retry Loop &amp; Formatting Re-Attempt</text>
+      <text x="430" y="20" fill="#fca5a5" font-size="11">Tokens: <strong style="fill:#f87171;">34,500</strong> | Latency: <strong style="fill:#f87171;">18.4s</strong> | Cost: $0.145</text>
+      <rect x="0" y="28" width="460" height="14" rx="3" fill="url(#bar-red)"/>
+      <rect x="0" y="44" width="380" height="8" rx="2" fill="#ef4444"/>
+    </g>
+
+    <!-- Turn 5 (Catastrophic Zone) -->
+    <g transform="translate(25, 360)">
+      <text x="0" y="20" fill="#ef4444" font-size="12" font-weight="800">Turn 5: Full Context Saturation &amp; Hallucinated Final Answer</text>
+      <text x="420" y="20" fill="#fca5a5" font-size="11">Tokens: <strong style="fill:#ef4444;">68,000+</strong> | Latency: <strong style="fill:#ef4444;">34.2s</strong> | Cost: $0.380</text>
+      <rect x="0" y="28" width="580" height="14" rx="3" fill="url(#bar-red)"/>
+      <rect x="0" y="44" width="500" height="8" rx="2" fill="#ef4444"/>
+      <text x="0" y="70" fill="#fca5a5" font-size="10" font-style="italic">Cumulative session total: 34 seconds waiting time (User abandoned) &amp; $0.38 burnt per single query!</text>
+    </g>
+  </g>
+
+  <!-- Right: The NFR Solution Blueprint -->
+  <g transform="translate(730, 95)" filter="url(#shadow-comp)">
+    <rect width="320" height="490" rx="12" fill="url(#card-grad)" stroke="#10b981" stroke-width="1.2"/>
+    <text x="20" y="32" fill="#34d399" font-size="14" font-weight="700">Mandatory NFR Controls Required</text>
+    <line x1="20" y1="45" x2="300" y2="45" stroke="#334155" stroke-width="1"/>
+
+    <!-- Control 1 -->
+    <rect x="15" y="60" width="290" height="65" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+    <text x="25" y="82" fill="#34d399" font-size="12" font-weight="700">1. Hard Turn Ceiling (Max = 3)</text>
+    <text x="25" y="100" fill="#94a3b8" font-size="10">Caps worst-case latency to &lt; 8 seconds and prevents endless recursion.</text>
+
+    <!-- Control 2 -->
+    <rect x="15" y="140" width="290" height="65" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+    <text x="25" y="162" fill="#38bdf8" font-size="12" font-weight="700">2. Sliding Context Pruning</text>
+    <text x="25" y="180" fill="#94a3b8" font-size="10">Prunes intermediate tool observation bodies after tool extraction.</text>
+
+    <!-- Control 3 -->
+    <rect x="15" y="220" width="290" height="65" rx="6" fill="#0f172a" stroke="#fbbf24" stroke-width="1"/>
+    <text x="25" y="242" fill="#fbbf24" font-size="12" font-weight="700">3. Per-Session Cost Ceiling</text>
+    <text x="25" y="260" fill="#94a3b8" font-size="10">Hard stop at $0.05/task. Escalate to human agent if ceiling is reached.</text>
+
+    <!-- Control 4 -->
+    <rect x="15" y="300" width="290" height="65" rx="6" fill="#0f172a" stroke="#8b5cf6" stroke-width="1"/>
+    <text x="25" y="322" fill="#c084fc" font-size="12" font-weight="700">4. Streaming TTFT Target</text>
+    <text x="25" y="340" fill="#94a3b8" font-size="10">Stream first thought token within 800ms via Server-Sent Events (SSE).</text>
+
+    <!-- Control 5 -->
+    <rect x="15" y="380" width="290" height="85" rx="6" fill="#0f172a" stroke="#f43f5e" stroke-width="1"/>
+    <text x="25" y="402" fill="#fb7185" font-size="12" font-weight="700">5. Repetition Circuit Breaker</text>
+    <text x="25" y="420" fill="#94a3b8" font-size="10">Kills process if the exact same tool and arguments are executed back-to-back.</text>
+  </g>
+
+  <!-- Footer Insight -->
+  <text x="550" y="605" text-anchor="middle" fill="#64748b" font-size="11" font-style="italic">Engineering Reality: A single missing NFR in agent loop management turns an innovative feature into a massive financial liability.</text>
+</svg>
