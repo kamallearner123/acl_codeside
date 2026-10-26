@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 660" width="100%" height="100%" style="background:#0b0f19; font-family:'Inter',system-ui,sans-serif;">
+  <defs>
+    <linearGradient id="grad-card-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="grad-sdlc" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="grad-adlc" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="grad-shared" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Title & Subtitle -->
+  <text x="550" y="42" text-anchor="middle" fill="#38bdf8" font-size="20" font-weight="800" letter-spacing="1">FIGURE 1: THE AI AGENT DEVELOPMENT LIFE CYCLE (ADLC) VS TRADITIONAL SDLC</text>
+  <text x="550" y="68" text-anchor="middle" fill="#94a3b8" font-size="13">Mapping Enterprise Software Engineering Disciplines to Probabilistic Cognitive Systems</text>
+
+  <!-- Legend Bar -->
+  <g transform="translate(180, 90)">
+    <rect x="0" y="0" width="20" height="12" rx="3" fill="#3b82f6"/>
+    <text x="28" y="10" fill="#94a3b8" font-size="11" font-weight="600">Traditional Software SDLC</text>
+    
+    <rect x="230" y="0" width="20" height="12" rx="3" fill="#f97316"/>
+    <text x="258" y="10" fill="#94a3b8" font-size="11" font-weight="600">Agentic Extension (Stochastic Core)</text>
+
+    <rect x="520" y="0" width="20" height="12" rx="3" fill="#10b981"/>
+    <text x="548" y="10" fill="#94a3b8" font-size="11" font-weight="600">Shared Engineering Foundation (80% Identical)</text>
+  </g>
+
+  <!-- Columns Header -->
+  <rect x="50" y="125" width="460" height="35" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="280" y="148" text-anchor="middle" fill="#38bdf8" font-size="13" font-weight="700">TRADITIONAL SDLC DISCIPLINE</text>
+
+  <rect x="590" y="125" width="460" height="35" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="820" y="148" text-anchor="middle" fill="#f43f5e" font-size="13" font-weight="700">AGENTIC ADLC PARALLEL (ENTERPRISE GRADE)</text>
+
+  <!-- Phase 1 -->
+  <g transform="translate(50, 175)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#3b82f6" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#3b82f6" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="800">1</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Feasibility &amp; Problem Discovery</text>
+    <text x="52" y="40" fill="#94a3b8" font-size="11">Determine ROI, user workflows, and deterministic business rules</text>
+  </g>
+  <g transform="translate(590, 175)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#f97316" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#f97316" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="800">1</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Autonomy Scoping &amp; Justification</text>
+    <text x="52" y="40" fill="#fed7aa" font-size="11">Is an agent necessary? (Prompt vs Deterministic DAG vs ReAct Loop)</text>
+  </g>
+
+  <!-- Phase 2 -->
+  <g transform="translate(50, 240)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#3b82f6" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#3b82f6" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="800">2</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Requirements Engineering &amp; NFRs</text>
+    <text x="52" y="40" fill="#94a3b8" font-size="11">Gather latency SLAs, throughput, user stories, data privacy policies</text>
+  </g>
+  <g transform="translate(590, 240)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#f97316" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#f97316" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="800">2</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Agentic NFRs &amp; Guardrail Policies</text>
+    <text x="52" y="40" fill="#fed7aa" font-size="11">Token budgets, TTFT SLAs, hallucination thresholds, HITL escalation</text>
+  </g>
+
+  <!-- Phase 3 -->
+  <g transform="translate(50, 305)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#3b82f6" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#3b82f6" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="800">3</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Architecture &amp; System Design</text>
+    <text x="52" y="40" fill="#94a3b8" font-size="11">Microservices, database schemas, REST/gRPC interfaces, state caching</text>
+  </g>
+  <g transform="translate(590, 305)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#f97316" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#f97316" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="800">3</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Cognitive &amp; Tool Sandbox Topologies</text>
+    <text x="52" y="40" fill="#fed7aa" font-size="11">Memory hierarchy (short/long), MCP/OpenAPI tools, state machines</text>
+  </g>
+
+  <!-- Phase 4 -->
+  <g transform="translate(50, 370)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#3b82f6" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#3b82f6" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="800">4</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Implementation &amp; Code Construction</text>
+    <text x="52" y="40" fill="#94a3b8" font-size="11">Type-safe code, API clients, deterministic business logic, error traps</text>
+  </g>
+  <g transform="translate(590, 370)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#f97316" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#f97316" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="800">4</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Prompt Harness &amp; Structured Contracts</text>
+    <text x="52" y="40" fill="#fed7aa" font-size="11">Pydantic schemas, dynamic context assemblers, deterministic fallbacks</text>
+  </g>
+
+  <!-- Phase 5 -->
+  <g transform="translate(50, 435)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#3b82f6" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#3b82f6" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="800">5</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Testing &amp; Quality Assurance</text>
+    <text x="52" y="40" fill="#94a3b8" font-size="11">Unit tests, integration suites, regression benchmarks, boundary fuzzing</text>
+  </g>
+  <g transform="translate(590, 435)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#f97316" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#f97316" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="800">5</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Continuous Evaluation &amp; Red-Teaming</text>
+    <text x="52" y="40" fill="#fed7aa" font-size="11">Golden datasets, LLM-as-a-judge, prompt injection tests, trajectory evals</text>
+  </g>
+
+  <!-- Phase 6 -->
+  <g transform="translate(50, 500)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#3b82f6" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#3b82f6" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="800">6</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Deployment &amp; DevOps</text>
+    <text x="52" y="40" fill="#94a3b8" font-size="11">CI/CD pipelines, container orchestration (K8s), canary rollouts, blue/green</text>
+  </g>
+  <g transform="translate(590, 500)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#f97316" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#f97316" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="800">6</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">AgentOps &amp; Telemetry Routing</text>
+    <text x="52" y="40" fill="#fed7aa" font-size="11">OpenTelemetry spans, multi-model fallback, rate-limit queues, shadow evals</text>
+  </g>
+
+  <!-- Phase 7 -->
+  <g transform="translate(50, 565)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#3b82f6" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#3b82f6" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="800">7</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Operations &amp; Maintenance</text>
+    <text x="52" y="40" fill="#94a3b8" font-size="11">APM monitoring, log aggregation, security patching, incident triage</text>
+  </g>
+  <g transform="translate(590, 565)" filter="url(#shadow)">
+    <rect width="460" height="55" rx="8" fill="url(#grad-card-dark)" stroke="#f97316" stroke-width="1.2"/>
+    <circle cx="28" cy="27" r="14" fill="#f97316" opacity="0.2"/>
+    <text x="28" y="32" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="800">7</text>
+    <text x="52" y="22" fill="#fff" font-size="12" font-weight="700">Governance, Drift &amp; Flywheel</text>
+    <text x="52" y="40" fill="#fed7aa" font-size="11">Model drift auditing, tool versioning, curated failure flywheel ingestion</text>
+  </g>
+
+  <!-- Center Connection Arrows indicating 80% shared DNA -->
+  <line x1="510" y1="202" x2="590" y2="202" stroke="#10b981" stroke-width="2" stroke-dasharray="4,3"/>
+  <line x1="510" y1="267" x2="590" y2="267" stroke="#10b981" stroke-width="2" stroke-dasharray="4,3"/>
+  <line x1="510" y1="332" x2="590" y2="332" stroke="#10b981" stroke-width="2" stroke-dasharray="4,3"/>
+  <line x1="510" y1="397" x2="590" y2="397" stroke="#10b981" stroke-width="2" stroke-dasharray="4,3"/>
+  <line x1="510" y1="462" x2="590" y2="462" stroke="#10b981" stroke-width="2" stroke-dasharray="4,3"/>
+  <line x1="510" y1="527" x2="590" y2="527" stroke="#10b981" stroke-width="2" stroke-dasharray="4,3"/>
+  <line x1="510" y1="592" x2="590" y2="592" stroke="#10b981" stroke-width="2" stroke-dasharray="4,3"/>
+
+  <!-- Footer Tagline -->
+  <text x="550" y="642" text-anchor="middle" fill="#64748b" font-size="11" font-style="italic">Enterprise Insight: Treating Agent Systems as Standard Software Engineering with a Probabilistic Core eliminates 90% of Production Failures.</text>
+</svg>

@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 660" width="100%" height="100%" style="background:#0b0f19; font-family:'Inter',system-ui,sans-serif;">
+  <defs>
+    <linearGradient id="eval-card-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <filter id="shadow-eval" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Title & Subtitle -->
+  <text x="550" y="38" text-anchor="middle" fill="#38bdf8" font-size="20" font-weight="800" letter-spacing="1">FIGURE 4: CONTINUOUS EVALS, CI/CD &amp; AGENTOPS PRODUCTION LIFECYCLE</text>
+  <text x="550" y="62" text-anchor="middle" fill="#94a3b8" font-size="13">From Pull Request to Production Feedback Flywheel — Treating Evals as Regression Tests</text>
+
+  <!-- Stage 1: Developer PR -->
+  <g transform="translate(40, 100)" filter="url(#shadow-eval)">
+    <rect width="180" height="200" rx="10" fill="url(#eval-card-grad)" stroke="#38bdf8" stroke-width="1.2"/>
+    <rect x="0" y="0" width="180" height="30" rx="10" fill="#0284c7"/>
+    <text x="90" y="20" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">1. Developer Commit</text>
+    <text x="15" y="55" fill="#f8fafc" font-size="11" font-weight="600">Pre-merge Gates:</text>
+    <text x="15" y="75" fill="#94a3b8" font-size="10">&bull; Prompt version diff</text>
+    <text x="15" y="93" fill="#94a3b8" font-size="10">&bull; Pydantic schema lint</text>
+    <text x="15" y="111" fill="#94a3b8" font-size="10">&bull; Unit tests (mock tools)</text>
+    <text x="15" y="129" fill="#94a3b8" font-size="10">&bull; Cost estimation check</text>
+    <rect x="15" y="150" width="150" height="30" rx="6" fill="#0f172a" stroke="#38bdf8"/>
+    <text x="90" y="170" text-anchor="middle" fill="#38bdf8" font-size="10" font-weight="700">Git PR Trigger</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="220" y1="200" x2="250" y2="200" stroke="#38bdf8" stroke-width="2"/>
+
+  <!-- Stage 2: Golden Dataset Evals -->
+  <g transform="translate(250, 100)" filter="url(#shadow-eval)">
+    <rect width="200" height="200" rx="10" fill="url(#eval-card-grad)" stroke="#10b981" stroke-width="1.2"/>
+    <rect x="0" y="0" width="200" height="30" rx="10" fill="#059669"/>
+    <text x="100" y="20" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">2. Continuous Evals</text>
+    <text x="15" y="55" fill="#f8fafc" font-size="11" font-weight="600">Automated Harness:</text>
+    <text x="15" y="75" fill="#94a3b8" font-size="10">&bull; 500+ Curated Scenarios</text>
+    <text x="15" y="93" fill="#94a3b8" font-size="10">&bull; Exact match tool asserts</text>
+    <text x="15" y="111" fill="#94a3b8" font-size="10">&bull; LLM-as-a-Judge scoring</text>
+    <text x="15" y="129" fill="#94a3b8" font-size="10">&bull; Trajectory step counts</text>
+    <rect x="15" y="150" width="170" height="30" rx="6" fill="#0f172a" stroke="#10b981"/>
+    <text x="100" y="170" text-anchor="middle" fill="#34d399" font-size="10" font-weight="700">Pass Rate &gt; 94%</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="450" y1="200" x2="480" y2="200" stroke="#10b981" stroke-width="2"/>
+
+  <!-- Stage 3: Security & Red Teaming -->
+  <g transform="translate(480, 100)" filter="url(#shadow-eval)">
+    <rect width="190" height="200" rx="10" fill="url(#eval-card-grad)" stroke="#f59e0b" stroke-width="1.2"/>
+    <rect x="0" y="0" width="190" height="30" rx="10" fill="#d97706"/>
+    <text x="95" y="20" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">3. Red-Teaming</text>
+    <text x="15" y="55" fill="#f8fafc" font-size="11" font-weight="600">Adversarial Testing:</text>
+    <text x="15" y="75" fill="#94a3b8" font-size="10">&bull; Jailbreak permutations</text>
+    <text x="15" y="93" fill="#94a3b8" font-size="10">&bull; Indirect prompt injection</text>
+    <text x="15" y="111" fill="#94a3b8" font-size="10">&bull; Tool argument fuzzing</text>
+    <text x="15" y="129" fill="#94a3b8" font-size="10">&bull; Data exfiltration probe</text>
+    <rect x="15" y="150" width="160" height="30" rx="6" fill="#0f172a" stroke="#f59e0b"/>
+    <text x="95" y="170" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="700">Zero Critical Leaks</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="670" y1="200" x2="700" y2="200" stroke="#f59e0b" stroke-width="2"/>
+
+  <!-- Stage 4: Canary / Shadow Rollout -->
+  <g transform="translate(700, 100)" filter="url(#shadow-eval)">
+    <rect width="180" height="200" rx="10" fill="url(#eval-card-grad)" stroke="#8b5cf6" stroke-width="1.2"/>
+    <rect x="0" y="0" width="180" height="30" rx="10" fill="#7c3aed"/>
+    <text x="90" y="20" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">4. Canary / Shadow</text>
+    <text x="15" y="55" fill="#f8fafc" font-size="11" font-weight="600">Progressive Rollout:</text>
+    <text x="15" y="75" fill="#94a3b8" font-size="10">&bull; Shadow mirror 10% traffic</text>
+    <text x="15" y="93" fill="#94a3b8" font-size="10">&bull; Differential response diff</text>
+    <text x="15" y="111" fill="#94a3b8" font-size="10">&bull; Latency P99 comparison</text>
+    <text x="15" y="129" fill="#94a3b8" font-size="10">&bull; Canary user cohort: 5%</text>
+    <rect x="15" y="150" width="150" height="30" rx="6" fill="#0f172a" stroke="#8b5cf6"/>
+    <text x="90" y="170" text-anchor="middle" fill="#c084fc" font-size="10" font-weight="700">Zero Degradation</text>
+  </g>
+
+  <!-- Arrow 4 -> 5 -->
+  <line x1="880" y1="200" x2="910" y2="200" stroke="#8b5cf6" stroke-width="2"/>
+
+  <!-- Stage 5: Production Operations -->
+  <g transform="translate(910, 100)" filter="url(#shadow-eval)">
+    <rect width="150" height="200" rx="10" fill="url(#eval-card-grad)" stroke="#ec4899" stroke-width="1.2"/>
+    <rect x="0" y="0" width="150" height="30" rx="10" fill="#db2777"/>
+    <text x="75" y="20" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">5. Production</text>
+    <text x="15" y="55" fill="#f8fafc" font-size="11" font-weight="600">Live Traffic:</text>
+    <text x="15" y="75" fill="#94a3b8" font-size="10">&bull; 100% Workload</text>
+    <text x="15" y="93" fill="#94a3b8" font-size="10">&bull; HITL routing</text>
+    <text x="15" y="111" fill="#94a3b8" font-size="10">&bull; Tracing active</text>
+    <text x="15" y="129" fill="#94a3b8" font-size="10">&bull; SLA monitoring</text>
+    <rect x="15" y="150" width="120" height="30" rx="6" fill="#0f172a" stroke="#ec4899"/>
+    <text x="75" y="170" text-anchor="middle" fill="#f472b6" font-size="10" font-weight="700">Operational</text>
+  </g>
+
+  <!-- Production Telemetry & Flywheel (Bottom Half) -->
+  <rect x="40" y="340" width="1020" height="250" rx="14" fill="#0f172a" stroke="#334155" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="65" y="370" fill="#38bdf8" font-size="14" font-weight="800">AGENTOPS PRODUCTION TELEMETRY &amp; CONTINUOUS FEEDBACK FLYWHEEL</text>
+
+  <!-- Telemetry Component 1: OpenTelemetry Tracing -->
+  <g transform="translate(65, 395)">
+    <rect width="280" height="160" rx="8" fill="#1e293b" stroke="#0284c7" stroke-width="1"/>
+    <text x="20" y="30" fill="#38bdf8" font-size="13" font-weight="700">Distributed Observability</text>
+    <text x="20" y="55" fill="#94a3b8" font-size="11">&bull; Full trajectory span collection</text>
+    <text x="20" y="75" fill="#94a3b8" font-size="11">&bull; Token consumption &amp; latency tracking</text>
+    <text x="20" y="95" fill="#94a3b8" font-size="11">&bull; Tool execution status &amp; return codes</text>
+    <text x="20" y="115" fill="#94a3b8" font-size="11">&bull; Integrates with LangSmith / Phoenix</text>
+  </g>
+
+  <!-- Telemetry Component 2: Drift & Anomaly Triage -->
+  <g transform="translate(380, 395)">
+    <rect width="280" height="160" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+    <text x="20" y="30" fill="#fbbf24" font-size="13" font-weight="700">Drift &amp; Anomaly Detection</text>
+    <text x="20" y="55" fill="#94a3b8" font-size="11">&bull; Tool call hallucination rate alerts</text>
+    <text x="20" y="75" fill="#94a3b8" font-size="11">&bull; P99 latency spikes on model updates</text>
+    <text x="20" y="95" fill="#94a3b8" font-size="11">&bull; Human supervisor negative rating triage</text>
+    <text x="20" y="115" fill="#94a3b8" font-size="11">&bull; PII filter breach notifications</text>
+  </g>
+
+  <!-- Telemetry Component 3: The Golden Dataset Flywheel -->
+  <g transform="translate(695, 395)">
+    <rect width="335" height="160" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="20" y="30" fill="#34d399" font-size="13" font-weight="700">The Continuous Flywheel</text>
+    <text x="20" y="55" fill="#94a3b8" font-size="11">&bull; Failed/edge-case traces auto-flagged</text>
+    <text x="20" y="75" fill="#94a3b8" font-size="11">&bull; Human curators sanitize &amp; label failures</text>
+    <text x="20" y="95" fill="#94a3b8" font-size="11">&bull; Appended to Phase 2 Golden Test Suite</text>
+    <text x="20" y="115" fill="#94a3b8" font-size="11">&bull; Prevents regressions on future model shifts</text>
+  </g>
+
+  <!-- Flywheel Return Path Arrow back to Stage 2 -->
+  <path d="M 860 395 C 860 320, 350 340, 350 300" fill="none" stroke="#10b981" stroke-width="2.5" stroke-dasharray="6,4"/>
+  <text x="560" y="330" text-anchor="middle" fill="#34d399" font-size="11" font-weight="700">Auto-Ingest Edge Cases Into Golden Evals</text>
+
+  <!-- Footer Insight -->
+  <text x="550" y="630" text-anchor="middle" fill="#64748b" font-size="11" font-style="italic">Industry Best Practice: What unit testing was to DevOps in 2012, automated trajectory evals are to AgentOps today.</text>
+</svg>
