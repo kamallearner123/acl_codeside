@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 660" width="100%" height="100%" style="background:#0b0f19; font-family:'Inter',system-ui,sans-serif;">
+  <defs>
+    <linearGradient id="step-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <filter id="shadow-f2" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Title & Subtitle -->
+  <text x="550" y="38" text-anchor="middle" fill="#38bdf8" font-size="20" font-weight="800" letter-spacing="1">FIGURE 2: REAL-TIME 60-MINUTE PERISHABLE ORDER &amp; COLD-CHAIN LIFECYCLE</text>
+  <text x="550" y="62" text-anchor="middle" fill="#94a3b8" font-size="13">End-to-End Execution Trace of a WhatsApp Fresh Egg &amp; Meat Delivery</text>
+
+  <!-- Step 1: Customer WhatsApp Message -->
+  <g transform="translate(50, 95)" filter="url(#shadow-f2)">
+    <rect width="180" height="230" rx="10" fill="url(#step-grad)" stroke="#22c55e" stroke-width="1.2"/>
+    <rect x="0" y="0" width="180" height="30" rx="10" fill="#15803d"/>
+    <text x="90" y="20" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">1. Natural Language Ingress</text>
+    <rect x="15" y="45" width="150" height="65" rx="6" fill="#0f172a" stroke="#22c55e" stroke-width="0.8"/>
+    <text x="25" y="65" fill="#4ade80" font-size="9" font-weight="600">Customer on WhatsApp:</text>
+    <text x="25" y="80" fill="#cbd5e1" font-size="9" font-style="italic">"Send 2 trays of country</text>
+    <text x="25" y="94" fill="#cbd5e1" font-size="9" font-style="italic">eggs &amp; 1kg curry chicken</text>
+    <text x="25" y="106" fill="#cbd5e1" font-size="9" font-style="italic">before 11:30 AM please"</text>
+    <text x="15" y="130" fill="#94a3b8" font-size="9">&bull; Intent: Fresh Meat &amp; Eggs</text>
+    <text x="15" y="145" fill="#94a3b8" font-size="9">&bull; Deadline: 11:30 AM SLA</text>
+    <text x="15" y="160" fill="#94a3b8" font-size="9">&bull; Address: HSR Layout Sector 2</text>
+    <rect x="15" y="180" width="150" height="35" rx="4" fill="#14532d"/>
+    <text x="90" y="202" text-anchor="middle" fill="#86efac" font-size="9" font-weight="700">Parsed via Pydantic Schema</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="230" y1="210" x2="260" y2="210" stroke="#38bdf8" stroke-width="2"/>
+
+  <!-- Step 2: Dark Store & Batch Matching -->
+  <g transform="translate(260, 95)" filter="url(#shadow-f2)">
+    <rect width="180" height="230" rx="10" fill="url(#step-grad)" stroke="#f59e0b" stroke-width="1.2"/>
+    <rect x="0" y="0" width="180" height="30" rx="10" fill="#b45309"/>
+    <text x="90" y="20" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">2. Dark Store &amp; FEFO Lock</text>
+    <rect x="15" y="45" width="150" height="65" rx="6" fill="#0f172a" stroke="#f59e0b" stroke-width="0.8"/>
+    <text x="25" y="65" fill="#fbbf24" font-size="9" font-weight="600">Hub Allocation Agent:</text>
+    <text x="25" y="80" fill="#cbd5e1" font-size="9">&bull; Nearest Hub: HSR Dark Store</text>
+    <text x="25" y="94" fill="#cbd5e1" font-size="9">&bull; Distance: 2.1 km away</text>
+    <text x="25" y="106" fill="#cbd5e1" font-size="9">&bull; Transit Time: 14 mins</text>
+    <text x="15" y="130" fill="#94a3b8" font-size="9">&bull; Eggs: Batch #EB-842 (24h old)</text>
+    <text x="15" y="145" fill="#94a3b8" font-size="9">&bull; Chicken: Batch #CB-119</text>
+    <text x="15" y="160" fill="#94a3b8" font-size="9">&bull; Chilled at: 2.1°C</text>
+    <rect x="15" y="180" width="150" height="35" rx="4" fill="#78350f"/>
+    <text x="90" y="202" text-anchor="middle" fill="#fde68a" font-size="9" font-weight="700">FEFO Inventory Lock Done</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="440" y1="210" x2="470" y2="210" stroke="#38bdf8" stroke-width="2"/>
+
+  <!-- Step 3: Dark Store Cold Packing -->
+  <g transform="translate(470, 95)" filter="url(#shadow-f2)">
+    <rect width="180" height="230" rx="10" fill="url(#step-grad)" stroke="#06b6d4" stroke-width="1.2"/>
+    <rect x="0" y="0" width="180" height="30" rx="10" fill="#0e7490"/>
+    <text x="90" y="20" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">3. Cold Pack &amp; Verification</text>
+    <rect x="15" y="45" width="150" height="65" rx="6" fill="#0f172a" stroke="#06b6d4" stroke-width="0.8"/>
+    <text x="25" y="65" fill="#67e8f9" font-size="9" font-weight="600">Hub Picker Actions:</text>
+    <text x="25" y="80" fill="#cbd5e1" font-size="9">&bull; QR Barcode Scan (RFID)</text>
+    <text x="25" y="94" fill="#cbd5e1" font-size="9">&bull; Weight Verified: 1045g</text>
+    <text x="25" y="106" fill="#cbd5e1" font-size="9">&bull; Packaged in insulated pouch</text>
+    <text x="15" y="130" fill="#94a3b8" font-size="9">&bull; Frozen ice gel pack added</text>
+    <text x="15" y="145" fill="#94a3b8" font-size="9">&bull; BLE temp tag activated</text>
+    <text x="15" y="160" fill="#94a3b8" font-size="9">&bull; Pack elapsed time: 6 mins</text>
+    <rect x="15" y="180" width="150" height="35" rx="4" fill="#155e75"/>
+    <text x="90" y="202" text-anchor="middle" fill="#a5f3fc" font-size="9" font-weight="700">Ready for Rider Pickup</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="650" y1="210" x2="680" y2="210" stroke="#38bdf8" stroke-width="2"/>
+
+  <!-- Step 4: Dispatch & Route Optimization -->
+  <g transform="translate(680, 95)" filter="url(#shadow-f2)">
+    <rect width="180" height="230" rx="10" fill="url(#step-grad)" stroke="#3b82f6" stroke-width="1.2"/>
+    <rect x="0" y="0" width="180" height="30" rx="10" fill="#1d4ed8"/>
+    <text x="90" y="20" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">4. Dispatch &amp; Cluster Route</text>
+    <rect x="15" y="45" width="150" height="65" rx="6" fill="#0f172a" stroke="#3b82f6" stroke-width="0.8"/>
+    <text x="25" y="65" fill="#93c5fd" font-size="9" font-weight="600">Routing Agent Decision:</text>
+    <text x="25" y="80" fill="#cbd5e1" font-size="9">&bull; Batched with 1 nearby order</text>
+    <text x="25" y="94" fill="#cbd5e1" font-size="9">&bull; Rider: Ramesh (EV Scooter)</text>
+    <text x="25" y="106" fill="#cbd5e1" font-size="9">&bull; Est. Delivery: 11:15 AM</text>
+    <text x="15" y="130" fill="#94a3b8" font-size="9">&bull; WhatsApp UPI link sent</text>
+    <text x="15" y="145" fill="#94a3b8" font-size="9">&bull; Customer pays in 1 click</text>
+    <text x="15" y="160" fill="#94a3b8" font-size="9">&bull; Live tracking URL shared</text>
+    <rect x="15" y="180" width="150" height="35" rx="4" fill="#1e3a8a"/>
+    <text x="90" y="202" text-anchor="middle" fill="#bfdbfe" font-size="9" font-weight="700">En Route: 11:02 AM</text>
+  </g>
+
+  <!-- Arrow 4 -> 5 -->
+  <line x1="860" y1="210" x2="890" y2="210" stroke="#38bdf8" stroke-width="2"/>
+
+  <!-- Step 5: Doorstep Delivery & Thermal Check -->
+  <g transform="translate(890, 95)" filter="url(#shadow-f2)">
+    <rect width="160" height="230" rx="10" fill="url(#step-grad)" stroke="#10b981" stroke-width="1.2"/>
+    <rect x="0" y="0" width="160" height="30" rx="10" fill="#059669"/>
+    <text x="80" y="20" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">5. Handover &amp; Feedback</text>
+    <rect x="15" y="45" width="130" height="65" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="0.8"/>
+    <text x="20" y="65" fill="#34d399" font-size="9" font-weight="600">Doorstep Verification:</text>
+    <text x="20" y="80" fill="#cbd5e1" font-size="9">&bull; Arrived: 11:18 AM</text>
+    <text x="20" y="94" fill="#cbd5e1" font-size="9">&bull; Total Time: 38 mins</text>
+    <text x="20" y="106" fill="#cbd5e1" font-size="9">&bull; Probe Temp: 2.4°C (&lt; 4°C)</text>
+    <text x="15" y="130" fill="#94a3b8" font-size="9">&bull; OTP handover confirmed</text>
+    <text x="15" y="145" fill="#94a3b8" font-size="9">&bull; WhatsApp receipt sent</text>
+    <text x="15" y="160" fill="#94a3b8" font-size="9">&bull; Feedback prompt: 5★</text>
+    <rect x="15" y="180" width="130" height="35" rx="4" fill="#064e3b"/>
+    <text x="80" y="202" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="700">Completed in 38 mins</text>
+  </g>
+
+  <!-- Detailed Trace Table Below -->
+  <g transform="translate(50, 360)" filter="url(#shadow-f2)">
+    <rect width="1000" height="260" rx="12" fill="url(#step-grad)" stroke="#334155" stroke-width="1.2"/>
+    <text x="25" y="30" fill="#38bdf8" font-size="13" font-weight="700">Behind the Scenes: Multi-Agent Tool Invocations Across the 38-Minute Timeline</text>
+    <line x1="25" y1="45" x2="975" y2="45" stroke="#334155" stroke-width="1"/>
+
+    <!-- Row 1 -->
+    <text x="25" y="70" fill="#4ade80" font-size="11" font-weight="700">10:40:02 AM</text>
+    <text x="130" y="70" fill="#94a3b8" font-size="11">WhatsApp Webhook received &rarr; Customer Agent parses entities: <code>[Product(type="country_eggs", qty=2), Product(type="curry_chicken", wt=1000g)]</code></text>
+
+    <!-- Row 2 -->
+    <text x="25" y="105" fill="#fbbf24" font-size="11" font-weight="700">10:40:03 AM</text>
+    <text x="130" y="105" fill="#94a3b8" font-size="11">Inventory Agent calls <code>check_hub_stock(lat=12.912, lng=77.644)</code> &rarr; Reserves Batch #EB-842 &amp; #CB-119 at HSR Hub; decrements available stock.</text>
+
+    <!-- Row 3 -->
+    <text x="25" y="140" fill="#67e8f9" font-size="11" font-weight="700">10:40:04 AM</text>
+    <text x="130" y="140" fill="#94a3b8" font-size="11">Commerce Agent responds on WhatsApp with order summary + Razorpay UPI payment link. <strong>Customer latency: 1.4 seconds.</strong></text>
+
+    <!-- Row 4 -->
+    <text x="25" y="175" fill="#38bdf8" font-size="11" font-weight="700">10:46:15 AM</text>
+    <text x="130" y="175" fill="#94a3b8" font-size="11">Dark store packer scans barcode. Dispatch Agent invokes <code>calculate_multi_drop_route()</code> &rarr; Clusters order with nearby Koramangala drop.</text>
+
+    <!-- Row 5 -->
+    <text x="25" y="210" fill="#a7f3d0" font-size="11" font-weight="700">11:18:10 AM</text>
+    <text x="130" y="210" fill="#94a3b8" font-size="11">Rider completes handover. Thermal probe telemetry confirms <strong>peak transit temp was 2.8°C</strong>. Customer Care Agent schedules 2-hour cooking feedback.</text>
+  </g>
+</svg>
