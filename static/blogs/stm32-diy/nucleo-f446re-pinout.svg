@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" width="100%" height="100%">
+    <defs>
+        <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+            <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.12" />
+        </filter>
+        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1" fill="#CBD5E1" opacity="0.6"/>
+        </pattern>
+        <linearGradient id="pcbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0284C7"/>
+            <stop offset="100%" stop-color="#0369A1"/>
+        </linearGradient>
+        <linearGradient id="breadboardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#F8FAFC"/>
+            <stop offset="100%" stop-color="#F1F5F9"/>
+        </linearGradient>
+    </defs>
+    <!-- Background Canvas -->
+    <rect width="800" height="520" fill="#F8FAFC" />
+    <rect width="800" height="520" fill="url(#grid)" />
+    <!-- Header Banner -->
+    <rect x="0" y="0" width="800" height="42" fill="#0F172A" />
+    <text x="24" y="26" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">STM32 EMBEDDED WIRING SCHEMATIC &bull; STM32 NUCLEO-F446RE HARDWARE PINOUT (MORPHO CN7 & CN10)</text>
+    <rect x="0" y="42" width="800" height="3" fill="#FF5B5B" />
+
+    <g transform="translate(60, 60)" filter="url(#shadow)">
+        <rect width="680" height="420" rx="16" fill="url(#pcbGrad)" stroke="#0284C7" stroke-width="2"/>
+        <rect x="0" y="0" width="680" height="70" fill="#0F172A" rx="16"/>
+        <rect x="0" y="50" width="680" height="20" fill="#0F172A"/>
+        <text x="340" y="36" fill="#F8FAFC" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle">ST-LINK / V2-1 ON-BOARD SWD DEBUGGER &amp; VCP BRIDGE</text>
+        <rect x="300" y="4" width="80" height="20" rx="3" fill="#E2E8F0" stroke="#94A3B8"/>
+        <text x="340" y="18" fill="#475467" font-family="monospace" font-size="9" text-anchor="middle">USB / ST-LINK</text>
+        
+        <!-- STM32 MCU Chip -->
+        <rect x="280" y="180" width="120" height="120" rx="6" fill="#0F172A" stroke="#334155" stroke-width="2"/>
+        <circle cx="295" cy="195" r="4" fill="#64748B"/>
+        <text x="340" y="235" fill="#38BDF8" font-family="monospace" font-size="12" font-weight="bold" text-anchor="middle">STM32F446RE</text>
+        <text x="340" y="255" fill="#94A3B8" font-family="monospace" font-size="10" text-anchor="middle">ARM Cortex-M4F</text>
+        <text x="340" y="272" fill="#94A3B8" font-family="monospace" font-size="9" text-anchor="middle">180MHz &bull; 512K Flash</text>
+
+        <!-- Buttons LD2, B1, RESET -->
+        <circle cx="160" cy="360" r="14" fill="#3B82F6" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="160" y="390" fill="#FFFFFF" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">B1: USER (PC13)</text>
+        
+        <circle cx="520" cy="360" r="14" fill="#000000" stroke="#334155" stroke-width="2"/>
+        <text x="520" y="390" fill="#FFFFFF" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">B2: RESET (NRST)</text>
+        
+        <circle cx="280" cy="340" r="8" fill="#22C55E" stroke="#15803D" stroke-width="1.5"/>
+        <text x="280" y="365" fill="#FFFFFF" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">LD2: USER (PA5)</text>
+
+        <!-- Left Connector Morpho CN7 -->
+        <g transform="translate(18, 95)">
+            <rect width="135" height="250" rx="4" fill="#1E293B" stroke="#0F172A"/>
+            <text x="67" y="16" fill="#38BDF8" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">CN7 LEFT HEADER</text>
+            <text x="10" y="38" fill="#F8FAFC" font-family="monospace" font-size="9">PC10 &bull; UART4_TX</text>
+            <text x="10" y="56" fill="#F8FAFC" font-family="monospace" font-size="9">PC12 &bull; UART5_TX</text>
+            <text x="10" y="74" fill="#38BDF8" font-family="monospace" font-size="9">VDD  &bull; 3.3V OUT</text>
+            <text x="10" y="92" fill="#F8FAFC" font-family="monospace" font-size="9">NRST &bull; SYS_RESET</text>
+            <text x="10" y="110" fill="#EF4444" font-family="monospace" font-size="9">5V   &bull; 5.0V SUPPLY</text>
+            <text x="10" y="128" fill="#94A3B8" font-family="monospace" font-size="9">GND  &bull; GROUND</text>
+            <text x="10" y="146" fill="#94A3B8" font-family="monospace" font-size="9">GND  &bull; GROUND</text>
+            <text x="10" y="164" fill="#F59E0B" font-family="monospace" font-size="9">PA0  &bull; ADC1_IN0</text>
+            <text x="10" y="182" fill="#F59E0B" font-family="monospace" font-size="9">PA1  &bull; ADC1_IN1</text>
+            <text x="10" y="200" fill="#F59E0B" font-family="monospace" font-size="9">PA4  &bull; DAC1_OUT1</text>
+            <text x="10" y="218" fill="#F8FAFC" font-family="monospace" font-size="9">PB0  &bull; TIM3_CH3</text>
+            <text x="10" y="236" fill="#F8FAFC" font-family="monospace" font-size="9">PC1  &bull; ADC1_IN11</text>
+        </g>
+
+        <!-- Right Connector Morpho CN10 -->
+        <g transform="translate(527, 95)">
+            <rect width="135" height="250" rx="4" fill="#1E293B" stroke="#0F172A"/>
+            <text x="67" y="16" fill="#38BDF8" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">CN10 RIGHT HEADER</text>
+            <text x="10" y="38" fill="#F8FAFC" font-family="monospace" font-size="9">PB8  &bull; I2C1_SCL</text>
+            <text x="10" y="56" fill="#F8FAFC" font-family="monospace" font-size="9">PB9  &bull; I2C1_SDA</text>
+            <text x="10" y="74" fill="#22C55E" font-family="monospace" font-size="9">PA5  &bull; SPI1_SCK/LD2</text>
+            <text x="10" y="92" fill="#F8FAFC" font-family="monospace" font-size="9">PA6  &bull; SPI1_MISO</text>
+            <text x="10" y="110" fill="#F8FAFC" font-family="monospace" font-size="9">PA7  &bull; SPI1_MOSI</text>
+            <text x="10" y="128" fill="#F8FAFC" font-family="monospace" font-size="9">PB6  &bull; TIM4_CH1</text>
+            <text x="10" y="146" fill="#F8FAFC" font-family="monospace" font-size="9">PC7  &bull; TIM3_CH2</text>
+            <text x="10" y="164" fill="#F8FAFC" font-family="monospace" font-size="9">PA9  &bull; USART1_TX</text>
+            <text x="10" y="182" fill="#F8FAFC" font-family="monospace" font-size="9">PA8  &bull; TIM1_CH1</text>
+            <text x="10" y="200" fill="#F8FAFC" font-family="monospace" font-size="9">PB10 &bull; I2C2_SCL</text>
+            <text x="10" y="218" fill="#38BDF8" font-family="monospace" font-size="9">PA2  &bull; USART2_TX(VCP)</text>
+            <text x="10" y="236" fill="#38BDF8" font-family="monospace" font-size="9">PA3  &bull; USART2_RX(VCP)</text>
+        </g>
+    </g>
+    </svg>

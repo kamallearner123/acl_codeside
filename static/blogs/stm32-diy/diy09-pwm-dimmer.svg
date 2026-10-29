@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="100%" height="100%">
+    <defs>
+        <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+            <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.12" />
+        </filter>
+        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1" fill="#CBD5E1" opacity="0.6"/>
+        </pattern>
+        <linearGradient id="pcbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0284C7"/>
+            <stop offset="100%" stop-color="#0369A1"/>
+        </linearGradient>
+        <linearGradient id="breadboardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#F8FAFC"/>
+            <stop offset="100%" stop-color="#F1F5F9"/>
+        </linearGradient>
+    </defs>
+    <!-- Background Canvas -->
+    <rect width="800" height="480" fill="#F8FAFC" />
+    <rect width="800" height="480" fill="url(#grid)" />
+    <!-- Header Banner -->
+    <rect x="0" y="0" width="800" height="42" fill="#0F172A" />
+    <text x="24" y="26" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">STM32 EMBEDDED WIRING SCHEMATIC &bull; ASSIGNMENT 9: PWM LED DIMMER (ADC PA0 & TIM3_CH3 PB0)</text>
+    <rect x="0" y="42" width="800" height="3" fill="#FF5B5B" />
+
+    <!-- Pin Header Block: STM32F446RE PINS -->
+    <g transform="translate(60,80)" filter="url(#shadow)">
+        <rect width="230" height="320" rx="6" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
+        <rect x="0" y="0" width="230" height="24" rx="6" fill="#0F172A"/>
+        <text x="115.0" y="16" fill="#38BDF8" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">STM32F446RE PINS</text>
+    
+        <circle cx="12" cy="36.0" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
+        <circle cx="12" cy="36.0" r="2" fill="#0F172A"/>
+        <text x="24" y="40.0" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">PA0  (ADC1_IN0 Potentiometer)</text>
+        
+        <circle cx="12" cy="108.0" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
+        <circle cx="12" cy="108.0" r="2" fill="#0F172A"/>
+        <text x="24" y="112.0" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">PB0  (TIM3_CH3 PWM LED Out)</text>
+        
+        <circle cx="12" cy="180.0" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
+        <circle cx="12" cy="180.0" r="2" fill="#0F172A"/>
+        <text x="24" y="184.0" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">3.3V (VDD Supply)</text>
+        
+        <circle cx="12" cy="252.0" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
+        <circle cx="12" cy="252.0" r="2" fill="#0F172A"/>
+        <text x="24" y="256.0" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">GND  (Common Ground)</text>
+        </g>
+    <!-- Breadboard Area -->
+    <g transform="translate(340,80)" filter="url(#shadow)">
+        <rect width="400" height="320" rx="8" fill="url(#breadboardGrad)" stroke="#CBD5E1" stroke-width="2"/>
+        <line x1="15" y1="12" x2="385" y2="12" stroke="#EF4444" stroke-width="2" stroke-dasharray="8,4"/>
+        <line x1="15" y1="20" x2="385" y2="20" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8,4"/>
+        <text x="6" y="15" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">+</text>
+        <text x="6" y="23" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold">-</text>
+        
+        <line x1="15" y1="300" x2="385" y2="300" stroke="#EF4444" stroke-width="2" stroke-dasharray="8,4"/>
+        <line x1="15" y1="308" x2="385" y2="308" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8,4"/>
+        <text x="6" y="303" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">+</text>
+        <text x="6" y="311" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold">-</text>
+        <rect x="15" y="156.0" width="370" height="8" fill="#E2E8F0" rx="2"/>
+    </g>
+    
+    <g transform="translate(430, 200)">
+        <rect x="-30" y="-30" width="60" height="60" rx="6" fill="#0284C7"/>
+        <circle cx="0" cy="0" r="18" fill="#E2E8F0" stroke="#94A3B8"/>
+        <circle cx="-18" cy="38" r="4" fill="#EF4444"/><text x="-18" y="52" fill="#EF4444" font-family="monospace" font-size="8" text-anchor="middle">3.3V</text>
+        <circle cx="0" cy="38" r="4" fill="#F59E0B"/><text x="0" y="52" fill="#F59E0B" font-family="monospace" font-size="8" text-anchor="middle">PA0</text>
+        <circle cx="18" cy="38" r="4" fill="#0F172A"/><text x="18" y="52" fill="#0F172A" font-family="monospace" font-size="8" text-anchor="middle">GND</text>
+        <text x="0" y="-36" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">10k&Omega; POT</text>
+    </g>
+    
+    <g transform="translate(580,200)">
+        <circle cx="0" cy="0" r="12" fill="#38BDF8" opacity="0.85" stroke="#0F172A" stroke-width="1.5"/>
+        <circle cx="-3" cy="-3" r="4" fill="#FFFFFF" opacity="0.6"/>
+        <line x1="11" y1="-7" x2="11" y2="7" stroke="#0F172A" stroke-width="2"/>
+        <line x1="-6" y1="12" x2="-6" y2="28" stroke="#94A3B8" stroke-width="2.5"/>
+        <line x1="6" y1="12" x2="6" y2="28" stroke="#94A3B8" stroke-width="2.5"/>
+        <text x="-6" y="40" fill="#0F172A" font-family="monospace" font-size="8" text-anchor="middle">(+)Anode</text>
+        <text x="14" y="40" fill="#0F172A" font-family="monospace" font-size="8" text-anchor="middle">(-)Cathode</text>
+        <text x="0" y="-16" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">PB0 PWM LED</text>
+    </g>
+    
+        <g transform="translate(660,200)">
+            <line x1="-25" y1="0" x2="25" y2="0" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+            <rect x="-14" y="-6" width="28" height="12" rx="3" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
+            <rect x="-8" y="-6" width="3" height="12" fill="#B45309"/>
+            <rect x="-2" y="-6" width="3" height="12" fill="#B45309"/>
+            <rect x="4" y="-6" width="3" height="12" fill="#78350F"/>
+            <text x="0" y="-10" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">330 &Omega;</text>
+        </g>
+        
+    <g>
+        <path d="M 72 260.0 C 242.0 260.0, 242.0 238, 412 238" fill="none" stroke="#EF4444" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+        <circle cx="72" cy="260.0" r="3.5" fill="#EF4444"/>
+        <circle cx="412" cy="238" r="3.5" fill="#EF4444"/>
+    
+        <rect x="214.0" y="233.0" width="56" height="15" rx="3" fill="#FFFFFF" stroke="#EF4444" stroke-width="1" opacity="0.9"/>
+        <text x="242.0" y="244.0" fill="#EF4444" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">3.3V</text>
+        </g>
+    <g>
+        <path d="M 72 116.0 C 251.0 116.0, 251.0 238, 430 238" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+        <circle cx="72" cy="116.0" r="3.5" fill="#F59E0B"/>
+        <circle cx="430" cy="238" r="3.5" fill="#F59E0B"/>
+    
+        <rect x="223.0" y="161.0" width="56" height="15" rx="3" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1" opacity="0.9"/>
+        <text x="251.0" y="172.0" fill="#F59E0B" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">PA0 Wiper</text>
+        </g>
+    <g>
+        <path d="M 72 332.0 C 260.0 332.0, 260.0 238, 448 238" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+        <circle cx="72" cy="332.0" r="3.5" fill="#0F172A"/>
+        <circle cx="448" cy="238" r="3.5" fill="#0F172A"/>
+    
+        <rect x="232.0" y="269.0" width="56" height="15" rx="3" fill="#FFFFFF" stroke="#0F172A" stroke-width="1" opacity="0.9"/>
+        <text x="260.0" y="280.0" fill="#0F172A" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">GND</text>
+        </g>
+    <g>
+        <path d="M 72 188.0 C 323.0 188.0, 323.0 200, 574 200" fill="none" stroke="#38BDF8" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+        <circle cx="72" cy="188.0" r="3.5" fill="#38BDF8"/>
+        <circle cx="574" cy="200" r="3.5" fill="#38BDF8"/>
+    
+        <rect x="295.0" y="178.0" width="56" height="15" rx="3" fill="#FFFFFF" stroke="#38BDF8" stroke-width="1" opacity="0.9"/>
+        <text x="323.0" y="189.0" fill="#38BDF8" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">PB0 PWM</text>
+        </g>
+    <g>
+        <path d="M 685 200 C 378.5 200, 378.5 332.0, 72 332.0" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+        <circle cx="685" cy="200" r="3.5" fill="#0F172A"/>
+        <circle cx="72" cy="332.0" r="3.5" fill="#0F172A"/>
+    </g>
+    <g transform="translate(60, 415)">
+        <rect width="680" height="50" rx="6" fill="#1E293B"/>
+        <text x="20" y="30" fill="#38BDF8" font-family="monospace" font-size="11" font-weight="bold">REGISTER MAPPING:</text>
+        <text x="160" y="30" fill="#F8FAFC" font-family="monospace" font-size="11">ADC1_IN0 (PA0) &rarr; TIM3-&gt;CCR3 Duty Cycle &bull; 1000 Hz PWM Carrier</text>
+    </g>
+    </svg>
