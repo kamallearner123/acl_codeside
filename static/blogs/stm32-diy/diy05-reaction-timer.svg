@@ -23,105 +23,151 @@
     <text x="24" y="26" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">STM32 EMBEDDED WIRING SCHEMATIC &bull; ASSIGNMENT 5: REACTION-TIME MEASUREMENT (PA5 & PA0)</text>
     <rect x="0" y="42" width="800" height="3" fill="#FF5B5B" />
 
-    <!-- Pin Header Block: STM32F446RE PINS -->
-    <g transform="translate(60,80)" filter="url(#shadow)">
-        <rect width="230" height="320" rx="6" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
-        <rect x="0" y="0" width="230" height="24" rx="6" fill="#0F172A"/>
-        <text x="115.0" y="16" fill="#38BDF8" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">STM32F446RE PINS</text>
+    <!-- STM32 Pin Header Block: STM32F446RE PINS -->
+    <g transform="translate(45,80)" filter="url(#shadow)">
+        <rect width="260" height="320" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.5"/>
+        <rect x="0" y="0" width="260" height="32" rx="8" fill="#1E293B"/>
+        <rect x="0" y="24" width="260" height="8" fill="#1E293B"/>
+        <text x="130.0" y="21" fill="#38BDF8" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">STM32F446RE PINS</text>
     
-        <circle cx="12" cy="36.0" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
-        <circle cx="12" cy="36.0" r="2" fill="#0F172A"/>
-        <text x="24" y="40.0" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">PA5  (Random LED &bull; TIM2_CH1)</text>
+        <!-- Pin: PA5 -->
+        <rect x="8" y="36.0" width="230" height="24" rx="4" fill="#1E293B" stroke="#334155" stroke-width="0.8"/>
+        <text x="16" y="52.0" fill="#38BDF8" font-family="monospace" font-size="11" font-weight="bold">PA5</text>
+        <text x="64" y="51.5" fill="#CBD5E1" font-family="sans-serif" font-size="9">(Random LED &bull; TIM2_CH1)</text>
+        <!-- Contact pad on far right edge -->
+        <circle cx="244" cy="48.0" r="6" fill="#38BDF8" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="244" cy="48.0" r="2" fill="#0F172A"/>
         
-        <circle cx="12" cy="93.6" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
-        <circle cx="12" cy="93.6" r="2" fill="#0F172A"/>
-        <text x="24" y="97.6" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">PA0  (Slap Button &bull; EXTI0)</text>
+        <!-- Pin: PA0 -->
+        <rect x="8" y="91.2" width="230" height="24" rx="4" fill="#1E293B" stroke="#334155" stroke-width="0.8"/>
+        <text x="16" y="107.2" fill="#38BDF8" font-family="monospace" font-size="11" font-weight="bold">PA0</text>
+        <text x="64" y="106.7" fill="#CBD5E1" font-family="sans-serif" font-size="9">(Slap Button &bull; EXTI0)</text>
+        <!-- Contact pad on far right edge -->
+        <circle cx="244" cy="103.2" r="6" fill="#38BDF8" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="244" cy="103.2" r="2" fill="#0F172A"/>
         
-        <circle cx="12" cy="151.2" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
-        <circle cx="12" cy="151.2" r="2" fill="#0F172A"/>
-        <text x="24" y="155.2" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">PA2  (USART2_TX  &bull; 115200)</text>
+        <!-- Pin: PA2 -->
+        <rect x="8" y="146.4" width="230" height="24" rx="4" fill="#1E293B" stroke="#334155" stroke-width="0.8"/>
+        <text x="16" y="162.4" fill="#38BDF8" font-family="monospace" font-size="11" font-weight="bold">PA2</text>
+        <text x="64" y="161.9" fill="#CBD5E1" font-family="sans-serif" font-size="9">(USART2_TX  &bull; 115200)</text>
+        <!-- Contact pad on far right edge -->
+        <circle cx="244" cy="158.4" r="6" fill="#38BDF8" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="244" cy="158.4" r="2" fill="#0F172A"/>
         
-        <circle cx="12" cy="208.8" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
-        <circle cx="12" cy="208.8" r="2" fill="#0F172A"/>
-        <text x="24" y="212.8" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">3.3V (VDD Supply)</text>
+        <!-- Pin: 3.3V -->
+        <rect x="8" y="201.60000000000002" width="230" height="24" rx="4" fill="#1E293B" stroke="#334155" stroke-width="0.8"/>
+        <text x="16" y="217.60000000000002" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">3.3V</text>
+        <text x="64" y="217.10000000000002" fill="#CBD5E1" font-family="sans-serif" font-size="9">(VDD Supply)</text>
+        <!-- Contact pad on far right edge -->
+        <circle cx="244" cy="213.60000000000002" r="6" fill="#EF4444" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="244" cy="213.60000000000002" r="2" fill="#0F172A"/>
         
-        <circle cx="12" cy="266.4" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
-        <circle cx="12" cy="266.4" r="2" fill="#0F172A"/>
-        <text x="24" y="270.4" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">GND  (Common Ground)</text>
+        <!-- Pin: GND -->
+        <rect x="8" y="256.8" width="230" height="24" rx="4" fill="#1E293B" stroke="#334155" stroke-width="0.8"/>
+        <text x="16" y="272.8" fill="#94A3B8" font-family="monospace" font-size="11" font-weight="bold">GND</text>
+        <text x="64" y="272.3" fill="#CBD5E1" font-family="sans-serif" font-size="9">(Common Ground)</text>
+        <!-- Contact pad on far right edge -->
+        <circle cx="244" cy="268.8" r="6" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="244" cy="268.8" r="2" fill="#0F172A"/>
         </g>
     <!-- Breadboard Area -->
-    <g transform="translate(340,80)" filter="url(#shadow)">
+    <g transform="translate(345,80)" filter="url(#shadow)">
         <rect width="400" height="320" rx="8" fill="url(#breadboardGrad)" stroke="#CBD5E1" stroke-width="2"/>
-        <line x1="15" y1="12" x2="385" y2="12" stroke="#EF4444" stroke-width="2" stroke-dasharray="8,4"/>
-        <line x1="15" y1="20" x2="385" y2="20" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8,4"/>
-        <text x="6" y="15" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">+</text>
-        <text x="6" y="23" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold">-</text>
+        <!-- Top Power Rails -->
+        <line x1="20" y1="14" x2="380" y2="14" stroke="#EF4444" stroke-width="2" stroke-dasharray="8,4"/>
+        <line x1="20" y1="24" x2="380" y2="24" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8,4"/>
+        <text x="8" y="17" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">+</text>
+        <text x="8" y="27" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold">-</text>
         
-        <line x1="15" y1="300" x2="385" y2="300" stroke="#EF4444" stroke-width="2" stroke-dasharray="8,4"/>
-        <line x1="15" y1="308" x2="385" y2="308" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8,4"/>
-        <text x="6" y="303" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">+</text>
-        <text x="6" y="311" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold">-</text>
+        <!-- Bottom Power Rails -->
+        <line x1="20" y1="296" x2="380" y2="296" stroke="#EF4444" stroke-width="2" stroke-dasharray="8,4"/>
+        <line x1="20" y1="306" x2="380" y2="306" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8,4"/>
+        <text x="8" y="299" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">+</text>
+        <text x="8" y="309" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold">-</text>
+        
+        <!-- Center Divider -->
         <rect x="15" y="156.0" width="370" height="8" fill="#E2E8F0" rx="2"/>
     </g>
     
-    <g transform="translate(460,180)">
-        <circle cx="0" cy="0" r="12" fill="#EF4444" opacity="0.85" stroke="#0F172A" stroke-width="1.5"/>
-        <circle cx="-3" cy="-3" r="4" fill="#FFFFFF" opacity="0.6"/>
-        <line x1="11" y1="-7" x2="11" y2="7" stroke="#0F172A" stroke-width="2"/>
-        <line x1="-6" y1="12" x2="-6" y2="28" stroke="#94A3B8" stroke-width="2.5"/>
-        <line x1="6" y1="12" x2="6" y2="28" stroke="#94A3B8" stroke-width="2.5"/>
-        <text x="-6" y="40" fill="#0F172A" font-family="monospace" font-size="8" text-anchor="middle">(+)Anode</text>
-        <text x="14" y="40" fill="#0F172A" font-family="monospace" font-size="8" text-anchor="middle">(-)Cathode</text>
-        <text x="0" y="-16" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">Trigger (PA5)</text>
+    <g transform="translate(480,160)">
+        <circle cx="0" cy="0" r="14" fill="#EF4444" opacity="0.9" stroke="#0F172A" stroke-width="1.5"/>
+        <circle cx="-4" cy="-4" r="4" fill="#FFFFFF" opacity="0.7"/>
+        <line x1="-10" y1="16" x2="-10" y2="32" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="10" y1="16" x2="10" y2="32" stroke="#94A3B8" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="-10" cy="32" r="3.5" fill="#EF4444" stroke="#FFFFFF" stroke-width="1"/>
+        <circle cx="10" cy="32" r="3.5" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+        <text x="-10" y="44" fill="#EF4444" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">(+)Anode</text>
+        <text x="10" y="44" fill="#0F172A" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">(-)Cathode</text>
+        <text x="0" y="-18" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">Trigger (PA5)</text>
     </g>
     
-        <g transform="translate(540,180)">
-            <line x1="-25" y1="0" x2="25" y2="0" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
-            <rect x="-14" y="-6" width="28" height="12" rx="3" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
-            <rect x="-8" y="-6" width="3" height="12" fill="#B45309"/>
-            <rect x="-2" y="-6" width="3" height="12" fill="#B45309"/>
-            <rect x="4" y="-6" width="3" height="12" fill="#78350F"/>
-            <text x="0" y="-10" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">330 &Omega;</text>
+        <g transform="translate(570,160)">
+            <line x1="-30" y1="0" x2="30" y2="0" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+            <rect x="-15" y="-7" width="30" height="14" rx="3" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
+            <rect x="-9" y="-7" width="3" height="14" fill="#B45309"/>
+            <rect x="-3" y="-7" width="3" height="14" fill="#B45309"/>
+            <rect x="3" y="-7" width="3" height="14" fill="#78350F"/>
+            <circle cx="-30" cy="0" r="3.5" fill="#64748B" stroke="#FFFFFF" stroke-width="1"/>
+            <circle cx="30" cy="0" r="3.5" fill="#64748B" stroke="#FFFFFF" stroke-width="1"/>
+            <text x="0" y="-11" fill="#0F172A" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">330 &Omega;</text>
         </g>
         
-    <g transform="translate(460,300)">
-        <rect x="-18" y="-18" width="36" height="36" rx="4" fill="#334155" stroke="#0F172A" stroke-width="1.5"/>
+    <g transform="translate(480,280)">
+        <rect x="-18" y="-18" width="36" height="36" rx="4" fill="#1E293B" stroke="#0F172A" stroke-width="1.5"/>
         <circle cx="0" cy="0" r="10" fill="#0284C7" stroke="#0369A1" stroke-width="1.5"/>
-        <rect x="-24" y="-12" width="6" height="4" fill="#94A3B8"/>
-        <rect x="-24" y="8" width="6" height="4" fill="#94A3B8"/>
-        <rect x="18" y="-12" width="6" height="4" fill="#94A3B8"/>
-        <rect x="18" y="8" width="6" height="4" fill="#94A3B8"/>
-        <text x="-26" y="-7" fill="#64748B" font-family="monospace" font-size="8" text-anchor="end">Pin 1</text>
-        <text x="26" y="-7" fill="#64748B" font-family="monospace" font-size="8">Pin 2</text>
-        <text x="0" y="-22" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">Response (PA0)</text>
+        <!-- Terminal 1 Left -->
+        <rect x="-26" y="-3" width="8" height="6" fill="#94A3B8"/>
+        <circle cx="-26" cy="0" r="3.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1"/>
+        <text x="-32" y="3.5" fill="#64748B" font-family="monospace" font-size="8" font-weight="bold" text-anchor="end">Pin 1</text>
+        <!-- Terminal 2 Right -->
+        <rect x="18" y="-3" width="8" height="6" fill="#94A3B8"/>
+        <circle cx="26" cy="0" r="3.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1"/>
+        <text x="32" y="3.5" fill="#64748B" font-family="monospace" font-size="8" font-weight="bold" text-anchor="start">Pin 2</text>
+        <text x="0" y="-23" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">Response (PA0)</text>
     </g>
     
     <g>
-        <path d="M 72 116.0 C 263.0 116.0, 263.0 180, 454 180" fill="none" stroke="#EF4444" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
-        <circle cx="72" cy="116.0" r="3.5" fill="#EF4444"/>
-        <circle cx="454" cy="180" r="3.5" fill="#EF4444"/>
+        <path d="M 289 128.0 C 370.45 128.0, 388.55 192, 470 192" fill="none" stroke="#EF4444" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="289" cy="128.0" r="4" fill="#EF4444" stroke="#FFFFFF" stroke-width="1.2"/>
+        <circle cx="470" cy="192" r="4" fill="#EF4444" stroke="#FFFFFF" stroke-width="1.2"/>
     
-        <rect x="235.0" y="132.0" width="56" height="15" rx="3" fill="#FFFFFF" stroke="#EF4444" stroke-width="1" opacity="0.9"/>
-        <text x="263.0" y="143.0" fill="#EF4444" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">PA5 Output</text>
+        <g transform="translate(379.5,152.0)">
+            <rect x="-32" y="-9" width="64" height="18" rx="4" fill="#FFFFFF" stroke="#EF4444" stroke-width="1.2" opacity="0.95"/>
+            <text x="0" y="3.5" fill="#EF4444" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">PA5 Output</text>
+        </g>
         </g>
     <g>
-        <path d="M 565 180 C 318.5 180, 318.5 346.4, 72 346.4" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
-        <circle cx="565" cy="180" r="3.5" fill="#0F172A"/>
-        <circle cx="72" cy="346.4" r="3.5" fill="#0F172A"/>
+        <path d="M 490 192 C 515 192, 515 160, 540 160" fill="none" stroke="#94A3B8" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="490" cy="192" r="4" fill="#94A3B8" stroke="#FFFFFF" stroke-width="1.2"/>
+        <circle cx="540" cy="160" r="4" fill="#94A3B8" stroke="#FFFFFF" stroke-width="1.2"/>
+    </g>
+    <g>
+        <path d="M 600 160 C 739.95 160, 149.04999999999998 348.8, 289 348.8" fill="none" stroke="#0F172A" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="600" cy="160" r="4" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
+        <circle cx="289" cy="348.8" r="4" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
     
-        <rect x="290.5" y="247.2" width="56" height="15" rx="3" fill="#FFFFFF" stroke="#0F172A" stroke-width="1" opacity="0.9"/>
-        <text x="318.5" y="258.2" fill="#0F172A" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">GND</text>
+        <g transform="translate(444.5,246.4)">
+            <rect x="-32" y="-9" width="64" height="18" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2" opacity="0.95"/>
+            <text x="0" y="3.5" fill="#0F172A" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">GND</text>
+        </g>
         </g>
     <g>
-        <path d="M 72 173.6 C 254.0 173.6, 254.0 300, 436 300" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
-        <circle cx="72" cy="173.6" r="3.5" fill="#3B82F6"/>
-        <circle cx="436" cy="300" r="3.5" fill="#3B82F6"/>
+        <path d="M 289 183.2 C 363.25 183.2, 379.75 280, 454 280" fill="none" stroke="#3B82F6" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="289" cy="183.2" r="4" fill="#3B82F6" stroke="#FFFFFF" stroke-width="1.2"/>
+        <circle cx="454" cy="280" r="4" fill="#3B82F6" stroke="#FFFFFF" stroke-width="1.2"/>
     
-        <rect x="226.0" y="220.8" width="56" height="15" rx="3" fill="#FFFFFF" stroke="#3B82F6" stroke-width="1" opacity="0.9"/>
-        <text x="254.0" y="231.8" fill="#3B82F6" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">PA0 Input</text>
+        <g transform="translate(371.5,223.6)">
+            <rect x="-32" y="-9" width="64" height="18" rx="4" fill="#FFFFFF" stroke="#3B82F6" stroke-width="1.2" opacity="0.95"/>
+            <text x="0" y="3.5" fill="#3B82F6" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">PA0 Input</text>
         </g>
-    <g transform="translate(60, 415)">
-        <rect width="680" height="50" rx="6" fill="#0F172A"/>
+        </g>
+    <g>
+        <path d="M 506 280 C 603.65 280, 191.35 348.8, 289 348.8" fill="none" stroke="#0F172A" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="506" cy="280" r="4" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
+        <circle cx="289" cy="348.8" r="4" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
+    </g>
+    <g transform="translate(45, 415)">
+        <rect width="700" height="50" rx="6" fill="#0F172A"/>
         <text x="20" y="30" fill="#22C55E" font-family="monospace" font-size="12" font-weight="bold">USART2_TX (PA2):</text>
         <text x="170" y="30" fill="#F8FAFC" font-family="monospace" font-size="12">"Reaction Time: 238 ms" &bull; Hardware Timer Microsecond Resolution</text>
     </g>

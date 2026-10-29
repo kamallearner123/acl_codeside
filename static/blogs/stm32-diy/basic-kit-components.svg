@@ -20,64 +20,56 @@
     <rect width="800" height="480" fill="url(#grid)" />
     <!-- Header Banner -->
     <rect x="0" y="0" width="800" height="42" fill="#0F172A" />
-    <text x="24" y="26" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">STM32 EMBEDDED WIRING SCHEMATIC &bull; KIT 2: FUNDAMENTAL PROTOTYPING COMPONENTS</text>
+    <text x="24" y="26" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">STM32 EMBEDDED WIRING SCHEMATIC &bull; KIT 2: BASIC ELECTRONICS PROTOTYPING ESSENTIALS</text>
     <rect x="0" y="42" width="800" height="3" fill="#FF5B5B" />
 
-    <g transform="translate(60, 70)" filter="url(#shadow)">
-        <rect width="320" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="26" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">1. Tactile Push Button Switch</text>
-        <rect x="40" y="60" width="50" height="50" rx="6" fill="#334155"/>
-        <circle cx="65" cy="85" r="16" fill="#0284C7"/>
-        <text x="120" y="70" fill="#334155" font-family="monospace" font-size="10">&bull; STM32 Pin: PC13 or PA0</text>
-        <text x="120" y="90" fill="#334155" font-family="monospace" font-size="10">&bull; Mode: GPIO_MODE_INPUT</text>
-        <text x="120" y="110" fill="#334155" font-family="monospace" font-size="10">&bull; Internal Pull-Up/Pull-Down</text>
-    </g>
-    <g transform="translate(420, 70)" filter="url(#shadow)">
-        <rect width="320" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="26" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">2. LED + 330&Omega; Current Resistor</text>
-        <g transform="translate(60, 95)">
-            <circle cx="0" cy="0" r="14" fill="#22C55E" opacity="0.9" stroke="#15803D"/>
-            <line x1="0" y1="14" x2="0" y2="35" stroke="#94A3B8" stroke-width="3"/>
-            <line x1="25" y1="20" x2="70" y2="20" stroke="#94A3B8" stroke-width="3"/>
-            <rect x="35" y="14" width="24" height="12" rx="3" fill="#FDE68A" stroke="#D97706"/>
-            <text x="47" y="38" fill="#B45309" font-family="monospace" font-size="9" text-anchor="middle">330&Omega;</text>
+    <g transform="translate(40, 70)">
+        <rect x="0" y="0" width="220" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="110" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">RESISTORS &amp; OHM'S LAW</text>
+        <g transform="translate(110, 70)">
+            <line x1="-50" y1="0" x2="50" y2="0" stroke="#94A3B8" stroke-width="3"/>
+            <rect x="-24" y="-10" width="48" height="20" rx="4" fill="#FDE68A" stroke="#D97706"/>
+            <text x="0" y="32" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">220 &Omega; / 330 &Omega; / 10 k&Omega;</text>
         </g>
-        <text x="150" y="70" fill="#334155" font-family="monospace" font-size="10">&bull; STM32 Pin: PA5 (LD2)</text>
-        <text x="150" y="90" fill="#334155" font-family="monospace" font-size="10">&bull; Mode: GPIO_MODE_OUTPUT_PP</text>
-        <text x="150" y="110" fill="#334155" font-family="monospace" font-size="10">&bull; Max Pin Current: 20 mA</text>
+        <text x="110" y="145" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">R = (3.3V - 2.0V) / 10mA</text>
     </g>
-    <g transform="translate(60, 260)" filter="url(#shadow)">
-        <rect width="320" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="26" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">3. 10k&Omega; Rotary Potentiometer</text>
-        <g transform="translate(60, 95)">
-            <rect x="-25" y="-25" width="50" height="50" rx="4" fill="#0284C7"/>
-            <circle cx="0" cy="0" r="16" fill="#E2E8F0" stroke="#94A3B8"/>
-            <line x1="0" y1="0" x2="10" y2="-10" stroke="#0F172A" stroke-width="2"/>
-            <circle cx="-15" cy="32" r="3" fill="#94A3B8"/><text x="-15" y="44" fill="#64748B" font-family="monospace" font-size="8" text-anchor="middle">3.3V</text>
-            <circle cx="0" cy="32" r="3" fill="#F59E0B"/><text x="0" y="44" fill="#F59E0B" font-family="monospace" font-size="8" text-anchor="middle">PA0</text>
-            <circle cx="15" cy="32" r="3" fill="#0F172A"/><text x="15" y="44" fill="#0F172A" font-family="monospace" font-size="8" text-anchor="middle">GND</text>
+
+    <g transform="translate(290, 70)">
+        <rect x="0" y="0" width="220" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="110" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">TACTILE PUSH BUTTONS</text>
+        <g transform="translate(110, 80)">
+            <rect x="-25" y="-25" width="50" height="50" rx="6" fill="#1E293B"/>
+            <circle cx="0" cy="0" r="14" fill="#0284C7"/>
         </g>
-        <text x="120" y="70" fill="#334155" font-family="monospace" font-size="10">&bull; Terminal 1: STM32 3.3V</text>
-        <text x="120" y="90" fill="#334155" font-family="monospace" font-size="10">&bull; Wiper: STM32 PA0 (ADC1_IN0)</text>
-        <text x="120" y="110" fill="#334155" font-family="monospace" font-size="10">&bull; Terminal 3: STM32 GND</text>
-        <text x="120" y="130" fill="#334155" font-family="monospace" font-size="10">&bull; 12-bit Value: 0 to 4095</text>
+        <text x="110" y="145" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">Internal / External Pull-Ups</text>
     </g>
-    <g transform="translate(420, 260)" filter="url(#shadow)">
-        <rect width="320" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="26" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">4. 2N2222 Transistor Driver</text>
-        <g transform="translate(60, 95)">
-            <path d="M -15 -18 A 18 18 0 0 1 15 -18 L 15 12 L -15 12 Z" fill="#1E293B" stroke="#0F172A"/>
-            <text x="0" y="0" fill="#94A3B8" font-family="monospace" font-size="7" text-anchor="middle">2N2222</text>
-            <line x1="-10" y1="12" x2="-10" y2="30" stroke="#94A3B8" stroke-width="2"/>
-            <line x1="0" y1="12" x2="0" y2="30" stroke="#94A3B8" stroke-width="2"/>
-            <line x1="10" y1="12" x2="10" y2="30" stroke="#94A3B8" stroke-width="2"/>
-            <text x="-10" y="40" fill="#64748B" font-family="monospace" font-size="8" text-anchor="middle">E</text>
-            <text x="0" y="40" fill="#64748B" font-family="monospace" font-size="8" text-anchor="middle">B</text>
-            <text x="10" y="40" fill="#64748B" font-family="monospace" font-size="8" text-anchor="middle">C</text>
+
+    <g transform="translate(540, 70)">
+        <rect x="0" y="0" width="220" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="110" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">DISCRETE &amp; RGB LEDS</text>
+        <g transform="translate(110, 80)">
+            <circle cx="-30" cy="0" r="12" fill="#EF4444"/>
+            <circle cx="0" cy="0" r="12" fill="#22C55E"/>
+            <circle cx="30" cy="0" r="12" fill="#3B82F6"/>
         </g>
-        <text x="120" y="70" fill="#334155" font-family="monospace" font-size="10">&bull; Base (B): PB0 (TIM3_CH3)</text>
-        <text x="120" y="90" fill="#334155" font-family="monospace" font-size="10">&bull; Emitter (E): GND</text>
-        <text x="120" y="110" fill="#334155" font-family="monospace" font-size="10">&bull; Collector (C): Buzzer / Relay</text>
-        <text x="120" y="130" fill="#EF4444" font-family="monospace" font-size="10">&bull; Diode: 1N4148 Flyback</text>
+        <text x="110" y="145" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">Push-Pull &bull; Common Cathode</text>
+    </g>
+
+    <g transform="translate(40, 270)">
+        <rect x="0" y="0" width="345" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="172" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">PIEZO &amp; ELECTROMAGNETIC BUZZERS</text>
+        <circle cx="172" cy="85" r="30" fill="#1E293B"/>
+        <circle cx="172" cy="85" r="10" fill="#CBD5E1"/>
+        <text x="172" y="145" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">Active 5V / Passive PWM Driven</text>
+    </g>
+
+    <g transform="translate(415, 270)">
+        <rect x="0" y="0" width="345" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="172" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">TRANSISTOR &amp; MOSFET DRIVERS</text>
+        <g transform="translate(172, 85)">
+            <path d="M -15 -18 A 18 18 0 0 1 15 -18 L 15 12 L -15 12 Z" fill="#1E293B"/>
+            <text x="0" y="2" fill="#FFFFFF" font-family="monospace" font-size="9" text-anchor="middle">2N2222</text>
+        </g>
+        <text x="172" y="145" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">Low-Side Switching &bull; Flyback Diode Protected</text>
     </g>
     </svg>

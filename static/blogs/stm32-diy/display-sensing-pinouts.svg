@@ -20,71 +20,40 @@
     <rect width="800" height="480" fill="url(#grid)" />
     <!-- Header Banner -->
     <rect x="0" y="0" width="800" height="42" fill="#0F172A" />
-    <text x="24" y="26" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">STM32 EMBEDDED WIRING SCHEMATIC &bull; KIT 3: DISPLAY & SENSING MODULE PIN CONNECTIONS</text>
+    <text x="24" y="26" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">STM32 EMBEDDED WIRING SCHEMATIC &bull; KIT 3: DISPLAY & SENSING MODULE INTERFACING</text>
     <rect x="0" y="42" width="800" height="3" fill="#FF5B5B" />
 
-    <g transform="translate(50, 70)" filter="url(#shadow)">
-        <rect width="210" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">SSD1306 0.96" OLED</text>
-        <rect x="25" y="40" width="160" height="80" rx="4" fill="#0F172A"/>
-        <text x="105" y="85" fill="#38BDF8" font-family="monospace" font-size="11" text-anchor="middle">128x64 I2C</text>
-        <rect x="25" y="125" width="160" height="30" rx="3" fill="#1E293B"/>
-        <text x="35" y="144" fill="#64748B" font-family="monospace" font-size="8.5">GND</text>
-        <text x="75" y="144" fill="#EF4444" font-family="monospace" font-size="8.5">3.3V</text>
-        <text x="115" y="144" fill="#A855F7" font-family="monospace" font-size="8.5">PB8(SCL)</text>
-        <text x="155" y="144" fill="#10B981" font-family="monospace" font-size="8.5">PB9(SDA)</text>
+    <g transform="translate(40, 70)">
+        <rect width="345" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="172" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">SSD1306 0.96-INCH I2C OLED</text>
+        <rect x="72" y="45" width="200" height="90" rx="4" fill="#0F172A"/>
+        <text x="172" y="95" fill="#38BDF8" font-family="monospace" font-size="12" text-anchor="middle">128x64 Pixels</text>
+        <text x="172" y="155" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">GND &bull; VCC(3V3) &bull; SCL(PB8) &bull; SDA(PB9)</text>
     </g>
-    <g transform="translate(295, 70)" filter="url(#shadow)">
-        <rect width="210" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">DS3231 Precision RTC</text>
-        <circle cx="105" cy="80" r="30" fill="#E2E8F0" stroke="#94A3B8"/>
-        <text x="105" y="85" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">CR2032</text>
-        <rect x="15" y="125" width="180" height="30" rx="3" fill="#1E293B"/>
-        <text x="25" y="144" fill="#EF4444" font-family="monospace" font-size="8.5">3V3</text>
-        <text x="60" y="144" fill="#64748B" font-family="monospace" font-size="8.5">GND</text>
-        <text x="95" y="144" fill="#10B981" font-family="monospace" font-size="8.5">PB9(SDA)</text>
-        <text x="135" y="144" fill="#A855F7" font-family="monospace" font-size="8.5">PB8(SCL)</text>
-        <text x="175" y="144" fill="#F59E0B" font-family="monospace" font-size="8.5">INT</text>
+
+    <g transform="translate(415, 70)">
+        <rect width="345" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="172" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">DS3231 HIGH-PRECISION I2C RTC</text>
+        <rect x="122" y="55" width="100" height="60" rx="4" fill="#1E293B"/>
+        <circle cx="172" cy="85" r="14" fill="#D97706"/>
+        <text x="172" y="155" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">VCC &bull; GND &bull; SCL &bull; SDA &bull; Battery Backup</text>
     </g>
-    <g transform="translate(540, 70)" filter="url(#shadow)">
-        <rect width="210" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">MPU6050 6-DOF IMU</text>
-        <rect x="80" y="50" width="50" height="50" rx="4" fill="#0284C7"/>
-        <text x="105" y="78" fill="#FFFFFF" font-family="monospace" font-size="8" text-anchor="middle">3-Axis Accel</text>
-        <text x="105" y="90" fill="#FFFFFF" font-family="monospace" font-size="8" text-anchor="middle">3-Axis Gyro</text>
-        <rect x="15" y="125" width="180" height="30" rx="3" fill="#1E293B"/>
-        <text x="22" y="144" fill="#EF4444" font-family="monospace" font-size="8">3V3</text>
-        <text x="48" y="144" fill="#64748B" font-family="monospace" font-size="8">GND</text>
-        <text x="75" y="144" fill="#A855F7" font-family="monospace" font-size="8">PB8(SCL)</text>
-        <text x="105" y="144" fill="#10B981" font-family="monospace" font-size="8">PB9(SDA)</text>
-        <text x="140" y="144" fill="#F59E0B" font-family="monospace" font-size="8">AD0</text>
-        <text x="170" y="144" fill="#F59E0B" font-family="monospace" font-size="8">INT</text>
+
+    <g transform="translate(40, 275)">
+        <rect width="345" height="175" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="172" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">ANALOG TEMP (LM35) &amp; LDR</text>
+        <circle cx="110" cy="85" r="22" fill="#E2E8F0"/>
+        <text x="110" y="89" fill="#0F172A" font-family="monospace" font-size="9" text-anchor="middle">LM35</text>
+        <circle cx="230" cy="85" r="20" fill="#FEF3C7" stroke="#D97706"/>
+        <text x="230" y="89" fill="#D97706" font-family="monospace" font-size="9" text-anchor="middle">LDR</text>
+        <text x="172" y="150" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">Linear 10 mV/&deg;C &bull; Voltage Divider ADC</text>
     </g>
-    <g transform="translate(50, 260)" filter="url(#shadow)">
-        <rect width="210" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">LM35 Analog Temp</text>
-        <path d="M 90 60 A 20 20 0 0 1 120 60 L 120 90 L 90 90 Z" fill="#1E293B"/>
-        <text x="105" y="78" fill="#FFFFFF" font-family="monospace" font-size="8" text-anchor="middle">LM35</text>
-        <text x="20" y="125" fill="#334155" font-family="monospace" font-size="10">&bull; Pin 1: STM32 5.0V</text>
-        <text x="20" y="145" fill="#334155" font-family="monospace" font-size="10">&bull; Pin 2: STM32 PA0 (ADC)</text>
-        <text x="20" y="165" fill="#334155" font-family="monospace" font-size="10">&bull; Pin 3: STM32 GND</text>
-    </g>
-    <g transform="translate(295, 260)" filter="url(#shadow)">
-        <rect width="210" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">LDR Ambient Light</text>
-        <circle cx="105" cy="70" r="16" fill="#FDE68A" stroke="#D97706"/>
-        <path d="M 95 65 Q 105 55 115 65 T 105 80" fill="none" stroke="#DC2626" stroke-width="2"/>
-        <text x="20" y="125" fill="#334155" font-family="monospace" font-size="10">&bull; Divider: 10k&Omega; to GND</text>
-        <text x="20" y="145" fill="#334155" font-family="monospace" font-size="10">&bull; Sense: STM32 PA1 (ADC)</text>
-        <text x="20" y="165" fill="#334155" font-family="monospace" font-size="10">&bull; Top: STM32 3.3V</text>
-    </g>
-    <g transform="translate(540, 260)" filter="url(#shadow)">
-        <rect width="210" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">HC-SR501 PIR Motion</text>
-        <circle cx="105" cy="70" r="24" fill="#F1F5F9" stroke="#94A3B8"/>
-        <rect x="25" y="120" width="160" height="30" rx="3" fill="#1E293B"/>
-        <text x="35" y="139" fill="#EF4444" font-family="monospace" font-size="8.5">5V VCC</text>
-        <text x="90" y="139" fill="#F59E0B" font-family="monospace" font-size="8.5">PA2 (OUT)</text>
-        <text x="155" y="139" fill="#64748B" font-family="monospace" font-size="8.5">GND</text>
+
+    <g transform="translate(415, 275)">
+        <rect width="345" height="175" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="172" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">MPU6050 6-AXIS IMU (ACCEL + GYRO)</text>
+        <rect x="122" y="55" width="100" height="60" rx="4" fill="#0284C7"/>
+        <text x="172" y="90" fill="#FFFFFF" font-family="monospace" font-size="11" text-anchor="middle">I2C: 0x68</text>
+        <text x="172" y="150" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">VCC &bull; GND &bull; SCL &bull; SDA &bull; INT</text>
     </g>
     </svg>

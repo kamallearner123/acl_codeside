@@ -20,49 +20,37 @@
     <rect width="800" height="480" fill="url(#grid)" />
     <!-- Header Banner -->
     <rect x="0" y="0" width="800" height="42" fill="#0F172A" />
-    <text x="24" y="26" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">STM32 EMBEDDED WIRING SCHEMATIC &bull; KIT 4: DETECTION & ACTUATION MODULE PIN CONNECTIONS</text>
+    <text x="24" y="26" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">STM32 EMBEDDED WIRING SCHEMATIC &bull; KIT 4: DETECTION & ACTUATION MODULES PINOUTS</text>
     <rect x="0" y="42" width="800" height="3" fill="#FF5B5B" />
 
-    <g transform="translate(50, 70)" filter="url(#shadow)">
-        <rect width="330" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">HC-SR04 Ultrasonic Distance</text>
-        <rect x="25" y="45" width="130" height="70" rx="6" fill="#0284C7"/>
-        <circle cx="55" cy="80" r="22" fill="#E2E8F0" stroke="#475467" stroke-width="2"/>
-        <circle cx="125" cy="80" r="22" fill="#E2E8F0" stroke="#475467" stroke-width="2"/>
-        <text x="175" y="65" fill="#EF4444" font-family="monospace" font-size="10">&bull; VCC: STM32 5.0V</text>
-        <text x="175" y="85" fill="#3B82F6" font-family="monospace" font-size="10">&bull; Trig: STM32 PB6 (GPIO)</text>
-        <text x="175" y="105" fill="#F59E0B" font-family="monospace" font-size="10">&bull; Echo: PA6 (TIM3_CH1)</text>
-        <text x="175" y="125" fill="#0F172A" font-family="monospace" font-size="10">&bull; GND: STM32 GND</text>
-        <text x="175" y="145" fill="#DC2626" font-family="monospace" font-size="9">&bull; Note: 1k/2k on Echo to 3.3V</text>
+    <g transform="translate(40, 70)">
+        <rect width="345" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="172" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">HC-SR04 ULTRASONIC RANGEFINDER</text>
+        <circle cx="110" cy="85" r="28" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2"/>
+        <circle cx="234" cy="85" r="28" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2"/>
+        <text x="172" y="150" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">VCC(5V) &bull; Trig(PA0) &bull; Echo(5V&rarr;3.3V Divider) &bull; GND</text>
     </g>
-    <g transform="translate(420, 70)" filter="url(#shadow)">
-        <rect width="330" height="170" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">SG90 50Hz PWM Servo Motor</text>
-        <rect x="35" y="50" width="70" height="70" rx="4" fill="#0284C7"/>
-        <circle cx="70" cy="70" r="16" fill="#FFFFFF" stroke="#64748B"/>
-        <rect x="66" y="40" width="8" height="30" fill="#FFFFFF"/>
-        <text x="130" y="65" fill="#0F172A" font-family="monospace" font-size="10">&bull; Brown Pin: Ground (GND)</text>
-        <text x="130" y="85" fill="#EF4444" font-family="monospace" font-size="10">&bull; Red Pin: Ext +5.0V Power</text>
-        <text x="130" y="105" fill="#F59E0B" font-family="monospace" font-size="10">&bull; Orange: STM32 PB4 (TIM3)</text>
-        <text x="130" y="125" fill="#334155" font-family="monospace" font-size="10">&bull; PWM: 1.0ms to 2.0ms (50Hz)</text>
+
+    <g transform="translate(415, 70)">
+        <rect width="345" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="172" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">SG90 MICRO SERVO MOTOR</text>
+        <rect x="122" y="55" width="100" height="60" rx="4" fill="#0284C7"/>
+        <circle cx="172" cy="70" r="10" fill="#FFFFFF"/>
+        <text x="172" y="150" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">Brown(GND) &bull; Red(5V) &bull; Orange(PWM 50Hz)</text>
     </g>
-    <g transform="translate(50, 260)" filter="url(#shadow)">
-        <rect width="330" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">MQ-2 Gas / Smoke Sensor</text>
-        <circle cx="75" cy="95" r="30" fill="#94A3B8" stroke="#475467" stroke-width="2"/>
-        <text x="130" y="70" fill="#EF4444" font-family="monospace" font-size="10">&bull; VCC: STM32 5.0V (150mA)</text>
-        <text x="130" y="90" fill="#0F172A" font-family="monospace" font-size="10">&bull; GND: STM32 GND</text>
-        <text x="130" y="110" fill="#3B82F6" font-family="monospace" font-size="10">&bull; DO: STM32 PC7 (Digital)</text>
-        <text x="130" y="130" fill="#F59E0B" font-family="monospace" font-size="10">&bull; AO: STM32 PA1 (ADC1_IN1)</text>
+
+    <g transform="translate(40, 275)">
+        <rect width="345" height="175" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="172" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">MQ-2 / MQ-3 GAS SENSORS</text>
+        <circle cx="172" cy="85" r="30" fill="#78350F" stroke="#B45309" stroke-width="2"/>
+        <text x="172" y="150" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">VCC(5V) &bull; GND &bull; AOUT(ADC 0-3.3V) &bull; DOUT</text>
     </g>
-    <g transform="translate(420, 260)" filter="url(#shadow)">
-        <rect width="330" height="180" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-        <text x="16" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold">L298N DC Motor Driver</text>
-        <rect x="30" y="55" width="80" height="70" rx="4" fill="#DC2626"/>
-        <rect x="50" y="45" width="40" height="20" fill="#1E293B"/>
-        <text x="130" y="65" fill="#334155" font-family="monospace" font-size="10">&bull; 12V/GND: External Battery</text>
-        <text x="130" y="85" fill="#3B82F6" font-family="monospace" font-size="10">&bull; ENA / ENB: PA7 / PB0 (PWM)</text>
-        <text x="130" y="105" fill="#334155" font-family="monospace" font-size="10">&bull; IN1..IN4: PC0..PC3 (GPIO)</text>
-        <text x="130" y="125" fill="#334155" font-family="monospace" font-size="10">&bull; GND: Common to STM32 GND</text>
+
+    <g transform="translate(415, 275)">
+        <rect width="345" height="175" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+        <text x="172" y="24" fill="#0F172A" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">L298N / TB6612 DUAL MOTOR DRIVER</text>
+        <rect x="122" y="55" width="100" height="60" rx="4" fill="#DC2626"/>
+        <text x="172" y="90" fill="#FFFFFF" font-family="monospace" font-size="11" text-anchor="middle">H-Bridge</text>
+        <text x="172" y="150" fill="#64748B" font-family="monospace" font-size="9" text-anchor="middle">IN1 &bull; IN2 &bull; ENA(PWM) &bull; Bidirectional Control</text>
     </g>
     </svg>

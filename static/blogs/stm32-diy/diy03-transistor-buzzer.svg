@@ -23,103 +23,139 @@
     <text x="24" y="26" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="0.5">STM32 EMBEDDED WIRING SCHEMATIC &bull; ASSIGNMENT 3: ELECTRONIC BUZZER DRIVER (PB0 TIM3_CH3)</text>
     <rect x="0" y="42" width="800" height="3" fill="#FF5B5B" />
 
-    <!-- Pin Header Block: STM32F446RE PINS -->
-    <g transform="translate(60,80)" filter="url(#shadow)">
-        <rect width="230" height="320" rx="6" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
-        <rect x="0" y="0" width="230" height="24" rx="6" fill="#0F172A"/>
-        <text x="115.0" y="16" fill="#38BDF8" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">STM32F446RE PINS</text>
+    <!-- STM32 Pin Header Block: STM32F446RE PINS -->
+    <g transform="translate(45,80)" filter="url(#shadow)">
+        <rect width="260" height="320" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1.5"/>
+        <rect x="0" y="0" width="260" height="32" rx="8" fill="#1E293B"/>
+        <rect x="0" y="24" width="260" height="8" fill="#1E293B"/>
+        <text x="130.0" y="21" fill="#38BDF8" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">STM32F446RE PINS</text>
     
-        <circle cx="12" cy="36.0" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
-        <circle cx="12" cy="36.0" r="2" fill="#0F172A"/>
-        <text x="24" y="40.0" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">PB0  (TIM3_CH3 PWM Tone)</text>
+        <!-- Pin: PB0 -->
+        <rect x="8" y="36.0" width="230" height="24" rx="4" fill="#1E293B" stroke="#334155" stroke-width="0.8"/>
+        <text x="16" y="52.0" fill="#10B981" font-family="monospace" font-size="11" font-weight="bold">PB0</text>
+        <text x="64" y="51.5" fill="#CBD5E1" font-family="sans-serif" font-size="9">(TIM3_CH3 PWM Tone)</text>
+        <!-- Contact pad on far right edge -->
+        <circle cx="244" cy="48.0" r="6" fill="#10B981" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="244" cy="48.0" r="2" fill="#0F172A"/>
         
-        <circle cx="12" cy="108.0" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
-        <circle cx="12" cy="108.0" r="2" fill="#0F172A"/>
-        <text x="24" y="112.0" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">PA0  (GPIO Push Button)</text>
+        <!-- Pin: PA0 -->
+        <rect x="8" y="105.0" width="230" height="24" rx="4" fill="#1E293B" stroke="#334155" stroke-width="0.8"/>
+        <text x="16" y="121.0" fill="#38BDF8" font-family="monospace" font-size="11" font-weight="bold">PA0</text>
+        <text x="64" y="120.5" fill="#CBD5E1" font-family="sans-serif" font-size="9">(GPIO Push Button)</text>
+        <!-- Contact pad on far right edge -->
+        <circle cx="244" cy="117.0" r="6" fill="#38BDF8" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="244" cy="117.0" r="2" fill="#0F172A"/>
         
-        <circle cx="12" cy="180.0" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
-        <circle cx="12" cy="180.0" r="2" fill="#0F172A"/>
-        <text x="24" y="184.0" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">5.0V (Buzzer Power)</text>
+        <!-- Pin: 5.0V -->
+        <rect x="8" y="174.0" width="230" height="24" rx="4" fill="#1E293B" stroke="#334155" stroke-width="0.8"/>
+        <text x="16" y="190.0" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">5.0V</text>
+        <text x="64" y="189.5" fill="#CBD5E1" font-family="sans-serif" font-size="9">(Buzzer Power)</text>
+        <!-- Contact pad on far right edge -->
+        <circle cx="244" cy="186.0" r="6" fill="#EF4444" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="244" cy="186.0" r="2" fill="#0F172A"/>
         
-        <circle cx="12" cy="252.0" r="5" fill="#F59E0B" stroke="#78350F" stroke-width="1"/>
-        <circle cx="12" cy="252.0" r="2" fill="#0F172A"/>
-        <text x="24" y="256.0" fill="#F1F5F9" font-family="monospace" font-size="10" font-weight="600" text-anchor="start">GND  (Common Ground)</text>
+        <!-- Pin: GND -->
+        <rect x="8" y="243.0" width="230" height="24" rx="4" fill="#1E293B" stroke="#334155" stroke-width="0.8"/>
+        <text x="16" y="259.0" fill="#94A3B8" font-family="monospace" font-size="11" font-weight="bold">GND</text>
+        <text x="64" y="258.5" fill="#CBD5E1" font-family="sans-serif" font-size="9">(Common Ground)</text>
+        <!-- Contact pad on far right edge -->
+        <circle cx="244" cy="255.0" r="6" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.5"/>
+        <circle cx="244" cy="255.0" r="2" fill="#0F172A"/>
         </g>
     <!-- Breadboard Area -->
-    <g transform="translate(340,80)" filter="url(#shadow)">
+    <g transform="translate(345,80)" filter="url(#shadow)">
         <rect width="400" height="320" rx="8" fill="url(#breadboardGrad)" stroke="#CBD5E1" stroke-width="2"/>
-        <line x1="15" y1="12" x2="385" y2="12" stroke="#EF4444" stroke-width="2" stroke-dasharray="8,4"/>
-        <line x1="15" y1="20" x2="385" y2="20" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8,4"/>
-        <text x="6" y="15" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">+</text>
-        <text x="6" y="23" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold">-</text>
+        <!-- Top Power Rails -->
+        <line x1="20" y1="14" x2="380" y2="14" stroke="#EF4444" stroke-width="2" stroke-dasharray="8,4"/>
+        <line x1="20" y1="24" x2="380" y2="24" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8,4"/>
+        <text x="8" y="17" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">+</text>
+        <text x="8" y="27" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold">-</text>
         
-        <line x1="15" y1="300" x2="385" y2="300" stroke="#EF4444" stroke-width="2" stroke-dasharray="8,4"/>
-        <line x1="15" y1="308" x2="385" y2="308" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8,4"/>
-        <text x="6" y="303" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">+</text>
-        <text x="6" y="311" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold">-</text>
+        <!-- Bottom Power Rails -->
+        <line x1="20" y1="296" x2="380" y2="296" stroke="#EF4444" stroke-width="2" stroke-dasharray="8,4"/>
+        <line x1="20" y1="306" x2="380" y2="306" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8,4"/>
+        <text x="8" y="299" fill="#EF4444" font-family="monospace" font-size="11" font-weight="bold">+</text>
+        <text x="8" y="309" fill="#3B82F6" font-family="monospace" font-size="11" font-weight="bold">-</text>
+        
+        <!-- Center Divider -->
         <rect x="15" y="156.0" width="370" height="8" fill="#E2E8F0" rx="2"/>
     </g>
     
-    <g transform="translate(560, 160)">
-        <circle cx="0" cy="0" r="28" fill="#1E293B" stroke="#0F172A" stroke-width="2"/>
-        <circle cx="0" cy="0" r="12" fill="#E2E8F0"/>
-        <text x="0" y="4" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">BUZZER</text>
-        <circle cx="-12" cy="36" r="3" fill="#EF4444"/><text x="-12" y="48" fill="#EF4444" font-family="monospace" font-size="8" text-anchor="middle">(+)</text>
-        <circle cx="12" cy="36" r="3" fill="#0F172A"/><text x="12" y="48" fill="#0F172A" font-family="monospace" font-size="8" text-anchor="middle">(-)</text>
+    <g transform="translate(580, 150)">
+        <circle cx="0" cy="0" r="26" fill="#1E293B" stroke="#0F172A" stroke-width="2"/>
+        <circle cx="0" cy="0" r="10" fill="#E2E8F0"/>
+        <text x="0" y="3.5" fill="#0F172A" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">BUZZER</text>
+        <circle cx="-14" cy="34" r="3.5" fill="#EF4444" stroke="#FFFFFF" stroke-width="1"/>
+        <text x="-14" y="46" fill="#EF4444" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">(+)</text>
+        <circle cx="14" cy="34" r="3.5" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+        <text x="14" y="46" fill="#0F172A" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">(-)</text>
     </g>
-    <g transform="translate(500, 280)">
-        <path d="M -15 -18 A 18 18 0 0 1 15 -18 L 15 12 L -15 12 Z" fill="#1E293B"/>
+    <!-- Transistor 2N2222 -->
+    <g transform="translate(500, 270)">
+        <path d="M -16 -18 A 18 18 0 0 1 16 -18 L 16 12 L -16 12 Z" fill="#1E293B"/>
         <text x="0" y="0" fill="#94A3B8" font-family="monospace" font-size="8" text-anchor="middle">2N2222</text>
-        <circle cx="-10" cy="22" r="3" fill="#0F172A"/><text x="-10" y="34" fill="#0F172A" font-family="monospace" font-size="8" text-anchor="middle">E(GND)</text>
-        <circle cx="0" cy="22" r="3" fill="#3B82F6"/><text x="0" y="34" fill="#3B82F6" font-family="monospace" font-size="8" text-anchor="middle">B(Base)</text>
-        <circle cx="10" cy="22" r="3" fill="#0F172A"/><text x="10" y="34" fill="#0F172A" font-family="monospace" font-size="8" text-anchor="middle">C(Coil)</text>
+        <circle cx="-12" cy="22" r="3.5" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+        <text x="-12" y="34" fill="#0F172A" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">E(GND)</text>
+        <circle cx="0" cy="22" r="3.5" fill="#3B82F6" stroke="#FFFFFF" stroke-width="1"/>
+        <text x="0" y="34" fill="#3B82F6" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">B(Base)</text>
+        <circle cx="12" cy="22" r="3.5" fill="#0F172A" stroke="#FFFFFF" stroke-width="1"/>
+        <text x="12" y="34" fill="#0F172A" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">C(Coil)</text>
     </g>
-    <g transform="translate(630, 200)">
+    <!-- 1N4148 Diode -->
+    <g transform="translate(650, 190)">
         <rect x="-6" y="-14" width="12" height="28" fill="#0F172A" rx="2"/>
         <rect x="-6" y="-14" width="12" height="6" fill="#E2E8F0"/>
-        <text x="16" y="4" fill="#DC2626" font-family="monospace" font-size="9">1N4148 Diode</text>
+        <text x="14" y="4" fill="#DC2626" font-family="monospace" font-size="8.5" font-weight="bold">1N4148</text>
     </g>
     
-        <g transform="translate(420,280)">
-            <line x1="-25" y1="0" x2="25" y2="0" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
-            <rect x="-14" y="-6" width="28" height="12" rx="3" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
-            <rect x="-8" y="-6" width="3" height="12" fill="#B45309"/>
-            <rect x="-2" y="-6" width="3" height="12" fill="#B45309"/>
-            <rect x="4" y="-6" width="3" height="12" fill="#78350F"/>
-            <text x="0" y="-10" fill="#0F172A" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">1 k&Omega; Base</text>
+        <g transform="translate(420,270)">
+            <line x1="-30" y1="0" x2="30" y2="0" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+            <rect x="-15" y="-7" width="30" height="14" rx="3" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
+            <rect x="-9" y="-7" width="3" height="14" fill="#B45309"/>
+            <rect x="-3" y="-7" width="3" height="14" fill="#B45309"/>
+            <rect x="3" y="-7" width="3" height="14" fill="#78350F"/>
+            <circle cx="-30" cy="0" r="3.5" fill="#64748B" stroke="#FFFFFF" stroke-width="1"/>
+            <circle cx="30" cy="0" r="3.5" fill="#64748B" stroke="#FFFFFF" stroke-width="1"/>
+            <text x="0" y="-11" fill="#0F172A" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">1 k&Omega; Base</text>
         </g>
         
     <g>
-        <path d="M 72 116.0 C 233.5 116.0, 233.5 280, 395 280" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
-        <circle cx="72" cy="116.0" r="3.5" fill="#3B82F6"/>
-        <circle cx="395" cy="280" r="3.5" fill="#3B82F6"/>
+        <path d="M 289 128.0 C 334.45 128.0, 344.55 270, 390 270" fill="none" stroke="#3B82F6" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="289" cy="128.0" r="4" fill="#3B82F6" stroke="#FFFFFF" stroke-width="1.2"/>
+        <circle cx="390" cy="270" r="4" fill="#3B82F6" stroke="#FFFFFF" stroke-width="1.2"/>
     
-        <rect x="205.5" y="182.0" width="56" height="15" rx="3" fill="#FFFFFF" stroke="#3B82F6" stroke-width="1" opacity="0.9"/>
-        <text x="233.5" y="193.0" fill="#3B82F6" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">PB0 PWM</text>
+        <g transform="translate(339.5,191.0)">
+            <rect x="-32" y="-9" width="64" height="18" rx="4" fill="#FFFFFF" stroke="#3B82F6" stroke-width="1.2" opacity="0.95"/>
+            <text x="0" y="3.5" fill="#3B82F6" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">PB0 PWM</text>
+        </g>
         </g>
     <g>
-        <path d="M 445 280 C 472.5 280, 472.5 295, 500 295" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
-        <circle cx="445" cy="280" r="3.5" fill="#3B82F6"/>
-        <circle cx="500" cy="295" r="3.5" fill="#3B82F6"/>
+        <path d="M 450 270 C 475 270, 475 292, 500 292" fill="none" stroke="#3B82F6" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="450" cy="270" r="4" fill="#3B82F6" stroke="#FFFFFF" stroke-width="1.2"/>
+        <circle cx="500" cy="292" r="4" fill="#3B82F6" stroke="#FFFFFF" stroke-width="1.2"/>
     </g>
     <g>
-        <path d="M 490 295 C 281.0 295, 281.0 332.0, 72 332.0" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
-        <circle cx="490" cy="295" r="3.5" fill="#0F172A"/>
-        <circle cx="72" cy="332.0" r="3.5" fill="#0F172A"/>
+        <path d="M 488 292 C 577.55 292, 199.45 335.0, 289 335.0" fill="none" stroke="#0F172A" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="488" cy="292" r="4" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
+        <circle cx="289" cy="335.0" r="4" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
     
-        <rect x="253.0" y="297.5" width="56" height="15" rx="3" fill="#FFFFFF" stroke="#0F172A" stroke-width="1" opacity="0.9"/>
-        <text x="281.0" y="308.5" fill="#0F172A" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">GND</text>
+        <g transform="translate(388.5,305.5)">
+            <rect x="-32" y="-9" width="64" height="18" rx="4" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2" opacity="0.95"/>
+            <text x="0" y="3.5" fill="#0F172A" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">GND</text>
+        </g>
         </g>
     <g>
-        <path d="M 510 295 C 541.0 295, 541.0 196, 572 196" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
-        <circle cx="510" cy="295" r="3.5" fill="#0F172A"/>
-        <circle cx="572" cy="196" r="3.5" fill="#0F172A"/>
+        <path d="M 512 292 C 548.9 292, 557.1 184, 594 184" fill="none" stroke="#0F172A" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="512" cy="292" r="4" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
+        <circle cx="594" cy="184" r="4" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.2"/>
     </g>
     <g>
-        <path d="M 548 196 C 310.0 196, 310.0 260.0, 72 260.0" fill="none" stroke="#EF4444" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
-        <circle cx="548" cy="196" r="3.5" fill="#EF4444"/>
-        <circle cx="72" cy="260.0" r="3.5" fill="#EF4444"/>
+        <path d="M 566 184 C 690.65 184, 164.35 266.0, 289 266.0" fill="none" stroke="#EF4444" stroke-width="2.8" stroke-linecap="round" opacity="0.95"/>
+        <circle cx="566" cy="184" r="4" fill="#EF4444" stroke="#FFFFFF" stroke-width="1.2"/>
+        <circle cx="289" cy="266.0" r="4" fill="#EF4444" stroke="#FFFFFF" stroke-width="1.2"/>
     
-        <rect x="282.0" y="212.0" width="56" height="15" rx="3" fill="#FFFFFF" stroke="#EF4444" stroke-width="1" opacity="0.9"/>
-        <text x="310.0" y="223.0" fill="#EF4444" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">5.0V</text>
+        <g transform="translate(427.5,217.0)">
+            <rect x="-32" y="-9" width="64" height="18" rx="4" fill="#FFFFFF" stroke="#EF4444" stroke-width="1.2" opacity="0.95"/>
+            <text x="0" y="3.5" fill="#EF4444" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">5V Power</text>
+        </g>
         </g></svg>
