@@ -37,7 +37,7 @@ def get_prerequisites_section():
     Before configuring peripherals in STM32CubeMX or pressing the flash button in STM32CubeIDE, an embedded engineer must master four interconnected foundational pillars: <strong>Embedded C Programming</strong>, <strong>ARM Cortex-M Architecture</strong>, <strong>Circuit Theory &amp; Interfacing</strong>, and <strong>The STM32 Toolchain</strong>. Neglecting any of these domains leads to mysterious HardFault crashes, blown microcontroller pins, or firmware that locks up under real-time interrupts.
 </p>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+<div class="space-y-8 my-8">
     <div class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
         <h3 class="text-xl font-bold text-brand-navy mb-3 flex items-center">
             <i class="fas fa-code text-blue-600 mr-2"></i> 1.1 Embedded C Programming

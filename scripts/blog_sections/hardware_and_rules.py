@@ -1,9 +1,16 @@
 """
 Hardware Kits and Mandatory Rules Section for STM32 Arm Cortex-M DIY Blog.
 """
+from .svg_loader import get_inline_svg
 
 def get_hardware_and_rules_section():
-    return r"""
+    svg_board = get_inline_svg("nucleo-f446re-pinout.svg")
+    svg_basic = get_inline_svg("basic-kit-components.svg")
+    svg_display = get_inline_svg("display-sensing-pinouts.svg")
+    svg_detection = get_inline_svg("detection-modules-pinouts.svg")
+    svg_can = get_inline_svg("can-bus-transceiver-circuit.svg")
+
+    return f"""
 <h2 id="hardware-kit" class="text-3xl font-bold text-brand-navy mt-12 mb-6 border-b-2 border-brand-coral pb-3 flex items-center">
     <i class="fas fa-boxes text-brand-coral mr-3"></i> 2. The Recommended Hardware Lab Kit &amp; Bill of Materials
 </h2>
@@ -15,123 +22,118 @@ def get_hardware_and_rules_section():
 <div class="space-y-8 my-8">
     <!-- Kit 1 -->
     <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <div class="flex flex-col md:flex-row gap-6 items-center">
-            <div class="w-full md:w-1/3">
-                <img src="/static/blogs/stm32-diy/nucleo-f446re-pinout.svg" alt="STM32 NUCLEO-F446RE Pinout and Architecture Diagram" class="rounded-lg shadow border border-gray-200 w-full object-cover">
-            </div>
-            <div class="w-full md:w-2/3">
-                <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full mb-2">Core Platform</span>
-                <h3 class="text-2xl font-bold text-brand-navy mb-2">1. STM32 Development Board</h3>
-                <p class="text-slate-700 text-sm mb-3">
-                    The recommended target is the <strong>NUCLEO-F446RE</strong> (or <strong>NUCLEO-L476RG</strong> for ultra-low-power focus). Alternatively, the classic STM32F103C8T6 "Blue Pill" board paired with an external ST-LINK V2 programmer can be used for fundamental assignments.
-                </p>
-                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs text-slate-800 space-y-1">
-                    <p><strong>NUCLEO-F446RE Specs:</strong> ARM Cortex-M4F core @ 180 MHz, 512 KB Flash, 128 KB SRAM, Hardware FPU.</p>
-                    <p><strong>Peripherals:</strong> 3x ADC (12-bit, up to 2.4 MSPS), 2x DAC (12-bit), 2x CAN 2.0B controllers, 4x USART/UART, 4x SPI, 3x I2C, 2x Advanced Timers, 8x General Purpose Timers.</p>
-                    <p><strong>On-board ST-LINK/V2-1:</strong> Integrated hardware programmer/debugger providing SWD programming, Virtual COM Port (VCP) over USB, and direct drag-and-drop flash programming.</p>
-                </div>
-            </div>
+        <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full mb-2">Core Platform</span>
+        <h3 class="text-2xl font-bold text-brand-navy mb-2">1. STM32 Development Board</h3>
+        <p class="text-slate-700 text-sm mb-4">
+            The recommended target is the <strong>NUCLEO-F446RE</strong> (or <strong>NUCLEO-L476RG</strong> for ultra-low-power focus). Alternatively, the classic STM32F103C8T6 "Blue Pill" board paired with an external ST-LINK V2 programmer can be used for fundamental assignments.
+        </p>
+        
+        <figure class="my-5">
+            {svg_board}
+            <figcaption class="text-xs text-center text-slate-500 mt-2">Figure 2.1: STM32 NUCLEO-F446RE pinout and hardware architecture overview.</figcaption>
+        </figure>
+
+        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs text-slate-800 space-y-1 mt-4">
+            <p><strong>NUCLEO-F446RE Specs:</strong> ARM Cortex-M4F core @ 180 MHz, 512 KB Flash, 128 KB SRAM, Hardware FPU.</p>
+            <p><strong>Peripherals:</strong> 3x ADC (12-bit, up to 2.4 MSPS), 2x DAC (12-bit), 2x CAN 2.0B controllers, 4x USART/UART, 4x SPI, 3x I2C, 2x Advanced Timers, 8x General Purpose Timers.</p>
+            <p><strong>On-board ST-LINK/V2-1:</strong> Integrated hardware programmer/debugger providing SWD programming, Virtual COM Port (VCP) over USB, and direct drag-and-drop flash programming.</p>
         </div>
     </div>
 
     <!-- Kit 2 -->
     <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <div class="flex flex-col md:flex-row gap-6 items-center">
-            <div class="w-full md:w-1/3">
-                <img src="/static/blogs/stm32-diy/basic-kit-components.svg" alt="Basic Electronics Prototyping Kit Diagram" class="rounded-lg shadow border border-gray-200 w-full object-cover">
-            </div>
-            <div class="w-full md:w-2/3">
-                <span class="inline-block px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full mb-2">Prototyping Kit</span>
-                <h3 class="text-2xl font-bold text-brand-navy mb-2">2. Basic Electronics Kit</h3>
-                <p class="text-slate-700 text-sm mb-3">
-                    The fundamental building blocks for digital I/O, tactile input, signal attenuation, and driver circuits.
-                </p>
-                <ul class="text-xs text-slate-700 space-y-1 list-disc pl-5">
-                    <li>Full-size 830-point solderless breadboard and premium male-to-male / male-to-female DuPont jumper wires.</li>
-                    <li>Tactile push buttons with breadboard-friendly pins (4-pin momentary switches).</li>
-                    <li>3mm and 5mm high-efficiency LEDs (Red, Green, Yellow, Blue) and an RGB Common-Cathode LED module.</li>
-                    <li>Metal film resistor assortment: 220 &Omega;, 330 &Omega;, 1 k&Omega;, 4.7 k&Omega; (I2C pull-ups), 10 k&Omega; (pull-downs/potentiometers), and 120 &Omega; (CAN termination).</li>
-                    <li>10 k&Omega; linear rotary potentiometers for analog voltage divider inputs.</li>
-                    <li>Active 5V/3.3V piezo buzzer and passive electromagnetic buzzer for tone/frequency synthesis.</li>
-                    <li>General-purpose NPN transistors (2N2222 / BC547), N-channel logic MOSFETs (2N7000), and 1N4148 / 1N4007 flyback diodes.</li>
-                </ul>
-            </div>
-        </div>
+        <span class="inline-block px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full mb-2">Prototyping Kit</span>
+        <h3 class="text-2xl font-bold text-brand-navy mb-2">2. Basic Electronics Kit</h3>
+        <p class="text-slate-700 text-sm mb-4">
+            The fundamental building blocks for digital I/O, tactile input, signal attenuation, and driver circuits:
+        </p>
+
+        <figure class="my-5">
+            {svg_basic}
+            <figcaption class="text-xs text-center text-slate-500 mt-2">Figure 2.2: Basic electronics prototyping components, pinouts, and current-limiting calculations.</figcaption>
+        </figure>
+
+        <ul class="text-xs text-slate-700 space-y-1 list-disc pl-5 mt-4">
+            <li>Full-size 830-point solderless breadboard and premium male-to-male / male-to-female DuPont jumper wires.</li>
+            <li>Tactile push buttons with breadboard-friendly pins (4-pin momentary switches).</li>
+            <li>3mm and 5mm high-efficiency LEDs (Red, Green, Yellow, Blue) and an RGB Common-Cathode LED module.</li>
+            <li>Metal film resistor assortment: 220 &Omega;, 330 &Omega;, 1 k&Omega;, 4.7 k&Omega; (I2C pull-ups), 10 k&Omega; (pull-downs/potentiometers), and 120 &Omega; (CAN termination).</li>
+            <li>10 k&Omega; linear rotary potentiometers for analog voltage divider inputs.</li>
+            <li>Active 5V/3.3V piezo buzzer and passive electromagnetic buzzer for tone/frequency synthesis.</li>
+            <li>General-purpose NPN transistors (2N2222 / BC547), N-channel logic MOSFETs (2N7000), and 1N4148 / 1N4007 flyback diodes.</li>
+        </ul>
     </div>
 
     <!-- Kit 3 -->
     <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <div class="flex flex-col md:flex-row gap-6 items-center">
-            <div class="w-full md:w-1/3">
-                <img src="/static/blogs/stm32-diy/display-sensing-pinouts.svg" alt="Display and Sensing Module Pinout Diagram" class="rounded-lg shadow border border-gray-200 w-full object-cover">
-            </div>
-            <div class="w-full md:w-2/3">
-                <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full mb-2">Human Interface &amp; Sensors</span>
-                <h3 class="text-2xl font-bold text-brand-navy mb-2">3. Display and Sensing Kit</h3>
-                <p class="text-slate-700 text-sm mb-3">
-                    Essential visual feedback units, precision clocks, and physical transducer sensors:
-                </p>
-                <ul class="text-xs text-slate-700 space-y-1 list-disc pl-5">
-                    <li><strong>SSD1306 0.96-inch Monochrome OLED:</strong> 128x64 resolution with I2C interface (address 0x3C / 0x3D).</li>
-                    <li><strong>DS3231 High-Precision Real-Time Clock (RTC):</strong> Temperature-compensated crystal oscillator (TCXO) with I2C bus and coin-cell battery backup.</li>
-                    <li><strong>LM35 / TMP36 Analog Temperature Sensor:</strong> 10 mV/°C linear analog output voltage.</li>
-                    <li><strong>DS18B20 1-Wire Digital Thermometer:</strong> 9-bit to 12-bit programmable resolution with digital CRC.</li>
-                    <li><strong>Light Dependent Resistor (LDR / Photoresistor):</strong> CdS photocell for ambient light measurement.</li>
-                    <li><strong>HC-SR501 PIR Motion Sensor:</strong> Pyroelectric infrared sensor with adjustable sensitivity and trigger delay.</li>
-                    <li><strong>TTP223 Capacitive Touch Sensor:</strong> Momentary and latching digital capacitive touch detection.</li>
-                    <li><strong>SW-420 Piezo Vibration Sensor:</strong> High-sensitivity vibration sensor with onboard comparator.</li>
-                    <li><strong>MPU6050 6-Axis IMU:</strong> 3-axis accelerometer and 3-axis gyroscope with integrated 16-bit ADCs and I2C output.</li>
-                </ul>
-            </div>
-        </div>
+        <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full mb-2">Human Interface &amp; Sensors</span>
+        <h3 class="text-2xl font-bold text-brand-navy mb-2">3. Display and Sensing Kit</h3>
+        <p class="text-slate-700 text-sm mb-4">
+            Essential visual feedback units, precision clocks, and physical transducer sensors:
+        </p>
+
+        <figure class="my-5">
+            {svg_display}
+            <figcaption class="text-xs text-center text-slate-500 mt-2">Figure 2.3: Display and environmental sensing modules with I2C/analog pin configurations.</figcaption>
+        </figure>
+
+        <ul class="text-xs text-slate-700 space-y-1 list-disc pl-5 mt-4">
+            <li><strong>SSD1306 0.96-inch Monochrome OLED:</strong> 128x64 resolution with I2C interface (address 0x3C / 0x3D).</li>
+            <li><strong>DS3231 High-Precision Real-Time Clock (RTC):</strong> Temperature-compensated crystal oscillator (TCXO) with I2C bus and coin-cell battery backup.</li>
+            <li><strong>LM35 / TMP36 Analog Temperature Sensor:</strong> 10 mV/°C linear analog output voltage.</li>
+            <li><strong>DS18B20 1-Wire Digital Thermometer:</strong> 9-bit to 12-bit programmable resolution with digital CRC.</li>
+            <li><strong>Light Dependent Resistor (LDR / Photoresistor):</strong> CdS photocell for ambient light measurement.</li>
+            <li><strong>HC-SR501 PIR Motion Sensor:</strong> Pyroelectric infrared sensor with adjustable sensitivity and trigger delay.</li>
+            <li><strong>TTP223 Capacitive Touch Sensor:</strong> Momentary and latching digital capacitive touch detection.</li>
+            <li><strong>SW-420 Piezo Vibration Sensor:</strong> High-sensitivity vibration sensor with onboard comparator.</li>
+            <li><strong>MPU6050 6-Axis IMU:</strong> 3-axis accelerometer and 3-axis gyroscope with integrated 16-bit ADCs and I2C output.</li>
+        </ul>
     </div>
 
     <!-- Kit 4 -->
     <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <div class="flex flex-col md:flex-row gap-6 items-center">
-            <div class="w-full md:w-1/3">
-                <img src="/static/blogs/stm32-diy/detection-modules-pinouts.svg" alt="Detection and Actuation Modules Pinout Diagram" class="rounded-lg shadow border border-gray-200 w-full object-cover">
-            </div>
-            <div class="w-full md:w-2/3">
-                <span class="inline-block px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full mb-2">Robotics &amp; Actuation</span>
-                <h3 class="text-2xl font-bold text-brand-navy mb-2">4. Detection and Actuation Modules</h3>
-                <p class="text-slate-700 text-sm mb-3">
-                    Modules for environmental gas monitoring, rangefinding, motion actuation, and robotic navigation:
-                </p>
-                <ul class="text-xs text-slate-700 space-y-1 list-disc pl-5">
-                    <li><strong>HC-SR04 Ultrasonic Distance Sensor:</strong> 2 cm to 400 cm range with 10 µs trigger pulse and duration echo output (requires 5V to 3.3V voltage divider on Echo pin).</li>
-                    <li><strong>TCRT5000 Infrared Reflective Sensor Array:</strong> Dual or multi-channel IR line tracking modules.</li>
-                    <li><strong>MQ-2 Smoke &amp; Combustible Gas Sensor:</strong> Analog tin dioxide (SnO2) sensing element with onboard heating coil.</li>
-                    <li><strong>MQ-3 Alcohol Sensor Module:</strong> Ethanol-sensitive metal oxide semiconductor sensor.</li>
-                    <li><strong>Low-Power Eye-Safe Laser Emitter &amp; Photodiode Receiver:</strong> 650 nm 5 mW red laser diode module for optical tripwires.</li>
-                    <li><strong>SG90 Micro-Servo Motor:</strong> 180-degree PWM position control (50 Hz / 1.0 ms–2.0 ms pulse width).</li>
-                    <li><strong>L298N or TB6612FNG Dual H-Bridge Motor Driver:</strong> Bidirectional DC motor speed and direction driver stage.</li>
-                </ul>
-            </div>
-        </div>
+        <span class="inline-block px-3 py-1 bg-purple-100 text-purple-800 text-xs font-bold rounded-full mb-2">Robotics &amp; Actuation</span>
+        <h3 class="text-2xl font-bold text-brand-navy mb-2">4. Detection and Actuation Modules</h3>
+        <p class="text-slate-700 text-sm mb-4">
+            Modules for environmental gas monitoring, rangefinding, motion actuation, and robotic navigation:
+        </p>
+
+        <figure class="my-5">
+            {svg_detection}
+            <figcaption class="text-xs text-center text-slate-500 mt-2">Figure 2.4: Robotic sensors, ultrasonic rangefinders, and actuator interface pinouts.</figcaption>
+        </figure>
+
+        <ul class="text-xs text-slate-700 space-y-1 list-disc pl-5 mt-4">
+            <li><strong>HC-SR04 Ultrasonic Distance Sensor:</strong> 2 cm to 400 cm range with 10 µs trigger pulse and duration echo output (requires 5V to 3.3V voltage divider on Echo pin).</li>
+            <li><strong>TCRT5000 Infrared Reflective Sensor Array:</strong> Dual or multi-channel IR line tracking modules.</li>
+            <li><strong>MQ-2 Smoke &amp; Combustible Gas Sensor:</strong> Analog tin dioxide (SnO2) sensing element with onboard heating coil.</li>
+            <li><strong>MQ-3 Alcohol Sensor Module:</strong> Ethanol-sensitive metal oxide semiconductor sensor.</li>
+            <li><strong>Low-Power Eye-Safe Laser Emitter &amp; Photodiode Receiver:</strong> 650 nm 5 mW red laser diode module for optical tripwires.</li>
+            <li><strong>SG90 Micro-Servo Motor:</strong> 180-degree PWM position control (50 Hz / 1.0 ms–2.0 ms pulse width).</li>
+            <li><strong>L298N or TB6612FNG Dual H-Bridge Motor Driver:</strong> Bidirectional DC motor speed and direction driver stage.</li>
+        </ul>
     </div>
 
     <!-- Kit 5 -->
     <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <div class="flex flex-col md:flex-row gap-6 items-center">
-            <div class="w-full md:w-1/3">
-                <img src="/static/blogs/stm32-diy/can-bus-transceiver-circuit.svg" alt="CAN Bus and Communication Transceiver Circuit Diagram" class="rounded-lg shadow border border-gray-200 w-full object-cover">
-            </div>
-            <div class="w-full md:w-2/3">
-                <span class="inline-block px-3 py-1 bg-rose-100 text-rose-800 text-xs font-bold rounded-full mb-2">Industrial Fieldbuses</span>
-                <h3 class="text-2xl font-bold text-brand-navy mb-2">5. Industrial Communication Kit</h3>
-                <p class="text-slate-700 text-sm mb-3">
-                    Transceivers and memory modules to master industrial multi-node communication:
-                </p>
-                <ul class="text-xs text-slate-700 space-y-1 list-disc pl-5">
-                    <li><strong>3.3V CAN Transceivers:</strong> 2x SN65HVD230 (or VP230) 3.3V CAN transceivers designed to interface directly with STM32 CAN TX/RX pins without level translation.</li>
-                    <li><strong>CAN Bus Transmission Line:</strong> Twisted-pair cabling terminated with precise 120 &Omega; resistors at both physical cable ends.</li>
-                    <li><strong>Second CAN Node:</strong> A second STM32 development board, or a USB-to-CAN analyzer (e.g., Candlelight / CANable) running Wireshark/cangen for protocol verification.</li>
-                    <li><strong>External SPI NOR Flash:</strong> W25Q64 (8 MB) or W25Q128 (16 MB) SPI flash memory module for non-volatile logging.</li>
-                    <li><strong>USB-to-UART Bridge:</strong> CP2102 or FT232RL breakout adapter for external terminal debugging and telemetry capture.</li>
-                </ul>
-            </div>
-        </div>
+        <span class="inline-block px-3 py-1 bg-rose-100 text-rose-800 text-xs font-bold rounded-full mb-2">Industrial Fieldbuses</span>
+        <h3 class="text-2xl font-bold text-brand-navy mb-2">5. Industrial Communication Kit</h3>
+        <p class="text-slate-700 text-sm mb-4">
+            Transceivers and memory modules to master industrial multi-node communication:
+        </p>
+
+        <figure class="my-5">
+            {svg_can}
+            <figcaption class="text-xs text-center text-slate-500 mt-2">Figure 2.5: Differential CAN bus transceiver wiring, terminal matching, and external memory interfaces.</figcaption>
+        </figure>
+
+        <ul class="text-xs text-slate-700 space-y-1 list-disc pl-5 mt-4">
+            <li><strong>3.3V CAN Transceivers:</strong> 2x SN65HVD230 (or VP230) 3.3V CAN transceivers designed to interface directly with STM32 CAN TX/RX pins without level translation.</li>
+            <li><strong>CAN Bus Transmission Line:</strong> Twisted-pair cabling terminated with precise 120 &Omega; resistors at both physical cable ends.</li>
+            <li><strong>Second CAN Node:</strong> A second STM32 development board, or a USB-to-CAN analyzer (e.g., Candlelight / CANable) running Wireshark/cangen for protocol verification.</li>
+            <li><strong>External SPI NOR Flash:</strong> W25Q64 (8 MB) or W25Q128 (16 MB) SPI flash memory module for non-volatile logging.</li>
+            <li><strong>USB-to-UART Bridge:</strong> CP2102 or FT232RL breakout adapter for external terminal debugging and telemetry capture.</li>
+        </ul>
     </div>
 </div>
 
@@ -154,10 +156,10 @@ def get_hardware_and_rules_section():
         <pre class="bg-slate-900 text-slate-100 p-2 rounded text-xs font-mono mt-2"><code>/* Correct Non-Blocking Delta-Tick Pattern */
 static uint32_t last_time = 0;
 uint32_t now = HAL_GetTick();
-if (now - last_time &gt;= INTERVAL_MS) {
+if (now - last_time &gt;= INTERVAL_MS) {{
     last_time = now;
     Execute_Periodic_Task();
-}</code></pre>
+}}</code></pre>
     </div>
 
     <div class="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg text-slate-800">

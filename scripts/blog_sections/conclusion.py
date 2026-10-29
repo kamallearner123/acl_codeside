@@ -20,29 +20,29 @@ def get_conclusion_section():
         Before marking any assignment as "COMPLETE" in your engineering notebook, ensure it passes every gate in this six-point verification checklist:
     </p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700">
-        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-            <strong class="text-brand-navy block mb-1">1. Zero Compiler Warnings:</strong>
+    <div class="space-y-3 text-xs text-slate-700">
+        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <strong class="text-brand-navy block mb-1 text-sm">1. Zero Compiler Warnings</strong>
             Build with <code>-Wall -Wextra -Werror -pedantic</code>. No uninitialized variables, unused parameters, or implicit type conversions permitted.
         </div>
-        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-            <strong class="text-brand-navy block mb-1">2. Hardware Oscilloscope / Logic Analyzer Proof:</strong>
+        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <strong class="text-brand-navy block mb-1 text-sm">2. Hardware Oscilloscope / Logic Analyzer Proof</strong>
             Capture digital waveform traces verifying baud rates, rise times, PWM frequencies, and interrupt response latencies.
         </div>
-        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-            <strong class="text-brand-navy block mb-1">3. Boundary &amp; Stress Testing:</strong>
+        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <strong class="text-brand-navy block mb-1 text-sm">3. Boundary &amp; Stress Testing</strong>
             Intentionally disconnect sensors, rapidly chatter buttons, flood communication buses, and verify system recovery without deadlocks.
         </div>
-        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-            <strong class="text-brand-navy block mb-1">4. Modular Architectural Separation:</strong>
+        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <strong class="text-brand-navy block mb-1 text-sm">4. Modular Architectural Separation</strong>
             Keep low-level hardware drivers (<code>bsp_*.c</code>) strictly isolated from application business logic and Finite State Machines.
         </div>
-        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-            <strong class="text-brand-navy block mb-1">5. Structured GitHub Repository:</strong>
+        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <strong class="text-brand-navy block mb-1 text-sm">5. Structured GitHub Repository</strong>
             Maintain a clean repository where each assignment contains its CubeMX <code>.ioc</code> file, commented C source code, wiring schematic diagram, and demo video GIF.
         </div>
-        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
-            <strong class="text-brand-navy block mb-1">6. Non-Volatile Memory Integrity:</strong>
+        <div class="p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <strong class="text-brand-navy block mb-1 text-sm">6. Non-Volatile Memory Integrity</strong>
             Validate that calibration data, RTC timekeeping, and flash event logs persist accurately across physical power cycles.
         </div>
     </div>
@@ -53,20 +53,20 @@ def get_conclusion_section():
     <p class="text-slate-700 text-sm leading-relaxed mb-4">
         Ready to take your embedded firmware architecture to the next level? Explore our comprehensive hands-on courses, hardware deep dives, and architectural guides:
     </p>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="space-y-3">
         <a href="/courses/mastering-stm32-arm-cortex-m-bare-metal-firmware-development/" class="p-4 bg-white rounded-xl shadow-sm hover:shadow border border-gray-200 transition-all block">
             <div class="text-xs font-bold text-blue-600 uppercase mb-1">Core Course</div>
-            <div class="font-bold text-brand-navy text-sm mb-1">Mastering STM32 in C</div>
+            <div class="font-bold text-brand-navy text-base mb-1">Mastering STM32 in C</div>
             <div class="text-xs text-slate-600">Bare-metal registers, CMSIS drivers, and HAL architecture.</div>
         </a>
         <a href="/courses/arm-cortex-m-architecture-internals/" class="p-4 bg-white rounded-xl shadow-sm hover:shadow border border-gray-200 transition-all block">
             <div class="text-xs font-bold text-indigo-600 uppercase mb-1">Deep Dive</div>
-            <div class="font-bold text-brand-navy text-sm mb-1">ARM Cortex-M Architecture</div>
+            <div class="font-bold text-brand-navy text-base mb-1">ARM Cortex-M Architecture</div>
             <div class="text-xs text-slate-600">NVIC, fault handling, assembly, and RTOS internals.</div>
         </a>
         <a href="/blogs/guidance-on-embedded-systems-software-development/" class="p-4 bg-white rounded-xl shadow-sm hover:shadow border border-gray-200 transition-all block">
             <div class="text-xs font-bold text-brand-coral uppercase mb-1">Engineering Whitepaper</div>
-            <div class="font-bold text-brand-navy text-sm mb-1">Embedded Systems Guidance</div>
+            <div class="font-bold text-brand-navy text-base mb-1">Embedded Systems Guidance</div>
             <div class="text-xs text-slate-600">Designing dependable firmware from specs to field updates.</div>
         </a>
     </div>
@@ -76,4 +76,3 @@ def get_conclusion_section():
     Published by <strong>Apt Computing Labs</strong>. Kamal Kumar Mukiri is a Principal Architect specializing in embedded firmware engineering, distributed safety-critical systems, and automotive architectures. For corporate workshops, curriculum licensing, or embedded firmware consulting, reach out via our contact portal.
 </p>
 """
-

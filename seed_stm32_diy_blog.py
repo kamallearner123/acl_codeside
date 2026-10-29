@@ -29,6 +29,7 @@ from scripts.blog_sections.level3 import get_level3_section
 from scripts.blog_sections.level4 import get_level4_section
 from scripts.blog_sections.level5 import get_level5_section
 from scripts.blog_sections.conclusion import get_conclusion_section
+from scripts.blog_sections.svg_loader import inline_all_stm32_svgs
 
 SLUG = "diy-with-stm32-arm-cortex-m-boards"
 TITLE = "DIY with STM32 Arm Cortex-M Boards: The Complete 50-Project Embedded Engineering Masterclass"
@@ -51,7 +52,8 @@ def build_content():
         get_level5_section(),
         get_conclusion_section()
     ]
-    return "\n\n".join(parts)
+    raw_html = "\n\n".join(parts)
+    return inline_all_stm32_svgs(raw_html)
 
 def seed_blog():
     html_content = build_content()
