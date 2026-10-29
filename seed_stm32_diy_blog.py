@@ -39,7 +39,7 @@ EXCERPT = (
     "bare-metal GPIOs and hardware timers to sensor acquisition, communication protocols (I2C, SPI, UART, CAN), "
     "and mission-critical integrated systems."
 )
-COVER_IMAGE = "/static/blogs/stm32-diy/nucleo-f446re-pinout.svg"
+COVER_IMAGE = "/static/blogs/stm32-diy/stm32-diy-masterclass-cover.jpg"
 
 def build_content():
     parts = [
