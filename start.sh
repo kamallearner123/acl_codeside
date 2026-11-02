@@ -31,9 +31,11 @@ fi
 
 echo "Rust part is done"
 
+VENV_IS_NEW=false
 if [ ! -d "$PROJECT_ROOT/.venv" ]; then
+    echo "Creating Python virtual environment..."
     python3 -m venv .venv
-    echo "Python virtual env is created"
+    VENV_IS_NEW=true
 else
     echo "Virtual environment '.venv' already exists, reusing it."
 fi
@@ -41,10 +43,18 @@ fi
 # shellcheck source=/dev/null
 source "$PROJECT_ROOT/.venv/bin/activate"
 
-echo "activated python env"
+# Check if requirements have changed or venv is fresh
+REQ_STAMP="$PROJECT_ROOT/.venv/.requirements.stamp"
+if [ "$VENV_IS_NEW" = true ] || [ ! -f "$REQ_STAMP" ] || [ "$PROJECT_ROOT/requirements.txt" -nt "$REQ_STAMP" ]; then
+    echo "Syncing dependencies from requirements.txt..."
+    python3 -m pip install -r requirements.txt
+    touch "$REQ_STAMP"
+else
+    echo "✓ Python dependencies up-to-date (cached)."
+fi
 
-python3 -m pip install --upgrade pip >/dev/null
-python3 -m pip install -r requirements.txt
-
+echo "Applying database migrations..."
 python3 manage.py migrate
+
+echo "Starting Django server at http://127.0.0.1:8008 ..."
 python3 manage.py runserver 0.0.0.0:8008

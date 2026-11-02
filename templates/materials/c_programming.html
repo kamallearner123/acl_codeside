@@ -7,7 +7,49 @@
             <h1 class="display-6 fw-bold">C/C++ Programming Track</h1>
             <p class="text-muted mb-0">Chapter-wise progression from bare-metal C to modern C++ for real-time and systems work.</p>
         </div>
-        <a class="btn btn-outline-primary" href="{% url 'materials:dashboard' %}">← Back to Materials</a>
+        <div class="d-flex gap-2">
+            <a class="btn btn-primary fw-bold" href="/courses/c-programming-professional/book/" target="_blank">
+                📖 Open Digital Book Reader
+            </a>
+            <a class="btn btn-outline-primary" href="{% url 'materials:dashboard' %}">← Back to Materials</a>
+        </div>
+    </div>
+
+    <!-- Featured Digital Book Banner -->
+    <div class="card mb-4 border-0 shadow-sm text-white" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); border-radius: 16px;">
+        <div class="card-body p-4 p-md-5">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <span class="badge bg-primary mb-2 px-3 py-2 text-uppercase fw-bold" style="letter-spacing: 0.5px;">Comprehensive 42-Module Reference</span>
+                    <h2 class="h3 fw-bold mb-2 text-white">C Programming for Professional Software, Firmware and Systems Engineers</h2>
+                    <p class="text-light opacity-75 mb-3" style="font-size: 0.95rem;">
+                        From C Foundations, Pointers and Linux Systems Programming to Real-Time Embedded Firmware, Security Auditing, and 8 Capstone Engineering Projects.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <span class="badge bg-secondary bg-opacity-50">10 Parts</span>
+                        <span class="badge bg-secondary bg-opacity-50">42 In-Depth Modules</span>
+                        <span class="badge bg-secondary bg-opacity-50">8 Capstone Projects</span>
+                        <span class="badge bg-secondary bg-opacity-50">Interactive Code Reader</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="/courses/c-programming-professional/book/" class="btn btn-primary px-4 py-2 fw-bold">
+                            📖 Read Digital Book
+                        </a>
+                        <a href="/courses/c-programming-professional/book/chapters/mod02-compilation-and-build-process.html" class="btn btn-outline-light px-4 py-2">
+                            ⚡ Jump to Module 2 (Compilation Pipeline)
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                    <div class="p-3 bg-dark bg-opacity-50 rounded-3 border border-secondary border-opacity-25 text-start font-monospace text-xs" style="color: #38BDF8;">
+                        <div>$ gcc -S -O2 main.c -o main.s</div>
+                        <div class="text-secondary"># Preprocess &rarr; Compile &rarr; Assemble &rarr; Link</div>
+                        <div>$ nm -C main.o | grep 'T '</div>
+                        <div>$ readelf -S firmware.elf</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row row-cols-1 row-cols-lg-2 g-4">

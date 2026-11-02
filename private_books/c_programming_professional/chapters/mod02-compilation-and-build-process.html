@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 2: Compilation and Build Process - Preprocessing, compilation, assembly, static and dynamic linking, symbol tables, ELF object files, macros, and compiler toolchains.">
+  <title>Module 2: Compilation &amp; Build Process | Professional C Engineering</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css?v=3">
+</head>
+<body data-chapter-id="mod02-compilation-and-build-process">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Professional C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Target:</span>
+        <span class="board-select-label" style="font-weight:700;">Linux x86_64 / ARM Cortex-M</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/materials/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Materials Portal</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">Part 1 Foundations</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <!-- Overview -->
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Curriculum</span>
+          </a>
+        </div>
+
+        <!-- PART 1 -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P1</span>
+              <span>C Programming Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="mod01-intro-to-c.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Mod 1: Intro to C &amp; Software Dev</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+            </li>
+            <li>
+              <a href="mod02-compilation-and-build-process.html" class="chapter-nav-item active">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Mod 2: Compilation &amp; Build Process</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="#sec-2-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.1 The Four Stages of Compilation</a></li>
+                <li><a href="#sec-2-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.2 Deep Dive: Preprocessing Stage</a></li>
+                <li><a href="#sec-2-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.3 Compilation to Assembly</a></li>
+                <li><a href="#sec-2-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.4 Assembling to Relocatable ELF (.o)</a></li>
+                <li><a href="#sec-2-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.5 Linking: Static vs Dynamic</a></li>
+                <li><a href="#sec-2-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.6 Inspecting Binary Symbol Tables</a></li>
+                <li><a href="#sec-2-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.7 Compiler Options &amp; Sanitizers</a></li>
+                <li><a href="#sec-2-lab" class="subtopic-link"><span class="subtopic-bullet">▸</span> 2.8 Hands-On Lab: Manual Pipeline Dissection</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="mod03-data-types-and-variables.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Mod 3: C Data Types &amp; Variables</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+            </li>
+            <li>
+              <a href="mod04-operators-and-expressions.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Mod 4: Operators &amp; Expressions</span>
+                <span class="chapter-read-time">40m</span>
+              </a>
+            </li>
+            <li>
+              <a href="mod05-control-flow.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Mod 5: Control Flow &amp; State Machines</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+            </li>
+            <li>
+              <a href="mod06-functions-and-modularity.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">○</span>
+                <span class="chapter-title-text">Mod 6: Functions &amp; Modular Design</span>
+                <span class="chapter-read-time">55m</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- PART 2 -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P2</span>
+              <span>Memory &amp; Data Structures</span>
+            </div>
+            <span class="module-chevron">▶</span>
+          </button>
+          <ul class="chapter-sublist" style="display:none;">
+            <li><span class="chapter-nav-item"><span class="chapter-title-text">Mod 7: Pointers In-Depth</span></span></li>
+            <li><span class="chapter-nav-item"><span class="chapter-title-text">Mod 8: Arrays and Strings</span></span></li>
+            <li><span class="chapter-nav-item"><span class="chapter-title-text">Mod 9: Dynamic Memory &amp; Allocators</span></span></li>
+            <li><span class="chapter-nav-item"><span class="chapter-title-text">Mod 10: Structs, Unions &amp; Bitfields</span></span></li>
+            <li><span class="chapter-nav-item"><span class="chapter-title-text">Mod 11: Data Structures in C</span></span></li>
+          </ul>
+        </div>
+
+        <!-- Remaining parts collapsible badges -->
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P3</span> <span class="chapter-title-text">Advanced C (Mod 12-16)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P4</span> <span class="chapter-title-text">Linux &amp; Tooling (Mod 17-21)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P5</span> <span class="chapter-title-text">Testing &amp; QA (Mod 22-25)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P6</span> <span class="chapter-title-text">Linux Systems (Mod 26-32)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P7</span> <span class="chapter-title-text">Embedded Firmware (Mod 33-37)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P8</span> <span class="chapter-title-text">Secure C (Mod 38-39)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P9</span> <span class="chapter-title-text">Architecture (Mod 40-42)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P10</span> <span class="chapter-title-text">Capstone Projects 1–8</span></span></div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="content-top-bar">
+        <div class="breadcrumbs">
+          <a href="../index.html">Home</a><span>/</span>
+          <span>Part 1: Foundations</span><span>/</span>
+          <span>Module 2: Compilation &amp; Build Process</span>
+        </div>
+        <div class="chapter-actions">
+          <a href="mod01-intro-to-c.html" class="btn-secondary">← Module 1</a>
+          <a href="mod03-data-types-and-variables.html" class="btn-primary">Module 3 →</a>
+        </div>
+      </div>
+
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Part 1: C Programming Foundations • Module 2</span>
+          <h1 class="chapter-h1">Module 2: Compilation and Build Process</h1>
+          <p class="chapter-lead">
+            A professional systems or firmware engineer never treats the C compiler as a black box. Understanding how source code translates into machine instructions across Preprocessing, Compilation, Assembly, and Linking is the fundamental prerequisite to diagnosing linker collisions, undefined symbols, stack sizing, memory map segment placement, and binary optimization.
+          </p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Reading Time: 60 minutes</div>
+            <div class="meta-item">🛠️ Engineering Tools: gcc, clang, cpp, as, ld, nm, objdump, readelf, file</div>
+            <div class="meta-item">🎯 Core Concepts: ELF Segments, Symbol Tables, Dynamic vs Static Linking</div>
+          </div>
+        </div>
+
+        <!-- 2.1 The Four Stages -->
+        <h2 id="sec-2-1">2.1 The Four Stages of the C Compilation Pipeline</h2>
+        <p>
+          When you invoke <code>gcc main.c -o app</code>, the GCC command driver does not perform a single atomic conversion. It acts as a supervisor, invoking four discrete tools sequentially:
+        </p>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <div style="display:flex;flex-direction:column;gap:1rem;font-family:'JetBrains Mono',monospace;font-size:0.875rem;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="background:#3B82F6;color:#FFF;padding:4px 10px;border-radius:6px;font-weight:700;min-width:110px;text-align:center;">1. PREPROCESS</span>
+              <span><code>main.c</code> &rarr; <strong>cpp</strong> (C Preprocessor) &rarr; <code>main.i</code> (Pure expanded C text)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="background:#8B5CF6;color:#FFF;padding:4px 10px;border-radius:6px;font-weight:700;min-width:110px;text-align:center;">2. COMPILE</span>
+              <span><code>main.i</code> &rarr; <strong>cc1</strong> (Compiler proper) &rarr; <code>main.s</code> (Target Assembly code)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="background:#F59E0B;color:#0F172A;padding:4px 10px;border-radius:6px;font-weight:700;min-width:110px;text-align:center;">3. ASSEMBLE</span>
+              <span><code>main.s</code> &rarr; <strong>as</strong> (GNU Assembler) &rarr; <code>main.o</code> (Relocatable ELF object)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="background:#10B981;color:#FFF;padding:4px 10px;border-radius:6px;font-weight:700;min-width:110px;text-align:center;">4. LINK</span>
+              <span><code>main.o</code> + <code>lib*.a / .so</code> &rarr; <strong>ld</strong> (Linker) &rarr; <code>app</code> (Executable ELF / .bin)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.2 Preprocessing -->
+        <h2 id="sec-2-2">2.2 Deep Dive: Preprocessing Stage (<code>cpp</code>)</h2>
+        <p>
+          The preprocessor is a text-substitution engine that operates on source code before lexical and semantic syntax analysis. It performs three critical operations:
+        </p>
+        <ol>
+          <li><strong>Header Expansion (<code>#include</code>):</strong> Recursively replaces the <code>#include &lt;header.h&gt;</code> directive with the entire verbatim contents of that header file.</li>
+          <li><strong>Macro Expansion (<code>#define</code>):</strong> Replaces symbolic macros and function-like macros with their definition.</li>
+          <li><strong>Conditional Compilation:</strong> Evaluates <code>#ifdef</code>, <code>#ifndef</code>, <code>#if defined()</code>, stripping out inactive source blocks.</li>
+          <li><strong>Comment Stripping:</strong> Strips both single-line <code>//</code> and block <code>/* ... */</code> comments, replacing them with whitespace.</li>
+        </ol>
+
+        <div style="background:var(--bg-card);border-left:4px solid #3B82F6;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
+          <strong>Engineering Practice: Inspecting Preprocessed Output</strong>
+          <pre style="margin-top:0.5rem;"><code>gcc -E main.c -o main.i</code></pre>
+          <p style="margin:0.25rem 0 0 0;font-size:0.875rem;color:var(--text-secondary);">
+            Inspecting <code>main.i</code> is the quickest way to resolve macro substitution bugs, header guard failures, and unexpected typedef overrides.
+          </p>
+        </div>
+
+        <!-- 2.3 Compilation -->
+        <h2 id="sec-2-3">2.3 Compilation to Target Assembly (<code>cc1</code>)</h2>
+        <p>
+          The compiler takes pure C code (without directives or comments) and parses it into an Abstract Syntax Tree (AST). It performs semantic verification, type checking, register allocation, dead-code elimination, and loop unrolling based on the optimization level (<code>-O0</code>, <code>-O2</code>, <code>-Os</code>), finally producing assembly language instructions specific to the target CPU architecture (x86_64, ARM Cortex-M, RISC-V).
+        </p>
+        <pre><code class="language-bash"># Stop compilation after generating assembly code:
+gcc -S -O2 main.c -o main.s</code></pre>
+
+        <!-- 2.4 Assembling -->
+        <h2 id="sec-2-4">2.4 Assembling to Relocatable ELF Objects (<code>as</code>)</h2>
+        <p>
+          The assembler translates human-readable assembly instructions into raw binary machine code, packaging them inside an <strong>Executable and Linkable Format (ELF)</strong> object file.
+        </p>
+        <pre><code class="language-bash"># Stop after assembling into an unlinked relocatable object file:
+gcc -c main.c -o main.o</code></pre>
+        <p>
+          At this stage, <code>main.o</code> is <em>relocatable</em>. Addresses of external functions (such as <code>printf</code> or hardware drivers) and global variables in other translation units are unresolved and filled with dummy zeroes in the relocation section.
+        </p>
+
+        <!-- 2.5 Linking -->
+        <h2 id="sec-2-5">2.5 Linking: Static vs Dynamic Linking (<code>ld</code>)</h2>
+        <p>
+          The linker resolves cross-module references and merges identical sections from multiple <code>.o</code> files into a single unified memory map.
+        </p>
+
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);text-align:left;">
+                <th style="padding:0.6rem;">Feature</th>
+                <th style="padding:0.6rem;">Static Linking (<code>.a</code>)</th>
+                <th style="padding:0.6rem;">Dynamic Linking (<code>.so</code> / <code>.dll</code>)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.6rem;font-weight:600;">Resolution Time</td>
+                <td style="padding:0.6rem;">Compile/Link Time</td>
+                <td style="padding:0.6rem;">Program Load Time / Runtime (<code>ld.so</code> / <code>dlopen</code>)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.6rem;font-weight:600;">Binary Footprint</td>
+                <td style="padding:0.6rem;">Larger (library code copied into binary)</td>
+                <td style="padding:0.6rem;">Minimal (only symbol stubs and PLT/GOT tables)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.6rem;font-weight:600;">Embedded / Firmware Usage</td>
+                <td style="padding:0.6rem;">Standard (Microcontrollers lack runtime loaders)</td>
+                <td style="padding:0.6rem;">Rare (Requires MMU and OS runtime loader)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.6rem;font-weight:600;">Updates</td>
+                <td style="padding:0.6rem;">Requires complete rebuild of application</td>
+                <td style="padding:0.6rem;">Drop-in upgrade of shared library file</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 2.6 Symbol Tables -->
+        <h2 id="sec-2-6">2.6 Inspecting Binary Symbol Tables &amp; Sections</h2>
+        <p>
+          Professional engineers inspect object files and binaries using GNU Binutils:
+        </p>
+
+        <pre><code class="language-bash"># 1. View symbol table (local, global, undefined symbols)
+nm -C main.o
+
+# 2. Inspect ELF section headers (.text, .data, .bss, .rodata)
+readelf -S main.o
+
+# 3. Disassemble machine code back to assembly with C source interleaved
+objdump -d -S -M intel main.o</code></pre>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1.25rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;font-family:'JetBrains Mono',monospace;">Symbol Types in nm Output:</h4>
+          <ul style="font-size:0.875rem;margin-bottom:0;line-height:1.8;">
+            <li><code>T / t</code>: Symbol is in the <strong>Text</strong> (code) section. Capital <code>T</code> = global; lowercase <code>t</code> = static.</li>
+            <li><code>D / d</code>: Symbol is in the <strong>Initialized Data</strong> section (<code>.data</code>).</li>
+            <li><code>B / b</code>: Symbol is in the <strong>Zero-initialized Data</strong> section (<code>.bss</code>).</li>
+            <li><code>R / r</code>: Symbol is in <strong>Read-Only Memory</strong> (<code>.rodata</code>).</li>
+            <li><code>U</code>: Symbol is <strong>Undefined</strong> in this translation unit (must be resolved by linker).</li>
+          </ul>
+        </div>
+
+        <!-- 2.7 Compiler Options -->
+        <h2 id="sec-2-7">2.7 Mandatory Compiler Options &amp; Sanitizers</h2>
+        <p>
+          Never compile professional software with default GCC options. Enforce the gold-standard engineering warning flags:
+        </p>
+
+        <pre><code class="language-bash"># Recommended Production &amp; Development Compiler Flags:
+CFLAGS = -std=c17 \
+         -Wall -Wextra -Werror -pedantic \
+         -Wshadow -Wdouble-promotion -Wformat=2 \
+         -Wundef -fno-common -O2 -g</code></pre>
+
+        <p>
+          During active development and unit testing, enable runtime sanitizers to catch memory corruption and undefined behavior instantly at the point of origin:
+        </p>
+        <pre><code class="language-bash"># AddressSanitizer (ASan) + UndefinedBehaviorSanitizer (UBSan):
+gcc -fsanitize=address,undefined -g -O1 test_program.c -o test_program</code></pre>
+
+        <!-- 2.8 Hands-on Lab -->
+        <h2 id="sec-2-lab">2.8 Hands-On Lab: Manual Pipeline Dissection</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:var(--brand-coral);">Lab Objective: Dissect Every Stage of Compilation</h3>
+          <p style="font-size:0.9rem;">
+            Create a multi-file program with a custom header, compile each stage manually, inspect symbol tables, and trigger a deliberate unresolved linker symbol.
+          </p>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Step 1: Create <code>math_ops.h</code>, <code>math_ops.c</code>, and <code>main.c</code></h4>
+          <pre><code class="language-c">/* math_ops.h */
+#ifndef MATH_OPS_H
+#define MATH_OPS_H
+int multiply(int a, int b);
+#endif
+
+/* math_ops.c */
+#include "math_ops.h"
+int multiply(int a, int b) {
+    return a * b;
+}
+
+/* main.c */
+#include &lt;stdio.h&gt;
+#include "math_ops.h"
+
+int main(void) {
+    int res = multiply(6, 7);
+    printf("Result: %d\n", res);
+    return 0;
+}</code></pre>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Step 2: Execute Each Tool Explicitly</h4>
+          <pre><code class="language-bash"># Step 2.1: Preprocess main.c
+gcc -E main.c -o main.i
+grep -n "multiply" main.i
+
+# Step 2.2: Compile to Assembly
+gcc -S -O1 main.i -o main.s
+cat main.s | grep -A 5 "call"
+
+# Step 2.3: Assemble to Object
+gcc -c main.s -o main.o
+gcc -c math_ops.c -o math_ops.o
+
+# Step 2.4: Inspect Unresolved Relocations
+nm main.o
+# Notice 'U multiply' and 'U printf'
+
+# Step 2.5: Final Link
+gcc main.o math_ops.o -o final_app
+./final_app
+# Output: Result: 42</code></pre>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+          <a href="mod01-intro-to-c.html" class="btn-secondary">← Module 1: Intro to C &amp; Software Dev</a>
+          <a href="mod03-data-types-and-variables.html" class="btn-primary">Module 3: C Data Types &amp; Variables →</a>
+        </div>
+      </article>
+    </main>
+  </div>
+
+  <script src="../js/book.js?v=3"></script>
+</body>
+</html>
+

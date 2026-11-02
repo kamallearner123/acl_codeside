@@ -69,6 +69,22 @@ ZEPHYR_BOOK_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'zephyr_stm32
 
 STM32_C_BOOK_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'stm32_c_firmware')
 
+C_PROFESSIONAL_BOOK_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'c_programming_professional')
+
+@course_login_required
+def c_professional_book_index(request):
+    """Serve the root index of the C Programming for Professional Engineers digital book."""
+    return serve(request, 'index.html', document_root=C_PROFESSIONAL_BOOK_DIR)
+
+@course_login_required
+def c_professional_book_serve(request, subpath):
+    """Serve chapters, stylesheets, scripts and assets for the Professional C book."""
+    if not subpath:
+        subpath = 'index.html'
+    elif subpath.endswith('/'):
+        subpath = os.path.join(subpath, 'index.html')
+    return serve(request, subpath, document_root=C_PROFESSIONAL_BOOK_DIR)
+
 @course_login_required
 def stm32_c_book_index(request):
     """Serve the root index of the Programming STM32 with C digital book."""
