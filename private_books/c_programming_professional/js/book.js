@@ -81,13 +81,8 @@
   }
 
   function initPlatformNote() {
-    const main = document.querySelector('.main-content');
-    if (!main || main.querySelector('.platform-note')) return;
-    const note = document.createElement('aside');
-    note.className = 'platform-note';
-    note.setAttribute('role', 'note');
-    note.innerHTML = '<strong>Board portability:</strong> The NUCLEO-F446RE (Cortex-M4F) is a reference board for selected hands-on examples, not a requirement for every lesson. Cortex-M architecture concepts apply across Cortex-M processors; STM32 peripheral and RTOS examples transfer only where equivalent hardware and software support exist. Pins, clocks, memory maps, peripheral instances, interrupt numbering, startup files, board support/DeviceTree, and wiring vary; verify against your exact MCU reference manual, datasheet, RTOS/SDK documentation, and board schematic.';
-    main.prepend(note);
+    // Disabled for Professional C: no reference board restriction note needed
+    return;
   }
 
   // --- Sidebar & Vertical Tab Toggle Management ---
@@ -272,26 +267,26 @@
 
   // --- Code Copy Buttons ---
   function initCodeCopy() {
-    document.querySelectorAll('.code-copy-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const container = btn.closest('.code-container');
-        if (!container) return;
-        const codeEl = container.querySelector('code') || container.querySelector('pre');
-        if (!codeEl) return;
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.code-copy-btn');
+      if (!btn) return;
+      const container = btn.closest('.code-container');
+      if (!container) return;
+      const codeEl = container.querySelector('code') || container.querySelector('pre');
+      if (!codeEl) return;
 
-        try {
-          await navigator.clipboard.writeText(codeEl.innerText);
-          const originalText = btn.textContent;
-          btn.textContent = 'Copied!';
-          btn.style.color = '#10b981';
-          setTimeout(() => {
-            btn.textContent = originalText;
-            btn.style.color = '';
-          }, 2000);
-        } catch (err) {
-          console.error('Failed to copy', err);
-        }
-      });
+      try {
+        await navigator.clipboard.writeText(codeEl.innerText);
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.color = '#10b981';
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.color = '';
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy', err);
+      }
     });
   }
 
@@ -580,7 +575,7 @@
   }
 
   // ==========================================================================
-  // Client-Side Syntax Highlighter for C, DTS, Bash, and Kconfig
+  // Client-Side Syntax Highlighter for C, DTS, Bash, ASM, and Rust
   // ==========================================================================
   function highlightCCode(code) {
     const tokens = [];
@@ -589,37 +584,36 @@
       return `___CTOK${tokens.length - 1}___`;
     }
 
-    // 1. Comments
+    // 1. Comments (multi-line and single-line)
     code = code.replace(/\/\*[\s\S]*?\*\//g, m => saveToken(`<span class="token-comment">${escapeHtml(m)}</span>`));
     code = code.replace(/\/\/[^\n\r]*/g, m => saveToken(`<span class="token-comment">${escapeHtml(m)}</span>`));
 
-    // 2. Preprocessor directives
-    code = code.replace(/#\s*(?:include|define|undef|ifdef|ifndef|if|else|elif|endif|pragma|error)\b[^\n\r]*/g, m => {
+    // 2. Preprocessor directives (#include, #ifndef, #define, #endif, etc.)
+    code = code.replace(/#\s*(?:include|define|undef|ifdef|ifndef|if|else|elif|endif|pragma|error|line)\b[^\n\r]*/g, m => {
       const formatted = escapeHtml(m).replace(/(&lt;[^&]+&gt;|"[^"]+")/g, '<span class="token-string">$1</span>');
       return saveToken(`<span class="token-preprocessor">${formatted}</span>`);
     });
 
-    // 3. String literals & characters
+    // 3. String literals & character constants
     code = code.replace(/"(?:\\.|[^"\\])*"/g, m => saveToken(`<span class="token-string">${escapeHtml(m)}</span>`));
     code = code.replace(/'(?:\\.|[^'\\])+'/g, m => saveToken(`<span class="token-string">${escapeHtml(m)}</span>`));
 
-    // 4. Numbers (hex and dec)
-    code = code.replace(/\b(?:0x[0-9a-fA-F]+|\d+(?:\.\d+)?)\b/g, m => saveToken(`<span class="token-number">${m}</span>`));
+    // 4. Numbers (hex, binary, float, integer with suffixes)
+    code = code.replace(/\b(?:0x[0-9a-fA-F]+|0b[01]+|\d+(?:\.\d+)?(?:[uUlLfF]+)?)\b/g, m => saveToken(`<span class="token-number">${m}</span>`));
 
-    // 5. Zephyr APIs, macros and subsystems
-    const zephyrApis = /\b(?:printk|k_msleep|k_sleep|k_busy_wait|k_uptime_get_32|k_uptime_get|gpio_pin_configure_dt|gpio_pin_toggle_dt|gpio_pin_set_dt|gpio_pin_get_dt|gpio_is_ready_dt|gpio_init_callback|gpio_add_callback|gpio_pin_interrupt_configure_dt|pwm_set_pulse_dt|pwm_set_dt|sensor_sample_fetch|sensor_channel_get|k_msgq_put|k_msgq_get|k_sem_give|k_sem_take|k_mutex_lock|k_mutex_unlock|wdt_setup|wdt_install_timeout|wdt_feed|can_send|can_add_rx_filter|LOG_INF|LOG_ERR|LOG_WRN|LOG_DBG|DEVICE_DT_GET|DEVICE_DT_GET_ANY|DT_ALIAS|DT_NODELABEL|DT_CHOSEN|DT_NODE_HAS_STATUS|GPIO_DT_SPEC_GET|K_THREAD_DEFINE|K_MSGQ_DEFINE|K_SEM_DEFINE|K_MUTEX_DEFINE|SHELL_CMD_REGISTER|SHELL_STATIC_SUBCMD_SET_CREATE|ARG_UNUSED|BIT|GPIO_OUTPUT_INACTIVE|GPIO_OUTPUT_ACTIVE|GPIO_INPUT|GPIO_INT_EDGE_TO_ACTIVE)\b/g;
-    code = code.replace(zephyrApis, m => saveToken(`<span class="token-zephyr">${m}</span>`));
-    code = code.replace(/\b(?:__HAL_\w+|HAL_\w+|LL_\w+|NVIC_\w+|__NVIC_\w+|__disable_irq|__enable_irq|__WFI|__NOP|SysTick_Config)\b/g, m => saveToken(`<span class="token-zephyr">${m}</span>`));
-
-    // 6. C Keywords
-    const keywords = /\b(?:void|int|char|short|long|float|double|signed|unsigned|const|static|volatile|struct|enum|union|typedef|extern|inline|return|if|else|switch|case|default|while|for|do|break|continue|goto|sizeof)\b/g;
+    // 5. C Standard & Modern Keywords
+    const keywords = /\b(?:void|int|char|short|long|float|double|signed|unsigned|const|static|volatile|struct|enum|union|typedef|extern|inline|return|if|else|switch|case|default|while|for|do|break|continue|goto|sizeof|_Static_assert|_Generic|_Atomic|_Alignof|_Alignas|register|restrict|auto)\b/g;
     code = code.replace(keywords, m => saveToken(`<span class="token-keyword">${m}</span>`));
 
-    // 7. Types & Booleans
-    const types = /\b(?:int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|size_t|ssize_t|bool|true|false|NULL)\b/g;
+    // 6. Types, Standard Macros & Booleans
+    const types = /\b(?:int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|uintptr_t|intptr_t|size_t|ssize_t|ptrdiff_t|bool|true|false|NULL|FILE|EXIT_SUCCESS|EXIT_FAILURE|stdin|stdout|stderr|va_list)\b/g;
     code = code.replace(types, m => saveToken(`<span class="token-type">${m}</span>`));
 
-    // 8. Function calls
+    // 7. Standard C Library Functions
+    const stdFuncs = /\b(?:printf|fprintf|sprintf|snprintf|scanf|sscanf|fscanf|puts|putchar|getchar|malloc|calloc|realloc|free|memcpy|memset|memmove|memcmp|strlen|strcpy|strncpy|strcat|strncat|strcmp|strncmp|strchr|strrchr|strstr|strtok|atoi|atol|strtol|strtoul|exit|abort|atexit|perror|strerror|qsort|bsearch|assert|open|close|read|write)\b/g;
+    code = code.replace(stdFuncs, m => saveToken(`<span class="token-func">${m}</span>`));
+
+    // 8. General function calls: ident(...)
     code = code.replace(/\b(?!___)([a-zA-Z_]\w*)(?=\s*\()/g, m => saveToken(`<span class="token-func">${m}</span>`));
 
     // Restore tokens
@@ -627,7 +621,6 @@
     while (re.test(code)) { code = code.replace(re, (_, id) => tokens[id]); }
     return code;
   }
-
 
   function highlightRustCode(code) {
     const tokens = [];
@@ -682,20 +675,124 @@
       return `___BTOK${tokens.length - 1}___`;
     }
 
+    // 1. Comments (# ...)
     code = code.replace(/#[^\n\r]*/g, m => saveToken(`<span class="token-comment">${escapeHtml(m)}</span>`));
+
+    // 2. Strings
     code = code.replace(/"(?:\\.|[^"\\])*"/g, m => saveToken(`<span class="token-string">${escapeHtml(m)}</span>`));
-    code = code.replace(/\b(west|cd|ninja|cmake|minicom|screen|pyocd|git|echo|mkdir|build|flash)\b/g, m => saveToken(`<span class="token-keyword">${m}</span>`));
-    code = code.replace(/(?:^|\s)(-[a-zA-Z]|--[a-zA-Z0-9_-]+)/g, m => saveToken(`<span class="token-prop">${m}</span>`));
-    code = code.replace(/\b(nucleo_f401re|nucleo_l476rg|nucleo_g071rb)\b/g, m => saveToken(`<span class="cmd-board-name token-string">${m}</span>`));
+    code = code.replace(/'(?:\\.|[^'\\])*'/g, m => saveToken(`<span class="token-string">${escapeHtml(m)}</span>`));
+
+    // 3. Common command names & compilers
+    const commands = /\b(gcc|g\+\+|clang|clang\+\+|make|cmake|ninja|gdb|valgrind|nm|readelf|objdump|size|ld|as|ar|ranlib|bear|cat|grep|diff|echo|touch|mkdir|cd|pwd|ls|chmod|cp|mv|rm|export|source|sudo|apt|apt-get|brew|git|curl|wget|python3|pip|bash|sh|zsh|strace|ltrace|head|tail|wc|awk|sed)\b/g;
+    code = code.replace(commands, m => saveToken(`<span class="token-keyword">${m}</span>`));
+
+    // 4. Flags (-Wall, -Wextra, -O1, -o, etc.)
+    code = code.replace(/(?:^|\s)(-[a-zA-Z0-9_=-]+|--[a-zA-Z0-9_-]+(?:=[^\s]+)?)/g, (full, flag) => {
+      return full.replace(flag, saveToken(`<span class="token-prop">${flag}</span>`));
+    });
+
+    // 5. Environment variables
+    code = code.replace(/\$\{?[a-zA-Z_0-9?*#@-]+\}?/g, m => saveToken(`<span class="token-type">${m}</span>`));
 
     const re = /___BTOK(\d+)___/g;
     while (re.test(code)) { code = code.replace(re, (_, id) => tokens[id]); }
     return code;
   }
 
+  function highlightAsmCode(code) {
+    const tokens = [];
+    function saveToken(html) {
+      tokens.push(html);
+      return `___ATOK${tokens.length - 1}___`;
+    }
+
+    // Comments (; ... or # ...)
+    code = code.replace(/[;#][^\n\r]*/g, m => saveToken(`<span class="token-comment">${escapeHtml(m)}</span>`));
+
+    // Directives (.globl, .section, etc.)
+    code = code.replace(/\.[a-zA-Z0-9_.]+/g, m => saveToken(`<span class="token-preprocessor">${m}</span>`));
+
+    // Instructions
+    const instrs = /\b(mov|movl|movq|push|pushq|pop|popq|call|ret|leave|add|sub|imul|idiv|xor|jmp|je|jne|jg|jge|jl|jle|ldr|str|b|bl|bx|nop|cmp|test)\b/gi;
+    code = code.replace(instrs, m => saveToken(`<span class="token-keyword">${m}</span>`));
+
+    // Registers
+    code = code.replace(/(%[a-zA-Z0-9]+|\b[re]?[a-d][xli]|\b[re]?[sbi]p|\br\d{1,2}\b|\blr\b|\bpc\b|\bsp\b)/gi, m => saveToken(`<span class="token-type">${m}</span>`));
+
+    const re = /___ATOK(\d+)___/g;
+    while (re.test(code)) { code = code.replace(re, (_, id) => tokens[id]); }
+    return code;
+  }
+
   function initSyntaxHighlighting() {
+    // 1. Automatically wrap bare <pre> blocks in .code-container
+    const article = document.querySelector('article.prose') || document.querySelector('main.main-content') || document.body;
+    const barePres = article.querySelectorAll('pre');
+    barePres.forEach(pre => {
+      if (pre.closest('.code-container')) return;
+
+      let codeEl = pre.querySelector('code');
+      if (!codeEl) {
+        codeEl = document.createElement('code');
+        codeEl.innerHTML = pre.innerHTML;
+        pre.innerHTML = '';
+        pre.appendChild(codeEl);
+      }
+
+      // Detect language from class or content
+      let lang = 'C';
+      const cls = (codeEl.className || '') + ' ' + (pre.className || '');
+      if (/language-bash|language-sh|language-shell|language-terminal/i.test(cls)) {
+        lang = 'BASH';
+      } else if (/language-c\b|language-cpp|language-h/i.test(cls)) {
+        lang = 'C';
+      } else if (/language-rust|language-rs/i.test(cls)) {
+        lang = 'RUST';
+      } else if (/language-asm|language-assembly|language-s/i.test(cls)) {
+        lang = 'ASM';
+      } else {
+        const text = codeEl.textContent;
+        if (/^\s*(gcc|clang|make|\$|#|\.\/)/m.test(text)) lang = 'BASH';
+        else if (/#include|#define|int main|printf|int |void /m.test(text)) lang = 'C';
+      }
+
+      const container = document.createElement('div');
+      container.className = 'code-container';
+
+      const header = document.createElement('div');
+      header.className = 'code-header';
+
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'code-title';
+
+      const badge = document.createElement('span');
+      badge.className = 'code-lang-badge';
+      badge.textContent = lang;
+
+      const titleSpan = document.createElement('span');
+      titleSpan.textContent = lang === 'BASH' ? 'Terminal Command' : (lang === 'C' ? 'C Source' : lang);
+
+      titleDiv.appendChild(badge);
+      titleDiv.appendChild(titleSpan);
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'code-copy-btn';
+      copyBtn.textContent = 'Copy';
+
+      header.appendChild(titleDiv);
+      header.appendChild(copyBtn);
+
+      const body = document.createElement('div');
+      body.className = 'code-body';
+
+      pre.parentNode.insertBefore(container, pre);
+      body.appendChild(pre);
+      container.appendChild(header);
+      container.appendChild(body);
+    });
+
+    // 2. Highlight all .code-container elements
     document.querySelectorAll('.code-container').forEach(container => {
-      // Ensure copy button is present
       const header = container.querySelector('.code-header');
       if (header && !header.querySelector('.code-copy-btn')) {
         const copyBtn = document.createElement('button');
@@ -707,19 +804,25 @@
       const langBadge = container.querySelector('.code-lang-badge');
       const codeEl = container.querySelector('code');
       if (!codeEl) return;
+      if (codeEl.dataset.highlighted) return;
 
       const lang = (langBadge ? langBadge.textContent.trim().toUpperCase() : '') || 'C';
-      const rawText = codeEl.innerText;
+      const rawText = codeEl.textContent || codeEl.innerText || '';
+      codeEl.dataset.highlighted = 'true';
 
-      if (lang === 'C') {
+      if (lang === 'C' || lang === 'C++' || lang === 'CPP' || lang === 'H') {
         codeEl.innerHTML = highlightCCode(rawText);
       } else if (lang === 'RUST' || lang === 'RS') {
         codeEl.innerHTML = highlightRustCode(rawText);
       } else if (lang === 'DTS' || lang === 'DEVICETREE') {
         codeEl.innerHTML = highlightDTSCode(rawText);
-      } else if (lang === 'BASH' || lang === 'SHELL' || lang === 'TERMINAL') {
+      } else if (lang === 'BASH' || lang === 'SHELL' || lang === 'TERMINAL' || lang === 'SH' || lang === 'MAKE' || lang === 'MAKEFILE') {
         codeEl.innerHTML = highlightBashCode(rawText);
-      } else if (rawText.includes('#include') || rawText.includes('int main(')) {
+      } else if (lang === 'ASM' || lang === 'ASSEMBLY' || lang === 'S') {
+        codeEl.innerHTML = highlightAsmCode(rawText);
+      } else if (rawText.includes('#include') || rawText.includes('int main(') || rawText.includes('#ifndef')) {
+        codeEl.innerHTML = highlightCCode(rawText);
+      } else {
         codeEl.innerHTML = highlightCCode(rawText);
       }
     });
@@ -1048,7 +1151,7 @@
   }
 
   // --- Global Initialization ---
-  document.addEventListener('DOMContentLoaded', () => {
+  function initAll() {
     initTheme();
     initPlatformNote();
     const themeBtn = document.getElementById('theme-toggle-btn');
@@ -1065,5 +1168,11 @@
     initLabChecklists();
     initQuizzes();
     initSearch();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
 })();

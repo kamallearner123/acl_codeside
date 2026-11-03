@@ -933,6 +933,29 @@ section[id] {
 .callout-important .callout-header { color: var(--status-error); }
 
 /* Code Blocks */
+pre {
+  margin: 1.5rem 0;
+  border-radius: var(--radius-md);
+  background: var(--bg-code);
+  border: 1px solid var(--border-strong);
+  overflow-x: auto;
+  padding: 1rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-code);
+  box-shadow: var(--shadow-md);
+}
+
+pre code {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
 .code-container {
   margin: 1.5rem 0;
   border-radius: var(--radius-md);
@@ -940,6 +963,15 @@ section[id] {
   border: 1px solid var(--border-strong);
   overflow: hidden;
   box-shadow: var(--shadow-md);
+}
+
+.code-container pre {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
 }
 
 .code-header {

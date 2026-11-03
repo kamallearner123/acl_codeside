@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 1: Introduction to C & Software Development - Evolution, standards (C89 through C23), hosted vs freestanding targets, compiler flags, and professional engineering practices.">
+  <title>Module 1: Intro to C &amp; Software Dev | Professional C Engineering</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css?v=5">
+</head>
+<body data-chapter-id="mod01-intro-to-c">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Professional C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Target:</span>
+        <span class="board-select-label" style="font-weight:700;">Linux x86_64 / ARM Cortex-M</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/materials/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Materials Portal</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">Part 1 Foundations</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <!-- Overview -->
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Course Overview &amp; Curriculum</span>
+          </a>
+        </div>
+
+        <!-- PART 1 -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P1</span>
+              <span>C Programming Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li>
+              <a href="mod01-intro-to-c.html" class="chapter-nav-item active">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Mod 1: Intro to C &amp; Software Dev</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+              <ul class="subtopic-list">
+                <li><a href="#sec-1-1" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.1 The Genesis, Standards &amp; Evolution</a></li>
+                <li><a href="#sec-1-2" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.2 Why C Dominates Core Engineering</a></li>
+                <li><a href="#sec-1-3" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.3 Professional Toolchain Setup</a></li>
+                <li><a href="#sec-1-4" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.4 Anatomy of a Production C Program</a></li>
+                <li><a href="#sec-1-5" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.5 Strict Compiler Flags &amp; Zero Warnings</a></li>
+                <li><a href="#sec-1-6" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.6 Hosted vs Freestanding Targets</a></li>
+                <li><a href="#sec-1-7" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.7 Undefined Behavior: Hazard Map</a></li>
+                <li><a href="#sec-1-8" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.8 Hands-On Lab: First Robust Utility</a></li>
+                <li><a href="#sec-1-quiz" class="subtopic-link"><span class="subtopic-bullet">▸</span> 1.9 Knowledge Verification &amp; Quiz</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="mod02-compilation-and-build-process.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Mod 2: Compilation &amp; Build Process</span>
+                <span class="chapter-read-time">60m</span>
+              </a>
+            </li>
+            <li>
+              <a href="mod03-data-types-and-variables.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Mod 3: C Data Types &amp; Variables</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+            </li>
+            <li>
+              <a href="mod04-operators-and-expressions.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Mod 4: Operators &amp; Expressions</span>
+                <span class="chapter-read-time">45m</span>
+              </a>
+            </li>
+            <li>
+              <a href="mod05-control-flow.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Mod 5: Control Flow &amp; State Machines</span>
+                <span class="chapter-read-time">55m</span>
+              </a>
+            </li>
+            <li>
+              <a href="mod06-functions-and-modularity.html" class="chapter-nav-item">
+                <span class="chapter-check-icon">●</span>
+                <span class="chapter-title-text">Mod 6: Functions &amp; Modular Design</span>
+                <span class="chapter-read-time">50m</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Remaining Parts -->
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P2</span> <span class="chapter-title-text">Memory &amp; Data Structures (Mod 7–11)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P3</span> <span class="chapter-title-text">Advanced C Programming (Mod 12–16)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P4</span> <span class="chapter-title-text">Linux &amp; Engineering Tools (Mod 17–21)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P5</span> <span class="chapter-title-text">Testing &amp; QA Engineering (Mod 22–25)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P6</span> <span class="chapter-title-text">Linux System Programming (Mod 26–32)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P7</span> <span class="chapter-title-text">Embedded C &amp; Firmware (Mod 33–37)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P8</span> <span class="chapter-title-text">Secure C Programming (Mod 38–39)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P9</span> <span class="chapter-title-text">Software Architecture (Mod 40–42)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P10</span> <span class="chapter-title-text">Capstone Projects (1–8)</span></span></div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Part 1 • C Programming Foundations</span>
+          <h1 class="chapter-h1">Module 1: Introduction to C &amp; Software Development</h1>
+          <p class="chapter-lead">
+            Understand the architectural origins, ISO standards evolution, systems rationale, and professional toolchain practices that keep C at the core of operating systems, embedded firmware, automotive microcontrollers, and high-performance computing.
+          </p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Estimated Reading: 45 min</div>
+            <div class="meta-item">🎯 Standard: C11 / C17 / C23</div>
+            <div class="meta-item">🛠️ Environments: Linux POSIX + Bare-Metal ARM</div>
+          </div>
+        </div>
+
+        <!-- 1.1 The Genesis, Standards & Evolution -->
+        <h2 id="sec-1-1">1.1 The Genesis, Standards &amp; Evolution of C</h2>
+        <p>
+          Created in 1972 by <strong>Dennis Ritchie</strong> at Bell Telephone Laboratories to implement the Unix operating system, C was engineered with a clear mandate: <em>provide clean algorithmic constructs while remaining one abstraction level above CPU machine code</em>. Unlike languages with heavy runtimes or garbage collection, C maps directly onto CPU instructions and hardware memory cells.
+        </p>
+
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+            <thead>
+              <tr style="background:var(--bg-card);border-bottom:2px solid var(--border-strong);">
+                <th style="padding:10px 14px;text-align:left;">Standard</th>
+                <th style="padding:10px 14px;text-align:left;">Year</th>
+                <th style="padding:10px 14px;text-align:left;">Key Innovations &amp; Engineering Significance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">K&amp;R C</td>
+                <td style="padding:10px 14px;">1978</td>
+                <td style="padding:10px 14px;">Classic C defined by Kernighan &amp; Ritchie. Implicit <code>int</code>, no prototype checks.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">ANSI C / C89 / C90</td>
+                <td style="padding:10px 14px;">1989 / 1990</td>
+                <td style="padding:10px 14px;">Formal ISO/ANSI standardization. Introduced function prototypes, <code>const</code>, <code>volatile</code>, standard library headers.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">C99 (ISO/IEC 9899:1999)</td>
+                <td style="padding:10px 14px;">1999</td>
+                <td style="padding:10px 14px;"><code>&lt;stdint.h&gt;</code> fixed-width types, <code>inline</code>, <code>restrict</code> pointer qualifier, designated initializers, variable declarations anywhere.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">C11 (ISO/IEC 9899:2011)</td>
+                <td style="padding:10px 14px;">2011</td>
+                <td style="padding:10px 14px;">Multi-threading (<code>&lt;threads.h&gt;</code>), atomic operations (<code>&lt;stdatomic.h&gt;</code>), <code>_Static_assert</code>, anonymous structs and unions.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">C17 (ISO/IEC 9899:2018)</td>
+                <td style="padding:10px 14px;">2018</td>
+                <td style="padding:10px 14px;">Current industrial gold standard. Defect fixes, clarifying technical corrigenda, compiler consistency across vendors.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">C23</td>
+                <td style="padding:10px 14px;">2024</td>
+                <td style="padding:10px 14px;"><code>true</code>, <code>false</code>, <code>nullptr</code> as native keywords, <code>#embed</code> for binary assets, <code>[[nodiscard]]</code>, <code>auto</code> type inference.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 1.2 Why C Dominates Core Engineering -->
+        <h2 id="sec-1-2">1.2 Why C Dominates Core Engineering &amp; Modern Systems</h2>
+        <p>
+          Modern software engineering relies on layered abstractions, but at the absolute foundation of computation—where performance, memory predictability, and hardware control are non-negotiable—C is unrivaled:
+        </p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:1rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+            <h4 style="margin-top:0;color:#38BDF8;">1. Operating System Kernels</h4>
+            <p style="font-size:0.875rem;margin-bottom:0;color:var(--text-secondary);">
+              The Linux kernel, macOS XNU, Windows NT core, and FreeBSD are written in C. Managing virtual memory pages, process context switching, and device drivers requires direct physical pointer manipulation.
+            </p>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+            <h4 style="margin-top:0;color:#34D399;">2. Embedded &amp; Automotive (AUTOSAR)</h4>
+            <p style="font-size:0.875rem;margin-bottom:0;color:var(--text-secondary);">
+              Automotive brake controllers, engine ECUs, and medical ventilators operate on microcontrollers with 16 KB to 512 KB of RAM. Garbage collection pauses or runtime bloat would compromise real-time safety.
+            </p>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+            <h4 style="margin-top:0;color:#F87171;">3. Runtimes, Interpreters &amp; DBs</h4>
+            <p style="font-size:0.875rem;margin-bottom:0;color:var(--text-secondary);">
+              CPython (Python), V8 (Node.js/Chrome), Lua, SQLite, PostgreSQL, and Redis are engineered in C or C-compatible ABI interfaces for extreme I/O throughput.
+            </p>
+          </div>
+        </div>
+
+        <!-- 1.3 Professional Development Toolchain Setup -->
+        <h2 id="sec-1-3">1.3 Professional Development Toolchain Setup</h2>
+        <p>
+          A production C engineer works with modern compilers, debuggers, static analyzers, and build utilities. On Linux (Ubuntu/Debian) or macOS, install the industry standard toolchain:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">BASH</span><span>Ubuntu / Debian Toolchain Installation</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-bash"># Update package index and install build essentials & analysis tools
+sudo apt update &amp;&amp; sudo apt install -y \
+    build-essential \
+    clang \
+    clang-format \
+    clang-tidy \
+    gdb \
+    valgrind \
+    binutils \
+    cmake \
+    git
+
+# Verify GCC and Clang versions
+gcc --version
+clang --version</code></pre>
+          </div>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">BASH</span><span>macOS Toolchain (Homebrew / Xcode CLI)</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-bash"># Install Apple Command Line Tools
+xcode-select --install
+
+# Install GNU Compiler Collection, LLVM, GDB, and tools via Homebrew
+brew install gcc llvm gdb cmake</code></pre>
+          </div>
+        </div>
+
+        <!-- 1.4 Anatomy of a Production C Program -->
+        <h2 id="sec-1-4">1.4 Anatomy of a Production C Program</h2>
+        <p>
+          A toy C script prints <em>"Hello, World!"</em> without validating arguments, handling errors, or inspecting return codes. A <strong>production-grade C engineering program</strong> adheres to strict input verification, deterministic memory lifecycle management, and explicit status codes:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>production_sample.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;errno.h&gt;
+
+/**
+ * @brief Computes factorial with defensive overflow validation.
+ * @param n Unsigned 32-bit input operand.
+ * @param out_result Pointer to store computed result.
+ * @return true on success, false if overflow would occur.
+ */
+static bool calculate_factorial(uint32_t n, uint64_t *out_result) {
+    if (out_result == NULL) {
+        return false;
+    }
+    /* 20! is the maximum factorial that fits in a 64-bit unsigned integer */
+    if (n &gt; 20U) {
+        return false;
+    }
+
+    uint64_t acc = 1ULL;
+    for (uint32_t i = 1U; i &lt;= n; ++i) {
+        acc *= (uint64_t)i;
+    }
+
+    *out_result = acc;
+    return true;
+}
+
+int main(int argc, char *argv[]) {
+    /* 1. Defensive verification of command line arguments */
+    if (argc != 2) {
+        fprintf(stderr, "Error: Missing operand.\nUsage: %s &lt;number (0-20)&gt;\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    /* 2. Safe numerical parsing using strtoul (avoid unvalidated atoi) */
+    char *endptr = NULL;
+    errno = 0;
+    unsigned long val = strtoul(argv[1], &amp;endptr, 10);
+
+    if (errno != 0 || endptr == argv[1] || *endptr != '\0') {
+        fprintf(stderr, "Error: Invalid non-numeric argument '%s'\n", argv[1]);
+        return EXIT_FAILURE;
+    }
+
+    /* 3. Execute core logic with defensive return checks */
+    uint64_t answer = 0ULL;
+    if (!calculate_factorial((uint32_t)val, &amp;answer)) {
+        fprintf(stderr, "Error: Integer overflow or invalid input for n=%lu\n", val);
+        return EXIT_FAILURE;
+    }
+
+    printf("Factorial(%lu) = %llu\n", val, (unsigned long long)answer);
+    return EXIT_SUCCESS;
+}</code></pre>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-card);border-left:4px solid #10B981;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
+          <strong>Why this pattern is required in engineering:</strong>
+          <ul style="margin:0.5rem 0 0 0;font-size:0.875rem;line-height:1.7;padding-left:1.25rem;">
+            <li>Never use <code>atoi()</code> in production code: it has no mechanism to detect non-numeric input or arithmetic overflow. Always use <code>strtol()</code> or <code>strtoul()</code> and verify <code>errno</code>.</li>
+            <li>Error messages belong on standard error (<code>stderr</code>) via <code>fprintf(stderr, ...)</code>, keeping standard output (<code>stdout</code>) clean for downstream pipeline filters.</li>
+            <li>Always return standardized POSIX macros <code>EXIT_SUCCESS</code> (0) or <code>EXIT_FAILURE</code> (1) defined in <code>&lt;stdlib.h&gt;</code>.</li>
+          </ul>
+        </div>
+
+        <!-- 1.5 Strict Compiler Flags & Zero Warnings Philosophy -->
+        <h2 id="sec-1-5">1.5 Strict Compiler Flags &amp; Zero Warnings Philosophy</h2>
+        <p>
+          In professional firmware, aerospace, and mission-critical engineering, compiler warnings are treated as defects. The compiler's diagnostic engine should be configured to maximum vigilance:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">BASH</span><span>Standard Engineering Compilation Command</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-bash">gcc -std=c17 \
+    -Wall \
+    -Wextra \
+    -Werror \
+    -Wpedantic \
+    -Wshadow \
+    -Wconversion \
+    -Wdouble-promotion \
+    -Wformat=2 \
+    -Wundef \
+    -O2 -g production_sample.c -o factorial_app</code></pre>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+            <thead>
+              <tr style="background:var(--bg-card);border-bottom:2px solid var(--border-strong);">
+                <th style="padding:8px 12px;text-align:left;">Flag</th>
+                <th style="padding:8px 12px;text-align:left;">Defect Category Caught</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:8px 12px;"><code>-Wall -Wextra</code></td>
+                <td style="padding:8px 12px;">Catches uninitialized variables, unused parameters, missing switch cases, sign comparisons.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:8px 12px;"><code>-Werror</code></td>
+                <td style="padding:8px 12px;">Converts all warnings into build-halting errors, preventing broken code from slipping into CI/CD.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:8px 12px;"><code>-Wpedantic</code></td>
+                <td style="padding:8px 12px;">Enforces strict compliance with ISO C, rejecting non-standard GNU compiler extensions.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:8px 12px;"><code>-Wshadow</code></td>
+                <td style="padding:8px 12px;">Warns if a local variable shadows an outer or global scope variable, preventing accidental mask bugs.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:8px 12px;"><code>-Wconversion</code></td>
+                <td style="padding:8px 12px;">Detects implicit type conversions that may alter value or sign (e.g. assigning a 64-bit int to a 16-bit short).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 1.6 Hosted vs Freestanding Targets -->
+        <h2 id="sec-1-6">1.6 Hosted vs Freestanding Targets</h2>
+        <p>
+          C standard definitions (ISO C §4) partition all execution targets into two fundamental environments:
+        </p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.5rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:10px;padding:1.5rem;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem;">
+              <span style="background:#0284C7;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;">ENVIRONMENT A</span>
+              <h3 style="margin:0;font-size:1.1rem;color:#38BDF8;">Hosted Environment</h3>
+            </div>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;">
+              Operates on top of an operating system (Linux, macOS, Windows). Full standard C library is available (<code>&lt;stdio.h&gt;</code>, <code>&lt;stdlib.h&gt;</code>, POSIX threads, filesystem, dynamic memory). Program entry point is <code>int main(int argc, char *argv[])</code>.
+            </p>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:10px;padding:1.5rem;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem;">
+              <span style="background:#10B981;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.7rem;font-weight:700;">ENVIRONMENT B</span>
+              <h3 style="margin:0;font-size:1.1rem;color:#34D399;">Freestanding Environment</h3>
+            </div>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;">
+              Executes on bare-metal hardware without an OS or standard C runtime (e.g., ARM Cortex-M startup code, OS kernel entry points). Only a minimal subset of headers is guaranteed (<code>&lt;stdint.h&gt;</code>, <code>&lt;stddef.h&gt;</code>, <code>&lt;stdbool.h&gt;</code>, <code>&lt;limits.h&gt;</code>). Entry point is determined by hardware reset vector (e.g., <code>Reset_Handler</code>).
+            </p>
+          </div>
+        </div>
+
+        <!-- 1.7 Undefined Behavior: Hazard Map -->
+        <h2 id="sec-1-7">1.7 Undefined Behavior (UB): The Systems Hazard Map</h2>
+        <p>
+          In C, operations are categorized into three critical classes:
+        </p>
+        <ul style="line-height:1.8;font-size:0.95rem;">
+          <li><strong>Implementation-Defined Behavior:</strong> Unspecified behavior where each vendor chooses how the compiler behaves and documents it (e.g., size of <code>int</code>, sign of right-shifted signed integers).</li>
+          <li><strong>Unspecified Behavior:</strong> Valid behavior where standard offers multiple choices and vendor is NOT required to document (e.g., order of function argument evaluation: <code>f(g(), h())</code>).</li>
+          <li><strong>Undefined Behavior (UB):</strong> Behavior upon use of a nonportable or erroneous program construct for which the Standard imposes <em>no requirements</em>. The compiler is legally permitted to optimize away safety checks, produce invalid instructions, or format your disk.</li>
+        </ul>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Dangerous Example: Optimizer Exploiting Undefined Behavior</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">/* Signed integer overflow is UNDEFINED BEHAVIOR in C */
+bool check_overflow_wrong(int a, int b) {
+    /* If signed addition overflows, the standard permits the compiler
+       to assume it never happens. Under -O2, GCC can optimize this entire
+       condition into: return false; removing your safety check! */
+    return (a + b &lt; a);
+}
+
+/* CORRECT &amp; SAFE (Check before adding without triggering UB) */
+bool check_overflow_safe(int a, int b) {
+    if (b &gt; 0 &amp;&amp; a &gt; (INT_MAX - b)) {
+        return true; /* Overflow will occur */
+    }
+    return false;
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- 1.8 Hands-on Lab -->
+        <h2 id="sec-1-8">1.8 Hands-On Lab: Build, Verify, and Instrument your First Utility</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:var(--brand-coral);">Lab Exercise: The Strict System Info Inspector</h3>
+          <p style="font-size:0.9rem;">
+            Create a standalone utility <code>sys_inspect.c</code> that inspects standard architecture type widths, verifies memory sizes using <code>sizeof</code>, and runs cleanly through compiler sanitizers with zero warnings.
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>sys_inspect.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+int main(void) {
+    printf("=== Professional C Architecture Type Audit ===\n\n");
+    printf("sizeof(char)      = %zu byte(s)\n", sizeof(char));
+    printf("sizeof(short)     = %zu byte(s)\n", sizeof(short));
+    printf("sizeof(int)       = %zu byte(s)\n", sizeof(int));
+    printf("sizeof(long)      = %zu byte(s)\n", sizeof(long));
+    printf("sizeof(long long) = %zu byte(s)\n", sizeof(long long));
+    printf("sizeof(void*)     = %zu byte(s) (Pointer Width)\n\n", sizeof(void*));
+
+    printf("Fixed-width standard types:\n");
+    printf("sizeof(uint8_t)   = %zu byte(s)\n", sizeof(uint8_t));
+    printf("sizeof(uint16_t)  = %zu byte(s)\n", sizeof(uint16_t));
+    printf("sizeof(uint32_t)  = %zu byte(s)\n", sizeof(uint32_t));
+    printf("sizeof(uint64_t)  = %zu byte(s)\n", sizeof(uint64_t));
+    printf("sizeof(size_t)    = %zu byte(s)\n", sizeof(size_t));
+
+    return EXIT_SUCCESS;
+}</code></pre>
+            </div>
+          </div>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1.25rem;">Compile &amp; Test under Strict Flags</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">BASH</span><span>Terminal Commands</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-bash">gcc -std=c17 -Wall -Wextra -Werror -pedantic -O2 sys_inspect.c -o sys_inspect
+./sys_inspect
+echo "Process exit status code: $?"</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1.9 Knowledge Verification & Quiz -->
+        <h2 id="sec-1-quiz">1.9 Knowledge Verification &amp; Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: In an ISO freestanding C environment, which of the following is guaranteed to be available?</p>
+            <div class="quiz-options" style="display:flex;flex-direction:column;gap:8px;">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. stdio.h relies on host operating system system-calls (read, write) and is not guaranteed in freestanding environments.">A) <code>&lt;stdio.h&gt;</code> and <code>printf()</code></button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! ISO C guarantees &lt;stdint.h&gt;, &lt;stddef.h&gt;, &lt;stdbool.h&gt;, &lt;limits.h&gt;, and &lt;float.h&gt; in freestanding environments without an OS.">B) <code>&lt;stdint.h&gt;</code> and fixed-width integer types</button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Dynamic memory allocation via malloc requires an OS heap or custom memory manager.">C) <code>malloc()</code> and <code>free()</code></button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. POSIX pthreads require kernel threading support.">D) <code>&lt;pthread.h&gt;</code></button>
+            </div>
+            <div class="quiz-feedback" style="display:none;margin-top:8px;font-size:0.875rem;"></div>
+          </div>
+
+          <div class="quiz-question">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the primary engineering hazard of Undefined Behavior (UB)?</p>
+            <div class="quiz-options" style="display:flex;flex-direction:column;gap:8px;">
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. UB is not guaranteed to crash; it may silently corrupt memory or behave normally until compiler flags change.">A) The program will always cleanly trigger a SIGSEGV crash.</button>
+              <button class="quiz-option-btn" data-correct="true" data-explanation="Correct! Modern optimizing compilers assume UB never happens, allowing them to optimize away safety checks or emit unpredictable code.">B) Optimizing compilers assume UB is impossible, stripping subsequent bounds checks or corrupting state silently.</button>
+              <button class="quiz-option-btn" data-correct="false" data-explanation="Incorrect. Warnings are compiler-dependent and not guaranteed for UB.">C) The compiler is required by ISO to issue a mandatory warning.</button>
+            </div>
+            <div class="quiz-feedback" style="display:none;margin-top:8px;font-size:0.875rem;"></div>
+          </div>
+        </div>
+
+        <!-- Next / Prev Module Navigation -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+          <a href="../index.html" class="btn-secondary">← Course Overview &amp; Curriculum</a>
+          <a href="mod02-compilation-and-build-process.html" class="btn-primary">Module 2: Compilation &amp; Build Process →</a>
+        </div>
+      </article>
+    </main>
+  </div>
+
+  <script src="../js/book.js?v=5"></script>
+</body>
+</html>

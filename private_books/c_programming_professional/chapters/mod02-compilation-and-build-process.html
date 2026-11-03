@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=3">
+  <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
 <body data-chapter-id="mod02-compilation-and-build-process">
   <div id="reading-progress-bar"></div>
@@ -225,7 +225,15 @@
 
         <div style="background:var(--bg-card);border-left:4px solid #3B82F6;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
           <strong>Engineering Practice: Inspecting Preprocessed Output</strong>
-          <pre style="margin-top:0.5rem;"><code>gcc -E main.c -o main.i</code></pre>
+          <div class="code-container" style="margin-top:0.75rem;">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">BASH</span><span>Stop After Preprocessing</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-bash">gcc -E main.c -o main.i</code></pre>
+            </div>
+          </div>
           <p style="margin:0.25rem 0 0 0;font-size:0.875rem;color:var(--text-secondary);">
             Inspecting <code>main.i</code> is the quickest way to resolve macro substitution bugs, header guard failures, and unexpected typedef overrides.
           </p>
@@ -236,16 +244,32 @@
         <p>
           The compiler takes pure C code (without directives or comments) and parses it into an Abstract Syntax Tree (AST). It performs semantic verification, type checking, register allocation, dead-code elimination, and loop unrolling based on the optimization level (<code>-O0</code>, <code>-O2</code>, <code>-Os</code>), finally producing assembly language instructions specific to the target CPU architecture (x86_64, ARM Cortex-M, RISC-V).
         </p>
-        <pre><code class="language-bash"># Stop compilation after generating assembly code:
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">BASH</span><span>Generate Target Assembly</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-bash"># Stop compilation after generating assembly code:
 gcc -S -O2 main.c -o main.s</code></pre>
+          </div>
+        </div>
 
         <!-- 2.4 Assembling -->
         <h2 id="sec-2-4">2.4 Assembling to Relocatable ELF Objects (<code>as</code>)</h2>
         <p>
           The assembler translates human-readable assembly instructions into raw binary machine code, packaging them inside an <strong>Executable and Linkable Format (ELF)</strong> object file.
         </p>
-        <pre><code class="language-bash"># Stop after assembling into an unlinked relocatable object file:
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">BASH</span><span>Assemble to Relocatable ELF</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-bash"># Stop after assembling into an unlinked relocatable object file:
 gcc -c main.c -o main.o</code></pre>
+          </div>
+        </div>
         <p>
           At this stage, <code>main.o</code> is <em>relocatable</em>. Addresses of external functions (such as <code>printf</code> or hardware drivers) and global variables in other translation units are unresolved and filled with dummy zeroes in the relocation section.
         </p>
@@ -296,7 +320,13 @@ gcc -c main.c -o main.o</code></pre>
           Professional engineers inspect object files and binaries using GNU Binutils:
         </p>
 
-        <pre><code class="language-bash"># 1. View symbol table (local, global, undefined symbols)
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">BASH</span><span>Binutils: nm, readelf &amp; objdump</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-bash"># 1. View symbol table (local, global, undefined symbols)
 nm -C main.o
 
 # 2. Inspect ELF section headers (.text, .data, .bss, .rodata)
@@ -304,6 +334,8 @@ readelf -S main.o
 
 # 3. Disassemble machine code back to assembly with C source interleaved
 objdump -d -S -M intel main.o</code></pre>
+          </div>
+        </div>
 
         <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1.25rem;margin:1.5rem 0;">
           <h4 style="margin-top:0;color:#38BDF8;font-family:'JetBrains Mono',monospace;">Symbol Types in nm Output:</h4>
@@ -322,17 +354,33 @@ objdump -d -S -M intel main.o</code></pre>
           Never compile professional software with default GCC options. Enforce the gold-standard engineering warning flags:
         </p>
 
-        <pre><code class="language-bash"># Recommended Production &amp; Development Compiler Flags:
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">MAKE</span><span>Production CFLAGS</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-bash"># Recommended Production &amp; Development Compiler Flags:
 CFLAGS = -std=c17 \
          -Wall -Wextra -Werror -pedantic \
          -Wshadow -Wdouble-promotion -Wformat=2 \
          -Wundef -fno-common -O2 -g</code></pre>
+          </div>
+        </div>
 
         <p>
           During active development and unit testing, enable runtime sanitizers to catch memory corruption and undefined behavior instantly at the point of origin:
         </p>
-        <pre><code class="language-bash"># AddressSanitizer (ASan) + UndefinedBehaviorSanitizer (UBSan):
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">BASH</span><span>Runtime Sanitizers (ASan + UBSan)</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-bash"># AddressSanitizer (ASan) + UndefinedBehaviorSanitizer (UBSan):
 gcc -fsanitize=address,undefined -g -O1 test_program.c -o test_program</code></pre>
+          </div>
+        </div>
 
         <!-- 2.8 Hands-on Lab -->
         <h2 id="sec-2-lab">2.8 Hands-On Lab: Manual Pipeline Dissection</h2>
@@ -343,7 +391,13 @@ gcc -fsanitize=address,undefined -g -O1 test_program.c -o test_program</code></p
           </p>
 
           <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Step 1: Create <code>math_ops.h</code>, <code>math_ops.c</code>, and <code>main.c</code></h4>
-          <pre><code class="language-c">/* math_ops.h */
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>math_ops.h, math_ops.c &amp; main.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">/* math_ops.h */
 #ifndef MATH_OPS_H
 #define MATH_OPS_H
 int multiply(int a, int b);
@@ -364,9 +418,17 @@ int main(void) {
     printf("Result: %d\n", res);
     return 0;
 }</code></pre>
+            </div>
+          </div>
 
           <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Step 2: Execute Each Tool Explicitly</h4>
-          <pre><code class="language-bash"># Step 2.1: Preprocess main.c
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">BASH</span><span>Manual Pipeline Toolchain Dissection</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-bash"># Step 2.1: Preprocess main.c
 gcc -E main.c -o main.i
 grep -n "multiply" main.i
 
@@ -386,6 +448,8 @@ nm main.o
 gcc main.o math_ops.o -o final_app
 ./final_app
 # Output: Result: 42</code></pre>
+            </div>
+          </div>
         </div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
@@ -396,7 +460,7 @@ gcc main.o math_ops.o -o final_app
     </main>
   </div>
 
-  <script src="../js/book.js?v=3"></script>
+  <script src="../js/book.js?v=5"></script>
 </body>
 </html>
 
