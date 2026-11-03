@@ -161,6 +161,47 @@
         .prose-custom h2 { font-size: 1.5rem; }
         .prose-custom h3 { font-size: 1.25rem; }
     }
+
+    /* Heading scroll offset for fixed navbar */
+    .prose-custom h2, .prose-custom h3 {
+        scroll-margin-top: 6rem;
+    }
+
+    /* Left Index Sidebar custom scrollbars */
+    #blog-index-sidebar {
+        scrollbar-width: thin;
+        scrollbar-color: #CBD5E1 transparent;
+    }
+    #blog-index-sidebar::-webkit-scrollbar {
+        width: 5px;
+    }
+    #blog-index-sidebar::-webkit-scrollbar-thumb {
+        background: #CBD5E1;
+        border-radius: 4px;
+    }
+    #blog-index-sidebar::-webkit-scrollbar-thumb:hover {
+        background: #94A3B8;
+    }
+    #toc-nav-list {
+        scrollbar-width: thin;
+        scrollbar-color: #E2E8F0 transparent;
+    }
+    #toc-nav-list::-webkit-scrollbar {
+        width: 4px;
+    }
+    #toc-nav-list::-webkit-scrollbar-thumb {
+        background: #E2E8F0;
+        border-radius: 4px;
+    }
+
+    /* Active link style in Left Index */
+    .toc-link.active-toc-link {
+        color: #FF5B5B !important;
+        font-weight: 700 !important;
+        background-color: rgba(255, 91, 91, 0.08) !important;
+        border-left: 3px solid #FF5B5B !important;
+        padding-left: 0.5rem !important;
+    }
 </style>
 {% endblock %}
 
@@ -206,8 +247,445 @@
         <div class="prose-custom text-lg text-brand-textSecondary">
             {{ post.content|render_blog_content }}
         </div>
-        
-        
+    </div>
 
-    <!-- Footer -->
+    <!-- Left Floating / Collapsible Index Table (TOC) -->
+    <!-- Floating 'Show Index' Button (Shown when index table is hidden/collapsed) -->
+    <button id="btn-show-index" 
+            type="button" 
+            aria-label="Open Table of Contents"
+            class="fixed left-3 sm:left-5 top-24 z-40 bg-brand-navy hover:bg-brand-coral text-white text-xs font-semibold px-3.5 py-2.5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center gap-2 border border-slate-700/30 group cursor-pointer hidden">
+        <i class="fas fa-list-ul text-brand-coral group-hover:text-white transition-colors"></i>
+        <span>Index</span>
+        <span id="btn-index-count" class="bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full font-mono">0</span>
+        <i class="fas fa-chevron-right text-[10px] opacity-70 group-hover:translate-x-0.5 transition-transform"></i>
+    </button>
+
+    <!-- Backdrop for mobile/tablet screens when drawer is open -->
+    <div id="index-drawer-backdrop" 
+         class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 hidden transition-opacity duration-300">
+    </div>
+
+    <!-- The Slide-out Index Sidebar -->
+    <aside id="blog-index-sidebar" 
+           aria-label="Table of Contents"
+           class="fixed left-3 sm:left-4 top-24 bottom-6 z-40 w-80 max-w-[calc(100vw-2rem)] bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-2xl flex flex-col overflow-hidden transition-transform duration-300 ease-in-out -translate-x-[120%]">
+        
+        <!-- Header -->
+        <div class="px-4 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-list-ol text-brand-coral text-sm"></i>
+                <h3 class="font-bold text-brand-navy text-sm">Table of Contents</h3>
+                <span id="toc-header-count" class="text-[11px] font-semibold bg-blue-50 text-brand-navy px-2 py-0.5 rounded-full border border-blue-100">0</span>
+            </div>
+            <!-- Hide / Collapse Button -->
+            <button id="btn-hide-index" 
+                    type="button" 
+                    class="p-1 px-2 text-xs font-semibold text-slate-500 hover:text-brand-coral hover:bg-coral-50/80 rounded-lg transition-colors flex items-center gap-1 cursor-pointer" 
+                    title="Hide index table (Esc)">
+                <span>Hide</span>
+                <i class="fas fa-angles-left text-xs"></i>
+            </button>
+        </div>
+
+        <!-- Filter / Search input -->
+        <div class="p-3 border-b border-slate-100 bg-white">
+            <div class="relative">
+                <i class="fas fa-search absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                <input id="toc-search" 
+                       type="text" 
+                       placeholder="Filter sections or assignments..." 
+                       class="w-full pl-8 pr-7 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white rounded-lg border border-slate-200 focus:border-brand-coral focus:ring-1 focus:ring-brand-coral/20 outline-none transition-all placeholder:text-slate-400">
+                <button id="toc-search-clear" 
+                        type="button" 
+                        class="absolute right-2 top-2 text-slate-400 hover:text-slate-600 text-xs hidden cursor-pointer">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            </div>
+            <!-- Quick Expand/Collapse toggles -->
+            <div class="flex justify-between items-center mt-2.5 px-0.5 text-[11px] text-slate-500">
+                <span id="toc-active-badge" class="truncate max-w-[170px] text-brand-navy font-medium italic">Jump to section:</span>
+                <button id="btn-toggle-all" type="button" class="text-brand-coral hover:underline font-semibold cursor-pointer">Expand All</button>
+            </div>
+        </div>
+
+        <!-- Scrollable Index Tree -->
+        <nav id="toc-nav-list" 
+             class="flex-1 overflow-y-auto p-2 space-y-1 text-xs select-none overscroll-contain">
+            <!-- Dynamic JS injected links -->
+        </nav>
+
+        <!-- Footer Progress Bar & Controls -->
+        <div class="p-2.5 border-t border-slate-100 bg-slate-50/80 text-[11px] flex items-center justify-between text-slate-500">
+            <div class="flex items-center gap-2 flex-1 mr-3">
+                <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                    <div id="reading-progress-bar" class="bg-brand-coral h-full w-0 transition-all duration-150"></div>
+                </div>
+                <span id="reading-progress-text" class="text-[10px] font-mono text-slate-500">0%</span>
+            </div>
+            <button type="button" id="btn-scroll-top" class="text-slate-600 hover:text-brand-coral font-medium flex items-center gap-1 cursor-pointer">
+                <i class="fas fa-arrow-up text-[10px]"></i> Top
+            </button>
+        </div>
+    </aside>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const content = document.querySelector('.prose-custom');
+    if (!content) return;
+
+    const headings = Array.from(content.querySelectorAll('h2, h3'));
+    const btnShow = document.getElementById('btn-show-index');
+    const btnHide = document.getElementById('btn-hide-index');
+    const sidebar = document.getElementById('blog-index-sidebar');
+    const backdrop = document.getElementById('index-drawer-backdrop');
+    const navList = document.getElementById('toc-nav-list');
+    const headerCount = document.getElementById('toc-header-count');
+    const btnCount = document.getElementById('btn-index-count');
+    const searchInput = document.getElementById('toc-search');
+    const searchClear = document.getElementById('toc-search-clear');
+    const btnToggleAll = document.getElementById('btn-toggle-all');
+    const activeBadge = document.getElementById('toc-active-badge');
+    const btnScrollTop = document.getElementById('btn-scroll-top');
+    const progressBar = document.getElementById('reading-progress-bar');
+    const progressText = document.getElementById('reading-progress-text');
+
+    if (!headings.length || !sidebar || !btnShow || !navList) {
+        if (btnShow) btnShow.style.display = 'none';
+        if (sidebar) sidebar.style.display = 'none';
+        return;
+    }
+
+    // Helper: generate clean slug
+    function slugify(text) {
+        return text.toLowerCase()
+            .replace(/[^\w\s-]/g, '')
+            .trim()
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    // Build hierarchical structure: H2 -> children H3s
+    const tree = [];
+    let currentH2 = null;
+
+    headings.forEach((heading, idx) => {
+        if (!heading.id) {
+            const rawSlug = slugify(heading.textContent) || ('section-' + (idx + 1));
+            let uniqueId = rawSlug;
+            let count = 1;
+            while (document.getElementById(uniqueId)) {
+                uniqueId = rawSlug + '-' + (count++);
+            }
+            heading.id = uniqueId;
+        }
+
+        const rawText = heading.textContent.replace(/^[#\s]+/, '').trim();
+
+        if (heading.tagName === 'H2') {
+            currentH2 = {
+                heading: heading,
+                id: heading.id,
+                title: rawText,
+                children: []
+            };
+            tree.push(currentH2);
+        } else if (heading.tagName === 'H3') {
+            const item = {
+                heading: heading,
+                id: heading.id,
+                title: rawText
+            };
+            if (currentH2) {
+                currentH2.children.push(item);
+            } else {
+                currentH2 = {
+                    heading: heading,
+                    id: heading.id,
+                    title: rawText,
+                    children: []
+                };
+                tree.push(currentH2);
+            }
+        }
+    });
+
+    // Update counts
+    if (headerCount) headerCount.textContent = headings.length + ' sections';
+    if (btnCount) btnCount.textContent = tree.length;
+
+    // Render tree to HTML
+    let html = '';
+    tree.forEach((sec, sIdx) => {
+        const hasChildren = sec.children.length > 0;
+        html += '<div class="toc-group mb-1 rounded-lg border border-transparent hover:border-slate-100 transition-colors" data-title="' + sec.title.toLowerCase() + '">';
+        html += '  <div class="flex items-center justify-between group rounded-md hover:bg-slate-50 transition-colors p-1">';
+        html += '    <a href="#' + sec.id + '" class="toc-link flex-1 text-slate-800 hover:text-brand-coral font-bold text-xs leading-snug py-1 px-1 rounded transition-colors flex items-center gap-1.5" data-target="' + sec.id + '" title="' + sec.title.replace(/"/g, '&quot;') + '">';
+        html += '      <span class="w-1.5 h-1.5 rounded-full bg-brand-coral/60 flex-shrink-0"></span>';
+        html += '      <span class="truncate">' + sec.title + '</span>';
+        html += '    </a>';
+        if (hasChildren) {
+            html += '    <button type="button" class="toc-accordion-btn text-slate-400 hover:text-brand-navy p-1 px-1.5 rounded text-[10px] flex items-center gap-1 transition-colors cursor-pointer" aria-expanded="false" data-group="' + sIdx + '" title="Toggle assignments">';
+            html += '      <span class="text-[10px] font-mono bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded-full">' + sec.children.length + '</span>';
+            html += '      <i class="fas fa-chevron-right text-[8px] transition-transform duration-200 toc-chevron"></i>';
+            html += '    </button>';
+        }
+        html += '  </div>';
+
+        if (hasChildren) {
+            html += '  <ul class="toc-sublist pl-2.5 mt-0.5 space-y-0.5 border-l-2 border-slate-100 ml-3 hidden">';
+            sec.children.forEach(child => {
+                html += '    <li data-title="' + child.title.toLowerCase() + '">';
+                html += '      <a href="#' + child.id + '" class="toc-link block text-slate-600 hover:text-brand-coral text-[11px] py-1 px-1.5 rounded hover:bg-coral-50/50 transition-colors truncate" data-target="' + child.id + '" title="' + child.title.replace(/"/g, '&quot;') + '">';
+                html += '        ' + child.title;
+                html += '      </a>';
+                html += '    </li>';
+            });
+            html += '  </ul>';
+        }
+        html += '</div>';
+    });
+
+    navList.innerHTML = html;
+
+    // Accordion toggle handler
+    navList.addEventListener('click', function (e) {
+        const accBtn = e.target.closest('.toc-accordion-btn');
+        if (accBtn) {
+            e.stopPropagation();
+            const group = accBtn.closest('.toc-group');
+            const sublist = group ? group.querySelector('.toc-sublist') : null;
+            const chevron = accBtn.querySelector('.toc-chevron');
+            if (sublist) {
+                const isHidden = sublist.classList.contains('hidden');
+                if (isHidden) {
+                    sublist.classList.remove('hidden');
+                    accBtn.setAttribute('aria-expanded', 'true');
+                    if (chevron) chevron.style.transform = 'rotate(90deg)';
+                } else {
+                    sublist.classList.add('hidden');
+                    accBtn.setAttribute('aria-expanded', 'false');
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                }
+            }
+            return;
+        }
+
+        // Link click smooth scroll
+        const link = e.target.closest('.toc-link');
+        if (link) {
+            e.preventDefault();
+            const targetId = link.getAttribute('data-target');
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                if (history.pushState) {
+                    history.pushState(null, null, '#' + targetId);
+                }
+                targetEl.scrollIntoView({ behavior: 'smooth' });
+                // If on mobile/tablet, close the drawer
+                if (window.innerWidth < 1024) {
+                    closeDrawer(false);
+                }
+            }
+        }
+    });
+
+    // Expand / Collapse All
+    let allExpanded = false;
+    if (btnToggleAll) {
+        btnToggleAll.addEventListener('click', function () {
+            allExpanded = !allExpanded;
+            const sublists = navList.querySelectorAll('.toc-sublist');
+            const chevrons = navList.querySelectorAll('.toc-chevron');
+            const accBtns = navList.querySelectorAll('.toc-accordion-btn');
+
+            sublists.forEach(sl => {
+                if (allExpanded) sl.classList.remove('hidden');
+                else sl.classList.add('hidden');
+            });
+            chevrons.forEach(ch => {
+                ch.style.transform = allExpanded ? 'rotate(90deg)' : 'rotate(0deg)';
+            });
+            accBtns.forEach(btn => {
+                btn.setAttribute('aria-expanded', allExpanded ? 'true' : 'false');
+            });
+            btnToggleAll.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+        });
+    }
+
+    // Search / Filter
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const query = searchInput.value.trim().toLowerCase();
+            if (searchClear) searchClear.classList.toggle('hidden', !query);
+
+            const groups = navList.querySelectorAll('.toc-group');
+            let anyMatch = false;
+
+            groups.forEach(group => {
+                const groupTitle = group.getAttribute('data-title') || '';
+                const childItems = group.querySelectorAll('li[data-title]');
+                const sublist = group.querySelector('.toc-sublist');
+                const chevron = group.querySelector('.toc-chevron');
+                let groupHasMatch = groupTitle.includes(query);
+                let matchingChildrenCount = 0;
+
+                childItems.forEach(li => {
+                    const liTitle = li.getAttribute('data-title') || '';
+                    if (!query || liTitle.includes(query)) {
+                        li.style.display = '';
+                        matchingChildrenCount++;
+                    } else {
+                        li.style.display = 'none';
+                    }
+                });
+
+                if (!query) {
+                    group.style.display = '';
+                    if (sublist) sublist.classList.add('hidden');
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                    anyMatch = true;
+                } else if (groupHasMatch || matchingChildrenCount > 0) {
+                    group.style.display = '';
+                    anyMatch = true;
+                    if (sublist) {
+                        sublist.classList.remove('hidden');
+                        if (chevron) chevron.style.transform = 'rotate(90deg)';
+                    }
+                } else {
+                    group.style.display = 'none';
+                }
+            });
+
+            let noMatchEl = document.getElementById('toc-no-match');
+            if (!anyMatch && query) {
+                if (!noMatchEl) {
+                    noMatchEl = document.createElement('div');
+                    noMatchEl.id = 'toc-no-match';
+                    noMatchEl.className = 'p-4 text-center text-xs text-slate-400 italic';
+                    noMatchEl.textContent = 'No matching sections found';
+                    navList.appendChild(noMatchEl);
+                }
+            } else if (noMatchEl) {
+                noMatchEl.remove();
+            }
+        });
+
+        if (searchClear) {
+            searchClear.addEventListener('click', function () {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+                searchInput.focus();
+            });
+        }
+    }
+
+    // Drawer Open / Close
+    function openDrawer(savePref) {
+        sidebar.classList.remove('-translate-x-[120%]');
+        sidebar.classList.add('translate-x-0');
+        btnShow.classList.add('hidden');
+        if (window.innerWidth < 1280 && backdrop) {
+            backdrop.classList.remove('hidden');
+        }
+        if (savePref) {
+            localStorage.setItem('acl_blog_index_hidden', 'false');
+        }
+    }
+
+    function closeDrawer(savePref) {
+        sidebar.classList.add('-translate-x-[120%]');
+        sidebar.classList.remove('translate-x-0');
+        btnShow.classList.remove('hidden');
+        if (backdrop) {
+            backdrop.classList.add('hidden');
+        }
+        if (savePref) {
+            localStorage.setItem('acl_blog_index_hidden', 'true');
+        }
+    }
+
+    btnShow.addEventListener('click', function () {
+        openDrawer(true);
+    });
+
+    btnHide.addEventListener('click', function () {
+        closeDrawer(true);
+    });
+
+    if (backdrop) {
+        backdrop.addEventListener('click', function () {
+            closeDrawer(false);
+        });
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !sidebar.classList.contains('-translate-x-[120%]')) {
+            closeDrawer(true);
+        }
+    });
+
+    // Initial drawer state based on screen size and localStorage
+    const savedHidden = localStorage.getItem('acl_blog_index_hidden');
+    if (window.innerWidth >= 1280) {
+        if (savedHidden === 'true') {
+            closeDrawer(false);
+        } else {
+            openDrawer(false);
+        }
+    } else {
+        closeDrawer(false);
+    }
+
+    // Scroll spy: active heading highlight
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                const links = navList.querySelectorAll('.toc-link');
+                links.forEach(l => l.classList.remove('active-toc-link'));
+
+                const activeLink = navList.querySelector('.toc-link[data-target="' + id + '"]');
+                if (activeLink) {
+                    activeLink.classList.add('active-toc-link');
+                    // Automatically reveal sublist if active is inside it
+                    const parentSublist = activeLink.closest('.toc-sublist');
+                    if (parentSublist && parentSublist.classList.contains('hidden')) {
+                        parentSublist.classList.remove('hidden');
+                        const chevron = parentSublist.previousElementSibling ? parentSublist.previousElementSibling.querySelector('.toc-chevron') : null;
+                        if (chevron) chevron.style.transform = 'rotate(90deg)';
+                    }
+                    // Keep visible in nav
+                    activeLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+
+                    if (activeBadge) {
+                        activeBadge.textContent = activeLink.textContent.trim();
+                    }
+                }
+            }
+        });
+    }, {
+        rootMargin: '-80px 0px -70% 0px'
+    });
+
+    headings.forEach(h => observer.observe(h));
+
+    // Reading progress & scroll to top
+    window.addEventListener('scroll', function () {
+        const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = height > 0 ? Math.min(100, Math.round((winScroll / height) * 100)) : 0;
+        if (progressBar) progressBar.style.width = scrolled + '%';
+        if (progressText) progressText.textContent = scrolled + '%';
+    }, { passive: true });
+
+    if (btnScrollTop) {
+        btnScrollTop.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+});
+</script>
 {% endblock %}
