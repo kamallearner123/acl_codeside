@@ -700,6 +700,19 @@ fn main() {
 </tr>
 </tbody></table></div>
 
+        <!-- ELF Anatomy Diagram -->
+        <div class="figure-card" style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;margin:2rem 0;box-shadow:var(--shadow-md);">
+          <div style="text-align:center;">
+            <img src="../assets/images/elf_format_structure.jpg" alt="ELF (Executable and Linkable Format) Layout and Sections" style="max-width:100%;height:auto;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,0.25);border:1px solid var(--border-subtle);display:inline-block;">
+          </div>
+          <div style="margin-top:1.25rem;font-size:0.875rem;line-height:1.6;color:var(--text-secondary);border-top:1px solid var(--border-subtle);padding-top:1rem;">
+            <strong style="color:var(--text-primary);font-size:0.925rem;">Figure 11.1: Architecture of the ELF Binary and Section Hierarchy</strong>
+            <p style="margin:0.5rem 0 0 0;">
+              The ELF container organises your compiled firmware into an <strong>ELF Header</strong> (metadata &amp; entry point), <strong>Program Headers</strong> (memory load segments), core data/code sections (<code>.text</code>, <code>.data</code>, <code>.bss</code>, <code>.rodata</code>), debugging tables (<code>.symtab</code>, <code>.debug</code>, <code>.strtab</code>), and a <strong>Section Header Table</strong> describing file offsets and permissions.
+            </p>
+          </div>
+        </div>
+
         <div class="code-container">
           <div class="code-header">
             <div class="code-title">

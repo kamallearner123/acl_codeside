@@ -274,6 +274,36 @@ gcc -c main.c -o main.o</code></pre>
           At this stage, <code>main.o</code> is <em>relocatable</em>. Addresses of external functions (such as <code>printf</code> or hardware drivers) and global variables in other translation units are unresolved and filled with dummy zeroes in the relocation section.
         </p>
 
+        <!-- ELF Anatomy Diagram -->
+        <div class="figure-card" style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;margin:2rem 0;box-shadow:var(--shadow-md);">
+          <div style="text-align:center;">
+            <img src="../assets/images/elf_format_structure.jpg" alt="ELF (Executable and Linkable Format) Architecture &amp; Sections Diagram" style="max-width:100%;height:auto;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,0.25);border:1px solid var(--border-subtle);display:inline-block;">
+          </div>
+          <div style="margin-top:1.25rem;font-size:0.875rem;line-height:1.6;color:var(--text-secondary);border-top:1px solid var(--border-subtle);padding-top:1rem;">
+            <strong style="color:var(--text-primary);font-size:0.925rem;">Figure 2.1: Internal Layout of an Executable and Linkable Format (ELF) File</strong>
+            <ul style="margin:0.5rem 0 0 1.25rem;padding:0;">
+              <li><strong>ELF Header:</strong> High-level file metadata specifying binary architecture (x86_64 / ARM), endianness, ELF version, ABI, and program entry point.</li>
+              <li><strong>Program Header:</strong> Directs the OS kernel or embedded flash loader on how segments map into physical/virtual memory address spaces.</li>
+              <li><strong>Executable &amp; Data Sections:</strong>
+                <ul>
+                  <li><code>.text</code>: Machine instruction opcodes executed by the CPU.</li>
+                  <li><code>.data</code>: Read/write global and static variables initialized to non-zero values.</li>
+                  <li><code>.bss</code>: Global/static variables initialized to zero (takes 0 bytes on disk, allocated in RAM at startup).</li>
+                  <li><code>.rodata</code>: Read-only constants, string literals, and jump tables.</li>
+                </ul>
+              </li>
+              <li><strong>Symbol &amp; Debugging Metadata:</strong>
+                <ul>
+                  <li><code>.symtab</code>: Symbol table associating function and variable names with memory offsets.</li>
+                  <li><code>.strtab</code>: String table storing raw text strings for identifiers.</li>
+                  <li><code>.debug</code>: DWARF debugging symbols used by GDB/LLDB to map assembly addresses back to original C source code lines.</li>
+                </ul>
+              </li>
+              <li><strong>Section Header Table:</strong> Comprehensive index cataloging each section's file offset, byte length, memory alignment, and permission flags (R/W/X).</li>
+            </ul>
+          </div>
+        </div>
+
         <!-- 2.5 Linking -->
         <h2 id="sec-2-5">2.5 Linking: Static vs Dynamic Linking (<code>ld</code>)</h2>
         <p>
