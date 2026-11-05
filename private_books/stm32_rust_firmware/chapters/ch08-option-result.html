@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=3">
+  <link rel="stylesheet" href="../css/style.css?v=4">
 </head>
 <body data-chapter-id="ch08-option-result">
   <div id="reading-progress-bar"></div>
@@ -603,7 +603,7 @@
           <div class="code-header">
             <div class="code-title">
               <span class="code-lang-badge">RUST</span>
-              <span>Option</span>
+              <span>Option in practice</span>
             </div>
             <button class="code-copy-btn">Copy</button>
           </div>
@@ -612,13 +612,28 @@
     buf.iter().position(|&amp;b| b == 0x7E)
 }
 
-match find_start(&amp;rx) {
-    Some(i) =&gt; process(&amp;rx[i..]),
-    None =&gt; { /* no frame start yet */ }
+fn process_frame(slice: &amp;[u8]) {
+    println!("Processing frame from delimiter: {:02X?}", slice);
 }
 
-let idx = find_start(&amp;rx).unwrap_or(0);          // default
-if let Some(i) = find_start(&amp;rx) { /* ... */ }  // only the case you care about</code></pre>
+fn main() {
+    let rx = [0x00, 0xFF, 0x7E, 0x01, 0x02, 0x03];
+
+    // 1. Explicit pattern matching:
+    match find_start(&amp;rx) {
+        Some(i) =&gt; process_frame(&amp;rx[i..]),
+        None =&gt; println!("No start delimiter found!"),
+    }
+
+    // 2. Safe default fallback:
+    let idx = find_start(&amp;rx).unwrap_or(0);
+    println!("Start index or default: {}", idx);
+
+    // 3. Concise `if let` syntax:
+    if let Some(i) = find_start(&amp;rx) {
+        println!("Frame starts at offset {}", i);
+    }
+}</code></pre>
           </div>
         </div>
 
@@ -641,7 +656,17 @@ enum SensorError&lt;E&gt; {
 }
 
 impl&lt;E&gt; From&lt;E&gt; for SensorError&lt;E&gt; {
-    fn from(e: E) -&gt; Self { SensorError::Bus(e) }
+    fn from(e: E) -&gt; Self {
+        SensorError::Bus(e)
+    }
+}
+
+fn main() {
+    let err: SensorError&lt;&amp;str&gt; = SensorError::WrongChipId(0x12);
+    println!("Formed custom error: {:?}", err);
+
+    let bus_err: SensorError&lt;&amp;str&gt; = SensorError::from("I2C NACK on address 0x68");
+    println!("Formed bus error via From trait: {:?}", bus_err);
 }</code></pre>
           </div>
         </div>
@@ -760,10 +785,23 @@ impl&lt;E&gt; From&lt;E&gt; for SensorError&lt;E&gt; {
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>let mv = adc.read(&amp;mut pin).ok()                  // Result -&gt; Option
-    .map(|raw| (raw as u32 * 3300 / 4095) as u16)
-    .filter(|&amp;v| v &gt; 50)                          // reject floor noise
-    .unwrap_or(0);</code></pre>
+            <pre><code>struct MockAdc;
+impl MockAdc {
+    fn read(&amp;self) -&gt; Result&lt;u16, &amp;'static str&gt; {
+        Ok(2500) // simulated 12-bit ADC reading
+    }
+}
+
+fn main() {
+    let adc = MockAdc;
+
+    let mv = adc.read().ok()                      // Result -&gt; Option
+        .map(|raw| (raw as u32 * 3300 / 4095) as u16)
+        .filter(|&amp;v| v &gt; 50)                      // reject floor noise
+        .unwrap_or(0);
+
+    println!("Processed ADC voltage: {} mV", mv);
+}</code></pre>
           </div>
         </div>
 
@@ -883,6 +921,6 @@ impl&lt;E&gt; From&lt;E&gt; for SensorError&lt;E&gt; {
       <ul id="search-results" class="search-results-list"></ul>
     </div>
   </div>
-  <script src="../js/book.js?v=3"></script>
+  <script src="../js/book.js?v=4"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=3">
+  <link rel="stylesheet" href="../css/style.css?v=4">
 </head>
 <body data-chapter-id="ch02-rust-for-c-developers">
   <div id="reading-progress-bar"></div>
@@ -591,12 +591,18 @@
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>let led_count: u8 = 4;          // like uint8_t, immutable
-let mut ticks: u32 = 0;         // like uint32_t, mutable
-ticks += 1;
+            <pre><code>const SAMPLE_RATE_HZ: u32 = 1_000;   // compile-time constant, like #define but strongly typed
+static BANNER: &amp;str = "STM32 Bootloader v1.0"; // lives in flash/rodata for the whole program
 
-const SAMPLE_RATE_HZ: u32 = 1_000;   // compile-time constant, like #define but typed
-static BANNER: &amp;str = "boot";        // lives in flash for the whole program</code></pre>
+fn main() {
+    let led_count: u8 = 4;          // like uint8_t, immutable by default
+    let mut ticks: u32 = 0;         // like uint32_t, mutable with `mut`
+    ticks += 1;
+
+    println!("Banner: {}", BANNER);
+    println!("SAMPLE_RATE_HZ: {} Hz", SAMPLE_RATE_HZ);
+    println!("led_count: {}, ticks: {}", led_count, ticks);
+}</code></pre>
           </div>
         </div>
 
@@ -649,13 +655,24 @@ static BANNER: &amp;str = "boot";        // lives in flash for the whole program
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>let raw: u16 = 3071;
-let mv = (raw as u32 * 3300) / 4095;     // widen BEFORE multiplying to avoid overflow
-let small = mv as u8;                     // `as` truncates silently - use with care
-let safe: Result&lt;u8, _&gt; = u8::try_from(mv);   // checked conversion</code></pre>
+            <pre><code>fn main() {
+    let raw: u16 = 3071;
+    // Widen to u32 BEFORE multiplying to prevent intermediate 16-bit integer overflow:
+    let mv = (raw as u32 * 3300) / 4095;
+    let small = mv as u8; // `as` truncates silently - use with care
+
+    // Safe checked conversion:
+    let safe: Result&lt;u8, _&gt; = u8::try_from(mv);
+
+    println!("Raw ADC: {}, Voltage: {} mV", raw, mv);
+    println!("Truncated as u8: {}", small);
+    match safe {
+        Ok(v) => println!("Checked u8: {}", v),
+        Err(e) => println!("u8::try_from error (value out of range): {}", e),
+    }
+}</code></pre>
           </div>
         </div>
-
 
         <div class="callout callout-tip">
           <div class="callout-header">Prefer From / TryFrom</div>
@@ -674,11 +691,20 @@ let safe: Result&lt;u8, _&gt; = u8::try_from(mv);   // checked conversion</code>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>let a: u8 = 250;
-let b = a.wrapping_add(10);        // 4      (explicit wrap, e.g. a hash)
-let c = a.checked_add(10);         // None   (detect overflow)
-let d = a.saturating_add(10);      // 255    (clamp, e.g. a PWM duty)
-let (e, overflowed) = a.overflowing_add(10);</code></pre>
+            <pre><code>fn main() {
+    let a: u8 = 250;
+
+    let b = a.wrapping_add(10);        // 4 (explicit modular wrap, e.g. for timer rollover or hashes)
+    let c = a.checked_add(10);         // None (detects overflow safely without crashing)
+    let d = a.saturating_add(10);      // 255 (clamps at maximum value, perfect for PWM duty cycles)
+    let (e, overflowed) = a.overflowing_add(10); // (4, true)
+
+    println!("Original a: {}", a);
+    println!("wrapping_add(10): {}", b);
+    println!("checked_add(10): {:?}", c);
+    println!("saturating_add(10): {}", d);
+    println!("overflowing_add(10): val={}, overflowed={}", e, overflowed);
+}</code></pre>
           </div>
         </div>
 
@@ -697,11 +723,20 @@ let (e, overflowed) = a.overflowing_add(10);</code></pre>
           <div class="code-body">
             <pre><code>fn celsius_x10(raw: u16) -&gt; i16 {
     let mv = (raw as i32 * 3300) / 4095;
-    (mv - 500) as i16              // TMP36: 500 mV offset, 10 mV per degree = degrees x 10
+    (mv - 500) as i16 // TMP36: 500 mV offset, 10 mV/°C = temperature in tenths of a degree
 }
 
 fn clamp_duty(d: u16, max: u16) -&gt; u16 {
-    if d &gt; max { max } else { d }  // `if` is an expression
+    if d &gt; max { max } else { d } // `if` is an expression in Rust
+}
+
+fn main() {
+    let raw_adc = 2048;
+    let temp_x10 = celsius_x10(raw_adc);
+    let duty = clamp_duty(1200, 1000);
+
+    println!("Raw ADC: {} -> Temperature: {}.{} °C", raw_adc, temp_x10 / 10, (temp_x10 % 10).abs());
+    println!("Clamped duty cycle (max 1000): {}", duty);
 }</code></pre>
           </div>
         </div>
@@ -724,6 +759,13 @@ fn clamp_duty(d: u16, max: u16) -&gt; u16 {
         10 | 11 =&gt; "mid",
         _ =&gt; "high",
     }
+}
+
+fn main() {
+    let test_levels = [0, 5, 10, 11, 42];
+    for &amp;lvl in &amp;test_levels {
+        println!("Level {}: status = {}", lvl, describe(lvl));
+    }
 }</code></pre>
           </div>
         </div>
@@ -739,11 +781,19 @@ fn clamp_duty(d: u16, max: u16) -&gt; u16 {
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>let mut buf = [0u8; 16];          // fixed size, stack allocated, zeroed
-buf[3] = 0x7E;
-let header: &amp;[u8] = &amp;buf[0..4];   // a slice: pointer + length together
-let sum: u32 = header.iter().map(|&amp;b| b as u32).sum();
-// buf[16] = 1;   // panics at run time: index out of bounds (never silent corruption)</code></pre>
+            <pre><code>fn main() {
+    let mut buf = [0u8; 16]; // fixed-size array on stack, zeroed
+    buf[0] = 0xAA;
+    buf[1] = 0x55;
+    buf[3] = 0x7E;
+
+    let header: &amp;[u8] = &amp;buf[0..4]; // slice: fat pointer [ptr, len]
+    let sum: u32 = header.iter().map(|&amp;b| b as u32).sum();
+
+    println!("Buffer: {:02X?}", buf);
+    println!("Header slice: {:02X?}, Length: {}", header, header.len());
+    println!("Sum of header bytes: {}", sum);
+}</code></pre>
           </div>
         </div>
 
@@ -891,6 +941,6 @@ fn read_idr() -&gt; u32 {
       <ul id="search-results" class="search-results-list"></ul>
     </div>
   </div>
-  <script src="../js/book.js?v=3"></script>
+  <script src="../js/book.js?v=4"></script>
 </body>
 </html>

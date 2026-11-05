@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=3">
+  <link rel="stylesheet" href="../css/style.css?v=4">
 </head>
 <body data-chapter-id="ch05-lifetimes">
   <div id="reading-progress-bar"></div>
@@ -587,7 +587,7 @@
           <div class="code-header">
             <div class="code-title">
               <span class="code-lang-badge">RUST</span>
-              <span>A dangling reference is a compile error</span>
+              <span>Explicit lifetimes in practice</span>
             </div>
             <button class="code-copy-btn">Copy</button>
           </div>
@@ -596,12 +596,13 @@
     if a.len() &gt;= b.len() { a } else { b }
 }
 
-let result;
-{
-    let short_lived = [1u8, 2, 3];
-    result = pick(&amp;short_lived, &amp;[9, 9]);
-}   // short_lived dies here
-// use(result);   // ERROR: `short_lived` does not live long enough</code></pre>
+fn main() {
+    let long_lived = [1u8, 2, 3, 4, 5];
+    let candidate = [10u8, 20];
+
+    let result = pick(&amp;long_lived, &amp;candidate);
+    println!("Picked longer slice: {:?}", result);
+}</code></pre>
           </div>
         </div>
 
@@ -619,7 +620,16 @@ let result;
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>fn first_word(s: &amp;str) -&gt; &amp;str { s.split(' ').next().unwrap_or("") }   // output tied to the input</code></pre>
+            <pre><code>fn first_word(s: &amp;str) -&gt; &amp;str {
+    s.split(' ').next().unwrap_or("")
+}
+
+fn main() {
+    let message = "STM32F446RE Cortex-M4F microcontroller";
+    let word = first_word(message);
+    println!("Full sentence: \"{}\"", message);
+    println!("First word: \"{}\"", word);
+}</code></pre>
           </div>
         </div>
 
@@ -634,17 +644,31 @@ let result;
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>struct Frame&lt;'a&gt; {
+            <pre><code>#[derive(Debug)]
+struct Frame&lt;'a&gt; {
     id: u16,
-    payload: &amp;'a [u8],     // points INTO the buffer - no copy
+    payload: &amp;'a [u8], // zero-copy: points directly into the receive buffer
 }
 
 fn parse(buf: &amp;[u8]) -&gt; Option&lt;Frame&lt;'_&gt;&gt; {
     if buf.len() &lt; 3 { return None; }
     let id = u16::from_be_bytes([buf[0], buf[1]]);
     let len = buf[2] as usize;
-    let payload = buf.get(3..3 + len)?;     // bounds-checked
+    let payload = buf.get(3..3 + len)?; // bounds-checked
     Some(Frame { id, payload })
+}
+
+fn main() {
+    // Simulated raw incoming UART packet: [ID_HIGH, ID_LOW, LEN, DATA...]
+    let raw_packet = [0x00, 0x2A, 0x04, 0xDE, 0xAD, 0xBE, 0xEF];
+
+    match parse(&amp;raw_packet) {
+        Some(frame) =&gt; {
+            println!("Parsed Frame ID: 0x{:04X}", frame.id);
+            println!("Payload slice: {:02X?}", frame.payload);
+        }
+        None =&gt; println!("Packet parsing failed or incomplete!"),
+    }
 }</code></pre>
           </div>
         </div>
@@ -826,6 +850,6 @@ let rx_buf: &amp;'static mut [u8; 64] = singleton!(: [u8; 64] = [0; 64]).unwrap(
       <ul id="search-results" class="search-results-list"></ul>
     </div>
   </div>
-  <script src="../js/book.js?v=3"></script>
+  <script src="../js/book.js?v=4"></script>
 </body>
 </html>

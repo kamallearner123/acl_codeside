@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=3">
+  <link rel="stylesheet" href="../css/style.css?v=4">
 </head>
 <body data-chapter-id="ch06-structs-enums">
   <div id="reading-progress-bar"></div>
@@ -591,17 +591,33 @@
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>#[derive(Clone, Copy, PartialEq, PartialOrd)]
+            <pre><code>#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 struct Millivolts(u16);
-#[derive(Clone, Copy)]
-struct DegC(i16);              // value in 0.1 degree units
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+struct DegC(i16); // value in 0.1 degree units
 
 impl Millivolts {
-    fn from_raw(raw: u16) -&gt; Self { Millivolts(((raw as u32 * 3300) / 4095) as u16) }
+    fn from_raw(raw: u16) -&gt; Self {
+        Millivolts(((raw as u32 * 3300) / 4095) as u16)
+    }
 }
 
-fn set_threshold(t: DegC) { /* ... */ }
-// set_threshold(Millivolts(500));   // ERROR: expected DegC</code></pre>
+fn set_temperature_threshold(t: DegC) {
+    println!("Active threshold: {}.{} °C", t.0 / 10, (t.0 % 10).abs());
+}
+
+fn main() {
+    let raw_adc: u16 = 2048;
+    let mv = Millivolts::from_raw(raw_adc);
+    let target = DegC(450); // 45.0 °C
+
+    println!("Converted ADC {}: {:?}", raw_adc, mv);
+    set_temperature_threshold(target);
+
+    // Strong type safety: passing Millivolts to DegC will NOT compile!
+    // set_temperature_threshold(mv); // error[E0308]: mismatched types
+}</code></pre>
           </div>
         </div>
 
@@ -618,7 +634,8 @@ fn set_threshold(t: DegC) { /* ... */ }
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>enum Command {
+            <pre><code>#[derive(Debug)]
+enum Command {
     LedOn,
     LedOff,
     SetPwm { channel: u8, duty: u16 },
@@ -628,12 +645,25 @@ fn set_threshold(t: DegC) { /* ... */ }
 
 fn handle(cmd: Command) {
     match cmd {
-        Command::LedOn =&gt; led.set_high(),
-        Command::LedOff =&gt; led.set_low(),
-        Command::SetPwm { channel, duty } =&gt; pwm_set(channel, duty),
-        Command::ReadAdc(ch) =&gt; adc_read(ch),
-        Command::Reboot =&gt; cortex_m::peripheral::SCB::sys_reset(),
-    }   // add a new variant and every match that ignores it fails to compile
+        Command::LedOn =&gt; println!("Action: LED turned ON"),
+        Command::LedOff =&gt; println!("Action: LED turned OFF"),
+        Command::SetPwm { channel, duty } =&gt; println!("Action: PWM Ch {} duty set to {}", channel, duty),
+        Command::ReadAdc(ch) =&gt; println!("Action: Reading ADC Channel {}", ch),
+        Command::Reboot =&gt; println!("Action: Triggering system reset!"),
+    }
+}
+
+fn main() {
+    let commands = [
+        Command::LedOn,
+        Command::SetPwm { channel: 1, duty: 750 },
+        Command::ReadAdc(3),
+        Command::LedOff,
+    ];
+
+    for cmd in commands {
+        handle(cmd);
+    }
 }</code></pre>
           </div>
         </div>
@@ -649,12 +679,17 @@ fn handle(cmd: Command) {
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>#[derive(Clone, Copy, PartialEq)]
+            <pre><code>#[derive(Debug, Clone, Copy, PartialEq)]
 enum Light { Green, Yellow, Red, Pedestrian }
 
 impl Light {
     fn duration_ms(self) -&gt; u32 {
-        match self { Light::Green =&gt; 8000, Light::Yellow =&gt; 2000, Light::Red =&gt; 6000, Light::Pedestrian =&gt; 5000 }
+        match self {
+            Light::Green =&gt; 8000,
+            Light::Yellow =&gt; 2000,
+            Light::Red =&gt; 6000,
+            Light::Pedestrian =&gt; 5000,
+        }
     }
     fn next(self, ped_request: bool) -&gt; Light {
         match (self, ped_request) {
@@ -664,6 +699,20 @@ impl Light {
             (Light::Red, false) | (Light::Pedestrian, _) =&gt; Light::Green,
         }
     }
+}
+
+fn main() {
+    let mut state = Light::Green;
+    println!("State: {:?}, Duration: {} ms", state, state.duration_ms());
+
+    state = state.next(false);
+    println!("State: {:?}, Duration: {} ms", state, state.duration_ms());
+
+    state = state.next(true); // pedestrian button pressed
+    println!("State: {:?}, Duration: {} ms", state, state.duration_ms());
+
+    state = state.next(true);
+    println!("State: {:?}, Duration: {} ms", state, state.duration_ms());
 }</code></pre>
           </div>
         </div>
@@ -700,16 +749,40 @@ let btn = gpioc.pc13.into_pull_up_input(); // Pin&lt;'C', 13, Input&gt;
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>struct Disabled; struct Enabled;
-struct Sensor&lt;S&gt; { _state: core::marker::PhantomData&lt;S&gt; }
+            <pre><code>use std::marker::PhantomData;
+
+struct Disabled;
+struct Enabled;
+
+struct Sensor&lt;State&gt; {
+    name: &amp;'static str,
+    _state: PhantomData&lt;State&gt;,
+}
 
 impl Sensor&lt;Disabled&gt; {
-    fn enable(self) -&gt; Sensor&lt;Enabled&gt; { /* write enable register */ Sensor { _state: core::marker::PhantomData } }
+    fn new(name: &amp;'static str) -&gt; Self {
+        Self { name, _state: PhantomData }
+    }
+    fn enable(self) -&gt; Sensor&lt;Enabled&gt; {
+        println!("[{}] Power rail enabled, calibration routine complete.", self.name);
+        Sensor { name: self.name, _state: PhantomData }
+    }
 }
+
 impl Sensor&lt;Enabled&gt; {
-    fn read(&amp;mut self) -&gt; u16 { /* ... */ 0 }
+    fn read(&amp;mut self) -&gt; u16 {
+        42 // simulated reading
+    }
 }
-// Sensor&lt;Disabled&gt; has no `read`: reading before enabling cannot be written.</code></pre>
+
+fn main() {
+    let sensor = Sensor::new("BME280 Temperature");
+    // sensor.read(); // Compile Error! Sensor&lt;Disabled&gt; has no read() method!
+
+    let mut active_sensor = sensor.enable();
+    let val = active_sensor.read();
+    println!("Reading from enabled sensor: {}", val);
+}</code></pre>
           </div>
         </div>
 
@@ -859,6 +932,6 @@ impl Board {
       <ul id="search-results" class="search-results-list"></ul>
     </div>
   </div>
-  <script src="../js/book.js?v=3"></script>
+  <script src="../js/book.js?v=4"></script>
 </body>
 </html>

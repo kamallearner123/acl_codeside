@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=3">
+  <link rel="stylesheet" href="../css/style.css?v=4">
 </head>
 <body data-chapter-id="ch07-traits-generics">
   <div id="reading-progress-bar"></div>
@@ -592,14 +592,31 @@
           </div>
           <div class="code-body">
             <pre><code>trait Sensor {
-    type Error;
+    type Error: std::fmt::Debug;
     fn read_mv(&amp;mut self) -&gt; Result&lt;u16, Self::Error&gt;;
 }
 
-struct Potentiometer { /* adc, pin */ }
+struct Potentiometer {
+    position: u16,
+}
+
 impl Sensor for Potentiometer {
     type Error = core::convert::Infallible;
-    fn read_mv(&amp;mut self) -&gt; Result&lt;u16, Self::Error&gt; { Ok(1650) }
+    fn read_mv(&amp;mut self) -&gt; Result&lt;u16, Self::Error&gt; {
+        Ok(self.position)
+    }
+}
+
+fn log_reading&lt;S: Sensor&gt;(s: &amp;mut S) -&gt; Option&lt;u16&gt; {
+    s.read_mv().ok()
+}
+
+fn main() {
+    let mut pot = Potentiometer { position: 1650 };
+    match log_reading(&amp;mut pot) {
+        Some(mv) =&gt; println!("Potentiometer sensor reading: {} mV", mv),
+        None =&gt; println!("Sensor reading failed!"),
+    }
 }</code></pre>
           </div>
         </div>
@@ -610,13 +627,36 @@ impl Sensor for Potentiometer {
           <div class="code-header">
             <div class="code-title">
               <span class="code-lang-badge">RUST</span>
-              <span>A function generic over any sensor</span>
+              <span>A function generic over multiple sensors</span>
             </div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>fn log_reading&lt;S: Sensor&gt;(s: &amp;mut S) -&gt; Option&lt;u16&gt; {
-    s.read_mv().ok()
+            <pre><code>trait Sensor {
+    fn name(&amp;self) -&gt; &amp;'static str;
+    fn sample(&amp;mut self) -&gt; f32;
+}
+
+struct TemperatureSensor;
+impl Sensor for TemperatureSensor {
+    fn name(&amp;self) -&gt; &amp;'static str { "TMP36 Temperature" }
+    fn sample(&amp;mut self) -&gt; f32 { 24.5 }
+}
+
+struct PressureSensor;
+impl Sensor for PressureSensor {
+    fn name(&amp;self) -&gt; &amp;'static str { "BMP280 Pressure" }
+    fn sample(&amp;mut self) -&gt; f32 { 1013.25 }
+}
+
+// Monomorphized generic function:
+fn print_telemetry&lt;S: Sensor&gt;(mut s: S) {
+    println!("[Telemetry] {}: {:.2}", s.name(), s.sample());
+}
+
+fn main() {
+    print_telemetry(TemperatureSensor);
+    print_telemetry(PressureSensor);
 }</code></pre>
           </div>
         </div>
@@ -836,6 +876,6 @@ fn toggles() {
       <ul id="search-results" class="search-results-list"></ul>
     </div>
   </div>
-  <script src="../js/book.js?v=3"></script>
+  <script src="../js/book.js?v=4"></script>
 </body>
 </html>

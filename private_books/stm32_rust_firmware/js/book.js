@@ -743,6 +743,241 @@
     });
   }
 
+  // --- Interactive Rust Code Runner & In-Place Playground ---
+  function initRustPlayground() {
+    document.querySelectorAll('.code-container').forEach(container => {
+      if (container.dataset.playgroundInitialized) return;
+      container.dataset.playgroundInitialized = 'true';
+
+      const langBadge = container.querySelector('.code-lang-badge');
+      const codeEl = container.querySelector('code');
+      const header = container.querySelector('.code-header');
+      const body = container.querySelector('.code-body');
+      if (!codeEl || !header || !body) return;
+
+      const lang = (langBadge ? langBadge.textContent.trim().toUpperCase() : '') || '';
+      if (lang !== 'RUST' && lang !== 'RS' && !codeEl.classList.contains('language-rust') && !codeEl.classList.contains('language-rs')) {
+        return;
+      }
+
+      const rawText = codeEl.innerText || codeEl.textContent || '';
+      const isHardware = /#\!\[no_std\]|cortex_m|stm32f4xx_hal|embedded_hal|pac::|#\[entry\]|singleton\!|Pin<|gpio[a-k]\.|defmt::|SCB::sys_reset|read_volatile/m.test(rawText);
+
+      const title = header.querySelector('.code-title');
+
+      if (isHardware) {
+        if (title && !title.querySelector('.code-target-badge')) {
+          const badge = document.createElement('span');
+          badge.className = 'code-target-badge hardware';
+          badge.textContent = 'STM32 Hardware';
+          badge.title = 'Requires STM32 microcontroller hardware / HAL target';
+          title.appendChild(badge);
+        }
+        return;
+      }
+
+      // Pure Runnable Rust Code Block
+      container.classList.add('is-runnable');
+      container.dataset.originalCode = rawText;
+
+      if (title && !title.querySelector('.code-target-badge')) {
+        const badge = document.createElement('span');
+        badge.className = 'code-target-badge runnable';
+        badge.innerHTML = '<span class="run-dot">●</span> Editable &amp; Runnable';
+        badge.title = 'You can edit this code in place and run it directly in your browser';
+        title.appendChild(badge);
+      }
+
+      // Make code element editable with plaintext-only mode
+      try {
+        codeEl.contentEditable = 'plaintext-only';
+      } catch (e) {
+        codeEl.contentEditable = 'true';
+      }
+      codeEl.spellcheck = false;
+      codeEl.setAttribute('autocorrect', 'off');
+      codeEl.setAttribute('autocapitalize', 'off');
+      codeEl.setAttribute('title', 'Click to edit Rust code directly');
+
+      // Edit hint
+      if (!body.querySelector('.code-edit-hint')) {
+        const hint = document.createElement('span');
+        hint.className = 'code-edit-hint';
+        hint.textContent = '✎ Click to edit';
+        body.appendChild(hint);
+      }
+
+      // Tab key indent support inside code
+      codeEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          if (document.queryCommandSupported && document.queryCommandSupported('insertText')) {
+            document.execCommand('insertText', false, '    ');
+          } else {
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0) {
+              const range = sel.getRangeAt(0);
+              range.deleteContents();
+              const textNode = document.createTextNode('    ');
+              range.insertNode(textNode);
+              range.setStartAfter(textNode);
+              range.setEndAfter(textNode);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          }
+        }
+      });
+
+      // Actions Container in Header
+      let actions = header.querySelector('.code-actions');
+      if (!actions) {
+        actions = document.createElement('div');
+        actions.className = 'code-actions';
+        const copyBtn = header.querySelector('.code-copy-btn');
+        if (copyBtn) {
+          header.removeChild(copyBtn);
+        }
+        header.appendChild(actions);
+
+        // Run Button
+        const runBtn = document.createElement('button');
+        runBtn.className = 'code-run-btn';
+        runBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Run';
+        runBtn.title = 'Compile and run this Rust code in browser';
+        actions.appendChild(runBtn);
+
+        // Reset Button
+        const resetBtn = document.createElement('button');
+        resetBtn.className = 'code-reset-btn';
+        resetBtn.textContent = '↺ Reset';
+        resetBtn.title = 'Reset code to default state';
+        actions.appendChild(resetBtn);
+
+        // Copy Button (re-add)
+        if (copyBtn) {
+          actions.appendChild(copyBtn);
+        } else {
+          const newCopy = document.createElement('button');
+          newCopy.className = 'code-copy-btn';
+          newCopy.textContent = 'Copy';
+          actions.appendChild(newCopy);
+        }
+      }
+
+      // Create Terminal Console Output
+      let terminal = container.querySelector('.code-terminal');
+      if (!terminal) {
+        terminal = document.createElement('div');
+        terminal.className = 'code-terminal';
+        terminal.style.display = 'none';
+        terminal.innerHTML = `
+          <div class="terminal-header">
+            <div class="terminal-title">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+              <span>Terminal Output</span>
+            </div>
+            <div class="terminal-actions">
+              <span class="terminal-status"></span>
+              <button class="terminal-close-btn" title="Close output">&times;</button>
+            </div>
+          </div>
+          <div class="terminal-body">
+            <pre class="term-stdout"></pre>
+            <pre class="term-stderr"></pre>
+          </div>
+        `;
+        container.appendChild(terminal);
+      }
+
+      const runBtn = actions.querySelector('.code-run-btn');
+      const resetBtn = actions.querySelector('.code-reset-btn');
+      const closeBtn = terminal.querySelector('.terminal-close-btn');
+      const statusEl = terminal.querySelector('.terminal-status');
+      const stdoutEl = terminal.querySelector('.term-stdout');
+      const stderrEl = terminal.querySelector('.term-stderr');
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          terminal.style.display = 'none';
+        });
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (container.dataset.originalCode) {
+            codeEl.innerText = container.dataset.originalCode;
+            codeEl.innerHTML = highlightRustCode(container.dataset.originalCode);
+          }
+          terminal.style.display = 'none';
+          stdoutEl.textContent = '';
+          stderrEl.textContent = '';
+        });
+      }
+
+      if (runBtn) {
+        runBtn.addEventListener('click', async () => {
+          if (runBtn.classList.contains('running')) return;
+          runBtn.classList.add('running');
+          runBtn.innerHTML = '<span class="spinner"></span> Running...';
+
+          terminal.style.display = 'block';
+          statusEl.className = 'terminal-status running';
+          statusEl.textContent = 'Compiling & Running...';
+          stdoutEl.textContent = '';
+          stderrEl.textContent = '';
+
+          const codeToExecute = codeEl.innerText || codeEl.textContent || '';
+
+          try {
+            const resp = await fetch('https://play.rust-lang.org/execute', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                channel: 'stable',
+                mode: 'debug',
+                edition: '2021',
+                crateType: 'bin',
+                tests: false,
+                code: codeToExecute,
+                backtrace: false
+              })
+            });
+
+            if (!resp.ok) {
+              throw new Error(`Playground returned HTTP ${resp.status}`);
+            }
+
+            const data = await resp.json();
+
+            if (data.success) {
+              statusEl.className = 'terminal-status success';
+              statusEl.textContent = '✓ Success (exit 0)';
+              stdoutEl.textContent = data.stdout || '(Program ran successfully with no stdout output)';
+              if (data.stderr && data.stderr.trim()) {
+                stderrEl.textContent = data.stderr;
+              }
+            } else {
+              statusEl.className = 'terminal-status error';
+              statusEl.textContent = '✗ Compilation / Runtime Error';
+              stderrEl.textContent = data.stderr || 'Execution failed';
+              if (data.stdout && data.stdout.trim()) {
+                stdoutEl.textContent = data.stdout;
+              }
+            }
+          } catch (err) {
+            statusEl.className = 'terminal-status error';
+            statusEl.textContent = '✗ Execution Failed';
+            stderrEl.textContent = 'Could not communicate with the Rust playground: ' + err.message + '\nPlease check your network connection.';
+          } finally {
+            runBtn.classList.remove('running');
+            runBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Run';
+          }
+        });
+      }
+    });
+  }
+
   // ==========================================================================
   // Interactive Hardware Output Simulators
   // ==========================================================================
@@ -1066,7 +1301,7 @@
   }
 
   // --- Global Initialization ---
-  document.addEventListener('DOMContentLoaded', () => {
+  function initAll() {
     initTheme();
     initPlatformNote();
     const themeBtn = document.getElementById('theme-toggle-btn');
@@ -1079,9 +1314,16 @@
     initScrollspy();
     initCodeCopy();
     initSyntaxHighlighting();
+    initRustPlayground();
     initSimulations();
     initLabChecklists();
     initQuizzes();
     initSearch();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
 })();

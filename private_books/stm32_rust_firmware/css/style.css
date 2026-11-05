@@ -1919,3 +1919,239 @@ section[id] {
     text-align: center;
   }
 }
+
+
+/* ==========================================================================
+   Interactive Rust Code Runner & Playground Terminal
+   ========================================================================== */
+.code-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.code-run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #059669;
+  border: 1px solid #10b981;
+  color: #ffffff;
+  padding: 0.22rem 0.65rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-sans);
+}
+
+.code-run-btn:hover {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  transform: translateY(-1px);
+}
+
+.code-run-btn.running {
+  background: #047857;
+  opacity: 0.85;
+  cursor: wait;
+}
+
+.code-run-btn .spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.code-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #94a3b8;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.code-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+.code-target-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.code-target-badge.runnable {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.code-target-badge.runnable .run-dot {
+  color: #10b981;
+  font-size: 0.65rem;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.code-target-badge.hardware {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Editable Code Container */
+.code-container.is-runnable .code-body {
+  position: relative;
+}
+
+.code-container.is-runnable .code-body code {
+  display: block;
+  outline: none;
+  cursor: text;
+  caret-color: #38bdf8;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.code-container.is-runnable .code-body code:focus {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.code-edit-hint {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: var(--font-sans);
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  user-select: none;
+}
+
+.code-container.is-runnable:hover .code-edit-hint {
+  opacity: 0.8;
+}
+
+/* Terminal Console Output */
+.code-terminal {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: #090d16;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.85rem;
+  background: rgba(0, 0, 0, 0.45);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.72rem;
+}
+
+.terminal-title {
+  color: #94a3b8;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.terminal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.terminal-status {
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.terminal-status.success {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.terminal-status.error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.terminal-status.running {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+}
+
+.terminal-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.terminal-close-btn:hover {
+  color: #ffffff;
+}
+
+.terminal-body {
+  padding: 0.85rem 1.15rem;
+  max-height: 260px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.terminal-body pre {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+.term-stdout {
+  color: #a7f3d0;
+}
+
+.term-stderr {
+  color: #fca5a5;
+}

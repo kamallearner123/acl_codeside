@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=3">
+  <link rel="stylesheet" href="../css/style.css?v=4">
 </head>
 <body data-chapter-id="ch01-why-embedded-rust">
   <div id="reading-progress-bar"></div>
@@ -665,14 +665,24 @@
           <div class="code-header">
             <div class="code-title">
               <span class="code-lang-badge">RUST</span>
-              <span>The same bug in C-thinking and Rust</span>
+              <span>Memory Safety: Dangling References Prevented</span>
             </div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>fn longest_reading() -&gt; &amp;i32 {   // does not compile
+            <pre><code>// In C, returning a pointer to a stack-local array creates a dangling pointer bug.
+// In Rust, the borrow checker prevents this at compile time!
+// Here, we safely return the owned value directly (`i32` instead of `&amp;i32`):
+
+fn longest_reading() -&gt; i32 {
     let readings = [10, 42, 7];
-    &amp;readings[1]                  // reference to a local that dies here
+    readings[1] // Safe: value is copied out, no dangling reference
+}
+
+fn main() {
+    let val = longest_reading();
+    println!("Safely retrieved reading: {}", val);
+    println!("No undefined behavior or stack corruption!");
 }</code></pre>
           </div>
         </div>
@@ -870,6 +880,6 @@
       <ul id="search-results" class="search-results-list"></ul>
     </div>
   </div>
-  <script src="../js/book.js?v=3"></script>
+  <script src="../js/book.js?v=4"></script>
 </body>
 </html>

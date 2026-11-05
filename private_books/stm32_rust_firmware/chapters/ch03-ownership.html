@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=3">
+  <link rel="stylesheet" href="../css/style.css?v=4">
 </head>
 <body data-chapter-id="ch03-ownership">
   <div id="reading-progress-bar"></div>
@@ -586,15 +586,26 @@
           <div class="code-header">
             <div class="code-title">
               <span class="code-lang-badge">RUST</span>
-              <span>Move semantics</span>
+              <span>Move semantics vs Copy types</span>
             </div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>let a = [1u8, 2, 3, 4];     // arrays of Copy types are Copy - see 3.2
-let msg = heapless::String::&lt;16&gt;::new();   // not Copy: it owns its buffer
-let other = msg;            // ownership MOVES to `other`
-// println!("{}", msg);     // compile error: value used after move</code></pre>
+            <pre><code>fn main() {
+    // 1. Primitive types and arrays of Copy types implement the Copy trait:
+    let a = [1u8, 2, 3, 4];
+    let b = a; // `a` is copied, not moved
+    println!("Array a is still accessible: {:?}", a);
+    println!("Array b holds a copy: {:?}", b);
+
+    // 2. Types that manage resources (like String or hardware peripherals) do NOT implement Copy:
+    let msg = String::from("Sensor Packet #42");
+    let other = msg; // Ownership MOVES to `other`. `msg` is invalidated!
+    println!("`other` now owns: \"{}\"", other);
+
+    // Uncommenting the next line triggers compile error [E0382]: borrow of moved value: `msg`
+    // println!("Trying to access msg: {}", msg);
+}</code></pre>
           </div>
         </div>
 
@@ -836,6 +847,6 @@ let mut led = gpioa.pa5.into_push_pull_output(); // consumes the pin; it cannot 
       <ul id="search-results" class="search-results-list"></ul>
     </div>
   </div>
-  <script src="../js/book.js?v=3"></script>
+  <script src="../js/book.js?v=4"></script>
 </body>
 </html>

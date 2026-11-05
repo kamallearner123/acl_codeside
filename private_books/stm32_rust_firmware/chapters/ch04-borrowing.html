@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css?v=3">
+  <link rel="stylesheet" href="../css/style.css?v=4">
 </head>
 <body data-chapter-id="ch04-borrowing">
   <div id="reading-progress-bar"></div>
@@ -609,18 +609,25 @@
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>fn average(samples: &amp;[u16]) -&gt; u16 {           // shared borrow: read only
+            <pre><code>fn average(samples: &amp;[u16]) -&gt; u16 {           // shared borrow: read only (&amp;)
     let sum: u32 = samples.iter().map(|&amp;s| s as u32).sum();
-    (sum / samples.len() as u32) as u16        // note: panics if len == 0, see chapter 8
+    (sum / samples.len() as u32) as u16
 }
 
-fn fill(buf: &amp;mut [u16], value: u16) {            // exclusive borrow: may modify
+fn fill(buf: &amp;mut [u16], value: u16) {            // exclusive borrow: may modify (&amp;mut)
     for b in buf.iter_mut() { *b = value; }
 }
 
-let mut data = [0u16; 8];
-let avg = average(&amp;data);        // borrow ends after the call
-fill(&amp;mut data, 100);        // new exclusive borrow</code></pre>
+fn main() {
+    let mut data = [10u16, 20, 30, 40, 50, 60, 70, 80];
+    let avg = average(&amp;data);        // shared borrow ends after average() returns
+    println!("Initial samples: {:?}", data);
+    println!("Calculated average: {}", avg);
+
+    fill(&amp;mut data, 100);            // exclusive borrow starts here
+    println!("After fill(&amp;mut data, 100): {:?}", data);
+    println!("New average: {}", average(&amp;data));
+}</code></pre>
           </div>
         </div>
 
@@ -635,10 +642,20 @@ fill(&amp;mut data, 100);        // new exclusive borrow</code></pre>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>let mut buf = [0u8; 4];
-let first = &amp;buf[0];      // shared borrow
-buf[1] = 7;               // ERROR: cannot assign while `first` is borrowed
-println!("{}", first);</code></pre>
+            <pre><code>fn main() {
+    let mut buf = [10u8, 20, 30, 40];
+    let first = &amp;buf[0];      // shared borrow of buf[0]
+
+    // In C, assigning here while reading causes race conditions or pointer invalidation.
+    // In Rust, the compiler rejects this:
+    // buf[1] = 7; // ERROR: cannot assign to `buf[_]` because it is borrowed
+
+    println!("First element is: {}", first);
+
+    // After `first` is no longer used, exclusive mutation is completely allowed:
+    buf[1] = 7;
+    println!("Updated buffer: {:?}", buf);
+}</code></pre>
           </div>
         </div>
 
@@ -655,13 +672,32 @@ println!("{}", first);</code></pre>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>impl Console {
-    fn line_count(&amp;self) -&gt; usize { self.lines }          // read only
-    fn write_line(&amp;mut self, s: &amp;str) { /* touches UART */ }
+            <pre><code>struct Console {
+    lines: usize,
+    buffer: Vec&lt;String&gt;,
 }
 
-let mut con = Console::new(tx);
-con.write_line("hello");     // needs `mut con`</code></pre>
+impl Console {
+    fn new() -> Self {
+        Self { lines: 0, buffer: Vec::new() }
+    }
+    fn line_count(&amp;self) -&gt; usize {
+        self.lines // read-only shared access
+    }
+    fn write_line(&amp;mut self, s: &amp;str) {
+        self.lines += 1;
+        self.buffer.push(s.to_string());
+        println!("[UART Console Line {}]: {}", self.lines, s);
+    }
+}
+
+fn main() {
+    let mut con = Console::new();
+    con.write_line("Booting firmware...");
+    con.write_line("Clock: 168 MHz (HSE + PLL)");
+    con.write_line("Sensors detected on I2C1");
+    println!("Total log lines recorded: {}", con.line_count());
+}</code></pre>
           </div>
         </div>
 
@@ -678,10 +714,20 @@ con.write_line("hello");     // needs `mut con`</code></pre>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>let mut frame = [0u8; 8];
-let (id_part, data_part) = frame.split_at_mut(2);
-id_part[0] = 0x01;
-data_part[0] = 0xFF;</code></pre>
+            <pre><code>fn main() {
+    let mut frame = [0u8; 8];
+
+    // Safely split into two disjoint mutable slices without unsafe:
+    let (id_part, data_part) = frame.split_at_mut(2);
+    id_part[0] = 0x01;
+    id_part[1] = 0xAA;
+    data_part[0] = 0xFF;
+    data_part[1] = 0x55;
+
+    println!("Complete Frame: {:02X?}", frame);
+    println!("Header (id_part): {:02X?}", id_part);
+    println!("Payload (data_part): {:02X?}", data_part);
+}</code></pre>
           </div>
         </div>
 
@@ -693,15 +739,28 @@ data_part[0] = 0xFF;</code></pre>
           <div class="code-header">
             <div class="code-title">
               <span class="code-lang-badge">RUST</span>
-              <span>static mut is a red flag</span>
+              <span>Safe Atomics vs static mut</span>
             </div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code>static mut TICKS: u32 = 0;
+            <pre><code>use std::sync::atomic::{AtomicU32, Ordering};
 
-fn bump() {
-    unsafe { TICKS += 1; }     // compiles, but races with any ISR that also touches TICKS
+// In C: static volatile uint32_t ticks = 0;
+// In Rust, static mut requires `unsafe` and causes data races in ISRs.
+// Safe, lock-free Rust alternative:
+static TICKS: AtomicU32 = AtomicU32::new(0);
+
+fn bump_ticks() {
+    TICKS.fetch_add(1, Ordering::Relaxed);
+}
+
+fn main() {
+    println!("Initial ticks: {}", TICKS.load(Ordering::Relaxed));
+    bump_ticks();
+    bump_ticks();
+    bump_ticks();
+    println!("Ticks after 3 bumps: {}", TICKS.load(Ordering::Relaxed));
 }</code></pre>
           </div>
         </div>
@@ -832,6 +891,6 @@ fn bump() {
       <ul id="search-results" class="search-results-list"></ul>
     </div>
   </div>
-  <script src="../js/book.js?v=3"></script>
+  <script src="../js/book.js?v=4"></script>
 </body>
 </html>
