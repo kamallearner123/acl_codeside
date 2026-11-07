@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Designing & Developing Embedded Systems Projects: From Architecture to Production using STM32, Texas Instruments, and ESP32.">
+  <title>Designing & Developing Embedded Systems Projects | Apt Computing Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=4">
+</head>
+<body data-chapter-id="index">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <a href="index.html" class="brand-badge">
+        <img src="assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Embedded Systems Projects</span>
+          <span class="brand-subtitle">STM32 • TI • ESP32</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search modules, STM32, TI, ESP32, FreeRTOS, CAN, BLE..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/courses/designing-embedded-systems-projects-stm32-ti-esp32/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="site-container">
+    <aside class="site-sidebar" id="site-sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Project Handbook</span>
+      </div>
+      <nav class="sidebar-nav">
+        <ul class="chapter-list">
+          <li class="chapter-item active">
+            <a href="#overview" class="chapter-link">
+              <span class="chapter-num">00</span>
+              <span class="chapter-title-text">Course Overview &amp; Platforms</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#matrix" class="chapter-link">
+              <span class="chapter-num">01</span>
+              <span class="chapter-title-text">Hardware Selection Matrix</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#schematics" class="chapter-link">
+              <span class="chapter-num">02</span>
+              <span class="chapter-title-text">Schematics &amp; Power Delivery</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#toolchains" class="chapter-link">
+              <span class="chapter-num">03</span>
+              <span class="chapter-title-text">Toolchains &amp; Debug Probes</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#baremetal" class="chapter-link">
+              <span class="chapter-num">04</span>
+              <span class="chapter-title-text">Bare-Metal Drivers &amp; Interrupts</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#serial-dma" class="chapter-link">
+              <span class="chapter-num">05</span>
+              <span class="chapter-title-text">Serial Protocols &amp; Circular DMA</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#can-fieldbus" class="chapter-link">
+              <span class="chapter-num">06</span>
+              <span class="chapter-title-text">CAN 2.0B, CAN-FD &amp; Modbus</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#analog-adc" class="chapter-link">
+              <span class="chapter-num">07</span>
+              <span class="chapter-title-text">ADC, DMA &amp; Digital Filtering</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#freertos" class="chapter-link">
+              <span class="chapter-num">08</span>
+              <span class="chapter-title-text">FreeRTOS Real-Time Architecture</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#low-power" class="chapter-link">
+              <span class="chapter-num">09</span>
+              <span class="chapter-title-text">Ultra-Low Power &amp; Harvesting</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#wireless-iot" class="chapter-link">
+              <span class="chapter-num">10</span>
+              <span class="chapter-title-text">Wi-Fi, BLE 5.0 &amp; MQTT TLS</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#production" class="chapter-link">
+              <span class="chapter-num">11</span>
+              <span class="chapter-title-text">Reliability, Bootloaders &amp; OTA</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#capstones" class="chapter-link">
+              <span class="chapter-num">12</span>
+              <span class="chapter-title-text">4 Production Capstones</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="site-main">
+      <article class="chapter-article">
+        <!-- Hero Section -->
+        <header class="chapter-header" id="overview">
+          <div class="chapter-meta">
+            <span class="chapter-badge">Comprehensive Engineering Reference</span>
+            <span class="chapter-read-time">16 Modules • 4 Capstones • Live Hardware</span>
+          </div>
+          <h1 class="chapter-title">Designing &amp; Developing Embedded Systems Projects</h1>
+          <p class="chapter-subtitle">A multi-platform engineering guide covering hardware co-design, bare-metal &amp; RTOS firmware, industrial buses, wireless IoT, and production deployment across STM32, Texas Instruments, and ESP32.</p>
+        </header>
+
+        <!-- Platform Comparison Cards -->
+        <section class="content-section" id="matrix">
+          <h2>1. Multi-MCU Platform Architecture &amp; Selection Matrix</h2>
+          <p>Every commercial embedded system begins with a trade-off analysis between computational horsepower, power envelope, connectivity requirements, unit BOM cost, and development velocity. In this course, we benchmark and build real products using three dominant industrial microcontroller ecosystems:</p>
+
+          <div style="overflow-x:auto; margin: 1.5rem 0;">
+            <table class="table-custom" style="width:100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-strong); text-align: left;">
+                  <th style="padding: 10px;">Platform</th>
+                  <th style="padding: 10px;">Core Architecture</th>
+                  <th style="padding: 10px;">Standout Strengths</th>
+                  <th style="padding: 10px;">Typical Industrial Applications</th>
+                  <th style="padding: 10px;">Target Dev Board</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600; color:var(--accent-primary);">STMicroelectronics (STM32)</td>
+                  <td style="padding: 10px;">ARM Cortex-M0+/M4/M7 (32-bit RISC, FPU, DSP)</td>
+                  <td style="padding: 10px;">Deterministic interrupt response, advanced motor timers, CAN-FD, hardware math accelerators, rich DMA channels</td>
+                  <td style="padding: 10px;">Motor drives, robotics, automotive ECUs, medical pumps, factory automation</td>
+                  <td style="padding: 10px;"><code>NUCLEO-F446RE</code> / <code>G474RE</code></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600; color:#ef4444;">Texas Instruments (TI)</td>
+                  <td style="padding: 10px;">MSP430 (16-bit RISC / FRAM) &amp; C2000 (32-bit DSP)</td>
+                  <td style="padding: 10px;">Sub-microamp standby currents (LPM3/4), instant non-volatile FRAM writes, zero-wait-state digital power control</td>
+                  <td style="padding: 10px;">Utility meters, solar energy harvesting, battery monitoring, high-efficiency power inverters</td>
+                  <td style="padding: 10px;"><code>MSP430FR5994 LaunchPad</code></td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600; color:#10b981;">Espressif (ESP32)</td>
+                  <td style="padding: 10px;">Dual-Core Xtensa LX6/LX7 &amp; RISC-V (up to 240 MHz)</td>
+                  <td style="padding: 10px;">Integrated 2.4 GHz Wi-Fi + BLE 5.0, hardware AES/RSA engines, dual-core FreeRTOS SMP, low BOM cost</td>
+                  <td style="padding: 10px;">Smart home, IoT edge gateways, remote telemetry monitors, industrial wireless sensors</td>
+                  <td style="padding: 10px;"><code>ESP32-S3 DevKitC-1</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <strong>Key Engineering Takeaway:</strong> High-reliability industrial systems frequently combine these chips in a <em>heterogeneous topology</em>: an STM32 or TI MCU manages deterministic hard real-time actuators/sensors, while an ESP32 acts as the networked communications co-processor running MQTT/TLS and OTA updates.
+          </div>
+        </section>
+
+        <!-- Hardware Schematics & Power Delivery -->
+        <section class="content-section" id="schematics">
+          <h2>2. Schematics, Power Delivery &amp; Hardware Bring-Up</h2>
+          <p>Writing reliable firmware is impossible on unstable hardware. Before touching a compiler, embedded engineers must understand the physical board layout and power budgeting:</p>
+          
+          <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem; margin:1.25rem 0;">
+            <h4 style="margin-top:0; color:var(--text-primary);"><i class="fas fa-bolt" style="color:var(--status-warning);"></i> Power Supply Topology: LDO vs. Buck Converter</h4>
+            <ul style="color:var(--text-secondary); line-height:1.7;">
+              <li><strong>Low-Dropout Regulators (LDO):</strong> Excellent for noise-sensitive analog ADC/DAC rails due to low output ripple and zero switching noise, but poor efficiency when dropping 12V/5V down to 3.3V ($\eta = V_{out} / V_{in}$).</li>
+              <li><strong>Switching Buck Regulators:</strong> Up to 95% power efficiency, essential for battery-operated designs and powering ESP32 Wi-Fi bursts (which can spike up to 450mA instantaneous current).</li>
+              <li><strong>Decoupling Matrix:</strong> Always place 100nF ceramic X7R capacitors within 2mm of every $V_{DD}$/$V_{SS}$ pin pair, backed by a 4.7µF–10µF bulk tantalum/ceramic capacitor per power rail.</li>
+            </ul>
+          </div>
+
+          <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem; margin:1.25rem 0;">
+            <h4 style="margin-top:0; color:var(--text-primary);"><i class="fas fa-wave-square" style="color:var(--accent-primary);"></i> Oscillator Circuitry &amp; Pin Multiplexing</h4>
+            <ul style="color:var(--text-secondary); line-height:1.7;">
+              <li><strong>HSE (High-Speed External):</strong> 8MHz–25MHz crystal for precise CAN bit timings and high-speed USB/Ethernet clock trees. Sizing load capacitors: $C_L = (C_1 \cdot C_2) / (C_1 + C_2) + C_{stray}$.</li>
+              <li><strong>LSE (Low-Speed External):</strong> 32.768 kHz tuning-fork crystal providing accurate RTC timekeeping during low-power standby.</li>
+              <li><strong>Hardware Bring-Up Checklist:</strong> Verify clean 3.3V rail $\rightarrow$ verify NRST pull-up ($10\text{k}\Omega$) and 100nF capacitor $\rightarrow$ inspect SWD/JTAG debug signals on oscilloscope $\rightarrow$ confirm crystal oscillation $\rightarrow$ flash LED blinky test.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Toolchains & Debugging -->
+        <section class="content-section" id="toolchains">
+          <h2>3. Cross-Compilation Toolchains &amp; Hardware Debuggers</h2>
+          <p>Professional engineers use hardware debuggers with live breakpoints, watch expressions, memory inspection, and trace logging:</p>
+          
+          <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
+            <pre style="color:var(--text-code); font-family:var(--font-mono); font-size:0.875rem; margin:0;">
+# GCC Cross-Compilation for ARM Cortex-M (STM32)
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
+  -O2 -Wall -fdata-sections -ffunction-sections -Wl,--gc-sections \
+  -T STM32F446RETx_FLASH.ld main.c -o firmware.elf
+
+# ESP-IDF CMake Build System (ESP32-S3)
+idf.py set-target esp32s3
+idf.py menuconfig
+idf.py build flash monitor
+
+# OpenOCD & GDB Hardware Debugging (ST-LINK / XDS110 / ESP-Prog)
+openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
+arm-none-eabi-gdb firmware.elf -ex "target extended-remote :3333" -ex "load"</pre>
+          </div>
+        </section>
+
+        <!-- Bare-Metal Drivers & Interrupts -->
+        <section class="content-section" id="baremetal">
+          <h2>4. Bare-Metal Peripheral Drivers &amp; Nested Interrupts</h2>
+          <p>Understanding register-level bit operations and interrupt controllers is essential before relying on vendor abstraction layers:</p>
+
+          <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
+            <pre style="color:var(--text-code); font-family:var(--font-mono); font-size:0.875rem; margin:0;">
+// Clean register-level GPIO toggle on STM32 using BSRR (Bit Set/Reset Register)
+void GPIOA_Pin5_Toggle(void) {
+    if (GPIOA->ODR & (1U << 5)) {
+        GPIOA->BSRR = (1U << (5 + 16)); // Atomic Reset without read-modify-write
+    } else {
+        GPIOA->BSRR = (1U << 5);        // Atomic Set
+    }
+}
+
+// Low-power interrupt-driven architecture:
+void EXTI15_10_IRQHandler(void) {
+    if (EXTI->PR & (1U << 13)) {
+        EXTI->PR = (1U << 13); // Clear pending bit by writing 1
+        g_button_pressed = true;
+    }
+}</pre>
+          </div>
+        </section>
+
+        <!-- Serial Protocols & DMA -->
+        <section class="content-section" id="serial-dma">
+          <h2>5. High-Throughput Serial Communication with Circular DMA</h2>
+          <p>Traditional character-by-character interrupt UART wastes hundreds of CPU cycles per millisecond. Industrial firmware uses <strong>Circular DMA with Idle-Line Detection</strong>:</p>
+
+          <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem; margin:1.25rem 0;">
+            <h4 style="margin-top:0; color:var(--text-primary);"><i class="fas fa-sync" style="color:var(--accent-primary);"></i> Zero-Copy UART Reception Architecture</h4>
+            <p style="color:var(--text-secondary); font-size:0.9rem;">
+              1. The DMA controller receives bytes directly from the UART data register into a circular RAM buffer without CPU intervention.<br>
+              2. When a frame ends, the UART hardware detects that the RX line remained idle for one full byte period ($T_{idle}$).<br>
+              3. The Idle-Line interrupt fires exactly once per message, allowing the CPU to read the buffer length ($L = \text{BUFFER\_SIZE} - \text{DMA\_NDTR}$) and dispatch the packet immediately.
+            </p>
+          </div>
+        </section>
+
+        <!-- Industrial CAN Bus -->
+        <section class="content-section" id="can-fieldbus">
+          <h2>6. Industrial CAN 2.0B, CAN-FD &amp; RS-485 Modbus</h2>
+          <p>CAN (Controller Area Network) is the gold standard for automotive and industrial automation due to differential noise immunity, hardware arbitration, and automatic retransmission:</p>
+
+          <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
+            <pre style="color:var(--text-code); font-family:var(--font-mono); font-size:0.875rem; margin:0;">
+// Transmitting telemetry packet over CAN 2.0B on STM32
+CAN_TxHeaderTypeDef tx_header;
+uint8_t payload[8];
+uint32_t tx_mailbox;
+
+tx_header.StdId = 0x205;             // Standard 11-bit ID: Motor Controller
+tx_header.RTR = CAN_RTR_DATA;
+tx_header.IDE = CAN_ID_STD;
+tx_header.DLC = 8;                   // 8 data bytes
+
+payload[0] = (uint8_t)(rpm & 0xFF);
+payload[1] = (uint8_t)((rpm >> 8) & 0xFF);
+payload[2] = (uint8_t)(current_mA & 0xFF);
+payload[3] = (uint8_t)((current_mA >> 8) & 0xFF);
+payload[4] = status_flags;
+
+HAL_CAN_AddTxMessage(&hcan1, &tx_header, payload, &tx_mailbox);</pre>
+          </div>
+        </section>
+
+        <!-- FreeRTOS Multitasking -->
+        <section class="content-section" id="freertos">
+          <h2>7. Real-Time Multitasking with FreeRTOS</h2>
+          <p>Moving from a single-threaded superloop to preemptive multitasking requires clean task separation, queue-based message passing, and deterministic priorities:</p>
+
+          <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
+            <pre style="color:var(--text-code); font-family:var(--font-mono); font-size:0.875rem; margin:0;">
+// Typical FreeRTOS Multi-Task Industrial Layout
+QueueHandle_t sensorQueue;
+
+void vSensorAcquisitionTask(void *pvParameters) {
+    SensorData_t data;
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    const TickType_t xFrequency = pdMS_TO_TICKS(20); // Exact 50 Hz sampling
+
+    for (;;) {
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+        Read_Analog_Sensors(&data);
+        xQueueSend(sensorQueue, &data, 0); // Non-blocking queue send
+    }
+}
+
+void vTelemetryTask(void *pvParameters) {
+    SensorData_t data;
+    for (;;) {
+        if (xQueueReceive(sensorQueue, &data, portMAX_DELAY) == pdPASS) {
+            Publish_MQTT_Telemetry(&data);
+        }
+    }
+}</pre>
+          </div>
+        </section>
+
+        <!-- Ultra-Low Power -->
+        <section class="content-section" id="low-power">
+          <h2>8. Ultra-Low-Power Firmware &amp; Energy Budgeting</h2>
+          <p>Comparing deep sleep modes across our three microcontrollers:</p>
+
+          <div style="overflow-x:auto; margin: 1.5rem 0;">
+            <table class="table-custom" style="width:100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-strong); text-align: left;">
+                  <th style="padding: 10px;">Device</th>
+                  <th style="padding: 10px;">Active Current</th>
+                  <th style="padding: 10px;">Sleep / Standby Current</th>
+                  <th style="padding: 10px;">Wakeup Source</th>
+                  <th style="padding: 10px;">RAM Retention</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600;">TI MSP430FR5994</td>
+                  <td style="padding: 10px;">100 µA / MHz</td>
+                  <td style="padding: 10px; color:#10b981; font-weight:700;">450 nA (LPM3.5)</td>
+                  <td style="padding: 10px;">RTC, External Pin</td>
+                  <td style="padding: 10px;">Universal non-volatile FRAM</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600;">STM32F446RE</td>
+                  <td style="padding: 10px;">180 µA / MHz</td>
+                  <td style="padding: 10px;">2.2 µA (Stop Mode)</td>
+                  <td style="padding: 10px;">EXTI, RTC Alarm</td>
+                  <td style="padding: 10px;">Full 128KB SRAM preserved</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600;">ESP32-S3</td>
+                  <td style="padding: 10px;">40–80 mA (Wi-Fi ON)</td>
+                  <td style="padding: 10px;">7 µA (Deep Sleep)</td>
+                  <td style="padding: 10px;">ULP Co-processor, Touch, RTC</td>
+                  <td style="padding: 10px;">8KB RTC Fast Memory</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Wireless IoT -->
+        <section class="content-section" id="wireless-iot">
+          <h2>9. Wireless IoT Networking: Wi-Fi, BLE 5.0 &amp; MQTT over TLS</h2>
+          <p>Connecting embedded hardware securely to cloud infrastructure requires mutual TLS encryption, reliable reconnect state machines, and lightweight binary/JSON serialization:</p>
+
+          <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
+            <pre style="color:var(--text-code); font-family:var(--font-mono); font-size:0.875rem; margin:0;">
+// ESP32 Secure MQTT Configuration with X.509 Server Certificate
+esp_mqtt_client_config_t mqtt_cfg = {
+    .broker = {
+        .address.uri = "mqtts://industrial-broker.company.com:8883",
+        .verification.certificate = (const char *)server_root_ca_pem,
+    },
+    .credentials = {
+        .authentication = {
+            .certificate = (const char *)device_cert_pem,
+            .key = (const char *)device_private_key_pem,
+        },
+    },
+};
+esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
+esp_mqtt_client_start(client);</pre>
+          </div>
+        </section>
+
+        <!-- Production Capstones -->
+        <section class="content-section" id="capstones">
+          <h2>10. 4 Real-World Production Capstones</h2>
+          <p>Throughout the course, students build, test, and present four industry-grade embedded projects:</p>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.25rem; margin:1.5rem 0;">
+            <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem;">
+              <span style="font-size:0.75rem; font-weight:700; color:var(--accent-primary); background:rgba(2,132,199,0.1); padding:3px 8px; border-radius:20px;">CAPSTONE 1 • STM32</span>
+              <h3 style="margin:0.75rem 0 0.5rem; font-size:1.1rem; color:var(--text-primary);">Industrial CAN Motor Drive &amp; Telemetry Node</h3>
+              <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6;">
+                Closed-loop PID velocity control of a DC/stepper motor on STM32F4. Quadrature encoder feedback, PWM drive, ADC shunt current sensing, IWDG watchdog, and periodic CAN bus status broadcasting with fault recovery.
+              </p>
+            </div>
+
+            <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem;">
+              <span style="font-size:0.75rem; font-weight:700; color:#ef4444; background:rgba(239,68,68,0.1); padding:3px 8px; border-radius:20px;">CAPSTONE 2 • TI MSP430</span>
+              <h3 style="margin:0.75rem 0 0.5rem; font-size:1.1rem; color:var(--text-primary);">Solar Energy Harvesting Sensor Beacon</h3>
+              <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6;">
+                Battery-less sensor node running on a mini solar panel and supercapacitor. Utilizes MSP430FR5994 FRAM for instant zero-power logging, sub-microamp LPM3.5 sleep, and periodic BLE advertisement bursts.
+              </p>
+            </div>
+
+            <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem;">
+              <span style="font-size:0.75rem; font-weight:700; color:#10b981; background:rgba(16,185,129,0.1); padding:3px 8px; border-radius:20px;">CAPSTONE 3 • ESP32-S3</span>
+              <h3 style="margin:0.75rem 0 0.5rem; font-size:1.1rem; color:var(--text-primary);">Secure Dual-Core Edge Gateway &amp; OTA</h3>
+              <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6;">
+                Dual-core FreeRTOS application. Core 0 handles high-speed BLE sensor scanning and reception. Core 1 hosts an embedded Web dashboard, publishes MQTT over TLS, and performs rollback-safe OTA firmware downloads.
+              </p>
+            </div>
+
+            <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem;">
+              <span style="font-size:0.75rem; font-weight:700; color:#8b5cf6; background:rgba(139,92,246,0.1); padding:3px 8px; border-radius:20px;">CAPSTONE 4 • HETEROGENEOUS</span>
+              <h3 style="margin:0.75rem 0 0.5rem; font-size:1.1rem; color:var(--text-primary);">Integrated Multi-MCU Smart System</h3>
+              <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6;">
+                Combines an STM32 real-time controller and an ESP32 wireless hub via a dedicated SPI/DMA packet protocol with CRC verification. Demonstrates industrial command execution, real-time safety shut-offs, and cloud telemetry.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Course Checklist -->
+        <section class="content-section">
+          <h2>11. Engineering Lab Checklist</h2>
+          <div class="lab-checklist">
+            <ul style="list-style:none; padding:0; margin:0;">
+              <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="chk1"> <label for="chk1">Complete schematic review and verify power rail sequencing &amp; decoupling capacitors</label>
+              </li>
+              <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="chk2"> <label for="chk2">Flash bare-metal clock configuration and verify SYSCLK with oscilloscope MCO output</label>
+              </li>
+              <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="chk3"> <label for="chk3">Implement UART circular DMA with idle-line interrupt parsing</label>
+              </li>
+              <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="chk4"> <label for="chk4">Configure CAN 2.0B transceivers and verify packet reception on a logic analyzer</label>
+              </li>
+              <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="chk5"> <label for="chk5">Deploy FreeRTOS preemptive tasks with queues, mutexes, and stack overflow hooks</label>
+              </li>
+              <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="chk6"> <label for="chk6">Establish secure TLS connection over Wi-Fi and publish telemetry to cloud MQTT broker</label>
+              </li>
+              <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="chk7"> <label for="chk7">Demonstrate rollback-safe dual-partition Over-The-Air (OTA) firmware upgrade</label>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="site-footer" style="margin-top:3rem; padding-top:2rem; border-top:1px solid var(--border-subtle); text-align:center; color:var(--text-muted); font-size:0.875rem;">
+          <p>© 2026 <strong>Apt Computing Labs</strong>. Designing &amp; Developing Embedded Systems Projects.</p>
+          <p>Proprietary Engineering Training Material • All Rights Reserved.</p>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <script src="js/book.js?v=4"></script>
+</body>
+</html>

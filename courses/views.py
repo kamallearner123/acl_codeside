@@ -29,6 +29,7 @@ COURSE_GROUPS = (
             'stm32-firmware-development-with-c',
             'embedded-rust-with-stm32',
             'visualise-stm32',
+            'designing-embedded-systems-projects-stm32-ti-esp32',
         },
     },
     {
@@ -42,6 +43,7 @@ COURSE_GROUPS = (
             'rust-programming',
             'realization-of-rust-from-c',
             'basic-electronics-sensors-actuators',
+            'designing-embedded-systems-projects-stm32-ti-esp32',
         },
     },
     {
@@ -156,6 +158,24 @@ def cortexm_book_serve(request, subpath):
         subpath = os.path.join(subpath, 'index.html')
     return serve(request, subpath, document_root=CORTEXM_BOOK_DIR)
 
+EMBEDDED_PROJECTS_BOOK_DIR = os.path.join(
+    settings.BASE_DIR, 'private_books', 'designing_embedded_systems_projects'
+)
+
+@course_login_required
+def embedded_projects_book_index(request):
+    """Serve the root index of the Designing Embedded Systems Projects digital book."""
+    return serve(request, 'index.html', document_root=EMBEDDED_PROJECTS_BOOK_DIR)
+
+@course_login_required
+def embedded_projects_book_serve(request, subpath):
+    """Serve chapters, stylesheets, scripts and assets for the Designing Embedded Systems Projects book."""
+    if not subpath:
+        subpath = 'index.html'
+    elif subpath.endswith('/'):
+        subpath = os.path.join(subpath, 'index.html')
+    return serve(request, subpath, document_root=EMBEDDED_PROJECTS_BOOK_DIR)
+
 VISUALISE_STM32_DIR = os.path.join(settings.BASE_DIR, 'private_books', 'visualise_stm32')
 
 @course_login_required
@@ -257,6 +277,7 @@ STM32_AUTOMOTIVE_COURSE_SLUGS = (
     'stm32-firmware-development-with-c',
     'embedded-rust-with-stm32',
     'visualise-stm32',
+    'designing-embedded-systems-projects-stm32-ti-esp32',
 )
 
 FEEDBACK_SESSION_KEY = 'pending_stm32_group_feedback'
@@ -270,6 +291,7 @@ STM32_GROUP_COURSES = (
     ('stm32-firmware-development-with-c', 'Programming STM32 with C'),
     ('embedded-rust-with-stm32', 'Embedded Rust with STM32'),
     ('visualise-stm32', 'Visualise STM32'),
+    ('designing-embedded-systems-projects-stm32-ti-esp32', 'Designing & Developing Embedded Systems Projects'),
 )
 
 
