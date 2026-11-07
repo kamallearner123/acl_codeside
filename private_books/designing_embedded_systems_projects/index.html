@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Designing & Developing Embedded Systems Projects: From Architecture to Production using STM32, Texas Instruments, and ESP32.">
+  <meta name="description" content="Designing & Developing Embedded Systems Projects: From Architecture to Production using STM32, Texas Instruments, and ESP32 following the Embedded V-Model SDLC.">
   <title>Designing & Developing Embedded Systems Projects | Apt Computing Labs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,14 +21,14 @@
         <img src="assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
         <div>
           <span class="brand-title">Embedded Systems Projects</span>
-          <span class="brand-subtitle">STM32 • TI • ESP32</span>
+          <span class="brand-subtitle">STM32 • TI • ESP32 • V-Model SDLC</span>
         </div>
       </a>
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="header-search" class="search-input" placeholder="Search modules, STM32, TI, ESP32, FreeRTOS, CAN, BLE..." readonly>
+        <input type="text" id="header-search" class="search-input" placeholder="Search SDLC, V-Model, STM32, TI, ESP32, FreeRTOS, CAN, BLE, HIL..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -55,75 +55,99 @@
             </a>
           </li>
           <li class="chapter-item">
-            <a href="#matrix" class="chapter-link">
+            <a href="#sdlc-vmodel" class="chapter-link">
               <span class="chapter-num">01</span>
+              <span class="chapter-title-text">The Embedded SDLC &amp; V-Model</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#matrix" class="chapter-link">
+              <span class="chapter-num">02</span>
               <span class="chapter-title-text">Hardware Selection Matrix</span>
             </a>
           </li>
           <li class="chapter-item">
             <a href="#schematics" class="chapter-link">
-              <span class="chapter-num">02</span>
+              <span class="chapter-num">03</span>
               <span class="chapter-title-text">Schematics &amp; Power Delivery</span>
             </a>
           </li>
           <li class="chapter-item">
             <a href="#toolchains" class="chapter-link">
-              <span class="chapter-num">03</span>
+              <span class="chapter-num">04</span>
               <span class="chapter-title-text">Toolchains &amp; Debug Probes</span>
             </a>
           </li>
           <li class="chapter-item">
             <a href="#baremetal" class="chapter-link">
-              <span class="chapter-num">04</span>
+              <span class="chapter-num">05</span>
               <span class="chapter-title-text">Bare-Metal Drivers &amp; Interrupts</span>
             </a>
           </li>
           <li class="chapter-item">
             <a href="#serial-dma" class="chapter-link">
-              <span class="chapter-num">05</span>
+              <span class="chapter-num">06</span>
               <span class="chapter-title-text">Serial Protocols &amp; Circular DMA</span>
             </a>
           </li>
           <li class="chapter-item">
             <a href="#can-fieldbus" class="chapter-link">
-              <span class="chapter-num">06</span>
+              <span class="chapter-num">07</span>
               <span class="chapter-title-text">CAN 2.0B, CAN-FD &amp; Modbus</span>
             </a>
           </li>
           <li class="chapter-item">
             <a href="#analog-adc" class="chapter-link">
-              <span class="chapter-num">07</span>
+              <span class="chapter-num">08</span>
               <span class="chapter-title-text">ADC, DMA &amp; Digital Filtering</span>
             </a>
           </li>
           <li class="chapter-item">
             <a href="#freertos" class="chapter-link">
-              <span class="chapter-num">08</span>
+              <span class="chapter-num">09</span>
               <span class="chapter-title-text">FreeRTOS Real-Time Architecture</span>
             </a>
           </li>
           <li class="chapter-item">
             <a href="#low-power" class="chapter-link">
-              <span class="chapter-num">09</span>
+              <span class="chapter-num">10</span>
               <span class="chapter-title-text">Ultra-Low Power &amp; Harvesting</span>
             </a>
           </li>
           <li class="chapter-item">
             <a href="#wireless-iot" class="chapter-link">
-              <span class="chapter-num">10</span>
+              <span class="chapter-num">11</span>
               <span class="chapter-title-text">Wi-Fi, BLE 5.0 &amp; MQTT TLS</span>
             </a>
           </li>
           <li class="chapter-item">
+            <a href="#verification-hil" class="chapter-link">
+              <span class="chapter-num">12</span>
+              <span class="chapter-title-text">Multi-Tier Testing &amp; HIL</span>
+            </a>
+          </li>
+          <li class="chapter-item">
             <a href="#production" class="chapter-link">
-              <span class="chapter-num">11</span>
-              <span class="chapter-title-text">Reliability, Bootloaders &amp; OTA</span>
+              <span class="chapter-num">13</span>
+              <span class="chapter-title-text">Bootloaders, Flashing &amp; OTA</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#diagnostics" class="chapter-link">
+              <span class="chapter-num">14</span>
+              <span class="chapter-title-text">Crash Diagnostics &amp; HardFaults</span>
             </a>
           </li>
           <li class="chapter-item">
             <a href="#capstones" class="chapter-link">
-              <span class="chapter-num">12</span>
+              <span class="chapter-num">15</span>
               <span class="chapter-title-text">4 Production Capstones</span>
+            </a>
+          </li>
+          <li class="chapter-item">
+            <a href="#checklist" class="chapter-link">
+              <span class="chapter-num">16</span>
+              <span class="chapter-title-text">Engineering Lab Checklist</span>
             </a>
           </li>
         </ul>
@@ -136,15 +160,83 @@
         <header class="chapter-header" id="overview">
           <div class="chapter-meta">
             <span class="chapter-badge">Comprehensive Engineering Reference</span>
-            <span class="chapter-read-time">16 Modules • 4 Capstones • Live Hardware</span>
+            <span class="chapter-read-time">16 Modules • 7 SDLC Phases • 4 Capstones</span>
           </div>
           <h1 class="chapter-title">Designing &amp; Developing Embedded Systems Projects</h1>
-          <p class="chapter-subtitle">A multi-platform engineering guide covering hardware co-design, bare-metal &amp; RTOS firmware, industrial buses, wireless IoT, and production deployment across STM32, Texas Instruments, and ESP32.</p>
+          <p class="chapter-subtitle">A multi-platform engineering guide covering the entire Embedded Systems Development Life Cycle (EDLC) from requirements and hardware co-design to bare-metal &amp; RTOS firmware, HIL verification, and secure production deployment across STM32, Texas Instruments, and ESP32.</p>
         </header>
 
-        <!-- Platform Comparison Cards -->
+        <!-- Top Callout Notice -->
+        <div class="callout callout-info">
+          <strong>Engineering Context &amp; Silicon Constraints:</strong> Unlike traditional web or cloud software where execution environments are virtualized and resources are elastic, the <strong>Embedded Software Development Life Cycle (SDLC)</strong> is governed by physical silicon, PCB board schematics, thermal/power budgets, and hard real-time latency deadlines. In this handbook, we apply the <strong>V-Model methodology</strong> across three real-world hardware platforms: <strong>STM32</strong> (ARM Cortex-M4/M7), <strong>Texas Instruments</strong> (MSP430 / C2000), and <strong>ESP32</strong> (Xtensa / RISC-V).
+        </div>
+
+        <!-- Section 1: The Embedded SDLC & V-Model -->
+        <section class="content-section" id="sdlc-vmodel">
+          <h2>1. The Embedded SDLC &amp; V-Model Methodology</h2>
+          <p>In safety-critical and high-reliability embedded products (automotive, industrial automation, medical robotics), discovering a bug after manufacturing incurs immense costs (physical recalls, re-spinning PCBs, or safety hazards). The <strong>Embedded V-Model</strong> provides strict bidirectional traceability between specification phases and verification phases:</p>
+
+          <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem; margin:1.25rem 0;">
+            <h4 style="margin-top:0; color:var(--text-primary);"><i class="fas fa-sitemap" style="color:var(--accent-primary);"></i> The 7 Phases of the Embedded Firmware Lifecycle</h4>
+            <ol style="color:var(--text-secondary); line-height:1.8; margin-bottom:0;">
+              <li><strong>Phase 1: Requirements Analysis &amp; Feasibility:</strong> Define functional features, timing constraints (e.g., $1\,\text{kHz}$ PID loop, $&lt;10\,\mu\text{s}$ ISR latency), power envelopes ($&lt;2.5\,\mu\text{A}$ in deep sleep), and regulatory safety standards (ISO 26262 ASIL-B/D, IEC 61508).</li>
+              <li><strong>Phase 2: System Architecture &amp; Hardware/Software Partitioning:</strong> Decide what executes in dedicated hardware silicon (timers, DMA, hardware CRC/AES) versus CPU software. Select the MCU (STM32 vs TI vs ESP32) and design clock/power trees.</li>
+              <li><strong>Phase 3: Detailed Firmware Design:</strong> Establish layered software modules (CMSIS $\rightarrow$ HAL/LL $\rightarrow$ BSP $\rightarrow$ App), FreeRTOS task schedules, priority levels, queue sizes, and vector table memory maps (`SCB->VTOR`).</li>
+              <li><strong>Phase 4: Implementation (Defensive Embedded C):</strong> Write MISRA-C:2012 compliant C code using strict fixed-width types (`uint32_t`), atomic register writes (`BSRR`), and `volatile` access to prevent compiler optimization hazards.</li>
+              <li><strong>Phase 5: Multi-Tier Verification &amp; HIL Testing:</strong> Unit tests with Unity/CMock on host PCs, Hardware-in-the-Loop (HIL) automated rigs, logic analyzer bus tracing (CAN, SPI, I2C), and GDB/ST-LINK hardware debugging.</li>
+              <li><strong>Phase 6: Deployment, Production Flashing &amp; Bring-Up:</strong> Automated bed-of-nails flashing scripts, MCU Readout Protection (RDP Level 1/2), dual-bank bootloaders, and fail-safe over-the-air (OTA) updates.</li>
+              <li><strong>Phase 7: Maintenance, Crash Diagnostics &amp; Field Operations:</strong> Non-volatile crash dump logging, post-mortem root cause analysis (RCA), and Cortex-M HardFault exception frame decoding ($R0$–$R3$, $R12$, $LR$, $PC$, $xPSR$).</li>
+            </ol>
+          </div>
+
+          <div style="overflow-x:auto; margin: 1.5rem 0;">
+            <table class="table-custom" style="width:100%; border-collapse: collapse;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--border-strong); text-align: left;">
+                  <th style="padding: 10px;">Lifecycle Dimension</th>
+                  <th style="padding: 10px;">Pure Software (Web / Cloud)</th>
+                  <th style="padding: 10px;">Embedded Systems (STM32 / TI / ESP32)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600;">Execution Target</td>
+                  <td style="padding: 10px;">Cloud VMs, containers, servers</td>
+                  <td style="padding: 10px; color:var(--accent-primary); font-weight:600;">Bare-metal silicon, fixed Flash &amp; SRAM</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600;">Resource Budget</td>
+                  <td style="padding: 10px;">Gigabytes of RAM, elastic disk</td>
+                  <td style="padding: 10px;">32 KB–512 KB Flash, 8 KB–128 KB SRAM</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600;">Concurrency Model</td>
+                  <td style="padding: 10px;">OS threads, event loops, async/await</td>
+                  <td style="padding: 10px;">Hardware interrupts (NVIC), DMA streams, FreeRTOS tasks</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600;">Timing Behavior</td>
+                  <td style="padding: 10px;">Best effort (milliseconds acceptable)</td>
+                  <td style="padding: 10px; color:#ef4444; font-weight:600;">Hard real-time (microsecond deterministic deadlines)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600;">Diagnostics &amp; Testing</td>
+                  <td style="padding: 10px;">Application logs, APM profilers, CI/CD</td>
+                  <td style="padding: 10px;">ST-LINK SWD, GDB, Oscilloscopes, Logic Analyzers</td>
+                </tr>
+                <tr style="border-bottom: 1px solid var(--border-subtle);">
+                  <td style="padding: 10px; font-weight:600;">Cost of In-Field Bug</td>
+                  <td style="padding: 10px;">Low (deploy hotfix patch in minutes)</td>
+                  <td style="padding: 10px; color:#ef4444; font-weight:700;">Critical (physical recalls, bricked devices, safety risks)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Section 2: Platform Architecture & Selection Matrix -->
         <section class="content-section" id="matrix">
-          <h2>1. Multi-MCU Platform Architecture &amp; Selection Matrix</h2>
+          <h2>2. Multi-MCU Platform Architecture &amp; Selection Matrix</h2>
           <p>Every commercial embedded system begins with a trade-off analysis between computational horsepower, power envelope, connectivity requirements, unit BOM cost, and development velocity. In this course, we benchmark and build real products using three dominant industrial microcontroller ecosystems:</p>
 
           <div style="overflow-x:auto; margin: 1.5rem 0;">
@@ -184,14 +276,14 @@
             </table>
           </div>
 
-          <div class="callout callout-info">
-            <strong>Key Engineering Takeaway:</strong> High-reliability industrial systems frequently combine these chips in a <em>heterogeneous topology</em>: an STM32 or TI MCU manages deterministic hard real-time actuators/sensors, while an ESP32 acts as the networked communications co-processor running MQTT/TLS and OTA updates.
+          <div class="callout callout-tip">
+            <strong>Heterogeneous Multi-MCU Best Practice:</strong> Modern industrial IoT products frequently combine these chips: an STM32 or TI MCU manages deterministic hard real-time actuators/sensors, while an ESP32 acts as the networked communications co-processor running MQTT/TLS and OTA updates.
           </div>
         </section>
 
-        <!-- Hardware Schematics & Power Delivery -->
+        <!-- Section 3: Hardware Schematics & Power Delivery -->
         <section class="content-section" id="schematics">
-          <h2>2. Schematics, Power Delivery &amp; Hardware Bring-Up</h2>
+          <h2>3. Schematics, Power Delivery &amp; Hardware Bring-Up</h2>
           <p>Writing reliable firmware is impossible on unstable hardware. Before touching a compiler, embedded engineers must understand the physical board layout and power budgeting:</p>
           
           <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem; margin:1.25rem 0;">
@@ -213,9 +305,9 @@
           </div>
         </section>
 
-        <!-- Toolchains & Debugging -->
+        <!-- Section 4: Toolchains & Debugging -->
         <section class="content-section" id="toolchains">
-          <h2>3. Cross-Compilation Toolchains &amp; Hardware Debuggers</h2>
+          <h2>4. Cross-Compilation Toolchains &amp; Hardware Debuggers</h2>
           <p>Professional engineers use hardware debuggers with live breakpoints, watch expressions, memory inspection, and trace logging:</p>
           
           <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
@@ -236,9 +328,9 @@ arm-none-eabi-gdb firmware.elf -ex "target extended-remote :3333" -ex "load"</pr
           </div>
         </section>
 
-        <!-- Bare-Metal Drivers & Interrupts -->
+        <!-- Section 5: Bare-Metal Drivers & Interrupts -->
         <section class="content-section" id="baremetal">
-          <h2>4. Bare-Metal Peripheral Drivers &amp; Nested Interrupts</h2>
+          <h2>5. Bare-Metal Peripheral Drivers &amp; Nested Interrupts</h2>
           <p>Understanding register-level bit operations and interrupt controllers is essential before relying on vendor abstraction layers:</p>
 
           <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
@@ -262,9 +354,9 @@ void EXTI15_10_IRQHandler(void) {
           </div>
         </section>
 
-        <!-- Serial Protocols & DMA -->
+        <!-- Section 6: Serial Protocols & DMA -->
         <section class="content-section" id="serial-dma">
-          <h2>5. High-Throughput Serial Communication with Circular DMA</h2>
+          <h2>6. High-Throughput Serial Communication with Circular DMA</h2>
           <p>Traditional character-by-character interrupt UART wastes hundreds of CPU cycles per millisecond. Industrial firmware uses <strong>Circular DMA with Idle-Line Detection</strong>:</p>
 
           <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem; margin:1.25rem 0;">
@@ -277,9 +369,9 @@ void EXTI15_10_IRQHandler(void) {
           </div>
         </section>
 
-        <!-- Industrial CAN Bus -->
+        <!-- Section 7: Industrial CAN Bus -->
         <section class="content-section" id="can-fieldbus">
-          <h2>6. Industrial CAN 2.0B, CAN-FD &amp; RS-485 Modbus</h2>
+          <h2>7. Industrial CAN 2.0B, CAN-FD &amp; RS-485 Modbus</h2>
           <p>CAN (Controller Area Network) is the gold standard for automotive and industrial automation due to differential noise immunity, hardware arbitration, and automatic retransmission:</p>
 
           <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
@@ -304,9 +396,9 @@ HAL_CAN_AddTxMessage(&hcan1, &tx_header, payload, &tx_mailbox);</pre>
           </div>
         </section>
 
-        <!-- FreeRTOS Multitasking -->
+        <!-- Section 8: FreeRTOS Multitasking -->
         <section class="content-section" id="freertos">
-          <h2>7. Real-Time Multitasking with FreeRTOS</h2>
+          <h2>8. Real-Time Multitasking with FreeRTOS</h2>
           <p>Moving from a single-threaded superloop to preemptive multitasking requires clean task separation, queue-based message passing, and deterministic priorities:</p>
 
           <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
@@ -337,9 +429,9 @@ void vTelemetryTask(void *pvParameters) {
           </div>
         </section>
 
-        <!-- Ultra-Low Power -->
+        <!-- Section 9: Ultra-Low Power -->
         <section class="content-section" id="low-power">
-          <h2>8. Ultra-Low-Power Firmware &amp; Energy Budgeting</h2>
+          <h2>9. Ultra-Low-Power Firmware &amp; Energy Budgeting</h2>
           <p>Comparing deep sleep modes across our three microcontrollers:</p>
 
           <div style="overflow-x:auto; margin: 1.5rem 0;">
@@ -380,9 +472,9 @@ void vTelemetryTask(void *pvParameters) {
           </div>
         </section>
 
-        <!-- Wireless IoT -->
+        <!-- Section 10: Wireless IoT -->
         <section class="content-section" id="wireless-iot">
-          <h2>9. Wireless IoT Networking: Wi-Fi, BLE 5.0 &amp; MQTT over TLS</h2>
+          <h2>10. Wireless IoT Networking: Wi-Fi, BLE 5.0 &amp; MQTT over TLS</h2>
           <p>Connecting embedded hardware securely to cloud infrastructure requires mutual TLS encryption, reliable reconnect state machines, and lightweight binary/JSON serialization:</p>
 
           <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
@@ -405,10 +497,64 @@ esp_mqtt_client_start(client);</pre>
           </div>
         </section>
 
-        <!-- Production Capstones -->
+        <!-- Section 11: Multi-Tier Verification & HIL Testing -->
+        <section class="content-section" id="verification-hil">
+          <h2>11. Multi-Tier Verification &amp; Hardware-in-the-Loop (HIL) Testing</h2>
+          <p>In Phase 5 of the SDLC, verification must cover every layer of the firmware stack:</p>
+
+          <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem; margin:1.25rem 0;">
+            <h4 style="margin-top:0; color:var(--text-primary);"><i class="fas fa-microscope" style="color:var(--accent-primary);"></i> The Embedded Testing Pyramid</h4>
+            <ul style="color:var(--text-secondary); line-height:1.7;">
+              <li><strong>Unit Testing on Host (PC):</strong> Run core algorithms (PID maths, circular buffer pointer manipulation, state machine parsing) in GCC with Unity/CMock by stubbing out hardware registers.</li>
+              <li><strong>Integration &amp; Bus Testing:</strong> Use an 8-channel USB Logic Analyzer (Saleae / PulseView) to measure real physical timings: I2C clock stretching, SPI setup/hold times, and CAN differential voltage states.</li>
+              <li><strong>Hardware-in-the-Loop (HIL) Rig:</strong> Connect target boards to an automated test fixture that injects sensor voltages, reads PWM duty cycles, and asserts fault conditions to verify watchdog resets.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Section 12: Bootloaders, Production Flashing & OTA -->
+        <section class="content-section" id="production">
+          <h2>12. Bootloaders, Production Flashing &amp; Secure OTA</h2>
+          <p>Deploying firmware to the factory floor requires partition maps, secure boot, and protection against intellectual property theft:</p>
+
+          <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem; margin:1.25rem 0;">
+            <h4 style="margin-top:0; color:var(--text-primary);"><i class="fas fa-lock" style="color:var(--status-warning);"></i> Security &amp; Flash Memory Layout</h4>
+            <ul style="color:var(--text-secondary); line-height:1.7;">
+              <li><strong>Readout Protection (RDP):</strong> Setting STM32 Option Bytes to RDP Level 1 disables SWD debug access to prevent firmware dumping from the board.</li>
+              <li><strong>Dual-Bank Flash Partition:</strong> Reserving Bank 1 for active firmware and Bank 2 for incoming OTA updates. The bootloader validates CRC32 / RSA signatures before jumping to the new image via `SCB->VTOR`.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Section 13: Crash Diagnostics & HardFault Recovery -->
+        <section class="content-section" id="diagnostics">
+          <h2>13. Reliability, Watchdogs &amp; HardFault Diagnostics</h2>
+          <p>When an embedded device crashes in the field, it must reset cleanly and log forensic telemetry:</p>
+
+          <div class="code-container" style="background:var(--bg-code); border-radius:8px; padding:1rem; margin:1rem 0;">
+            <pre style="color:var(--text-code); font-family:var(--font-mono); font-size:0.875rem; margin:0;">
+// Cortex-M HardFault exception frame extraction in C:
+void HardFault_Handler_C(uint32_t *stacked_args) {
+    uint32_t stacked_r0  = stacked_args[0];
+    uint32_t stacked_r1  = stacked_args[1];
+    uint32_t stacked_r2  = stacked_args[2];
+    uint32_t stacked_r3  = stacked_args[3];
+    uint32_t stacked_r12 = stacked_args[4];
+    uint32_t stacked_lr  = stacked_args[5];
+    uint32_t stacked_pc  = stacked_args[6];  // Instruction address that triggered the fault
+    uint32_t stacked_psr = stacked_args[7];
+
+    // Log stacked_pc and CFSR to non-volatile flash before issuing NVIC_SystemReset()
+    Save_Crash_Dump_To_Flash(stacked_pc, SCB->CFSR);
+    NVIC_SystemReset();
+}</pre>
+          </div>
+        </section>
+
+        <!-- Section 14: Production Capstones -->
         <section class="content-section" id="capstones">
-          <h2>10. 4 Real-World Production Capstones</h2>
-          <p>Throughout the course, students build, test, and present four industry-grade embedded projects:</p>
+          <h2>14. 4 Real-World Production Capstones</h2>
+          <p>Throughout the course, students build, test, and present four industry-grade embedded projects executing the full V-Model lifecycle:</p>
 
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.25rem; margin:1.5rem 0;">
             <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:12px; padding:1.25rem;">
@@ -445,31 +591,34 @@ esp_mqtt_client_start(client);</pre>
           </div>
         </section>
 
-        <!-- Course Checklist -->
-        <section class="content-section">
-          <h2>11. Engineering Lab Checklist</h2>
+        <!-- Section 15: Course Checklist -->
+        <section class="content-section" id="checklist">
+          <h2>15. Engineering Lab &amp; SDLC Verification Checklist</h2>
           <div class="lab-checklist">
             <ul style="list-style:none; padding:0; margin:0;">
               <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
-                <input type="checkbox" id="chk1"> <label for="chk1">Complete schematic review and verify power rail sequencing &amp; decoupling capacitors</label>
+                <input type="checkbox" id="chk1"> <label for="chk1"><strong>Phase 1:</strong> Formalize PRD/SRS with quantitative latency (&lt;10µs), power budgets, and memory bounds</label>
               </li>
               <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
-                <input type="checkbox" id="chk2"> <label for="chk2">Flash bare-metal clock configuration and verify SYSCLK with oscilloscope MCO output</label>
+                <input type="checkbox" id="chk2"> <label for="chk2"><strong>Phase 2:</strong> Complete schematic review and verify power rail sequencing &amp; decoupling capacitors</label>
               </li>
               <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
-                <input type="checkbox" id="chk3"> <label for="chk3">Implement UART circular DMA with idle-line interrupt parsing</label>
+                <input type="checkbox" id="chk3"> <label for="chk3"><strong>Phase 3:</strong> Configure vector table relocation (VTOR) and design FreeRTOS task priority hierarchy</label>
               </li>
               <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
-                <input type="checkbox" id="chk4"> <label for="chk4">Configure CAN 2.0B transceivers and verify packet reception on a logic analyzer</label>
+                <input type="checkbox" id="chk4"> <label for="chk4"><strong>Phase 4:</strong> Implement UART circular DMA with idle-line interrupt parsing and volatile-protected state</label>
               </li>
               <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
-                <input type="checkbox" id="chk5"> <label for="chk5">Deploy FreeRTOS preemptive tasks with queues, mutexes, and stack overflow hooks</label>
+                <input type="checkbox" id="chk5"> <label for="chk5"><strong>Phase 4:</strong> Configure CAN 2.0B transceivers and verify packet reception on a logic analyzer</label>
               </li>
               <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
-                <input type="checkbox" id="chk6"> <label for="chk6">Establish secure TLS connection over Wi-Fi and publish telemetry to cloud MQTT broker</label>
+                <input type="checkbox" id="chk6"> <label for="chk6"><strong>Phase 5:</strong> Deploy automated HIL test scripts to measure real-time jitter and signal rise times</label>
               </li>
               <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
-                <input type="checkbox" id="chk7"> <label for="chk7">Demonstrate rollback-safe dual-partition Over-The-Air (OTA) firmware upgrade</label>
+                <input type="checkbox" id="chk7"> <label for="chk7"><strong>Phase 6:</strong> Demonstrate rollback-safe dual-partition Over-The-Air (OTA) firmware upgrade</label>
+              </li>
+              <li style="padding:8px 0; border-bottom:1px solid var(--border-subtle); display:flex; align-items:center; gap:10px;">
+                <input type="checkbox" id="chk8"> <label for="chk8"><strong>Phase 7:</strong> Test crash dump logger by triggering a deliberate fault and verifying register capture</label>
               </li>
             </ul>
           </div>
