@@ -38,7 +38,7 @@
                             <i class="fas fa-map-marker-alt text-brand-coral mr-2"></i> {{ event.location }}
                         </p>
                         <p class="text-sm text-gray-500">
-                            {{ event.description|truncatewords:20 }}
+                            {{ event.description|striptags|truncatewords:25 }}
                         </p>
                     </div>
                     
