@@ -14,7 +14,9 @@ html_content = """
   <div class="bg-brand-navy text-white p-6 rounded-xl shadow-lg border-l-4 border-brand-coral">
     <h3 class="text-xl font-bold mb-3 flex items-center"><i class="fas fa-microchip mr-2 text-brand-coral"></i> Programming STM32 with C: From CubeMX to Hardware Debugging</h3>
     <ul class="space-y-2 text-gray-200">
-      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>9 chapters, 9 labs, 5 mini projects and a capstone</strong> on the NUCLEO-F446RE board.</li>
+      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>18 hours training</strong>: 23rd Nov to 10th Dec (Monday to Thursday).</li>
+      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Special Pricing</strong>: &#8377;5000/- for professionals | &#8377;3000/- for students (+ GST).</li>
+      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>9 chapters, 9 labs, 5 mini projects and a capstone</strong> on the STM32L476RG (NUCLEO-L476RG) board.</li>
       <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Foundation to peripherals</strong>: Embedded C, GPIO, interrupts, timers, PWM, ADC, UART, DMA, I&sup2;C, SPI and CAN.</li>
       <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Real hardware</strong>: sensors, OLED displays, servos and DC/stepper motors.</li>
       <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Debug like a professional</strong>: ST-LINK, SWD, GDB, logic analyzer and HardFault diagnosis.</li>
@@ -74,15 +76,15 @@ course, created = Course.objects.update_or_create(
     slug="stm32-firmware-development-with-c",
     defaults={
         "title": "STM32 Firmware Development with C",
-        "short_description": "Foundation course: Embedded C, STM32 architecture, CubeMX/CubeIDE, GPIO, interrupts, timers, PWM, ADC, UART, I2C, SPI, CAN, DMA, sensors, displays, motors, and hardware debugging with ST-LINK, SWD, GDB and a logic analyzer.",
+        "short_description": "18-Hour training on STM32L476RG (23rd Nov to 10th Dec, Mon-Thu): Embedded C, STM32 architecture, CubeMX/CubeIDE, GPIO, interrupts, timers, PWM, ADC, UART, I2C, SPI, CAN, DMA, sensors, and hardware debugging with ST-LINK & GDB.",
         "description": html_content,
-        "duration_weeks": 8,
-        "duration_hours": 45,
+        "duration_weeks": 3,
+        "duration_hours": 18,
         "skill_level": "Beginner to Intermediate",
-        "technologies": "C, STM32, CubeMX, CubeIDE, HAL, GPIO, UART, I2C, SPI, CAN, DMA, GDB, ST-LINK",
-        "fee": "7000/- + GST",
-        "timing": "Weekend course, 4:00pm to 5:30pm",
-        "start_date": "To be announced",
+        "technologies": "C, STM32L476RG, CubeMX, CubeIDE, HAL, GPIO, UART, I2C, SPI, CAN, DMA, GDB, ST-LINK",
+        "fee": "5000/- + GST",
+        "timing": "Monday to Thursday",
+        "start_date": "23rd Nov 2026 - 10th Dec 2026",
         "trainers": "Kamal Kumar Mukiri",
         "recordings_info": "Sessions are recorded and shared and maintained for 3 months.",
         "materials_info": "Full digital book with 9 chapters, code samples, lab checklists, quizzes and a capstone.",

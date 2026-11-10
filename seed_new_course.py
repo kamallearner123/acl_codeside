@@ -14,7 +14,7 @@ html_content = """
     <h3 class="text-xl font-bold mb-3 flex items-center"><i class="fas fa-list-ul mr-2 text-brand-coral"></i> What to Expect from this Course</h3>
     <ul class="space-y-2 text-gray-200">
       <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>24 problem-driven sessions</strong> blending Python, ML, and advanced Agentic AI engineering.</li>
-      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Hands-on weekend format</strong> (Sat &amp; Sun, 4:00pm - 5:30pm) designed for working professionals.</li>
+      <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Hands-on weekend format</strong> (Sat &amp; Sun, 09:00am - 11:00am) designed for working professionals.</li>
       <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>4 dedicated project days</strong> including AI Problem Solvers and RAG knowledge agents.</li>
       <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Production-ready capstone</strong>: Build a complete Automotive Engineering Assistant.</li>
       <li><i class="fas fa-check-circle text-brand-coral mr-2"></i><strong>Full access to materials</strong> and API access, with recordings maintained for 3 months.</li>
@@ -289,12 +289,13 @@ Course.objects.update_or_create(
         "title": "Agentic AI - Learn by Examples",
         "short_description": "A 24-Day Week end Problem-Driven Curriculum for Working Professionals and students",
         "description": html_content,
-        "duration_hours": 36,
+        "duration_hours": 24,
+        "duration_weeks": 6,
         "skill_level": "Beginner to Advanced",
         "technologies": "Python, LangChain, RAG, LangGraph, Agents, Claude, n8n",
         "fee": "7000/- + GST",
-        "timing": "Weekend course, 4:00pm to 5:30pm",
-        "start_date": "12th Sep 2026 - 29th Nov 2026",
+        "timing": "Weekend course (Sat & Sun), 09:00am to 11:00am",
+        "start_date": "5th Dec 2026 - 10th Jan 2027",
         "trainers": "Kamal Kumar Mukiri, Dhanush Boyapati",
         "recordings_info": "Sessions are recorded and shared and maintained for 3 months.",
         "materials_info": "Materials will be provided and hands on programs with APIs with limited access.",

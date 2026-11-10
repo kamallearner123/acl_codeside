@@ -184,8 +184,8 @@
 
                     {% if course.slug == 'agentic-ai-learn-by-examples' %}
                     <div class="course-print-hide bg-white/10 border border-white/20 rounded-xl p-5 max-w-xl backdrop-blur-sm" aria-live="polite">
-                        <p class="text-sm text-gray-300 mb-3">Course starts 12 September at 4:00 PM IST</p>
-                        <div id="course-countdown" class="grid grid-cols-4 gap-2 text-center" data-target="2026-09-12T16:00:00+05:30">
+                        <p class="text-sm text-gray-300 mb-3">Course starts 5 December at 9:00 AM IST</p>
+                        <div id="course-countdown" class="grid grid-cols-4 gap-2 text-center" data-target="2026-12-05T09:00:00+05:30">
                             <div class="bg-white/10 rounded-lg py-2"><span data-unit="days" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Days</span></div>
                             <div class="bg-white/10 rounded-lg py-2"><span data-unit="hours" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Hours</span></div>
                             <div class="bg-white/10 rounded-lg py-2"><span data-unit="minutes" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Minutes</span></div>
@@ -195,6 +195,46 @@
                     <script>
                         (() => {
                             const countdown = document.getElementById('course-countdown');
+                            const target = new Date(countdown.dataset.target).getTime();
+
+                            const updateCountdown = () => {
+                                const remaining = target - Date.now();
+                                if (remaining <= 0) {
+                                    countdown.textContent = 'The course has started.';
+                                    return;
+                                }
+
+                                const values = {
+                                    days: Math.floor(remaining / 86400000),
+                                    hours: Math.floor((remaining / 3600000) % 24),
+                                    minutes: Math.floor((remaining / 60000) % 60),
+                                    seconds: Math.floor((remaining / 1000) % 60)
+                                };
+                                Object.entries(values).forEach(([unit, value]) => {
+                                    countdown.querySelector(`[data-unit="${unit}"]`).textContent = value;
+                                });
+                            };
+
+                            updateCountdown();
+                            setInterval(updateCountdown, 1000);
+                        })();
+                    </script>
+                    {% endif %}
+
+                    {% if course.slug == 'stm32-firmware-development-with-c' %}
+                    <div class="course-print-hide bg-white/10 border border-white/20 rounded-xl p-5 max-w-xl backdrop-blur-sm" aria-live="polite">
+                        <p class="text-sm text-gray-300 mb-3">Course starts 23 November (Monday to Thursday)</p>
+                        <div id="course-countdown-stm32" class="grid grid-cols-4 gap-2 text-center" data-target="2026-11-23T18:00:00+05:30">
+                            <div class="bg-white/10 rounded-lg py-2"><span data-unit="days" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Days</span></div>
+                            <div class="bg-white/10 rounded-lg py-2"><span data-unit="hours" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Hours</span></div>
+                            <div class="bg-white/10 rounded-lg py-2"><span data-unit="minutes" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Minutes</span></div>
+                            <div class="bg-white/10 rounded-lg py-2"><span data-unit="seconds" class="block text-2xl font-bold">0</span><span class="text-xs text-gray-300">Seconds</span></div>
+                        </div>
+                    </div>
+                    <script>
+                        (() => {
+                            const countdown = document.getElementById('course-countdown-stm32');
+                            if (!countdown) return;
                             const target = new Date(countdown.dataset.target).getTime();
 
                             const updateCountdown = () => {
@@ -355,7 +395,7 @@
                                 <p class="text-xs text-brand-textSecondary uppercase font-semibold mb-2">Fee</p>
                                 <!-- Regular Fee -->
                                 <div class="flex items-center justify-between bg-brand-light rounded-lg px-3 py-2 mb-2 border border-gray-200">
-                                    <span class="text-sm text-brand-textSecondary font-medium">Regular</span>
+                                    <span class="text-sm text-brand-textSecondary font-medium">{% if course.slug == 'stm32-firmware-development-with-c' %}Professionals{% else %}Regular{% endif %}</span>
                                     <span class="font-bold text-brand-navy text-sm">{{ course.fee }}</span>
                                 </div>
                                 <!-- Student Fee -->
@@ -363,7 +403,7 @@
                                     <span class="text-sm text-green-700 font-medium flex items-center gap-1">
                                         <i class="fas fa-graduation-cap text-xs"></i> Student
                                     </span>
-                                    <span class="font-bold text-green-700 text-sm">4000/- + GST</span>
+                                    <span class="font-bold text-green-700 text-sm">{% if course.slug == 'stm32-firmware-development-with-c' %}3000/- + GST{% else %}4000/- + GST{% endif %}</span>
                                 </div>
                                 <!-- Weekly Backup Session Note -->
                                 <div class="bg-brand-coral/10 border border-brand-coral/30 rounded-lg px-3 py-2 flex items-start gap-2">
