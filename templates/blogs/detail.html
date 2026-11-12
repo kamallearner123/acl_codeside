@@ -242,19 +242,88 @@
     </div>
     {% endif %}
 
-    <!-- Blog Content -->
-    <div class="py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="prose-custom text-lg text-brand-textSecondary">
-            {{ post.content|render_blog_content }}
+    <!-- Main Article & Sidebar Wrapper -->
+    <div class="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-center gap-8 xl:gap-12 relative items-start">
+
+            <!-- Sticky Left Sidebar on Desktop (xl: 1280px+), Slide-out Drawer on Mobile/Tablet (< xl) -->
+            <aside id="blog-index-sidebar" 
+                   aria-label="Table of Contents"
+                   class="fixed xl:sticky top-24 xl:top-28 left-3 sm:left-4 xl:left-auto bottom-6 xl:bottom-auto z-40 xl:z-20 w-80 xl:w-72 max-w-[calc(100vw-2rem)] h-[calc(100vh-8rem)] xl:h-[calc(100vh-8.5rem)] flex-shrink-0 bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl xl:shadow-sm rounded-2xl flex flex-col overflow-hidden transition-all duration-300 ease-in-out -translate-x-[120%] xl:translate-x-0">
+                
+                <!-- Header -->
+                <div class="px-4 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-list-ol text-brand-coral text-sm"></i>
+                        <h3 class="font-bold text-brand-navy text-sm">Table of Contents</h3>
+                        <span id="toc-header-count" class="text-[11px] font-semibold bg-blue-50 text-brand-navy px-2 py-0.5 rounded-full border border-blue-100">0</span>
+                    </div>
+                    <!-- Hide / Collapse Button -->
+                    <button id="btn-hide-index" 
+                            type="button" 
+                            class="p-1 px-2 text-xs font-semibold text-slate-500 hover:text-brand-coral hover:bg-coral-50/80 rounded-lg transition-colors flex items-center gap-1 cursor-pointer" 
+                            title="Hide index table (Esc)">
+                        <span>Hide</span>
+                        <i class="fas fa-angles-left text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- Filter / Search input -->
+                <div class="p-3 border-b border-slate-100 bg-white">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
+                        <input id="toc-search" 
+                               type="text" 
+                               placeholder="Filter sections or assignments..." 
+                               class="w-full pl-8 pr-7 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white rounded-lg border border-slate-200 focus:border-brand-coral focus:ring-1 focus:ring-brand-coral/20 outline-none transition-all placeholder:text-slate-400">
+                        <button id="toc-search-clear" 
+                                type="button" 
+                                class="absolute right-2 top-2 text-slate-400 hover:text-slate-600 text-xs hidden cursor-pointer">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </div>
+                    <!-- Quick Expand/Collapse toggles -->
+                    <div class="flex justify-between items-center mt-2.5 px-0.5 text-[11px] text-slate-500">
+                        <span id="toc-active-badge" class="truncate max-w-[170px] text-brand-navy font-medium italic">Jump to section:</span>
+                        <button id="btn-toggle-all" type="button" class="text-brand-coral hover:underline font-semibold cursor-pointer">Expand All</button>
+                    </div>
+                </div>
+
+                <!-- Scrollable Index Tree -->
+                <nav id="toc-nav-list" 
+                     class="flex-1 overflow-y-auto p-2 space-y-1 text-xs select-none overscroll-contain">
+                    <!-- Dynamic JS injected links -->
+                </nav>
+
+                <!-- Footer Progress Bar & Controls -->
+                <div class="p-2.5 border-t border-slate-100 bg-slate-50/80 text-[11px] flex items-center justify-between text-slate-500">
+                    <div class="flex items-center gap-2 flex-1 mr-3">
+                        <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                            <div id="reading-progress-bar" class="bg-brand-coral h-full w-0 transition-all duration-150"></div>
+                        </div>
+                        <span id="reading-progress-text" class="text-[10px] font-mono text-slate-500">0%</span>
+                    </div>
+                    <button type="button" id="btn-scroll-top" class="text-slate-600 hover:text-brand-coral font-medium flex items-center gap-1 cursor-pointer">
+                        <i class="fas fa-arrow-up text-[10px]"></i> Top
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Blog Content Column -->
+            <main class="w-full max-w-3xl min-w-0 flex-1">
+                <div class="prose-custom text-lg text-brand-textSecondary">
+                    {{ post.content|render_blog_content }}
+                </div>
+            </main>
+
         </div>
     </div>
 
-    <!-- Left Floating / Collapsible Index Table (TOC) -->
     <!-- Floating 'Show Index' Button (Shown when index table is hidden/collapsed) -->
     <button id="btn-show-index" 
             type="button" 
             aria-label="Open Table of Contents"
-            class="fixed left-3 sm:left-5 top-24 z-40 bg-brand-navy hover:bg-brand-coral text-white text-xs font-semibold px-3.5 py-2.5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center gap-2 border border-slate-700/30 group cursor-pointer hidden">
+            class="fixed left-3 sm:left-5 top-28 z-40 bg-brand-navy hover:bg-brand-coral text-white text-xs font-semibold px-3.5 py-2.5 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center gap-2 border border-slate-700/30 group cursor-pointer hidden">
         <i class="fas fa-list-ul text-brand-coral group-hover:text-white transition-colors"></i>
         <span>Index</span>
         <span id="btn-index-count" class="bg-white/20 text-[10px] px-1.5 py-0.5 rounded-full font-mono">0</span>
@@ -263,71 +332,8 @@
 
     <!-- Backdrop for mobile/tablet screens when drawer is open -->
     <div id="index-drawer-backdrop" 
-         class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 hidden transition-opacity duration-300">
+         class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-30 hidden transition-opacity duration-300">
     </div>
-
-    <!-- The Slide-out Index Sidebar -->
-    <aside id="blog-index-sidebar" 
-           aria-label="Table of Contents"
-           class="fixed left-3 sm:left-4 top-24 bottom-6 z-40 w-80 max-w-[calc(100vw-2rem)] bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-2xl flex flex-col overflow-hidden transition-transform duration-300 ease-in-out -translate-x-[120%]">
-        
-        <!-- Header -->
-        <div class="px-4 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
-            <div class="flex items-center gap-2">
-                <i class="fas fa-list-ol text-brand-coral text-sm"></i>
-                <h3 class="font-bold text-brand-navy text-sm">Table of Contents</h3>
-                <span id="toc-header-count" class="text-[11px] font-semibold bg-blue-50 text-brand-navy px-2 py-0.5 rounded-full border border-blue-100">0</span>
-            </div>
-            <!-- Hide / Collapse Button -->
-            <button id="btn-hide-index" 
-                    type="button" 
-                    class="p-1 px-2 text-xs font-semibold text-slate-500 hover:text-brand-coral hover:bg-coral-50/80 rounded-lg transition-colors flex items-center gap-1 cursor-pointer" 
-                    title="Hide index table (Esc)">
-                <span>Hide</span>
-                <i class="fas fa-angles-left text-xs"></i>
-            </button>
-        </div>
-
-        <!-- Filter / Search input -->
-        <div class="p-3 border-b border-slate-100 bg-white">
-            <div class="relative">
-                <i class="fas fa-search absolute left-2.5 top-2.5 text-slate-400 text-xs"></i>
-                <input id="toc-search" 
-                       type="text" 
-                       placeholder="Filter sections or assignments..." 
-                       class="w-full pl-8 pr-7 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white rounded-lg border border-slate-200 focus:border-brand-coral focus:ring-1 focus:ring-brand-coral/20 outline-none transition-all placeholder:text-slate-400">
-                <button id="toc-search-clear" 
-                        type="button" 
-                        class="absolute right-2 top-2 text-slate-400 hover:text-slate-600 text-xs hidden cursor-pointer">
-                    <i class="fas fa-times-circle"></i>
-                </button>
-            </div>
-            <!-- Quick Expand/Collapse toggles -->
-            <div class="flex justify-between items-center mt-2.5 px-0.5 text-[11px] text-slate-500">
-                <span id="toc-active-badge" class="truncate max-w-[170px] text-brand-navy font-medium italic">Jump to section:</span>
-                <button id="btn-toggle-all" type="button" class="text-brand-coral hover:underline font-semibold cursor-pointer">Expand All</button>
-            </div>
-        </div>
-
-        <!-- Scrollable Index Tree -->
-        <nav id="toc-nav-list" 
-             class="flex-1 overflow-y-auto p-2 space-y-1 text-xs select-none overscroll-contain">
-            <!-- Dynamic JS injected links -->
-        </nav>
-
-        <!-- Footer Progress Bar & Controls -->
-        <div class="p-2.5 border-t border-slate-100 bg-slate-50/80 text-[11px] flex items-center justify-between text-slate-500">
-            <div class="flex items-center gap-2 flex-1 mr-3">
-                <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                    <div id="reading-progress-bar" class="bg-brand-coral h-full w-0 transition-all duration-150"></div>
-                </div>
-                <span id="reading-progress-text" class="text-[10px] font-mono text-slate-500">0%</span>
-            </div>
-            <button type="button" id="btn-scroll-top" class="text-slate-600 hover:text-brand-coral font-medium flex items-center gap-1 cursor-pointer">
-                <i class="fas fa-arrow-up text-[10px]"></i> Top
-            </button>
-        </div>
-    </aside>
 {% endblock %}
 
 {% block extra_js %}
@@ -485,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 targetEl.scrollIntoView({ behavior: 'smooth' });
                 // If on mobile/tablet, close the drawer
-                if (window.innerWidth < 1024) {
+                if (window.innerWidth < 1280) {
                     closeDrawer(false);
                 }
             }
@@ -584,11 +590,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Drawer Open / Close
     function openDrawer(savePref) {
-        sidebar.classList.remove('-translate-x-[120%]');
-        sidebar.classList.add('translate-x-0');
-        btnShow.classList.add('hidden');
-        if (window.innerWidth < 1280 && backdrop) {
-            backdrop.classList.remove('hidden');
+        if (window.innerWidth >= 1280) {
+            sidebar.classList.remove('xl:hidden');
+            btnShow.classList.add('hidden');
+        } else {
+            sidebar.classList.remove('-translate-x-[120%]');
+            sidebar.classList.add('translate-x-0');
+            btnShow.classList.add('hidden');
+            if (backdrop) {
+                backdrop.classList.remove('hidden');
+            }
         }
         if (savePref) {
             localStorage.setItem('acl_blog_index_hidden', 'false');
@@ -596,11 +607,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function closeDrawer(savePref) {
-        sidebar.classList.add('-translate-x-[120%]');
-        sidebar.classList.remove('translate-x-0');
-        btnShow.classList.remove('hidden');
-        if (backdrop) {
-            backdrop.classList.add('hidden');
+        if (window.innerWidth >= 1280) {
+            sidebar.classList.add('xl:hidden');
+            btnShow.classList.remove('hidden');
+        } else {
+            sidebar.classList.add('-translate-x-[120%]');
+            sidebar.classList.remove('translate-x-0');
+            btnShow.classList.remove('hidden');
+            if (backdrop) {
+                backdrop.classList.add('hidden');
+            }
         }
         if (savePref) {
             localStorage.setItem('acl_blog_index_hidden', 'true');
@@ -622,22 +638,26 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && !sidebar.classList.contains('-translate-x-[120%]')) {
+        if (e.key === 'Escape' && !sidebar.classList.contains('-translate-x-[120%]') && !sidebar.classList.contains('xl:hidden')) {
             closeDrawer(true);
         }
     });
 
     // Initial drawer state based on screen size and localStorage
-    const savedHidden = localStorage.getItem('acl_blog_index_hidden');
-    if (window.innerWidth >= 1280) {
-        if (savedHidden === 'true') {
-            closeDrawer(false);
+    function applyInitialState() {
+        const savedHidden = localStorage.getItem('acl_blog_index_hidden');
+        if (window.innerWidth >= 1280) {
+            if (savedHidden === 'true') {
+                closeDrawer(false);
+            } else {
+                openDrawer(false);
+            }
         } else {
-            openDrawer(false);
+            closeDrawer(false);
         }
-    } else {
-        closeDrawer(false);
     }
+    applyInitialState();
+    window.addEventListener('resize', applyInitialState);
 
     // Scroll spy: active heading highlight
     const observer = new IntersectionObserver(function (entries) {
