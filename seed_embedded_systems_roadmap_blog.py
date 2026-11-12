@@ -795,3 +795,4 @@ post, created = Post.objects.update_or_create(
 
 action = "Created" if created else "Updated"
 print(f"{action} blog post: {post.title} (ID: {post.id}, slug: {post.slug})")
+
