@@ -5,6 +5,8 @@ from .views import contact
 app_name = 'contact'
 
 urlpatterns = [
-    path("contact/",contact, name='contact'),
-    path("contact/verify/", views.verify, name="verify"),
+    path("", contact, name='contact'),
+    path("verify/", views.verify, name="verify"),
+    path("contact/", contact),
+    path("contact/verify/", views.verify),
 ]
