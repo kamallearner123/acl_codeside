@@ -108,9 +108,29 @@
                     </select>
                 </div>
                 
-                <div class="mb-8">
+                <div class="mb-6">
                     <label for="message" class="block text-sm font-bold text-brand-navy mb-2">Message *</label>
                     <textarea id="message" name="message" rows="6" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/20 outline-none transition-all resize-none" placeholder="Tell us about your requirements, questions, or how we can help you..."></textarea>
+                </div>
+
+                <!-- DPDP Act 2023 Consent & Notice -->
+                <div class="mb-8 p-5 bg-blue-50/60 rounded-2xl border border-blue-100">
+                    <div class="flex items-start gap-3">
+                        <div class="pt-0.5">
+                            <input type="checkbox" id="dpdp_consent" name="dpdp_consent" value="yes" required class="w-5 h-5 text-brand-navy border-gray-300 rounded focus:ring-brand-navy/30 cursor-pointer">
+                        </div>
+                        <div class="text-xs md:text-sm text-gray-700 leading-relaxed">
+                            <label for="dpdp_consent" class="font-semibold text-brand-navy block mb-1 cursor-pointer">
+                                Consent for Processing Personal Data (DPDP Act, 2023) *
+                            </label>
+                            <p class="text-gray-600 mb-2">
+                                In accordance with the <strong>Digital Personal Data Protection (DPDP) Act, 2023</strong>, by ticking this box you give express consent to <strong>Apt Computing Labs</strong> to collect and process your digital personal data (name, email address, phone number, and query details) solely for the purpose of communicating with you, evaluating your inquiry, and delivering requested academic, technical, or consulting information.
+                            </p>
+                            <p class="text-gray-500 text-xs">
+                                Your data will not be shared with unauthorized third parties or used for unrelated marketing. You retain the right to access, correct, or withdraw your consent at any time, or submit grievances by contacting our Grievance Officer at <a href="mailto:kamal@aptcomputinglabs.com" class="text-brand-navy underline font-medium hover:text-blue-700">kamal@aptcomputinglabs.com</a>.
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="text-center">

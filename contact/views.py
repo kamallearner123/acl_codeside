@@ -2,6 +2,7 @@ import hmac
 import logging
 import secrets
 import time
+from django.utils import timezone
 
 from django.conf import settings
 from django.contrib import messages
@@ -51,13 +52,16 @@ def _deliver(pending):
     contact = Contact.objects.create(
         name=pending['name'], email=pending['email'],
         subject=pending['subject'], message=pending['message'],
+        dpdp_consent=pending.get('dpdp_consent', True),
+        dpdp_consent_timestamp=timezone.now(),
     )
     send_mail(
         f"Contact Form: {pending['subject']}",
         f"Name: {pending['name']}\n"
         f"Email: {pending['email']} (verified)\n"
         f"Company: {pending['company']}\n"
-        f"Phone: {pending['phone']}\n\n"
+        f"Phone: {pending['phone']}\n"
+        f"DPDP Act 2023 Consent: Granted\n\n"
         f"Message:\n{pending['message']}",
         settings.DEFAULT_FROM_EMAIL,
         ['kamal@aptcomputinglabs.com'],
@@ -76,6 +80,7 @@ def contact(request):
         message = request.POST.get('message', '').strip()[:5000]
         company = request.POST.get('company', 'Not provided').strip()[:200]
         phone = request.POST.get('phone', 'Not provided').strip()[:50]
+        dpdp_consent = request.POST.get('dpdp_consent')
 
         try:
             validate_email(email)
@@ -84,6 +89,9 @@ def contact(request):
             return redirect('contact:contact')
         if not (name and subject and message):
             messages.error(request, 'Please fill in all required fields.')
+            return redirect('contact:contact')
+        if not dpdp_consent:
+            messages.error(request, 'Consent under the DPDP Act, 2023 is required to submit this form.')
             return redirect('contact:contact')
 
         if (_over_limit(f'contact_ip_{_client_ip(request)}', MAX_SENDS_PER_IP_HOUR)
@@ -94,6 +102,7 @@ def contact(request):
         pending = {
             'name': name, 'email': email, 'subject': subject,
             'message': message, 'company': company, 'phone': phone,
+            'dpdp_consent': True,
             'code': f'{secrets.randbelow(10**6):06d}',
             'expires': time.time() + CODE_TTL, 'attempts': 0,
         }

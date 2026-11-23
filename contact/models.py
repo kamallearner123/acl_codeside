@@ -15,6 +15,9 @@ class Contact(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     
+    dpdp_consent = models.BooleanField(default=False, help_text="Consent given under DPDP Act 2023")
+    dpdp_consent_timestamp = models.DateTimeField(null=True, blank=True)
+    
     admin_email_sent = models.BooleanField(default=False)
     
     user_email_sent = models.BooleanField(default=False)
