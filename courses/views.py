@@ -42,8 +42,8 @@ COURSE_GROUPS = (
             'linux-os-concepts',
             'rust-programming',
             'realization-of-rust-from-c',
-            'basic-electronics-sensors-actuators',
             'designing-embedded-systems-projects-stm32-ti-esp32',
+            'professional-c-in-embedded-systems',
         },
     },
     {

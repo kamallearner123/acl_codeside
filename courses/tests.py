@@ -27,9 +27,9 @@ class CoursePageTests(TestCase):
             title='Realization of Rust from C',
             slug='realization-of-rust-from-c',
         )
-        self.electronics_course = Course.objects.create(
-            title='Basic Electronics with Sensors and Actuators',
-            slug='basic-electronics-sensors-actuators',
+        self.professional_c_course = Course.objects.create(
+            title='Professional C in Embedded Systems',
+            slug='professional-c-in-embedded-systems',
         )
         self.other_course = Course.objects.create(
             title='New Training Program',
@@ -64,7 +64,7 @@ class CoursePageTests(TestCase):
         self.assertIn(self.ai_course, groups['AI/ML and Agentic AI'])
         self.assertIn(self.security_course, groups['Cyber security'])
         self.assertIn(self.rust_from_c_course, groups['Embedded Systems and IoT'])
-        self.assertIn(self.electronics_course, groups['Embedded Systems and IoT'])
+        self.assertIn(self.professional_c_course, groups['Embedded Systems and IoT'])
         self.assertIn(self.other_course, groups['Other Courses'])
         self.assertEqual(
             set(groups['STM32+C+Rust+Autmotive']),
@@ -196,8 +196,8 @@ class CoursePageTests(TestCase):
         rust_response = self.client.get(
             reverse('courses:detail', args=[self.rust_from_c_course.slug])
         )
-        electronics_response = self.client.get(
-            reverse('courses:detail', args=[self.electronics_course.slug])
+        c_response = self.client.get(
+            reverse('courses:detail', args=[self.professional_c_course.slug])
         )
 
         self.assertContains(
@@ -205,8 +205,8 @@ class CoursePageTests(TestCase):
             reverse('courses:rust_from_c_book_index'),
         )
         self.assertContains(
-            electronics_response,
-            reverse('courses:electronics_sensors_book_index'),
+            c_response,
+            reverse('courses:c_professional_book_index'),
         )
         self.assertContains(rust_response, 'DURATION TO BE ANNOUNCED')
 
