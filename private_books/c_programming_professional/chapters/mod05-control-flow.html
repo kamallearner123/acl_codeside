@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Module 5: Control Flow & State Machines - Conditional branching, switch jump-tables, deterministic loops, and implementing robust Finite State Machines (FSMs).">
-  <title>Module 5: Control Flow & State Machines | Professional C Engineering</title>
+  <meta name="description" content="Module 5: Control Flow & Finite State Machines - Structured control flow, branch prediction, Duff's Device, switch-case jump tables, and robust FSM design in C.">
+  <title>Module 5: Control Flow &amp; State Machines | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -72,48 +72,12 @@
             <span class="module-chevron">▼</span>
           </button>
           <ul class="chapter-sublist">
-            <li>
-              <a href="mod01-intro-to-c.html" class="chapter-nav-item">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 1: Intro to C &amp; Software Dev</span>
-                <span class="chapter-read-time">45m</span>
-              </a>
-            </li>
-            <li>
-              <a href="mod02-compilation-and-build-process.html" class="chapter-nav-item">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 2: Compilation &amp; Build Process</span>
-                <span class="chapter-read-time">60m</span>
-              </a>
-            </li>
-            <li>
-              <a href="mod03-data-types-and-variables.html" class="chapter-nav-item ">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 3: C Data Types &amp; Variables</span>
-                <span class="chapter-read-time">50m</span>
-              </a>
-            </li>
-            <li>
-              <a href="mod04-operators-and-expressions.html" class="chapter-nav-item ">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 4: Operators &amp; Expressions</span>
-                <span class="chapter-read-time">45m</span>
-              </a>
-            </li>
-            <li>
-              <a href="mod05-control-flow.html" class="chapter-nav-item active">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 5: Control Flow &amp; State Machines</span>
-                <span class="chapter-read-time">55m</span>
-              </a>
-            </li>
-            <li>
-              <a href="mod06-functions-and-modularity.html" class="chapter-nav-item ">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 6: Functions &amp; Modular Design</span>
-                <span class="chapter-read-time">50m</span>
-              </a>
-            </li>
+            <li><a href="mod01-intro-to-c.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 1: Intro to C &amp; Software Dev</span><span class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod02-compilation-and-build-process.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 2: Compilation &amp; Build Process</span><span class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod03-data-types-and-variables.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 3: C Data Types &amp; Variables</span><span class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod04-operators-and-expressions.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 4: Operators &amp; Expressions</span><span class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod05-control-flow.html" class="chapter-nav-item active"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 5: Control Flow &amp; State Machines</span><span class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod06-functions-and-modularity.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 6: Functions &amp; Modular Design</span><span class="chapter-read-time">50m</span></a></li>
           </ul>
         </div>
 
@@ -134,88 +98,118 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 1 • C Programming Foundations</span>
-          <h1 class="chapter-h1">Module 5: Control Flow & State Machines</h1>
-          <p class="chapter-lead">Conditional branching, switch jump-tables, deterministic loops, and implementing robust Finite State Machines (FSMs).</p>
+          <h1 class="chapter-h1">Module 5: Control Flow, Branch Prediction &amp; Finite State Machines</h1>
+          <p class="chapter-lead">
+            Design deterministic control logic, optimize CPU pipeline branch penalties, leverage compiler jump tables, and build hierarchical Finite State Machines (FSMs) for real-time firmware.
+          </p>
           <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Estimated Reading: 55 min</div>
             <div class="meta-item">🎯 Standard: C11 / C17 / C23</div>
             <div class="meta-item">🛠️ Environments: Linux POSIX + Bare-Metal ARM</div>
-            <div class="meta-item">⚡ Professional Systems Engineering Track</div>
+            <div class="meta-item">⚡ MISRA C:2012 Rule 14.1, 15.3 Aligned</div>
           </div>
         </div>
 
-        <div style="background:rgba(2,132,199,0.08);border-left:4px solid #0284c7;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
-          <strong style="color:#0284c7;">Curriculum Module Scope:</strong>
-          <p style="margin:0.5rem 0 0 0;font-size:0.9rem;color:var(--text-secondary);line-height:1.7;">
-            This module is part of the certified Professional C Engineering track. Below are the key engineering topics, architectural paradigms, and hands-on laboratory exercises covered in this chapter:
-          </p>
-        </div>
-
-        <h2>Module Syllabus &amp; Core Topics</h2>
+        <h2 id="sec-5-1">5.1 Switch-Case Lowering: Jump Tables vs. Binary Search Trees</h2>
+        <p>
+          The C <code>switch</code> statement is compiled in two distinct ways depending on the density and span of case values:
+        </p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin:1.5rem 0;">
-          
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 5.1</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Conditional Branching: if, else if, else &amp; MISRA Rules</h4>
+          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+            <h4 style="margin-top:0;color:#38BDF8;">1. Jump Table (O(1) Execution)</h4>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
+              When case values are contiguous (e.g. 0, 1, 2, 3), GCC emits an array of code pointers in <code>.rodata</code>. The CPU uses an indirect branch: <code>jmp *table[idx]</code> in constant time, ideal for real-time packet parsers.
+            </p>
           </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 5.2</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">switch-case Statements: Compiler Jump Tables &amp; Fallthrough Discipline</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 5.3</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Iteration: for, while, do-while &amp; Loop Termination Guarantees</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 5.4</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">break, continue &amp; The Disciplined Use of goto in Cleanup Handlers</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 5.5</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Engineering Finite State Machines (FSM): Moore vs Mealy Architecture</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 5.6</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Hands-On Lab: Non-Blocking Traffic Controller State Machine</h4>
+          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+            <h4 style="margin-top:0;color:#38BDF8;">2. Decision Tree / Binary Search (O(log N))</h4>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
+              When case values are sparse (e.g. 10, 1000, 500000), a jump table would waste excessive flash memory. The compiler generates cascading <code>cmp</code> and conditional branch instructions.
+            </p>
           </div>
         </div>
 
-        <h2>Representative Engineering Code</h2>
+        <h2 id="sec-5-2">5.2 Deterministic Finite State Machine (FSM) Implementation</h2>
+        <p>
+          Real-time firmware (automotive ECU, motor control, communication stacks) must never block in arbitrary loops. Instead, event-driven state machines process one state transition at a time:
+        </p>
+
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Module 5: Control Flow & State Machines Implementation Sample</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Table-Driven Finite State Machine in C</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
             <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
 
 typedef enum {
     STATE_IDLE,
-    STATE_ACTIVE,
-    STATE_FAULT
-} SystemState;
+    STATE_RX_HEADER,
+    STATE_RX_PAYLOAD,
+    STATE_VERIFY_CRC,
+    STATE_ERROR,
+    STATE_COUNT
+} ProtocolState_t;
 
-int main(void) {
-    SystemState current_state = STATE_IDLE;
-    
-    switch (current_state) {
-        case STATE_IDLE:
-            printf("System idle. Awaiting command.
-");
-            break;
-        case STATE_ACTIVE:
-            printf("System processing workload.
-");
-            break;
-        case STATE_FAULT:
-            printf("System in fault mode. Safe shutdown.
-");
-            break;
-        default:
-            printf("Invalid state detected!
-");
-            break;
+typedef enum {
+    EVENT_BYTE_RCVD,
+    EVENT_TIMEOUT,
+    EVENT_CRC_OK,
+    EVENT_CRC_FAIL
+} ProtocolEvent_t;
+
+typedef ProtocolState_t (*StateHandler_t)(ProtocolEvent_t event, uint8_t byte);
+
+static ProtocolState_t on_idle(ProtocolEvent_t ev, uint8_t byte) {
+    if (ev == EVENT_BYTE_RCVD &amp;&amp; byte == 0xAA) {
+        return STATE_RX_HEADER;
     }
-    return 0;
+    return STATE_IDLE;
+}
+
+static ProtocolState_t on_rx_header(ProtocolEvent_t ev, uint8_t byte) {
+    if (ev == EVENT_TIMEOUT) return STATE_ERROR;
+    /* Process packet header ... */
+    return STATE_RX_PAYLOAD;
+}
+
+/* Fast dispatch table with function pointers */
+static const StateHandler_t StateTable[STATE_COUNT] = {
+    [STATE_IDLE]        = on_idle,
+    [STATE_RX_HEADER]   = on_rx_header,
+    /* ... remaining handlers ... */
+};
+
+void run_protocol_engine(ProtocolState_t *current_state, ProtocolEvent_t event, uint8_t byte) {
+    if (*current_state &lt; STATE_COUNT &amp;&amp; StateTable[*current_state]) {
+        *current_state = StateTable[*current_state](event, byte);
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-5-3">5.3 Branch Prediction &amp; GNU __builtin_expect</h2>
+        <p>
+          Modern superscalar CPUs speculatively execute instructions down predicted branch paths. A branch misprediction incurs a pipeline flush of 10 to 20 CPU cycles. In high-frequency interrupt service routines, you can guide the compiler:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Likely &amp; Unlikely Branch Optimization Macros</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#define likely(x)   __builtin_expect(!!(x), 1)
+#define unlikely(x) __builtin_expect(!!(x), 0)
+
+void handle_packet_fastpath(const uint8_t *buf, size_t len) {
+    /* 99.9% of packets are valid; prioritize layout for non-null buffer */
+    if (unlikely(buf == NULL || len == 0)) {
+        log_hardware_error();
+        return;
+    }
+    process_stream(buf, len);
 }</code></pre>
           </div>
         </div>

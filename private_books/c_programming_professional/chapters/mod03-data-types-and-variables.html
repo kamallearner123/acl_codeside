@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Module 3: C Data Types & Variables - Deep dive into integer representations, fixed-width types, IEEE 754 floating point, storage classes, and memory alignment.">
+  <meta name="description" content="Module 3: C Data Types, Type Qualifiers & Memory Layout - Fixed-width integers, IEEE 754 floating point, pointer representations, structure alignment, and padding.">
   <title>Module 3: C Data Types & Variables | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -94,21 +94,21 @@
               </a>
             </li>
             <li>
-              <a href="mod04-operators-and-expressions.html" class="chapter-nav-item ">
+              <a href="mod04-operators-and-expressions.html" class="chapter-nav-item">
                 <span class="chapter-check-icon">●</span>
                 <span class="chapter-title-text">Mod 4: Operators &amp; Expressions</span>
                 <span class="chapter-read-time">45m</span>
               </a>
             </li>
             <li>
-              <a href="mod05-control-flow.html" class="chapter-nav-item ">
+              <a href="mod05-control-flow.html" class="chapter-nav-item">
                 <span class="chapter-check-icon">●</span>
                 <span class="chapter-title-text">Mod 5: Control Flow &amp; State Machines</span>
                 <span class="chapter-read-time">55m</span>
               </a>
             </li>
             <li>
-              <a href="mod06-functions-and-modularity.html" class="chapter-nav-item ">
+              <a href="mod06-functions-and-modularity.html" class="chapter-nav-item">
                 <span class="chapter-check-icon">●</span>
                 <span class="chapter-title-text">Mod 6: Functions &amp; Modular Design</span>
                 <span class="chapter-read-time">50m</span>
@@ -134,75 +134,196 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 1 • C Programming Foundations</span>
-          <h1 class="chapter-h1">Module 3: C Data Types & Variables</h1>
-          <p class="chapter-lead">Deep dive into integer representations, fixed-width types, IEEE 754 floating point, storage classes, and memory alignment.</p>
+          <h1 class="chapter-h1">Module 3: C Data Types, Variables & Memory Alignment</h1>
+          <p class="chapter-lead">
+            Master low-level integer representations, fixed-width types, IEEE 754 floating-point characteristics, storage classes, pointer sizes, and hardware memory alignment requirements in systems code.
+          </p>
           <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Estimated Reading: 50 min</div>
             <div class="meta-item">🎯 Standard: C11 / C17 / C23</div>
-            <div class="meta-item">🛠️ Environments: Linux POSIX + Bare-Metal ARM</div>
-            <div class="meta-item">⚡ Professional Systems Engineering Track</div>
+            <div class="meta-item">🛠️ Environments: Linux POSIX + ARM Cortex-M Bare-Metal</div>
+            <div class="meta-item">⚡ MISRA C:2012 Rule 8.4, 8.7, 8.9 Aligned</div>
           </div>
         </div>
 
-        <div style="background:rgba(2,132,199,0.08);border-left:4px solid #0284c7;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
-          <strong style="color:#0284c7;">Curriculum Module Scope:</strong>
+        <h2 id="sec-3-1">3.1 Primitive Types vs. Architecture-Dependent Sizes</h2>
+        <p>
+          In C, primitive types (such as <code>int</code>, <code>long</code>, and pointers) do not have a globally fixed byte width. Their sizes depend on the data model chosen by the compiler target architecture:
+        </p>
+
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+            <thead>
+              <tr style="background:var(--bg-card);border-bottom:2px solid var(--border-strong);">
+                <th style="padding:10px 14px;text-align:left;">Data Model</th>
+                <th style="padding:10px 14px;text-align:left;">Target Platforms</th>
+                <th style="padding:10px 14px;text-align:left;">short</th>
+                <th style="padding:10px 14px;text-align:left;">int</th>
+                <th style="padding:10px 14px;text-align:left;">long</th>
+                <th style="padding:10px 14px;text-align:left;">long long</th>
+                <th style="padding:10px 14px;text-align:left;">Pointer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">ILP32</td>
+                <td style="padding:10px 14px;">32-bit ARM (Cortex-M0/M3/M4), x86 32-bit</td>
+                <td style="padding:10px 14px;">16-bit</td>
+                <td style="padding:10px 14px;">32-bit</td>
+                <td style="padding:10px 14px;">32-bit</td>
+                <td style="padding:10px 14px;">64-bit</td>
+                <td style="padding:10px 14px;">32-bit (4 bytes)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">LP64</td>
+                <td style="padding:10px 14px;">Linux x86_64, macOS, ARM64 (AArch64)</td>
+                <td style="padding:10px 14px;">16-bit</td>
+                <td style="padding:10px 14px;">32-bit</td>
+                <td style="padding:10px 14px;">64-bit</td>
+                <td style="padding:10px 14px;">64-bit</td>
+                <td style="padding:10px 14px;">64-bit (8 bytes)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">LLP64</td>
+                <td style="padding:10px 14px;">Microsoft Windows x64</td>
+                <td style="padding:10px 14px;">16-bit</td>
+                <td style="padding:10px 14px;">32-bit</td>
+                <td style="padding:10px 14px;">32-bit</td>
+                <td style="padding:10px 14px;">64-bit</td>
+                <td style="padding:10px 14px;">64-bit (8 bytes)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="background:rgba(239,68,68,0.08);border-left:4px solid #ef4444;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
+          <strong style="color:#ef4444;">Professional Engineering Warning:</strong>
           <p style="margin:0.5rem 0 0 0;font-size:0.9rem;color:var(--text-secondary);line-height:1.7;">
-            This module is part of the certified Professional C Engineering track. Below are the key engineering topics, architectural paradigms, and hands-on laboratory exercises covered in this chapter:
+            Because <code>long</code> is 32 bits on ILP32 (ARM Cortex-M) and 64 bits on LP64 (Linux x86_64), writing data packets using standard types results in silent protocol corruption. Always use exact-width integer types from <code>&lt;stdint.h&gt;</code> in firmware and networking code.
           </p>
         </div>
 
-        <h2>Module Syllabus &amp; Core Topics</h2>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin:1.5rem 0;">
-          
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 3.1</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Integer Representations & Two's Complement Arithmetic</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 3.2</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Fixed-Width Integer Types (&lt;stdint.h&gt; &amp; &lt;inttypes.h&gt;)</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 3.3</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">IEEE-754 Floating-Point: Float, Double &amp; Precision Hazards</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 3.4</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Type Qualifiers: const, volatile &amp; restrict in Systems Code</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 3.5</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Storage Classes: auto, register, static, and extern</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 3.6</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Memory Alignment, Packing &amp; Structure Padding (sizeof &amp; alignof)</h4>
-          </div>
-        </div>
+        <h2 id="sec-3-2">3.2 Exact-Width Integer Types (&lt;stdint.h&gt; &amp; &lt;inttypes.h&gt;)</h2>
+        <p>
+          Introduced in C99, <code>&lt;stdint.h&gt;</code> specifies standard integer types with explicit widths and signedness:
+        </p>
 
-        <h2>Representative Engineering Code</h2>
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Module 3: C Data Types & Variables Implementation Sample</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Fixed-Width Declarations &amp; Format Specifiers</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
             <pre><code class="language-c">#include &lt;stdio.h&gt;
 #include &lt;stdint.h&gt;
-#include &lt;stdbool.h&gt;
+#include &lt;inttypes.h&gt;
 
-/* Structure padding & memory layout inspection */
-struct SensorPacket {
-    uint8_t  sensor_id;   /* 1 byte */
+void display_telemetry(uint32_t timestamp_ms, int16_t temperature_raw) {
+    /* Always use PRIu32 and PRId16 for portable printing across 32-bit and 64-bit hosts */
+    printf("Time: %" PRIu32 " ms | Temp: %" PRId16 " LSB\n", timestamp_ms, temperature_raw);
+}
+
+int main(void) {
+    uint8_t  can_id_filter = 0x7F;
+    uint16_t packet_crc    = 0xA4F2;
+    uint32_t flash_addr    = 0x08004000;
+    uint64_t uptime_ns     = 1450209384918ULL;
+
+    display_telemetry(15000, -420);
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-3-3">3.3 Type Qualifiers: const, volatile &amp; restrict</h2>
+        <p>
+          Type qualifiers change how compilers reason about memory locations and control optimizations:
+        </p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+            <h4 style="margin-top:0;color:#38BDF8;">1. volatile</h4>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
+              Tells the compiler that the variable's value can change outside the program's control (e.g., hardware registers, shared ISR memory). Prevents the compiler from caching the value in a CPU register or eliding successive reads/writes.
+            </p>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+            <h4 style="margin-top:0;color:#38BDF8;">2. const</h4>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
+              Marks an object as read-only. For embedded targets, global <code>const</code> tables are allocated directly in Flash ROM (<code>.rodata</code>), conserving critical micro-controller SRAM.
+            </p>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+            <h4 style="margin-top:0;color:#38BDF8;">3. restrict</h4>
+            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
+              Guarantees to the compiler that for the lifetime of the pointer, no other pointer will alias the same memory region. Enables aggressive SIMD vectorization and register unrolling.
+            </p>
+          </div>
+        </div>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Hardware MMIO with volatile vs const volatile</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">/* Typical ARM Cortex-M Peripheral Register Definitions */
+typedef struct {
+    volatile uint32_t MODER;   /* Read/Write control register */
+    volatile uint32_t OTYPER;  /* Read/Write output type */
+    volatile uint32_t OSPEEDR; /* Read/Write output speed */
+    const volatile uint32_t IDR;     /* READ-ONLY input data register (Hardware driven) */
+    volatile uint32_t ODR;     /* Read/Write output data register */
+    volatile uint32_t BSRR;    /* Write-only bit set/reset */
+} GPIO_TypeDef;
+
+#define GPIOA ((GPIO_TypeDef *) 0x48000000UL)
+
+void poll_pin(void) {
+    /* Compiler is forced to read physical bus every iteration */
+    while ((GPIOA->IDR & (1 << 0)) == 0) {
+        /* Wait for input pin high */
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-3-4">3.4 Memory Alignment, Padding &amp; Cache Coherence</h2>
+        <p>
+          CPUs access memory efficiently when data addresses are multiples of the natural word size (e.g. 4-byte integers at 4-byte aligned addresses). Compilers automatically insert padding bytes into structures to ensure alignment:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Structure Layout &amp; Padding Inspection</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stddef.h&gt;
+
+/* Sub-optimal ordering: 12 bytes */
+struct UnalignedSensor {
+    uint8_t  id;       /* 1 byte  - offset 0 */
     /* 3 bytes padding */
-    uint32_t timestamp;   /* 4 bytes */
-    uint16_t reading_raw; /* 2 bytes */
-    /* 2 bytes padding */
+    uint32_t timestamp;/* 4 bytes - offset 4 */
+    uint16_t reading;  /* 2 bytes - offset 8 */
+    /* 2 bytes tail padding to satisfy 4-byte struct alignment */
+};
+
+/* Optimized ordering (largest to smallest): 8 bytes */
+struct OptimalSensor {
+    uint32_t timestamp;/* 4 bytes - offset 0 */
+    uint16_t reading;  /* 2 bytes - offset 4 */
+    uint8_t  id;       /* 1 byte  - offset 6 */
+    /* 1 byte tail padding */
 };
 
 int main(void) {
-    printf("Size of SensorPacket: %zu bytes (expected 12 with alignment)
-",
-           sizeof(struct SensorPacket));
+    printf("Unaligned struct size: %zu bytes (lost 5 bytes to padding)\n", sizeof(struct UnalignedSensor));
+    printf("Optimal struct size:   %zu bytes\n", sizeof(struct OptimalSensor));
+    printf("Offset of timestamp:   %zu\n", offsetof(struct UnalignedSensor, timestamp));
     return 0;
 }</code></pre>
           </div>

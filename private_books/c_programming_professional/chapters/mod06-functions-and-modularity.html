@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Module 6: Functions & Modular Design - Stack frame mechanics, parameter passing, reentrancy, inline functions, and multi-file modular architecture.">
-  <title>Module 6: Functions & Modular Design | Professional C Engineering</title>
+  <meta name="description" content="Module 6: Functions, ABI & Modular Design - Stack frames, AAPCS calling convention, inlining, static libraries, header guards, and modular architecture.">
+  <title>Module 6: Functions &amp; Modular Design | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -72,48 +72,12 @@
             <span class="module-chevron">▼</span>
           </button>
           <ul class="chapter-sublist">
-            <li>
-              <a href="mod01-intro-to-c.html" class="chapter-nav-item">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 1: Intro to C &amp; Software Dev</span>
-                <span class="chapter-read-time">45m</span>
-              </a>
-            </li>
-            <li>
-              <a href="mod02-compilation-and-build-process.html" class="chapter-nav-item">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 2: Compilation &amp; Build Process</span>
-                <span class="chapter-read-time">60m</span>
-              </a>
-            </li>
-            <li>
-              <a href="mod03-data-types-and-variables.html" class="chapter-nav-item ">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 3: C Data Types &amp; Variables</span>
-                <span class="chapter-read-time">50m</span>
-              </a>
-            </li>
-            <li>
-              <a href="mod04-operators-and-expressions.html" class="chapter-nav-item ">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 4: Operators &amp; Expressions</span>
-                <span class="chapter-read-time">45m</span>
-              </a>
-            </li>
-            <li>
-              <a href="mod05-control-flow.html" class="chapter-nav-item ">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 5: Control Flow &amp; State Machines</span>
-                <span class="chapter-read-time">55m</span>
-              </a>
-            </li>
-            <li>
-              <a href="mod06-functions-and-modularity.html" class="chapter-nav-item active">
-                <span class="chapter-check-icon">●</span>
-                <span class="chapter-title-text">Mod 6: Functions &amp; Modular Design</span>
-                <span class="chapter-read-time">50m</span>
-              </a>
-            </li>
+            <li><a href="mod01-intro-to-c.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 1: Intro to C &amp; Software Dev</span><span class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod02-compilation-and-build-process.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 2: Compilation &amp; Build Process</span><span class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod03-data-types-and-variables.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 3: C Data Types &amp; Variables</span><span class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod04-operators-and-expressions.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 4: Operators &amp; Expressions</span><span class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod05-control-flow.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 5: Control Flow &amp; State Machines</span><span class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod06-functions-and-modularity.html" class="chapter-nav-item active"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 6: Functions &amp; Modular Design</span><span class="chapter-read-time">50m</span></a></li>
           </ul>
         </div>
 
@@ -134,85 +98,113 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 1 • C Programming Foundations</span>
-          <h1 class="chapter-h1">Module 6: Functions & Modular Design</h1>
-          <p class="chapter-lead">Stack frame mechanics, parameter passing, reentrancy, inline functions, and multi-file modular architecture.</p>
+          <h1 class="chapter-h1">Module 6: Functions, ABI &amp; Modular System Architecture</h1>
+          <p class="chapter-lead">
+            Understand how functions execute on CPU silicon: stack frames, calling conventions (AAPCS vs System V AMD64), function inlining, static functions for encapsulation, and clean header contracts.
+          </p>
           <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Estimated Reading: 50 min</div>
             <div class="meta-item">🎯 Standard: C11 / C17 / C23</div>
             <div class="meta-item">🛠️ Environments: Linux POSIX + Bare-Metal ARM</div>
-            <div class="meta-item">⚡ Professional Systems Engineering Track</div>
+            <div class="meta-item">⚡ MISRA C:2012 Rule 8.2, 8.4, 17.7 Aligned</div>
           </div>
         </div>
 
-        <div style="background:rgba(2,132,199,0.08);border-left:4px solid #0284c7;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
-          <strong style="color:#0284c7;">Curriculum Module Scope:</strong>
-          <p style="margin:0.5rem 0 0 0;font-size:0.9rem;color:var(--text-secondary);line-height:1.7;">
-            This module is part of the certified Professional C Engineering track. Below are the key engineering topics, architectural paradigms, and hands-on laboratory exercises covered in this chapter:
-          </p>
+        <h2 id="sec-6-1">6.1 The Application Binary Interface (ABI) &amp; Calling Conventions</h2>
+        <p>
+          When one function calls another, the compiler must adhere to a standardized <strong>Application Binary Interface (ABI)</strong> defining which CPU registers pass arguments, which registers must be preserved across calls, and how the return value is provided:
+        </p>
+
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+            <thead>
+              <tr style="background:var(--bg-card);border-bottom:2px solid var(--border-strong);">
+                <th style="padding:10px 14px;text-align:left;">Convention</th>
+                <th style="padding:10px 14px;text-align:left;">Argument Registers</th>
+                <th style="padding:10px 14px;text-align:left;">Return Register</th>
+                <th style="padding:10px 14px;text-align:left;">Callee-Saved (Preserved)</th>
+                <th style="padding:10px 14px;text-align:left;">Caller-Saved (Scratch)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">ARM AAPCS (32-bit Cortex-M)</td>
+                <td style="padding:10px 14px;"><code>r0, r1, r2, r3</code> (remainder on stack)</td>
+                <td style="padding:10px 14px;"><code>r0</code> (or <code>r0-r1</code> for 64-bit)</td>
+                <td style="padding:10px 14px;"><code>r4-r11, SP</code></td>
+                <td style="padding:10px 14px;"><code>r0-r3, r12, LR</code></td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">System V AMD64 (Linux x86_64)</td>
+                <td style="padding:10px 14px;"><code>rdi, rsi, rdx, rcx, r8, r9</code></td>
+                <td style="padding:10px 14px;"><code>rax</code> (or <code>rax:rdx</code>)</td>
+                <td style="padding:10px 14px;"><code>rbx, rsp, rbp, r12-r15</code></td>
+                <td style="padding:10px 14px;"><code>r10, r11, rax, rcx, rdx...</code></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <h2>Module Syllabus &amp; Core Topics</h2>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin:1.5rem 0;">
-          
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 6.1</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Function Declarations, Definitions &amp; Prototype Enforcement</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 6.2</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">The Call Stack Frame: Return Addresses, Stack Alignment &amp; Spills</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 6.3</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Pass-by-Value vs Pass-by-Reference via Pointers</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 6.4</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Inline Functions, static Functions &amp; Internal Linkage</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 6.5</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Recursion vs Iteration: Stack Overflow Risks in Embedded Systems</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 6.6</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Reentrancy, Thread Safety &amp; Pure Functions</h4>
-          </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:8px;padding:1rem;">
-            <span style="font-size:0.75rem;font-weight:700;color:var(--brand-coral);">TOPIC 6.7</span>
-            <h4 style="margin:0.25rem 0 0 0;font-size:0.95rem;color:var(--text-primary);">Modular Architecture: Public Interfaces (.h) vs Private Implementations (.c)</h4>
-          </div>
-        </div>
+        <h2 id="sec-6-2">6.2 Function Inlining: Performance vs. Flash Bloat</h2>
+        <p>
+          Small functions (e.g., bit manipulation, register reads) can be declared <code>static inline</code> in header files. This replaces the function call with the actual instructions, eliminating call overhead, parameter register shuffling, and stack frame generation:
+        </p>
 
-        <h2>Representative Engineering Code</h2>
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Module 6: Functions & Modular Design Implementation Sample</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Static Inline Header Pattern</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;stdbool.h&gt;
+            <pre><code class="language-c">#ifndef BIT_MATH_H
+#define BIT_MATH_H
 
-/* Pure, static inline utility */
-static inline int clamp(int val, int min_val, int max_val) {
-    if (val &lt; min_val) return min_val;
-    if (val &gt; max_val) return max_val;
-    return val;
+#include &lt;stdint.h&gt;
+
+/* static inline avoids multiple definition errors across compilation units */
+static inline uint32_t count_trailing_zeros(uint32_t val) {
+    if (val == 0) return 32U;
+    return (uint32_t)__builtin_ctz(val);
 }
 
-int main(void) {
-    int pwm_duty = clamp(120, 0, 100);
-    printf("Clamped duty cycle: %d%%
-", pwm_duty);
-    return 0;
-}</code></pre>
+#endif /* BIT_MATH_H */</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-6-3">6.3 Opaque Pointers &amp; True Encapsulation in C</h2>
+        <p>
+          In professional embedded and systems development, you achieve object-oriented encapsulation through <strong>opaque pointers</strong> (also called the Pimpl idiom or handle pattern). Consumers cannot access or depend on internal struct layout:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>ring_buffer.h (Public Interface)</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#ifndef RING_BUFFER_H
+#define RING_BUFFER_H
+
+#include &lt;stddef.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;stdint.h&gt;
+
+/* Forward declaration: struct internals are completely hidden */
+typedef struct RingBuffer RingBuffer_t;
+
+RingBuffer_t* ring_buffer_create(size_t capacity);
+void          ring_buffer_destroy(RingBuffer_t *rb);
+bool          ring_buffer_push(RingBuffer_t *rb, uint8_t byte);
+bool          ring_buffer_pop(RingBuffer_t *rb, uint8_t *byte);
+
+#endif /* RING_BUFFER_H */</code></pre>
           </div>
         </div>
 
         <!-- Next / Prev Module Navigation -->
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
           <a href="mod05-control-flow.html" class="btn-secondary">← Module 5: Control Flow & State Machines</a>
-          <a href="../index.html" class="btn-primary">Part 2: Memory & Data Structures (Mod 7–11) →</a>
+          <a href="../index.html" class="btn-primary">Back to Curriculum Overview 📖</a>
         </div>
       </article>
     </main>
