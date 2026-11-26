@@ -505,7 +505,7 @@
     <!-- Footer -->
     <!-- Enrollment Modal -->
     <div id="enrollModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-brand-navy/60 backdrop-blur-sm transition-opacity p-4">
-        <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl relative transform transition-transform animate-fade-in-up">
+        <div class="bg-white rounded-3xl w-full max-w-lg p-6 md:p-8 shadow-2xl relative transform transition-transform animate-fade-in-up max-h-[92vh] overflow-y-auto">
             <button type="button" onclick="document.getElementById('enrollModal').classList.add('hidden')" class="absolute top-6 right-6 text-gray-400 hover:text-brand-coral transition-colors">
                 <i class="fas fa-times text-xl"></i>
             </button>
@@ -531,9 +531,29 @@
                         <label for="experience" class="block text-sm font-bold text-brand-navy mb-1">Experience *</label>
                         <textarea id="experience" name="experience" required rows="2" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/20 outline-none transition-all resize-none" placeholder="E.g., 2 years in Python..."></textarea>
                     </div>
+
+                    <!-- DPDP Act 2023 Consent & Notice -->
+                    <div class="p-4 bg-blue-50/70 rounded-2xl border border-blue-100 mt-2">
+                        <div class="flex items-start gap-3">
+                            <div class="pt-0.5">
+                                <input type="checkbox" id="dpdp_consent" name="dpdp_consent" value="yes" required class="w-5 h-5 text-brand-navy border-gray-300 rounded focus:ring-brand-navy/30 cursor-pointer">
+                            </div>
+                            <div class="text-xs text-gray-700 leading-relaxed">
+                                <label for="dpdp_consent" class="font-semibold text-brand-navy block mb-1 cursor-pointer">
+                                    Consent for Processing Personal Data (DPDP Act, 2023) *
+                                </label>
+                                <p class="text-gray-600 mb-1.5">
+                                    In accordance with the <strong>Digital Personal Data Protection (DPDP) Act, 2023</strong>, by ticking this box you give express consent to <strong>Apt Computing Labs</strong> to collect and process your digital personal data (name, email, phone number, and experience details) solely for course registration, onboarding coordination, and delivering training updates.
+                                </p>
+                                <p class="text-gray-500 text-[11px]">
+                                    Your data will not be shared with unauthorized third parties or sold. You retain the right to withdraw consent or contact our Grievance Officer at <a href="mailto:kamal@aptcomputinglabs.com" class="text-brand-navy underline font-medium hover:text-blue-700">kamal@aptcomputinglabs.com</a>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="mt-8 flex gap-4">
+                <div class="mt-6 flex gap-4">
                     <button type="button" onclick="document.getElementById('enrollModal').classList.add('hidden')" class="flex-1 py-3 rounded-full border border-gray-200 text-brand-navy font-bold hover:bg-gray-50 transition-colors">
                         Cancel
                     </button>

@@ -333,3 +333,68 @@ class CourseBookSignInTests(TestCase):
         response = self.client.get(reverse('courses:google_signin'), {'next': 'https://evil.example/'})
         self.assertContains(response, 'Continue with Google')
         self.assertNotContains(response, 'name="next"')
+
+
+class CourseEnrollmentDPDPTests(TestCase):
+    def setUp(self):
+        self.course = Course.objects.create(
+            title='Professional C in Embedded Systems',
+            slug='professional-c-in-embedded-systems',
+        )
+
+    def test_enrollment_modal_contains_dpdp_act_notice_and_checkbox(self):
+        response = self.client.get(reverse('courses:detail', args=[self.course.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Consent for Processing Personal Data (DPDP Act, 2023)')
+        self.assertContains(response, 'name="dpdp_consent"')
+        self.assertContains(response, 'Digital Personal Data Protection (DPDP) Act, 2023')
+        self.assertContains(response, 'kamal@aptcomputinglabs.com')
+
+    def test_enrollment_fails_without_dpdp_consent(self):
+        response = self.client.post(
+            reverse('courses:enroll', args=[self.course.slug]),
+            {
+                'name': 'Priya Sharma',
+                'email': 'priya@example.com',
+                'phone': '+91 9876543210',
+                'experience': '3 years firmware engineer',
+            },
+            follow=True,
+        )
+        self.assertContains(response, 'Consent under the DPDP Act, 2023 is required to enroll.')
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_enrollment_succeeds_with_dpdp_consent(self):
+        response = self.client.post(
+            reverse('courses:enroll', args=[self.course.slug]),
+            {
+                'name': 'Priya Sharma',
+                'email': 'priya@example.com',
+                'phone': '+91 9876543210',
+                'experience': '3 years firmware engineer',
+                'dpdp_consent': 'yes',
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'We sent a 6-digit verification code to priya@example.com.')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('verification code', mail.outbox[0].subject)
+
+        # Verify email OTP
+        session = self.client.session
+        pending = session.get('pending_enrollment')
+        self.assertIsNotNone(pending)
+        self.assertTrue(pending.get('dpdp_consent'))
+        code = pending['code']
+
+        verify_response = self.client.post(
+            reverse('courses:enroll_verify', args=[self.course.slug]),
+            {'code': code},
+            follow=True,
+        )
+        self.assertContains(verify_response, 'Email verified and your registration has been submitted')
+        self.assertEqual(len(mail.outbox), 3)  # OTP + Admin notification + User confirmation
+        admin_email = mail.outbox[1]
+        self.assertIn('DPDP Act 2023 Consent: Granted', admin_email.body)
+

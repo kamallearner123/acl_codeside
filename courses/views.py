@@ -482,7 +482,8 @@ def _deliver_enrollment(pending, course):
         f"Name: {name}\n"
         f"Email: {email} (verified)\n"
         f"Phone: {pending['phone']}\n"
-        f"Experience: {pending['experience']}\n",
+        f"Experience: {pending['experience']}\n"
+        f"DPDP Act 2023 Consent: Granted\n",
         settings.DEFAULT_FROM_EMAIL,
         ['kamal@aptcomputinglabs.com'],
         fail_silently=False,
@@ -511,6 +512,7 @@ def enroll_course(request, slug):
     email = request.POST.get('email', '').strip().lower()
     phone = request.POST.get('phone', '').strip()[:50]
     experience = request.POST.get('experience', '').strip()[:1000]
+    dpdp_consent = request.POST.get('dpdp_consent')
 
     try:
         validate_email(email)
@@ -519,6 +521,9 @@ def enroll_course(request, slug):
         return redirect('courses:detail', slug=slug)
     if not (name and phone and experience):
         messages.error(request, 'Please fill in all required fields.')
+        return redirect('courses:detail', slug=slug)
+    if not dpdp_consent:
+        messages.error(request, 'Consent under the DPDP Act, 2023 is required to enroll.')
         return redirect('courses:detail', slug=slug)
 
     ip = request.META.get('REMOTE_ADDR', 'unknown')
@@ -529,6 +534,7 @@ def enroll_course(request, slug):
     pending = {
         'slug': slug, 'name': name, 'email': email, 'phone': phone,
         'experience': experience,
+        'dpdp_consent': True,
         'code': f'{secrets.randbelow(10**6):06d}',
         'expires': time.time() + CODE_TTL, 'attempts': 0,
     }
