@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Module 5: Control Flow & Finite State Machines - Structured control flow, branch prediction, Duff's Device, switch-case jump tables, and robust FSM design in C.">
+  <meta name="description"
+    content="Module 5: Control Flow & Finite State Machines - Structured control flow, branch prediction, Duff's Device, switch-case jump tables, and robust FSM design in C.">
   <title>Module 5: Control Flow &amp; State Machines | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
+
 <body data-chapter-id="mod05-control-flow">
   <div id="reading-progress-bar"></div>
   <header class="site-header">
     <div class="header-left">
       <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
       </button>
       <a href="../index.html" class="brand-badge">
         <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
@@ -27,8 +34,13 @@
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="header-search" class="search-input" placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" id="header-search" class="search-input"
+          placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -38,9 +50,17 @@
         <span class="board-select-label" style="font-weight:700;">Linux x86_64 / ARM Cortex-M</span>
       </div>
       <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
-      <a href="/materials/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+            <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Go to Apt Computing Labs Home">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="/courses/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Browse All Courses">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>All Courses</span>
+      </a>
+      <a href="/courses/professional-c-in-embedded-systems/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--brand-coral);border:1px solid var(--brand-coral);text-decoration:none;background:rgba(255,91,91,0.08);" title="Course Overview & Syllabus">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        <span>Materials Portal</span>
+        <span>Course Overview</span>
       </a>
     </div>
   </header>
@@ -54,11 +74,27 @@
         </div>
       </div>
       <nav class="sidebar-nav">
+                <!-- Global Portal Navigation -->
+        <div class="nav-module-group" style="margin-bottom:0.75rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border-subtle);">
+          <a href="/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">🏠</span>
+            <span class="chapter-title-text">Home (ACL)</span>
+          </a>
+          <a href="/courses/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">All Courses</span>
+          </a>
+          <a href="/courses/professional-c-in-embedded-systems/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">📋</span>
+            <span class="chapter-title-text">Course Dashboard</span>
+          </a>
+        </div>
+
         <!-- Overview -->
         <div class="nav-module-group">
           <a href="../index.html" class="chapter-nav-item">
             <span class="chapter-check-icon">📖</span>
-            <span class="chapter-title-text">Course Overview &amp; Curriculum</span>
+            <span class="chapter-title-text">Handbook Overview</span>
           </a>
         </div>
 
@@ -72,25 +108,55 @@
             <span class="module-chevron">▼</span>
           </button>
           <ul class="chapter-sublist">
-            <li><a href="mod01-intro-to-c.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 1: Intro to C &amp; Software Dev</span><span class="chapter-read-time">45m</span></a></li>
-            <li><a href="mod02-compilation-and-build-process.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 2: Compilation &amp; Build Process</span><span class="chapter-read-time">60m</span></a></li>
-            <li><a href="mod03-data-types-and-variables.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 3: C Data Types &amp; Variables</span><span class="chapter-read-time">50m</span></a></li>
-            <li><a href="mod04-operators-and-expressions.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 4: Operators &amp; Expressions</span><span class="chapter-read-time">45m</span></a></li>
-            <li><a href="mod05-control-flow.html" class="chapter-nav-item active"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 5: Control Flow &amp; State Machines</span><span class="chapter-read-time">55m</span></a></li>
-            <li><a href="mod06-functions-and-modularity.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 6: Functions &amp; Modular Design</span><span class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod01-intro-to-c.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span
+                  class="chapter-title-text">Mod 1: Intro to C &amp; Software Dev</span><span
+                  class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod02-compilation-and-build-process.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 2: Compilation &amp; Build
+                  Process</span><span class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod03-data-types-and-variables.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 3: C Data Types &amp;
+                  Variables</span><span class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod04-operators-and-expressions.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 4: Operators &amp;
+                  Expressions</span><span class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod05-control-flow.html" class="chapter-nav-item active"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 5: Control Flow &amp; State
+                  Machines</span><span class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod06-functions-and-modularity.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 6: Functions &amp; Modular
+                  Design</span><span class="chapter-read-time">50m</span></a></li>
           </ul>
         </div>
 
         <!-- Remaining Parts -->
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P2</span> <span class="chapter-title-text">Memory &amp; Data Structures (Mod 7–11)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P3</span> <span class="chapter-title-text">Advanced C Programming (Mod 12–16)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P4</span> <span class="chapter-title-text">Linux &amp; Engineering Tools (Mod 17–21)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P5</span> <span class="chapter-title-text">Testing &amp; QA Engineering (Mod 22–25)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P6</span> <span class="chapter-title-text">Linux System Programming (Mod 26–32)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P7</span> <span class="chapter-title-text">Embedded C &amp; Firmware (Mod 33–37)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P8</span> <span class="chapter-title-text">Secure C Programming (Mod 38–39)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P9</span> <span class="chapter-title-text">Software Architecture (Mod 40–42)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P10</span> <span class="chapter-title-text">Capstone Projects (1–8)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P2</span> <span class="chapter-title-text">Memory &amp; Data Structures (Mod
+              7–11)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P3</span> <span class="chapter-title-text">Advanced C Programming (Mod
+              12–16)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P4</span> <span class="chapter-title-text">Linux &amp; Engineering Tools (Mod
+              17–21)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P5</span> <span class="chapter-title-text">Testing &amp; QA Engineering (Mod
+              22–25)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P6</span> <span class="chapter-title-text">Linux System Programming (Mod
+              26–32)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P7</span> <span class="chapter-title-text">Embedded C &amp; Firmware (Mod
+              33–37)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P8</span> <span class="chapter-title-text">Secure C Programming (Mod
+              38–39)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P9</span> <span class="chapter-title-text">Software Architecture (Mod
+              40–42)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P10</span> <span class="chapter-title-text">Capstone Projects (1–8)</span></span>
+        </div>
       </nav>
     </aside>
 
@@ -100,7 +166,8 @@
           <span class="chapter-module-tag">Part 1 • C Programming Foundations</span>
           <h1 class="chapter-h1">Module 5: Control Flow, Branch Prediction &amp; Finite State Machines</h1>
           <p class="chapter-lead">
-            Design deterministic control logic, optimize CPU pipeline branch penalties, leverage compiler jump tables, and build hierarchical Finite State Machines (FSMs) for real-time firmware.
+            Design deterministic control logic, optimize CPU pipeline branch penalties, leverage compiler jump tables,
+            and build hierarchical Finite State Machines (FSMs) for real-time firmware.
           </p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Estimated Reading: 55 min</div>
@@ -112,31 +179,39 @@
 
         <h2 id="sec-5-1">5.1 Switch-Case Lowering: Jump Tables vs. Binary Search Trees</h2>
         <p>
-          The C <code>switch</code> statement is compiled in two distinct ways depending on the density and span of case values:
+          The C <code>switch</code> statement is compiled in two distinct ways depending on the density and span of case
+          values:
         </p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin:1.5rem 0;">
-          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+          <div
+            style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
             <h4 style="margin-top:0;color:#38BDF8;">1. Jump Table (O(1) Execution)</h4>
             <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
-              When case values are contiguous (e.g. 0, 1, 2, 3), GCC emits an array of code pointers in <code>.rodata</code>. The CPU uses an indirect branch: <code>jmp *table[idx]</code> in constant time, ideal for real-time packet parsers.
+              When case values are contiguous (e.g. 0, 1, 2, 3), GCC emits an array of code pointers in
+              <code>.rodata</code>. The CPU uses an indirect branch: <code>jmp *table[idx]</code> in constant time,
+              ideal for real-time packet parsers.
             </p>
           </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+          <div
+            style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
             <h4 style="margin-top:0;color:#38BDF8;">2. Decision Tree / Binary Search (O(log N))</h4>
             <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
-              When case values are sparse (e.g. 10, 1000, 500000), a jump table would waste excessive flash memory. The compiler generates cascading <code>cmp</code> and conditional branch instructions.
+              When case values are sparse (e.g. 10, 1000, 500000), a jump table would waste excessive flash memory. The
+              compiler generates cascading <code>cmp</code> and conditional branch instructions.
             </p>
           </div>
         </div>
 
         <h2 id="sec-5-2">5.2 Deterministic Finite State Machine (FSM) Implementation</h2>
         <p>
-          Real-time firmware (automotive ECU, motor control, communication stacks) must never block in arbitrary loops. Instead, event-driven state machines process one state transition at a time:
+          Real-time firmware (automotive ECU, motor control, communication stacks) must never block in arbitrary loops.
+          Instead, event-driven state machines process one state transition at a time:
         </p>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Table-Driven Finite State Machine in C</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Table-Driven Finite State Machine in
+                C</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
@@ -191,12 +266,15 @@ void run_protocol_engine(ProtocolState_t *current_state, ProtocolEvent_t event, 
 
         <h2 id="sec-5-3">5.3 Branch Prediction &amp; GNU __builtin_expect</h2>
         <p>
-          Modern superscalar CPUs speculatively execute instructions down predicted branch paths. A branch misprediction incurs a pipeline flush of 10 to 20 CPU cycles. In high-frequency interrupt service routines, you can guide the compiler:
+          Modern superscalar CPUs speculatively execute instructions down predicted branch paths. A branch misprediction
+          incurs a pipeline flush of 10 to 20 CPU cycles. In high-frequency interrupt service routines, you can guide
+          the compiler:
         </p>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Likely &amp; Unlikely Branch Optimization Macros</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Likely &amp; Unlikely Branch
+                Optimization Macros</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
@@ -215,7 +293,8 @@ void handle_packet_fastpath(const uint8_t *buf, size_t len) {
         </div>
 
         <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
           <a href="mod04-operators-and-expressions.html" class="btn-secondary">← Module 4: Operators & Expressions</a>
           <a href="mod06-functions-and-modularity.html" class="btn-primary">Module 6: Functions & Modular Design →</a>
         </div>
@@ -225,4 +304,5 @@ void handle_packet_fastpath(const uint8_t *buf, size_t len) {
 
   <script src="../js/book.js?v=5"></script>
 </body>
+
 </html>

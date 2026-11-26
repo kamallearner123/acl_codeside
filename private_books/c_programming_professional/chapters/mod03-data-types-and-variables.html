@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Module 3: C Data Types, Type Qualifiers & Memory Layout - Fixed-width integers, IEEE 754 floating point, pointer representations, structure alignment, and padding.">
+  <meta name="description"
+    content="Module 3: C Data Types, Type Qualifiers & Memory Layout - Fixed-width integers, IEEE 754 floating point, pointer representations, structure alignment, and padding.">
   <title>Module 3: C Data Types & Variables | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
+
 <body data-chapter-id="mod03-data-types-and-variables">
   <div id="reading-progress-bar"></div>
   <header class="site-header">
     <div class="header-left">
       <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
       </button>
       <a href="../index.html" class="brand-badge">
         <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
@@ -27,8 +34,13 @@
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="header-search" class="search-input" placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" id="header-search" class="search-input"
+          placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -38,9 +50,17 @@
         <span class="board-select-label" style="font-weight:700;">Linux x86_64 / ARM Cortex-M</span>
       </div>
       <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
-      <a href="/materials/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+            <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Go to Apt Computing Labs Home">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="/courses/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Browse All Courses">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>All Courses</span>
+      </a>
+      <a href="/courses/professional-c-in-embedded-systems/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--brand-coral);border:1px solid var(--brand-coral);text-decoration:none;background:rgba(255,91,91,0.08);" title="Course Overview & Syllabus">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        <span>Materials Portal</span>
+        <span>Course Overview</span>
       </a>
     </div>
   </header>
@@ -54,11 +74,27 @@
         </div>
       </div>
       <nav class="sidebar-nav">
+                <!-- Global Portal Navigation -->
+        <div class="nav-module-group" style="margin-bottom:0.75rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border-subtle);">
+          <a href="/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">🏠</span>
+            <span class="chapter-title-text">Home (ACL)</span>
+          </a>
+          <a href="/courses/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">All Courses</span>
+          </a>
+          <a href="/courses/professional-c-in-embedded-systems/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">📋</span>
+            <span class="chapter-title-text">Course Dashboard</span>
+          </a>
+        </div>
+
         <!-- Overview -->
         <div class="nav-module-group">
           <a href="../index.html" class="chapter-nav-item">
             <span class="chapter-check-icon">📖</span>
-            <span class="chapter-title-text">Course Overview &amp; Curriculum</span>
+            <span class="chapter-title-text">Handbook Overview</span>
           </a>
         </div>
 
@@ -118,15 +154,33 @@
         </div>
 
         <!-- Remaining Parts -->
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P2</span> <span class="chapter-title-text">Memory &amp; Data Structures (Mod 7–11)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P3</span> <span class="chapter-title-text">Advanced C Programming (Mod 12–16)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P4</span> <span class="chapter-title-text">Linux &amp; Engineering Tools (Mod 17–21)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P5</span> <span class="chapter-title-text">Testing &amp; QA Engineering (Mod 22–25)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P6</span> <span class="chapter-title-text">Linux System Programming (Mod 26–32)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P7</span> <span class="chapter-title-text">Embedded C &amp; Firmware (Mod 33–37)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P8</span> <span class="chapter-title-text">Secure C Programming (Mod 38–39)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P9</span> <span class="chapter-title-text">Software Architecture (Mod 40–42)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P10</span> <span class="chapter-title-text">Capstone Projects (1–8)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P2</span> <span class="chapter-title-text">Memory &amp; Data Structures (Mod
+              7–11)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P3</span> <span class="chapter-title-text">Advanced C Programming (Mod
+              12–16)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P4</span> <span class="chapter-title-text">Linux &amp; Engineering Tools (Mod
+              17–21)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P5</span> <span class="chapter-title-text">Testing &amp; QA Engineering (Mod
+              22–25)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P6</span> <span class="chapter-title-text">Linux System Programming (Mod
+              26–32)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P7</span> <span class="chapter-title-text">Embedded C &amp; Firmware (Mod
+              33–37)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P8</span> <span class="chapter-title-text">Secure C Programming (Mod
+              38–39)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P9</span> <span class="chapter-title-text">Software Architecture (Mod
+              40–42)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P10</span> <span class="chapter-title-text">Capstone Projects (1–8)</span></span>
+        </div>
       </nav>
     </aside>
 
@@ -136,7 +190,8 @@
           <span class="chapter-module-tag">Part 1 • C Programming Foundations</span>
           <h1 class="chapter-h1">Module 3: C Data Types, Variables & Memory Alignment</h1>
           <p class="chapter-lead">
-            Master low-level integer representations, fixed-width types, IEEE 754 floating-point characteristics, storage classes, pointer sizes, and hardware memory alignment requirements in systems code.
+            Master low-level integer representations, fixed-width types, IEEE 754 floating-point characteristics,
+            storage classes, pointer sizes, and hardware memory alignment requirements in systems code.
           </p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Estimated Reading: 50 min</div>
@@ -148,7 +203,8 @@
 
         <h2 id="sec-3-1">3.1 Primitive Types vs. Architecture-Dependent Sizes</h2>
         <p>
-          In C, primitive types (such as <code>int</code>, <code>long</code>, and pointers) do not have a globally fixed byte width. Their sizes depend on the data model chosen by the compiler target architecture:
+          In C, primitive types (such as <code>int</code>, <code>long</code>, and pointers) do not have a globally fixed
+          byte width. Their sizes depend on the data model chosen by the compiler target architecture:
         </p>
 
         <div style="overflow-x:auto;margin:1.5rem 0;">
@@ -196,21 +252,26 @@
           </table>
         </div>
 
-        <div style="background:rgba(239,68,68,0.08);border-left:4px solid #ef4444;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
+        <div
+          style="background:rgba(239,68,68,0.08);border-left:4px solid #ef4444;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
           <strong style="color:#ef4444;">Professional Engineering Warning:</strong>
           <p style="margin:0.5rem 0 0 0;font-size:0.9rem;color:var(--text-secondary);line-height:1.7;">
-            Because <code>long</code> is 32 bits on ILP32 (ARM Cortex-M) and 64 bits on LP64 (Linux x86_64), writing data packets using standard types results in silent protocol corruption. Always use exact-width integer types from <code>&lt;stdint.h&gt;</code> in firmware and networking code.
+            Because <code>long</code> is 32 bits on ILP32 (ARM Cortex-M) and 64 bits on LP64 (Linux x86_64), writing
+            data packets using standard types results in silent protocol corruption. Always use exact-width integer
+            types from <code>&lt;stdint.h&gt;</code> in firmware and networking code.
           </p>
         </div>
 
         <h2 id="sec-3-2">3.2 Exact-Width Integer Types (&lt;stdint.h&gt; &amp; &lt;inttypes.h&gt;)</h2>
         <p>
-          Introduced in C99, <code>&lt;stdint.h&gt;</code> specifies standard integer types with explicit widths and signedness:
+          Introduced in C99, <code>&lt;stdint.h&gt;</code> specifies standard integer types with explicit widths and
+          signedness:
         </p>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Fixed-Width Declarations &amp; Format Specifiers</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Fixed-Width Declarations &amp; Format
+                Specifiers</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
@@ -241,29 +302,37 @@ int main(void) {
         </p>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin:1.5rem 0;">
-          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+          <div
+            style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
             <h4 style="margin-top:0;color:#38BDF8;">1. volatile</h4>
             <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
-              Tells the compiler that the variable's value can change outside the program's control (e.g., hardware registers, shared ISR memory). Prevents the compiler from caching the value in a CPU register or eliding successive reads/writes.
+              Tells the compiler that the variable's value can change outside the program's control (e.g., hardware
+              registers, shared ISR memory). Prevents the compiler from caching the value in a CPU register or eliding
+              successive reads/writes.
             </p>
           </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+          <div
+            style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
             <h4 style="margin-top:0;color:#38BDF8;">2. const</h4>
             <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
-              Marks an object as read-only. For embedded targets, global <code>const</code> tables are allocated directly in Flash ROM (<code>.rodata</code>), conserving critical micro-controller SRAM.
+              Marks an object as read-only. For embedded targets, global <code>const</code> tables are allocated
+              directly in Flash ROM (<code>.rodata</code>), conserving critical micro-controller SRAM.
             </p>
           </div>
-          <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
+          <div
+            style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
             <h4 style="margin-top:0;color:#38BDF8;">3. restrict</h4>
             <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
-              Guarantees to the compiler that for the lifetime of the pointer, no other pointer will alias the same memory region. Enables aggressive SIMD vectorization and register unrolling.
+              Guarantees to the compiler that for the lifetime of the pointer, no other pointer will alias the same
+              memory region. Enables aggressive SIMD vectorization and register unrolling.
             </p>
           </div>
         </div>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Hardware MMIO with volatile vs const volatile</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Hardware MMIO with volatile vs const
+                volatile</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
@@ -290,12 +359,15 @@ void poll_pin(void) {
 
         <h2 id="sec-3-4">3.4 Memory Alignment, Padding &amp; Cache Coherence</h2>
         <p>
-          CPUs access memory efficiently when data addresses are multiples of the natural word size (e.g. 4-byte integers at 4-byte aligned addresses). Compilers automatically insert padding bytes into structures to ensure alignment:
+          CPUs access memory efficiently when data addresses are multiples of the natural word size (e.g. 4-byte
+          integers at 4-byte aligned addresses). Compilers automatically insert padding bytes into structures to ensure
+          alignment:
         </p>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Structure Layout &amp; Padding Inspection</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Structure Layout &amp; Padding
+                Inspection</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
@@ -330,8 +402,10 @@ int main(void) {
         </div>
 
         <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
-          <a href="mod02-compilation-and-build-process.html" class="btn-secondary">← Module 2: Compilation & Build Process</a>
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+          <a href="mod02-compilation-and-build-process.html" class="btn-secondary">← Module 2: Compilation & Build
+            Process</a>
           <a href="mod04-operators-and-expressions.html" class="btn-primary">Module 4: Operators & Expressions →</a>
         </div>
       </article>
@@ -340,4 +414,5 @@ int main(void) {
 
   <script src="../js/book.js?v=5"></script>
 </body>
+
 </html>

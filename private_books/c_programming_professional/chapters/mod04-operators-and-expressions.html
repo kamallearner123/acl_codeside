@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Module 4: Operators, Expressions & Bit Manipulation - Bitwise masking, shifts, bitfields, sequence points, and undefined behavior prevention.">
+  <meta name="description"
+    content="Module 4: Operators, Expressions & Bit Manipulation - Bitwise masking, shifts, bitfields, sequence points, and undefined behavior prevention.">
   <title>Module 4: Operators &amp; Expressions | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
+
 <body data-chapter-id="mod04-operators-and-expressions">
   <div id="reading-progress-bar"></div>
   <header class="site-header">
     <div class="header-left">
       <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
       </button>
       <a href="../index.html" class="brand-badge">
         <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
@@ -27,8 +34,13 @@
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="header-search" class="search-input" placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" id="header-search" class="search-input"
+          placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -38,9 +50,17 @@
         <span class="board-select-label" style="font-weight:700;">Linux x86_64 / ARM Cortex-M</span>
       </div>
       <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
-      <a href="/materials/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;">
+            <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Go to Apt Computing Labs Home">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="/courses/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Browse All Courses">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>All Courses</span>
+      </a>
+      <a href="/courses/professional-c-in-embedded-systems/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--brand-coral);border:1px solid var(--brand-coral);text-decoration:none;background:rgba(255,91,91,0.08);" title="Course Overview & Syllabus">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        <span>Materials Portal</span>
+        <span>Course Overview</span>
       </a>
     </div>
   </header>
@@ -54,11 +74,27 @@
         </div>
       </div>
       <nav class="sidebar-nav">
+                <!-- Global Portal Navigation -->
+        <div class="nav-module-group" style="margin-bottom:0.75rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border-subtle);">
+          <a href="/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">🏠</span>
+            <span class="chapter-title-text">Home (ACL)</span>
+          </a>
+          <a href="/courses/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">All Courses</span>
+          </a>
+          <a href="/courses/professional-c-in-embedded-systems/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">📋</span>
+            <span class="chapter-title-text">Course Dashboard</span>
+          </a>
+        </div>
+
         <!-- Overview -->
         <div class="nav-module-group">
           <a href="../index.html" class="chapter-nav-item">
             <span class="chapter-check-icon">📖</span>
-            <span class="chapter-title-text">Course Overview &amp; Curriculum</span>
+            <span class="chapter-title-text">Handbook Overview</span>
           </a>
         </div>
 
@@ -72,25 +108,55 @@
             <span class="module-chevron">▼</span>
           </button>
           <ul class="chapter-sublist">
-            <li><a href="mod01-intro-to-c.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 1: Intro to C &amp; Software Dev</span><span class="chapter-read-time">45m</span></a></li>
-            <li><a href="mod02-compilation-and-build-process.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 2: Compilation &amp; Build Process</span><span class="chapter-read-time">60m</span></a></li>
-            <li><a href="mod03-data-types-and-variables.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 3: C Data Types &amp; Variables</span><span class="chapter-read-time">50m</span></a></li>
-            <li><a href="mod04-operators-and-expressions.html" class="chapter-nav-item active"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 4: Operators &amp; Expressions</span><span class="chapter-read-time">45m</span></a></li>
-            <li><a href="mod05-control-flow.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 5: Control Flow &amp; State Machines</span><span class="chapter-read-time">55m</span></a></li>
-            <li><a href="mod06-functions-and-modularity.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 6: Functions &amp; Modular Design</span><span class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod01-intro-to-c.html" class="chapter-nav-item"><span class="chapter-check-icon">●</span><span
+                  class="chapter-title-text">Mod 1: Intro to C &amp; Software Dev</span><span
+                  class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod02-compilation-and-build-process.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 2: Compilation &amp; Build
+                  Process</span><span class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod03-data-types-and-variables.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 3: C Data Types &amp;
+                  Variables</span><span class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod04-operators-and-expressions.html" class="chapter-nav-item active"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 4: Operators &amp;
+                  Expressions</span><span class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod05-control-flow.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 5: Control Flow &amp; State
+                  Machines</span><span class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod06-functions-and-modularity.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 6: Functions &amp; Modular
+                  Design</span><span class="chapter-read-time">50m</span></a></li>
           </ul>
         </div>
 
         <!-- Remaining Parts -->
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P2</span> <span class="chapter-title-text">Memory &amp; Data Structures (Mod 7–11)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P3</span> <span class="chapter-title-text">Advanced C Programming (Mod 12–16)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P4</span> <span class="chapter-title-text">Linux &amp; Engineering Tools (Mod 17–21)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P5</span> <span class="chapter-title-text">Testing &amp; QA Engineering (Mod 22–25)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P6</span> <span class="chapter-title-text">Linux System Programming (Mod 26–32)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P7</span> <span class="chapter-title-text">Embedded C &amp; Firmware (Mod 33–37)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P8</span> <span class="chapter-title-text">Secure C Programming (Mod 38–39)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P9</span> <span class="chapter-title-text">Software Architecture (Mod 40–42)</span></span></div>
-        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span class="module-badge">P10</span> <span class="chapter-title-text">Capstone Projects (1–8)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P2</span> <span class="chapter-title-text">Memory &amp; Data Structures (Mod
+              7–11)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P3</span> <span class="chapter-title-text">Advanced C Programming (Mod
+              12–16)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P4</span> <span class="chapter-title-text">Linux &amp; Engineering Tools (Mod
+              17–21)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P5</span> <span class="chapter-title-text">Testing &amp; QA Engineering (Mod
+              22–25)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P6</span> <span class="chapter-title-text">Linux System Programming (Mod
+              26–32)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P7</span> <span class="chapter-title-text">Embedded C &amp; Firmware (Mod
+              33–37)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P8</span> <span class="chapter-title-text">Secure C Programming (Mod
+              38–39)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P9</span> <span class="chapter-title-text">Software Architecture (Mod
+              40–42)</span></span></div>
+        <div class="nav-module-group"><span class="chapter-nav-item" style="opacity:0.75;"><span
+              class="module-badge">P10</span> <span class="chapter-title-text">Capstone Projects (1–8)</span></span>
+        </div>
       </nav>
     </aside>
 
@@ -100,7 +166,8 @@
           <span class="chapter-module-tag">Part 1 • C Programming Foundations</span>
           <h1 class="chapter-h1">Module 4: Operators, Expressions &amp; Bit Manipulation</h1>
           <p class="chapter-lead">
-            Master professional bitwise idioms, register manipulation, sequence points, evaluation order, integer promotion rules, and avoiding Undefined Behavior (UB).
+            Master professional bitwise idioms, register manipulation, sequence points, evaluation order, integer
+            promotion rules, and avoiding Undefined Behavior (UB).
           </p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Estimated Reading: 45 min</div>
@@ -112,7 +179,8 @@
 
         <h2 id="sec-4-1">4.1 The Five Essential Bitwise Idioms in Firmware</h2>
         <p>
-          Microcontroller programming relies entirely on manipulating individual bits within peripheral hardware registers. The five core idioms must be second nature to every systems engineer:
+          Microcontroller programming relies entirely on manipulating individual bits within peripheral hardware
+          registers. The five core idioms must be second nature to every systems engineer:
         </p>
 
         <div style="overflow-x:auto;margin:1.5rem 0;">
@@ -128,27 +196,32 @@
               <tr style="border-bottom:1px solid var(--border-subtle);">
                 <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">Set Bit n</td>
                 <td style="padding:10px 14px;"><code>REG |= (1U &lt;&lt; n)</code></td>
-                <td style="padding:10px 14px;">Enables a peripheral clock, triggers an interrupt enable flag, or drives an output high.</td>
+                <td style="padding:10px 14px;">Enables a peripheral clock, triggers an interrupt enable flag, or drives
+                  an output high.</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border-subtle);">
                 <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">Clear Bit n</td>
                 <td style="padding:10px 14px;"><code>REG &amp;= ~(1U &lt;&lt; n)</code></td>
-                <td style="padding:10px 14px;">Disables a timer, resets an interrupt pending status, or drives an output low.</td>
+                <td style="padding:10px 14px;">Disables a timer, resets an interrupt pending status, or drives an output
+                  low.</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border-subtle);">
                 <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">Toggle Bit n</td>
                 <td style="padding:10px 14px;"><code>REG ^= (1U &lt;&lt; n)</code></td>
-                <td style="padding:10px 14px;">Inverts the state of a GPIO pin (e.g. flashing an LED or square-wave heartbeat).</td>
+                <td style="padding:10px 14px;">Inverts the state of a GPIO pin (e.g. flashing an LED or square-wave
+                  heartbeat).</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border-subtle);">
                 <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">Check Bit n</td>
                 <td style="padding:10px 14px;"><code>(REG &amp; (1U &lt;&lt; n)) != 0U</code></td>
-                <td style="padding:10px 14px;">Tests if a hardware TX buffer is empty or an ADC conversion is complete.</td>
+                <td style="padding:10px 14px;">Tests if a hardware TX buffer is empty or an ADC conversion is complete.
+                </td>
               </tr>
               <tr style="border-bottom:1px solid var(--border-subtle);">
                 <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">Modify Multi-bit Field</td>
                 <td style="padding:10px 14px;"><code>REG = (REG &amp; ~MASK) | (VAL &lt;&lt; POS)</code></td>
-                <td style="padding:10px 14px;">Safely updates multi-bit configuration registers (e.g. baud rate or ADC prescaler) without corrupting adjacent bits.</td>
+                <td style="padding:10px 14px;">Safely updates multi-bit configuration registers (e.g. baud rate or ADC
+                  prescaler) without corrupting adjacent bits.</td>
               </tr>
             </tbody>
           </table>
@@ -156,7 +229,8 @@
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Safe Multi-Bit Field Modification Pattern</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Safe Multi-Bit Field Modification
+                Pattern</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
@@ -178,12 +252,15 @@ void usart_set_word_length(volatile uint32_t *cr1, uint32_t mode) {
 
         <h2 id="sec-4-2">4.2 Integer Promotions &amp; The "unsigned int" Trap</h2>
         <p>
-          In C, operands smaller than <code>int</code> (such as <code>uint8_t</code> and <code>int16_t</code>) undergo <strong>integer promotion</strong> to signed <code>int</code> before arithmetic or bitwise operations. This frequently introduces security bugs:
+          In C, operands smaller than <code>int</code> (such as <code>uint8_t</code> and <code>int16_t</code>) undergo
+          <strong>integer promotion</strong> to signed <code>int</code> before arithmetic or bitwise operations. This
+          frequently introduces security bugs:
         </p>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Inversion &amp; Comparison Pitfall</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>Inversion &amp; Comparison
+                Pitfall</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
@@ -211,7 +288,9 @@ int main(void) {
 
         <h2 id="sec-4-3">4.3 Sequence Points &amp; Undefined Behavior (UB)</h2>
         <p>
-          Between sequence points, an object's value must not be modified more than once, nor may it be read except to determine the value to be stored. Violating this produces compiler-dependent <strong>Undefined Behavior</strong>:
+          Between sequence points, an object's value must not be modified more than once, nor may it be read except to
+          determine the value to be stored. Violating this produces compiler-dependent <strong>Undefined
+            Behavior</strong>:
         </p>
         <ul>
           <li><code>i = i++ + 1;</code> &mdash; Undefined behavior.</li>
@@ -220,7 +299,8 @@ int main(void) {
         </ul>
 
         <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
           <a href="mod03-data-types-and-variables.html" class="btn-secondary">← Module 3: C Data Types & Variables</a>
           <a href="mod05-control-flow.html" class="btn-primary">Module 5: Control Flow & State Machines →</a>
         </div>
@@ -230,4 +310,5 @@ int main(void) {
 
   <script src="../js/book.js?v=5"></script>
 </body>
+
 </html>
