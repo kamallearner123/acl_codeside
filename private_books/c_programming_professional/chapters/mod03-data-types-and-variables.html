@@ -1,28 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="Module 3: C Data Types, Type Qualifiers & Memory Layout - Fixed-width integers, IEEE 754 floating point, pointer representations, structure alignment, and padding.">
-  <title>Module 3: C Data Types & Variables | Professional C Engineering</title>
+  <meta name="description" content="Module 3: C Data Types, Variables & Memory Representation - ILP32 vs LP64 data models, exact-width stdint types, two's complement arithmetic, sign extension, integer promotions, IEEE-754 floats, endianness, and Modbus telemetry parsing.">
+  <title>Module 3: C Data Types &amp; Variables | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
-
 <body data-chapter-id="mod03-data-types-and-variables">
   <div id="reading-progress-bar"></div>
   <header class="site-header">
     <div class="header-left">
       <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
-          <path d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <a href="../index.html" class="brand-badge">
         <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
@@ -34,13 +27,8 @@
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
-        <input type="text" id="header-search" class="search-input"
-          placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search data types, stdint, IEEE-754, endianness..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -50,7 +38,7 @@
         <span class="board-select-label" style="font-weight:700;">Linux x86_64 / ARM Cortex-M</span>
       </div>
       <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
-            <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Go to Apt Computing Labs Home">
+      <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Go to Apt Computing Labs Home">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>Home</span>
       </a>
@@ -384,90 +372,149 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 1 • C Programming Foundations</span>
-          <h1 class="chapter-h1">Module 3: C Data Types, Variables & Memory Alignment</h1>
+          <h1 class="chapter-h1">Module 3: C Data Types, Variables &amp; Memory Representation</h1>
           <p class="chapter-lead">
-            Master low-level integer representations, fixed-width types, IEEE 754 floating-point characteristics,
-            storage classes, pointer sizes, and hardware memory alignment requirements in systems code.
+            Master the physical realities of memory representation in C: architecture data models (ILP32 vs. LP64), exact-width types, two's complement sign extension, the integer promotion rule trap, IEEE-754 floating-point mechanics, and endianness byte serialization in industrial telemetry protocols.
           </p>
           <div class="chapter-meta-bar">
-            <div class="meta-item">⏱️ Estimated Reading: 50 min</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23</div>
-            <div class="meta-item">🛠️ Environments: Linux POSIX + ARM Cortex-M Bare-Metal</div>
-            <div class="meta-item">⚡ MISRA C:2012 Rule 8.4, 8.7, 8.9 Aligned</div>
+            <div class="meta-item">⏱️ Estimated Reading: 65 min</div>
+            <div class="meta-item">🎯 Standard: C99 / C11 / C17 / C23</div>
+            <div class="meta-item">🛠️ Environments: Linux POSIX + ARM Cortex-M</div>
           </div>
         </div>
 
-        <h2 id="sec-3-1">3.1 Primitive Types vs. Architecture-Dependent Sizes</h2>
+
+        <!-- 3.1 The Silicon Grid & Data Models -->
+        <h2 id="sec-3-1">3.1 The Silicon Grid: Bits, Bytes, Words &amp; Architecture Data Models</h2>
         <p>
-          In C, primitive types (such as <code>int</code>, <code>long</code>, and pointers) do not have a globally fixed
-          byte width. Their sizes depend on the data model chosen by the compiler target architecture:
+          At the physical layer of digital computing, all data exists as electrical potentials across capacitive cells or transistor gates. When high-level C code declares a variable, the compiler allocates a discrete region of physical memory (or maps it directly into a CPU general-purpose register) governed by the CPU's memory bus width, cache line size, and word architecture.
+        </p>
+        <p>
+          Unlike interpreted languages or virtual-machine platforms that conceal hardware details, C exposes the naked memory grid. Consequently, understanding how primitive C data types translate into physical memory addresses is the hallmark of a systems and firmware engineer.
         </p>
 
+        <!-- Data Models Breakdown -->
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">Architecture Data Models: LP32, ILP32, LP64 &amp; LLP64</h3>
+        <p>
+          The ISO C standard intentionally avoids mandating exact bit-widths for standard types like <code>short</code>, <code>int</code>, and <code>long</code>. Instead, the standard defines only <strong>minimum guarantees</strong>:
+        </p>
+        <ul style="line-height:1.7;font-size:0.95rem;">
+          <li><code>sizeof(char) == 1</code> (guaranteed to be at least 8 bits).</li>
+          <li><code>sizeof(short) &gt;= 2</code> (at least 16 bits).</li>
+          <li><code>sizeof(int) &gt;= 2</code> (at least 16 bits, typically 32 bits on 32-bit and 64-bit systems).</li>
+          <li><code>sizeof(long) &gt;= 4</code> (at least 32 bits).</li>
+          <li><code>sizeof(long long) &gt;= 8</code> (at least 64 bits).</li>
+          <li>Relationship: <code>sizeof(char) &lt;= sizeof(short) &lt;= sizeof(int) &lt;= sizeof(long) &lt;= sizeof(long long)</code>.</li>
+        </ul>
+
         <div style="overflow-x:auto;margin:1.5rem 0;">
-          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;text-align:left;">
             <thead>
-              <tr style="background:var(--bg-card);border-bottom:2px solid var(--border-strong);">
-                <th style="padding:10px 14px;text-align:left;">Data Model</th>
-                <th style="padding:10px 14px;text-align:left;">Target Platforms</th>
-                <th style="padding:10px 14px;text-align:left;">short</th>
-                <th style="padding:10px 14px;text-align:left;">int</th>
-                <th style="padding:10px 14px;text-align:left;">long</th>
-                <th style="padding:10px 14px;text-align:left;">long long</th>
-                <th style="padding:10px 14px;text-align:left;">Pointer</th>
+              <tr style="border-bottom:2px solid var(--border-strong);color:var(--text-primary);">
+                <th style="padding:0.75rem 1rem;">Data Model</th>
+                <th style="padding:0.75rem 1rem;"><code>short</code></th>
+                <th style="padding:0.75rem 1rem;"><code>int</code></th>
+                <th style="padding:0.75rem 1rem;"><code>long</code></th>
+                <th style="padding:0.75rem 1rem;">Pointers (<code>void*</code>)</th>
+                <th style="padding:0.75rem 1rem;">Target Systems &amp; Architectures</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody style="color:var(--text-secondary);line-height:1.6;">
               <tr style="border-bottom:1px solid var(--border-subtle);">
-                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">ILP32</td>
-                <td style="padding:10px 14px;">32-bit ARM (Cortex-M0/M3/M4), x86 32-bit</td>
-                <td style="padding:10px 14px;">16-bit</td>
-                <td style="padding:10px 14px;">32-bit</td>
-                <td style="padding:10px 14px;">32-bit</td>
-                <td style="padding:10px 14px;">64-bit</td>
-                <td style="padding:10px 14px;">32-bit (4 bytes)</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:var(--brand-coral);">LP32</td>
+                <td style="padding:0.75rem 1rem;">16 bits</td>
+                <td style="padding:0.75rem 1rem;">16 bits</td>
+                <td style="padding:0.75rem 1rem;">32 bits</td>
+                <td style="padding:0.75rem 1rem;">32 bits</td>
+                <td style="padding:0.75rem 1rem;">Legacy 16-bit Windows 3.1, 8/16-bit Microcontrollers (AVR, 8051)</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border-subtle);">
-                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">LP64</td>
-                <td style="padding:10px 14px;">Linux x86_64, macOS, ARM64 (AArch64)</td>
-                <td style="padding:10px 14px;">16-bit</td>
-                <td style="padding:10px 14px;">32-bit</td>
-                <td style="padding:10px 14px;">64-bit</td>
-                <td style="padding:10px 14px;">64-bit</td>
-                <td style="padding:10px 14px;">64-bit (8 bytes)</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#38BDF8;">ILP32</td>
+                <td style="padding:0.75rem 1rem;">16 bits</td>
+                <td style="padding:0.75rem 1rem;">32 bits</td>
+                <td style="padding:0.75rem 1rem;">32 bits</td>
+                <td style="padding:0.75rem 1rem;">32 bits</td>
+                <td style="padding:0.75rem 1rem;"><strong>32-bit ARM Cortex-M (M0/M3/M4/M7)</strong>, 32-bit x86, Linux i386</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border-subtle);">
-                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">LLP64</td>
-                <td style="padding:10px 14px;">Microsoft Windows x64</td>
-                <td style="padding:10px 14px;">16-bit</td>
-                <td style="padding:10px 14px;">32-bit</td>
-                <td style="padding:10px 14px;">32-bit</td>
-                <td style="padding:10px 14px;">64-bit</td>
-                <td style="padding:10px 14px;">64-bit (8 bytes)</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;">LP64</td>
+                <td style="padding:0.75rem 1rem;">16 bits</td>
+                <td style="padding:0.75rem 1rem;">32 bits</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;">64 bits</td>
+                <td style="padding:0.75rem 1rem;">64 bits</td>
+                <td style="padding:0.75rem 1rem;"><strong>Modern 64-bit Linux (x86_64, AArch64)</strong>, macOS, BSD</td>
+              </tr>
+              <tr>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#FBBF24;">LLP64</td>
+                <td style="padding:0.75rem 1rem;">16 bits</td>
+                <td style="padding:0.75rem 1rem;">32 bits</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#FBBF24;">32 bits</td>
+                <td style="padding:0.75rem 1rem;">64 bits</td>
+                <td style="padding:0.75rem 1rem;">64-bit Microsoft Windows (Win64 API)</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div
-          style="background:rgba(239,68,68,0.08);border-left:4px solid #ef4444;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
-          <strong style="color:#ef4444;">Professional Engineering Warning:</strong>
-          <p style="margin:0.5rem 0 0 0;font-size:0.9rem;color:var(--text-secondary);line-height:1.7;">
-            Because <code>long</code> is 32 bits on ILP32 (ARM Cortex-M) and 64 bits on LP64 (Linux x86_64), writing
-            data packets using standard types results in silent protocol corruption. Always use exact-width integer
-            types from <code>&lt;stdint.h&gt;</code> in firmware and networking code.
+        <div style="background:rgba(239, 68, 68, 0.08);border-left:4px solid var(--brand-coral);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
+          <h4 style="margin:0 0 0.5rem 0;color:var(--brand-coral);font-size:0.95rem;">⚠️ The Fatal Portability Trap: Assuming sizeof(long) == sizeof(void*)</h4>
+          <p style="margin:0;font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            On a 64-bit Linux server (LP64), <code>sizeof(long) == 8</code> and <code>sizeof(void*) == 8</code>. Casting a pointer to <code>unsigned long</code> succeeds without truncation. However, on 64-bit Windows (LLP64) or when cross-compiling to a 32-bit Cortex-M target (ILP32), <code>sizeof(long)</code> is only 32 bits! Casting a 64-bit pointer to <code>long</code> on Windows truncates the upper 32 bits of the address, causing catastrophic memory corruption and segmentation faults. Always use <code>uintptr_t</code> when treating pointers as integers.
           </p>
         </div>
 
+        <!-- 3.2 Exact-Width Integer Types -->
         <h2 id="sec-3-2">3.2 Exact-Width Integer Types (&lt;stdint.h&gt; &amp; &lt;inttypes.h&gt;)</h2>
         <p>
-          Introduced in C99, <code>&lt;stdint.h&gt;</code> specifies standard integer types with explicit widths and
-          signedness:
+          Because primitive types vary across architectures, safety-critical embedded standards (e.g., <strong>MISRA C:2012 Rule 8.4</strong>) prohibit the naked use of <code>short</code>, <code>int</code>, and <code>long</code> in production code. ISO C99 introduced <code>&lt;stdint.h&gt;</code>, formalizing exact-width types that guarantee bit-level determinism across all platforms.
+        </p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.5rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <h4 style="color:#38BDF8;margin-top:0;">1. Exact-Width Types</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;">
+              Guaranteed to have exactly $N$ bits with two's complement representation and no padding bits:
+            </p>
+            <ul style="font-size:0.85rem;line-height:1.6;color:var(--text-primary);padding-left:1.2rem;">
+              <li><code>int8_t</code> / <code>uint8_t</code> ($-128$ to $+127$ / $0$ to $255$)</li>
+              <li><code>int16_t</code> / <code>uint16_t</code> ($-32,768$ to $+32,767$ / $0$ to $65,535$)</li>
+              <li><code>int32_t</code> / <code>uint32_t</code> ($-2.14 	imes 10^9$ to $+2.14 	imes 10^9$)</li>
+              <li><code>int64_t</code> / <code>uint64_t</code> (Full 64-bit integer range)</li>
+            </ul>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <h4 style="color:#34D399;margin-top:0;">2. Fast &amp; Least Types</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;">
+              Optimized for CPU register execution vs. memory storage density:
+            </p>
+            <ul style="font-size:0.85rem;line-height:1.6;color:var(--text-primary);padding-left:1.2rem;">
+              <li><code>int_fastN_t</code>: Fastest type with at least $N$ bits. On a 32-bit ARM, <code>uint_fast8_t</code> is often mapped to a 32-bit register to eliminate sign-extension instructions.</li>
+              <li><code>int_leastN_t</code>: Smallest type with at least $N$ bits, minimizing Flash/RAM footprint in dense lookup tables.</li>
+            </ul>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <h4 style="color:#FBBF24;margin-top:0;">3. Pointer-Sized &amp; System Types</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;">
+              Specialized integer types for hardware pointers and buffer indexing:
+            </p>
+            <ul style="font-size:0.85rem;line-height:1.6;color:var(--text-primary);padding-left:1.2rem;">
+              <li><code>uintptr_t</code> / <code>intptr_t</code>: Unsigned/signed integer guaranteed to be the exact same width as a pointer. Essential for memory-mapped I/O (MMIO).</li>
+              <li><code>size_t</code>: Unsigned integer returned by <code>sizeof</code>; can represent the maximum size of any object in memory.</li>
+              <li><code>ptrdiff_t</code>: Signed integer resulting from subtracting two pointers.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">Formatted Printing with &lt;inttypes.h&gt;</h3>
+        <p>
+          Because exact-width types resolve to different native types across architectures (e.g., <code>uint64_t</code> might be <code>unsigned long</code> on 64-bit Linux, but <code>unsigned long long</code> on 32-bit ARM or Windows), passing them to <code>printf</code> with <code>%lu</code> or <code>%llu</code> causes compiler warnings on cross-platform builds. The ISO C standard solves this via <code>&lt;inttypes.h&gt;</code> stringification macros:
         </p>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Fixed-Width Declarations &amp; Format
-                Specifiers</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>inttypes_example.c</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
@@ -475,134 +522,540 @@
 #include &lt;stdint.h&gt;
 #include &lt;inttypes.h&gt;
 
-void display_telemetry(uint32_t timestamp_ms, int16_t temperature_raw) {
-    /* Always use PRIu32 and PRId16 for portable printing across 32-bit and 64-bit hosts */
-    printf("Time: %" PRIu32 " ms | Temp: %" PRId16 " LSB\n", timestamp_ms, temperature_raw);
-}
-
-int main(void) {
-    uint8_t  can_id_filter = 0x7F;
-    uint16_t packet_crc    = 0xA4F2;
-    uint32_t flash_addr    = 0x08004000;
-    uint64_t uptime_ns     = 1450209384918ULL;
-
-    display_telemetry(15000, -420);
-    return 0;
+void print_telemetry(uint32_t sensor_id, int16_t temperature, uintptr_t reg_addr) {
+    /* PRIu32 expands to "u" or "lu", PRId16 to "d", PRIxPTR to "lx" or "x" */
+    printf("Sensor ID: %" PRIu32 " | Temp: %" PRId16 " dC | MMIO Addr: 0x%08" PRIxPTR "\n",
+           sensor_id, temperature, reg_addr);
 }</code></pre>
           </div>
         </div>
 
-        <h2 id="sec-3-3">3.3 Type Qualifiers: const, volatile &amp; restrict</h2>
+        <!-- 3.3 Two's Complement Integer Representation -->
+        <h2 id="sec-3-3">3.3 Two's Complement Representation, Sign Extension &amp; Overflow Mechanics</h2>
         <p>
-          Type qualifiers change how compilers reason about memory locations and control optimizations:
+          Virtually all modern microprocessors (x86, ARM Cortex-A/R/M, RISC-V) implement signed integers using <strong>Two's Complement</strong> arithmetic. In two's complement, the most significant bit (MSB) carries a negative weight:
+        </p>
+        <p style="font-family:'JetBrains Mono',monospace;text-align:center;font-size:1.05rem;background:var(--bg-card);padding:0.75rem;border-radius:8px;">
+          Value(b_{N-1} ... b_0) = -b_{N-1} \cdot 2^{N-1} + \sum_{i=0}^{N-2} b_i \cdot 2^i
         </p>
 
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;margin:1.5rem 0;">
-          <div
-            style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
-            <h4 style="margin-top:0;color:#38BDF8;">1. volatile</h4>
-            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
-              Tells the compiler that the variable's value can change outside the program's control (e.g., hardware
-              registers, shared ISR memory). Prevents the compiler from caching the value in a CPU register or eliding
-              successive reads/writes.
-            </p>
-          </div>
-          <div
-            style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
-            <h4 style="margin-top:0;color:#38BDF8;">2. const</h4>
-            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
-              Marks an object as read-only. For embedded targets, global <code>const</code> tables are allocated
-              directly in Flash ROM (<code>.rodata</code>), conserving critical micro-controller SRAM.
-            </p>
-          </div>
-          <div
-            style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:8px;padding:1.25rem;">
-            <h4 style="margin-top:0;color:#38BDF8;">3. restrict</h4>
-            <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
-              Guarantees to the compiler that for the lifetime of the pointer, no other pointer will alias the same
-              memory region. Enables aggressive SIMD vectorization and register unrolling.
-            </p>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;">Two's Complement 8-Bit Evaluation Example</h4>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.6;color:var(--text-primary);">
+<pre style="margin:0;background:transparent;padding:0;color:inherit;"><code style="background:transparent;padding:0;color:inherit;">
+ Binary Pattern: 1 1 1 1 1 1 1 1
+   MSB Bit 7 (Sign):  1 * -2^7  = -128
+   Bit 6:             1 *  2^6  =  +64
+   Bit 5:             1 *  2^5  =  +32
+   Bit 4:             1 *  2^4  =  +16
+   Bit 3:             1 *  2^3  =   +8
+   Bit 2:             1 *  2^2  =   +4
+   Bit 1:             1 *  2^1  =   +2
+   Bit 0:             1 *  2^0  =   +1
+ ---------------------------------------
+   Sum:              -128 + 127 =   -1
+
+ Binary Pattern: 1 0 0 0 0 0 0 0
+   MSB Bit 7 (Sign):  1 * -2^7  = -128 (Minimum 8-bit signed value: INT8_MIN)
+</code></pre>
           </div>
         </div>
 
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Hardware MMIO with volatile vs const
-                volatile</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">/* Typical ARM Cortex-M Peripheral Register Definitions */
-typedef struct {
-    volatile uint32_t MODER;   /* Read/Write control register */
-    volatile uint32_t OTYPER;  /* Read/Write output type */
-    volatile uint32_t OSPEEDR; /* Read/Write output speed */
-    const volatile uint32_t IDR;     /* READ-ONLY input data register (Hardware driven) */
-    volatile uint32_t ODR;     /* Read/Write output data register */
-    volatile uint32_t BSRR;    /* Write-only bit set/reset */
-} GPIO_TypeDef;
-
-#define GPIOA ((GPIO_TypeDef *) 0x48000000UL)
-
-void poll_pin(void) {
-    /* Compiler is forced to read physical bus every iteration */
-    while ((GPIOA->IDR & (1 << 0)) == 0) {
-        /* Wait for input pin high */
-    }
-}</code></pre>
-          </div>
-        </div>
-
-        <h2 id="sec-3-4">3.4 Memory Alignment, Padding &amp; Cache Coherence</h2>
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">Sign Extension vs. Zero Extension</h3>
         <p>
-          CPUs access memory efficiently when data addresses are multiples of the natural word size (e.g. 4-byte
-          integers at 4-byte aligned addresses). Compilers automatically insert padding bytes into structures to ensure
-          alignment:
+          When promoting a smaller integer to a larger integer (e.g., casting <code>int16_t</code> to <code>int32_t</code>), the processor must fill the new upper 16 bits:
         </p>
+        <ul style="line-height:1.7;font-size:0.95rem;">
+          <li><strong>Zero Extension:</strong> For unsigned types, the upper bits are simply padded with zeros. In ARM assembly, this is performed in a single cycle via <code>UXTB</code> (Unsigned Extend Byte) or <code>UXTH</code> (Unsigned Extend Halfword).</li>
+          <li><strong>Sign Extension:</strong> For signed types, the processor must copy the MSB (sign bit) across all upper bit positions to preserve negative value. In ARM assembly, this is performed via <code>SXTB</code> or <code>SXTH</code>.</li>
+        </ul>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Structure Layout &amp; Padding
-                Inspection</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>sign_extension_trap.c</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
             <pre><code class="language-c">#include &lt;stdio.h&gt;
 #include &lt;stdint.h&gt;
-#include &lt;stddef.h&gt;
 
-/* Sub-optimal ordering: 12 bytes */
-struct UnalignedSensor {
-    uint8_t  id;       /* 1 byte  - offset 0 */
-    /* 3 bytes padding */
-    uint32_t timestamp;/* 4 bytes - offset 4 */
-    uint16_t reading;  /* 2 bytes - offset 8 */
-    /* 2 bytes tail padding to satisfy 4-byte struct alignment */
-};
+void inspect_extension(void) {
+    int8_t  s_val = -5;              /* 0xFB (binary: 1111 1011) */
+    uint8_t u_val = 0xFB;            /* 251  (binary: 1111 1011) */
 
-/* Optimized ordering (largest to smallest): 8 bytes */
-struct OptimalSensor {
-    uint32_t timestamp;/* 4 bytes - offset 0 */
-    uint16_t reading;  /* 2 bytes - offset 4 */
-    uint8_t  id;       /* 1 byte  - offset 6 */
-    /* 1 byte tail padding */
-};
+    int32_t s_promoted = s_val;      /* Sign-extended to: 0xFFFFFFFB (-5) */
+    uint32_t u_promoted = u_val;     /* Zero-extended to: 0x000000FB (251) */
 
-int main(void) {
-    printf("Unaligned struct size: %zu bytes (lost 5 bytes to padding)\n", sizeof(struct UnalignedSensor));
-    printf("Optimal struct size:   %zu bytes\n", sizeof(struct OptimalSensor));
-    printf("Offset of timestamp:   %zu\n", offsetof(struct UnalignedSensor, timestamp));
-    return 0;
+    /* Critical trap: casting a signed 8-bit value to uint32_t causes sign extension first! */
+    uint32_t dangerous = (uint32_t)s_val; /* Yields 0xFFFFFFFB (4,294,967,291), NOT 0x000000FB! */
+    
+    printf("s_promoted:  0x%08X\n", s_promoted);
+    printf("u_promoted:  0x%08X\n", u_promoted);
+    printf("dangerous:   0x%08X\n", dangerous);
 }</code></pre>
           </div>
         </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div
-          style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
-          <a href="mod02-compilation-and-build-process.html" class="btn-secondary">← Module 2: Compilation & Build
-            Process</a>
-          <a href="mod04-operators-and-expressions.html" class="btn-primary">Module 4: Operators & Expressions →</a>
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">Signed Overflow (Undefined Behavior) vs. Unsigned Wrap (Defined)</h3>
+        <p>
+          One of the most consequential rules in C language systems engineering is the distinction between signed and unsigned overflow:
+        </p>
+        <ul style="line-height:1.8;font-size:0.95rem;">
+          <li><strong>Unsigned Integer Overflow:</strong> By ISO C specification (§6.2.5/9), unsigned integer arithmetic operates strictly modulo $2^N$. It is <strong>guaranteed never to overflow</strong>; it wraps around deterministically. <code>UINT32_MAX + 1U == 0U</code>. This is valid, standard-compliant behavior widely utilized in hardware ring buffers and timers.</li>
+          <li><strong>Signed Integer Overflow:</strong> Under ISO C, signed integer overflow is <strong>UNDEFINED BEHAVIOR (UB)</strong>. The compiler assumes signed overflow can never legally happen. When compiling with optimizations (<code>-O2</code> or <code>-O3</code>), GCC and Clang will aggressively eliminate code designed to check for signed overflow post-facto:</li>
+        </ul>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>ub_signed_overflow_trap.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdbool.h&gt;
+#include &lt;limits.h&gt;
+
+/* DANGEROUS BUG: The compiler will optimize this entire check away! */
+bool bad_check_overflow(int a, int b) {
+    /* If a + b overflows, UB occurs.
+     * The compiler assumes UB never happens, concludes (a + b &lt; a) is ALWAYS false,
+     * and compiles this function down to: "return false;" ! */
+    return (a + b &lt; a); 
+}
+
+/* DEFENSIVE PRODUCTION PATTERN: Check bounds BEFORE performing arithmetic */
+bool safe_add_int32(int32_t a, int32_t b, int32_t *out) {
+    if (out == NULL) return false;
+    
+    if ((b &gt; 0) &amp;&amp; (a &gt; (INT32_MAX - b))) {
+        return false; /* Positive overflow would occur */
+    }
+    if ((b &lt; 0) &amp;&amp; (a &lt; (INT32_MIN - b))) {
+        return false; /* Negative underflow would occur */
+    }
+    
+    *out = a + b;
+    return true;
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- 3.4 Integer Promotions -->
+        <h2 id="sec-3-4">3.4 Implicit Conversions &amp; The Integer Promotion Rule (The #1 Embedded Trap)</h2>
+        <p>
+          In C, operands are never evaluated directly at smaller widths than <code>int</code>. Under the <strong>Integer Promotion Rule</strong> (ISO C §6.3.1.1):
+        </p>
+        <blockquote style="border-left:4px solid #38BDF8;padding:0.75rem 1rem;background:var(--bg-card);margin:1.5rem 0;color:var(--text-secondary);font-size:0.92rem;">
+          <em>"If an <code>int</code> can represent all values of the original type, the value is converted to an <code>int</code>; otherwise, it is converted to an <code>unsigned int</code>."</em>
+        </blockquote>
+        <p>
+          This means whenever you execute an operation (+, -, ~, &lt;&lt;, ^) on <code>uint8_t</code> or <code>uint16_t</code>, both operands are silently promoted to a signed 32-bit <code>int</code> before the CPU executes the instruction. This is responsible for severe production firmware bugs.
+        </p>
+
+        <div style="background:var(--bg-card);border:2px solid var(--brand-coral);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:var(--brand-coral);">The Classic Bitwise NOT Trap on Embedded Hardware</h4>
+          <p style="font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            Consider toggling an 8-bit GPIO register mask:
+          </p>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>promotion_trap.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+
+int main(void) {
+    uint8_t status = 0xFE; /* Binary: 1111 1110 */
+    
+    /* Engineer intends to check if inverting status yields 0x01 */
+    if (~status == 0x01) {
+        printf("MATCH!\n");
+    } else {
+        printf("FAILED! Evaluated to: 0x%08X\n", (unsigned int)(~status));
+    }
+    return 0;
+}</code></pre>
+            </div>
+          </div>
+          <p style="font-size:0.875rem;line-height:1.6;color:var(--text-primary);margin-top:1rem;">
+            <strong>Output:</strong> <code>FAILED! Evaluated to: 0xFFFFFF01</code>
+          </p>
+          <p style="font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            <strong>Root Cause Analysis:</strong> <code>status</code> (0xFE) is first promoted to signed 32-bit integer: <code>0x000000FE</code>. The bitwise NOT (<code>~</code>) operator inverts all 32 bits, producing <code>0xFFFFFF01</code>. The comparison <code>0xFFFFFF01 == 0x00000001</code> fails! To fix this, explicitly cast the result back to <code>(uint8_t)(~status)</code> or mask with <code>0xFFU</code>.
+          </p>
+        </div>
+
+        <!-- 3.5 Floating-Point Representation -->
+        <h2 id="sec-3-5">3.5 Floating-Point Representation (IEEE-754 Single &amp; Double Precision)</h2>
+        <p>
+          Real numbers in embedded firmware (sensor readings, PID control variables, GPS coordinates) are standardized by <strong>IEEE-754</strong>. In single precision (<code>float</code>, 32 bits) and double precision (<code>double</code>, 64 bits), numbers are decomposed into three fields:
+        </p>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;">IEEE-754 Single-Precision (32-bit float) Bitfield Structure</h4>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.6;color:var(--text-primary);">
+<pre style="margin:0;background:transparent;padding:0;color:inherit;"><code style="background:transparent;padding:0;color:inherit;">
+  Bit 31:        Sign bit S (0 = positive, 1 = negative)
+  Bits 30-23:    Exponent E (8 bits, biased by +127)
+  Bits 22-0:     Mantissa / Fraction M (23 bits, implicit leading 1: 1.M)
+
+  Formula: Value = (-1)^S * 2^(E - 127) * (1.M)
+</code></pre>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;text-align:left;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);color:var(--text-primary);">
+                <th style="padding:0.75rem 1rem;">Condition</th>
+                <th style="padding:0.75rem 1rem;">Exponent (E)</th>
+                <th style="padding:0.75rem 1rem;">Mantissa (M)</th>
+                <th style="padding:0.75rem 1rem;">Value Represented</th>
+                <th style="padding:0.75rem 1rem;">Firmware Implication</th>
+              </tr>
+            </thead>
+            <tbody style="color:var(--text-secondary);line-height:1.6;">
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;">Zero</td>
+                <td style="padding:0.75rem 1rem;">0 (all 0s)</td>
+                <td style="padding:0.75rem 1rem;">0 (all 0s)</td>
+                <td style="padding:0.75rem 1rem;">+0.0 or -0.0</td>
+                <td style="padding:0.75rem 1rem;">Note: <code>+0.0 == -0.0</code> evaluates to true</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#38BDF8;">Normalized</td>
+                <td style="padding:0.75rem 1rem;">1 to 254</td>
+                <td style="padding:0.75rem 1rem;">Any pattern</td>
+                <td style="padding:0.75rem 1rem;">Standard real numbers</td>
+                <td style="padding:0.75rem 1rem;">Full FPU hardware acceleration</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#FBBF24;">Subnormal</td>
+                <td style="padding:0.75rem 1rem;">0 (all 0s)</td>
+                <td style="padding:0.75rem 1rem;">Non-zero</td>
+                <td style="padding:0.75rem 1rem;">$(-1)^S \cdot 2^{-126} \cdot (0.M)$</td>
+                <td style="padding:0.75rem 1rem;">Severe performance penalty (up to 100x CPU cycles) without Flush-to-Zero (FTZ)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:var(--brand-coral);">Infinity</td>
+                <td style="padding:0.75rem 1rem;">255 (all 1s)</td>
+                <td style="padding:0.75rem 1rem;">0 (all 0s)</td>
+                <td style="padding:0.75rem 1rem;">$+\infty$ or $-\infty$</td>
+                <td style="padding:0.75rem 1rem;">Result of division by zero (e.g. <code>1.0f / 0.0f</code>)</td>
+              </tr>
+              <tr>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#F472B6;">NaN (Not a Number)</td>
+                <td style="padding:0.75rem 1rem;">255 (all 1s)</td>
+                <td style="padding:0.75rem 1rem;">Non-zero</td>
+                <td style="padding:0.75rem 1rem;">Quiet / Signaling NaN</td>
+                <td style="padding:0.75rem 1rem;">Result of invalid math (<code>0.0f / 0.0f</code>, <code>sqrt(-1.0f)</code>). Any comparison with NaN returns false (even <code>NaN == NaN</code>)!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">Hardware FPU vs. Software Emulation on ARM Cortex-M</h3>
+        <p>
+          Microcontrollers like the STM32F4 (Cortex-M4F) and STM32F7 (Cortex-M7) feature an integrated hardware <strong>Floating Point Unit (FPU)</strong> executing single-precision arithmetic in 1 to 3 cycles. However, Cortex-M0/M0+/M3 lack an FPU; floating-point math on those targets invokes multi-hundred-cycle software emulation routines (<code>__aeabi_fadd</code>, <code>__aeabi_fmul</code>) from <code>libgcc</code>, which can cause real-time deadline violations.
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>safe_float_comparison.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdbool.h&gt;
+#include &lt;math.h&gt;
+
+#define FLOAT_EPSILON 0.00001f
+
+/* DEFENSIVE: Never compare floating point numbers with == in sensors or control loops */
+bool float_is_equal(float a, float b) {
+    /* fabs from &lt;math.h&gt; or fabsf for single-precision */
+    return fabsf(a - b) &lt; FLOAT_EPSILON;
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- 3.6 Endianness Architecture -->
+        <h2 id="sec-3-6">3.6 Endianness Architecture (Little-Endian vs. Big-Endian)</h2>
+        <p>
+          When an integer spans multiple bytes (e.g., a 32-bit word <code>0x12345678</code>), endianness dictates how those bytes are arranged in physical sequential memory addresses:
+        </p>
+        <ul style="line-height:1.8;font-size:0.95rem;">
+          <li><strong>Little-Endian (ARM Cortex-M default, x86):</strong> The <em>Least Significant Byte (LSB)</em> is stored at the lowest memory address. Address 0: <code>0x78</code>, Address 1: <code>0x56</code>, Address 2: <code>0x34</code>, Address 3: <code>0x12</code>.</li>
+          <li><strong>Big-Endian (Network Byte Order, Motorola, older PowerPC):</strong> The <em>Most Significant Byte (MSB)</em> is stored at the lowest memory address. Address 0: <code>0x12</code>, Address 1: <code>0x34</code>, Address 2: <code>0x56</code>, Address 3: <code>0x78</code>.</li>
+        </ul>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;">Byte-Swapping Primitives: Portable vs. Hardware Accelerated</h4>
+          <p style="font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            Serial buses (CAN, Modbus, Ethernet TCP/IP) transmit data in Big-Endian network byte order. When receiving on a Little-Endian Cortex-M MCU, multi-byte values must be flipped. Using GCC built-ins compiles directly to the ARM single-cycle <code>REV</code> machine instruction:
+          </p>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>byte_swap_mechanics.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#include &lt;stdint.h&gt;
+
+/* 16-bit Byte Swap: Compiles to "REV16" on ARM Cortex-M */
+static inline uint16_t swap_uint16(uint16_t val) {
+    return __builtin_bswap16(val);
+}
+
+/* 32-bit Byte Swap: Compiles to "REV" on ARM Cortex-M */
+static inline uint32_t swap_uint32(uint32_t val) {
+    return __builtin_bswap32(val);
+}
+
+/* Runtime Endianness Test Function */
+static inline int is_system_little_endian(void) {
+    const uint16_t test_val = 0x0001;
+    const uint8_t *byte_ptr = (const uint8_t *)&amp;test_val;
+    return (*byte_ptr == 0x01); /* Returns 1 if Little-Endian, 0 if Big-Endian */
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3.7 Real-Time Case Study -->
+        <h2 id="sec-3-7">3.7 Real-Time Case Study: Industrial Sensor Packet Parsing &amp; Telemetry</h2>
+        <p>
+          In industrial automation, sensor nodes (e.g. pressure transducers, energy meters) transmit serialized telemetry frames across an RS-485 / Modbus bus. A firmware engineer must parse incoming wire bytes into valid C data types without violating alignment, corrupting sign bits, or triggering undefined behavior:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>modbus_packet_parser.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;string.h&gt;
+
+/* Industrial Telemetry Struct */
+typedef struct {
+    uint16_t sensor_node_id;
+    int16_t  raw_temperature_celsius_scaled; /* Scaled by x10 (e.g. 235 = 23.5 C) */
+    uint32_t total_pulse_count;
+    float    pressure_psi;
+    bool     alarm_active;
+} sensor_telemetry_t;
+
+/**
+ * @brief Parses raw Big-Endian serial frame into validated telemetry struct.
+ * @param wire_buf Raw packet buffer (12 bytes expected).
+ * @param buf_len Size of buffer in bytes.
+ * @param out_telemetry Pointer to output struct.
+ * @return true if parsed cleanly, false on malformed packet.
+ */
+bool parse_sensor_wire_frame(const uint8_t *wire_buf, size_t buf_len, sensor_telemetry_t *out_telemetry) {
+    if (wire_buf == NULL || out_telemetry == NULL || buf_len &lt; 12U) {
+        return false;
+    }
+
+    /* Extract Node ID (Bytes 0-1, Big-Endian) */
+    out_telemetry-&gt;sensor_node_id = (uint16_t)(((uint16_t)wire_buf[0] &lt;&lt; 8U) | (uint16_t)wire_buf[1]);
+
+    /* Extract Signed Temperature (Bytes 2-3, Big-Endian Two's Complement) */
+    uint16_t raw_temp_u16 = (uint16_t)(((uint16_t)wire_buf[2] &lt;&lt; 8U) | (uint16_t)wire_buf[3]);
+    out_telemetry-&gt;raw_temperature_celsius_scaled = (int16_t)raw_temp_u16;
+
+    /* Extract Pulse Count (Bytes 4-7, Big-Endian 32-bit) */
+    out_telemetry-&gt;total_pulse_count = ((uint32_t)wire_buf[4] &lt;&lt; 24U) |
+                                      ((uint32_t)wire_buf[5] &lt;&lt; 16U) |
+                                      ((uint32_t)wire_buf[6] &lt;&lt; 8U)  |
+                                      ((uint32_t)wire_buf[7]);
+
+    /* Extract Float Pressure (Bytes 8-11, IEEE-754 Single-Precision, Big-Endian)
+     * To prevent strict-aliasing violations and unaligned access faults on Cortex-M0,
+     * we copy to a temporary 32-bit unsigned integer, byte-swap, and memcpy to float. */
+    uint32_t raw_float_bits = ((uint32_t)wire_buf[8]  &lt;&lt; 24U) |
+                              ((uint32_t)wire_buf[9]  &lt;&lt; 16U) |
+                              ((uint32_t)wire_buf[10] &lt;&lt; 8U)  |
+                              ((uint32_t)wire_buf[11]);
+    memcpy(&amp;(out_telemetry-&gt;pressure_psi), &amp;raw_float_bits, sizeof(float));
+
+    out_telemetry-&gt;alarm_active = (out_telemetry-&gt;raw_temperature_celsius_scaled &gt; 850); /* &gt; 85.0 C */
+    return true;
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- 3.8 Hands-on Lab -->
+        <h2 id="sec-3-8">3.8 Hands-On Lab: Architecture Type Width &amp; Memory Layout Inspector</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:var(--brand-coral);">Lab Exercise: The Systems Memory Grid Inspector</h3>
+          <p style="font-size:0.9rem;">
+            In this lab, you will construct a standalone C utility <code>type_memory_inspector.c</code> that inspects platform type sizes, explores IEEE-754 bit representations, dumps raw byte memory layouts in hexadecimal, and verifies endianness.
+          </p>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Complete Source Code: type_memory_inspector.c</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>type_memory_inspector.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;inttypes.h&gt;
+#include &lt;string.h&gt;
+
+/* Dumps raw byte sequence of any memory object */
+static void dump_memory_hex(const char *label, const void *ptr, size_t size) {
+    const uint8_t *bytes = (const uint8_t *)ptr;
+    printf("%-20s [%2zu bytes] @ %p: ", label, size, ptr);
+    for (size_t i = 0; i &lt; size; ++i) {
+        printf("%02X ", bytes[i]);
+    }
+    printf("\n");
+}
+
+int main(void) {
+    printf("========================================================\n");
+    printf("     SYSTEMS MEMORY &amp; DATA TYPE ARCHITECTURE INSPECTOR   \n");
+    printf("========================================================\n\n");
+
+    /* 1. Architecture Type Width Verification */
+    printf("--- [1] ARCHITECTURE TYPE WIDTHS ---\n");
+    printf("sizeof(char):        %zu byte  (%zu bits)\n", sizeof(char), sizeof(char) * 8);
+    printf("sizeof(short):       %zu bytes (%zu bits)\n", sizeof(short), sizeof(short) * 8);
+    printf("sizeof(int):         %zu bytes (%zu bits)\n", sizeof(int), sizeof(int) * 8);
+    printf("sizeof(long):        %zu bytes (%zu bits)\n", sizeof(long), sizeof(long) * 8);
+    printf("sizeof(long long):   %zu bytes (%zu bits)\n", sizeof(long long), sizeof(long long) * 8);
+    printf("sizeof(void *):      %zu bytes (%zu bits)\n", sizeof(void *), sizeof(void *) * 8);
+    printf("sizeof(size_t):      %zu bytes (%zu bits)\n", sizeof(size_t), sizeof(size_t) * 8);
+    printf("sizeof(uintptr_t):   %zu bytes (%zu bits)\n\n", sizeof(uintptr_t), sizeof(uintptr_t) * 8);
+
+    /* 2. Endianness Memory Dump */
+    printf("--- [2] ENDIANNESS &amp; INTEGER MEMORY LAYOUT ---\n");
+    uint32_t test_word = 0x12345678U;
+    dump_memory_hex("uint32_t 0x12345678", &amp;test_word, sizeof(test_word));
+    
+    int16_t neg_int16 = -5;
+    dump_memory_hex("int16_t -5", &amp;neg_int16, sizeof(neg_int16));
+
+    /* 3. IEEE-754 Floating-Point Breakdown */
+    printf("\n--- [3] IEEE-754 FLOATING-POINT DECOMPOSITION ---\n");
+    float f_val = -12.375f;
+    uint32_t f_bits;
+    memcpy(&amp;f_bits, &amp;f_val, sizeof(float));
+    dump_memory_hex("float -12.375", &amp;f_val, sizeof(f_val));
+
+    uint32_t sign = (f_bits &gt;&gt; 31) &amp; 0x1;
+    uint32_t exp  = (f_bits &gt;&gt; 23) &amp; 0xFF;
+    uint32_t mant = f_bits &amp; 0x7FFFFF;
+
+    printf("Float Value: %f\n", f_val);
+    printf("  Sign Bit:  %" PRIu32 " (%s)\n", sign, sign ? "Negative" : "Positive");
+    printf("  Exponent:  %" PRIu32 " (Biased), %d (True Unbiased)\n", exp, (int)exp - 127);
+    printf("  Mantissa:  0x%06" PRIx32 "\n\n", mant);
+
+    printf("========================================================\n");
+    printf("Inspection completed successfully with zero defects.\n");
+    return EXIT_SUCCESS;
+}</code></pre>
+            </div>
+          </div>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Compilation &amp; Execution with Strict Flags</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">BASH</span><span>Terminal Build Commands</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-bash"># Compile with strict warnings and Undefined Behavior Sanitizer
+gcc -std=c17 -Wall -Wextra -Werror -pedantic -fsanitize=undefined type_memory_inspector.c -o type_inspector
+
+# Execute Inspector
+./type_inspector</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3.9 Knowledge Verification & Quiz -->
+        <h2 id="sec-3-quiz">3.9 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: On an ILP32 architecture (e.g. 32-bit ARM Cortex-M), what is the sizeof(long) and sizeof(void*)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) sizeof(long) = 8 bytes, sizeof(void*) = 4 bytes</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) sizeof(long) = 4 bytes, sizeof(void*) = 4 bytes (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) sizeof(long) = 4 bytes, sizeof(void*) = 8 bytes</label></li>
+              <li><input type="radio" name="q1" id="q1d"> <label for="q1d">D) sizeof(long) = 2 bytes, sizeof(void*) = 4 bytes</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Under ILP32 (Integer, Long, Pointer = 32 bits), <code>int</code>, <code>long</code>, and pointers are all 4 bytes (32 bits).
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What happens when evaluating: <code>uint8_t a = 0x80; uint8_t b = 0x80; if (a + b == 0x100)</code> ?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) The addition wraps to 0x00 because 8-bit registers overflow.</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) <code>a</code> and <code>b</code> are promoted to signed 32-bit <code>int</code>, evaluating to 256 (0x100), making the comparison TRUE. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) Undefined behavior occurs due to integer overflow.</label></li>
+              <li><input type="radio" name="q2" id="q2d"> <label for="q2d">D) Compilation fails with a type-mismatch error.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Under C's integer promotion rules, <code>uint8_t</code> operands are promoted to signed 32-bit <code>int</code> before addition, so <code>128 + 128 = 256</code> (0x100). The comparison succeeds.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: Why is signed integer overflow treated as Undefined Behavior (UB) by the compiler?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) Because older architectures used one's complement or sign-magnitude, and ISO C permits the optimizer to assume overflow never happens to generate faster code. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) Because hardware CPUs always raise a trap interrupt on signed overflow.</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) Because signed integers cannot be represented in binary.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Leaving signed overflow undefined allows compilers to optimize loops and reorder expressions without emitting defensive CPU check instructions.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: On a Little-Endian system, how is the 32-bit value <code>0xAABBCCDD</code> stored at memory address <code>0x20000000</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) 0x20000000: DD, 0x20000001: CC, 0x20000002: BB, 0x20000003: AA (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) 0x20000000: AA, 0x20000001: BB, 0x20000002: CC, 0x20000003: DD</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) 0x20000000: BB, 0x20000001: AA, 0x20000002: DD, 0x20000003: CC</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> In Little-Endian format, the least significant byte (0xDD) is located at the lowest memory address.
+            </div>
+          </div>
+
+          <div class="quiz-question">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: Why should floating-point numbers never be compared directly with <code>==</code> in control loops?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) Because floating point registers cannot execute comparison instructions.</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) Because finite binary representation causes recurring fractions (e.g. 0.1) to accumulate rounding errors. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) Because <code>==</code> is only valid for pointers in C.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Binary IEEE-754 cannot represent most decimal fractions exactly. Small accumulation errors cause direct equality comparisons to fail unpredictably. Always compare using an epsilon threshold.
+            </div>
+          </div>
+        </div>
+
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+          <a href="mod02-compilation-and-build-process.html" class="btn-secondary">← Module 2: Compilation &amp; Build Process</a>
+          <a href="mod04-operators-and-expressions.html" class="btn-primary">Module 4: Operators &amp; Expressions →</a>
         </div>
       </article>
     </main>
@@ -610,5 +1063,4 @@ int main(void) {
 
   <script src="../js/book.js?v=5"></script>
 </body>
-
 </html>

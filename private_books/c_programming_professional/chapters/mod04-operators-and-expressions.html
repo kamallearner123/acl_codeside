@@ -1,28 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="Module 4: Operators, Expressions & Bit Manipulation - Bitwise masking, shifts, bitfields, sequence points, and undefined behavior prevention.">
+  <meta name="description" content="Module 4: Operators, Expressions & Bitwise Systems Engineering - Hardware ALU mapping, barrel shifter optimizations, bitmask idioms, shift undefined behavior, precedence traps, MISRA compliance, and atomic GPIO register drivers.">
   <title>Module 4: Operators &amp; Expressions | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
-
 <body data-chapter-id="mod04-operators-and-expressions">
   <div id="reading-progress-bar"></div>
   <header class="site-header">
     <div class="header-left">
       <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
-          <path d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <a href="../index.html" class="brand-badge">
         <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
@@ -34,13 +27,8 @@
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
-        <input type="text" id="header-search" class="search-input"
-          placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search bitwise, ALU, BSRR, precedence, MISRA..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -50,7 +38,7 @@
         <span class="board-select-label" style="font-weight:700;">Linux x86_64 / ARM Cortex-M</span>
       </div>
       <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
-            <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Go to Apt Computing Labs Home">
+      <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Go to Apt Computing Labs Home">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>Home</span>
       </a>
@@ -384,145 +372,481 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 1 • C Programming Foundations</span>
-          <h1 class="chapter-h1">Module 4: Operators, Expressions &amp; Bit Manipulation</h1>
+          <h1 class="chapter-h1">Module 4: Operators, Expressions &amp; Bitwise Systems Engineering</h1>
           <p class="chapter-lead">
-            Master professional bitwise idioms, register manipulation, sequence points, evaluation order, integer
-            promotion rules, and avoiding Undefined Behavior (UB).
+            Deconstruct operators at the hardware ALU layer: exploit ARM barrel shifters, master register bitmasking idioms (set, clear, toggle, test), eliminate shift undefined behavior, avoid lethal precedence traps, and write atomic GPIO drivers using the BSRR register.
           </p>
           <div class="chapter-meta-bar">
-            <div class="meta-item">⏱️ Estimated Reading: 45 min</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23</div>
-            <div class="meta-item">🛠️ Environments: Linux POSIX + Bare-Metal ARM</div>
-            <div class="meta-item">⚡ MISRA C:2012 Rule 10.1, 12.1 Aligned</div>
+            <div class="meta-item">⏱️ Estimated Reading: 60 min</div>
+            <div class="meta-item">🎯 Standard: C99 / C11 / C17 / MISRA C:2012</div>
+            <div class="meta-item">🛠️ Environments: Linux POSIX + ARM Cortex-M</div>
           </div>
         </div>
 
-        <h2 id="sec-4-1">4.1 The Five Essential Bitwise Idioms in Firmware</h2>
+
+        <!-- 4.1 Operators as ALU Operations -->
+        <h2 id="sec-4-1">4.1 Operators as Hardware ALU Operations &amp; The Barrel Shifter</h2>
         <p>
-          Microcontroller programming relies entirely on manipulating individual bits within peripheral hardware
-          registers. The five core idioms must be second nature to every systems engineer:
+          In higher-level languages, operators are abstract syntactic constructs. In systems C and embedded firmware, every operator maps directly to discrete hardware components within the CPU's <strong>Arithmetic Logic Unit (ALU)</strong>. On modern RISC processors such as the <strong>ARM Cortex-M4 / Cortex-M7</strong>, mathematical operations are heavily influenced by hardware architectural features such as the <em>Barrel Shifter</em> and hardware single-cycle multipliers.
         </p>
 
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;">The ARM Hardware Barrel Shifter in Action</h4>
+          <p style="font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            ARM processors incorporate a physical hardware barrel shifter directly on the second operand (Operand 2) of the ALU input path. This enables the CPU to shift or rotate a register value and perform an arithmetic/logic operation in a <strong>single clock cycle</strong>:
+          </p>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>barrel_shifter_idiom.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">/* Multiplying an index by 4 and adding a base address */
+uint32_t calc_address(uint32_t base, uint32_t index) {
+    return base + (index * 4U);
+}
+
+/* Compiles on ARM Cortex-M to a single instruction with ZERO cycle penalty:
+ *   ADD R0, R0, R1, LSL #2   ; R0 = R0 + (R1 &lt;&lt; 2) in 1 clock cycle!
+ */</code></pre>
+            </div>
+          </div>
+        </div>
+
         <div style="overflow-x:auto;margin:1.5rem 0;">
-          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;text-align:left;">
             <thead>
-              <tr style="background:var(--bg-card);border-bottom:2px solid var(--border-strong);">
-                <th style="padding:10px 14px;text-align:left;">Operation</th>
-                <th style="padding:10px 14px;text-align:left;">Bitwise Expression</th>
-                <th style="padding:10px 14px;text-align:left;">Engineering Purpose</th>
+              <tr style="border-bottom:2px solid var(--border-strong);color:var(--text-primary);">
+                <th style="padding:0.75rem 1rem;">C Operator</th>
+                <th style="padding:0.75rem 1rem;">ARM Cortex-M Instruction</th>
+                <th style="padding:0.75rem 1rem;">Hardware Cycle Latency</th>
+                <th style="padding:0.75rem 1rem;">Real-Time Architectural Impact</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody style="color:var(--text-secondary);line-height:1.6;">
               <tr style="border-bottom:1px solid var(--border-subtle);">
-                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">Set Bit n</td>
-                <td style="padding:10px 14px;"><code>REG |= (1U &lt;&lt; n)</code></td>
-                <td style="padding:10px 14px;">Enables a peripheral clock, triggers an interrupt enable flag, or drives
-                  an output high.</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;"><code>+</code>, <code>-</code></td>
+                <td style="padding:0.75rem 1rem;"><code>ADD</code>, <code>SUB</code></td>
+                <td style="padding:0.75rem 1rem;">1 cycle</td>
+                <td style="padding:0.75rem 1rem;">Deterministic execution; sets carry/overflow flags in APSR.</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border-subtle);">
-                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">Clear Bit n</td>
-                <td style="padding:10px 14px;"><code>REG &amp;= ~(1U &lt;&lt; n)</code></td>
-                <td style="padding:10px 14px;">Disables a timer, resets an interrupt pending status, or drives an output
-                  low.</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#38BDF8;"><code>*</code></td>
+                <td style="padding:0.75rem 1rem;"><code>MUL</code>, <code>SMULL</code>, <code>UMULL</code></td>
+                <td style="padding:0.75rem 1rem;">1 cycle (Cortex-M3/M4/M7)</td>
+                <td style="padding:0.75rem 1rem;">Hardware multiplier present on M3/M4/M7. On Cortex-M0/M0+, can take 1 or 32 cycles depending on silicon option!</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border-subtle);">
-                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">Toggle Bit n</td>
-                <td style="padding:10px 14px;"><code>REG ^= (1U &lt;&lt; n)</code></td>
-                <td style="padding:10px 14px;">Inverts the state of a GPIO pin (e.g. flashing an LED or square-wave
-                  heartbeat).</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:var(--brand-coral);"><code>/</code>, <code>%</code></td>
+                <td style="padding:0.75rem 1rem;"><code>SDIV</code>, <code>UDIV</code></td>
+                <td style="padding:0.75rem 1rem;">2 to 12 cycles (Non-deterministic)</td>
+                <td style="padding:0.75rem 1rem;">Hardware divide is non-constant time. Cortex-M0/M0+ lacks hardware division entirely; invokes heavy software library routines.</td>
               </tr>
-              <tr style="border-bottom:1px solid var(--border-subtle);">
-                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">Check Bit n</td>
-                <td style="padding:10px 14px;"><code>(REG &amp; (1U &lt;&lt; n)) != 0U</code></td>
-                <td style="padding:10px 14px;">Tests if a hardware TX buffer is empty or an ADC conversion is complete.
-                </td>
-              </tr>
-              <tr style="border-bottom:1px solid var(--border-subtle);">
-                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">Modify Multi-bit Field</td>
-                <td style="padding:10px 14px;"><code>REG = (REG &amp; ~MASK) | (VAL &lt;&lt; POS)</code></td>
-                <td style="padding:10px 14px;">Safely updates multi-bit configuration registers (e.g. baud rate or ADC
-                  prescaler) without corrupting adjacent bits.</td>
+              <tr>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#FBBF24;"><code>&amp;</code>, <code>|</code>, <code>^</code>, <code>~</code></td>
+                <td style="padding:0.75rem 1rem;"><code>AND</code>, <code>ORR</code>, <code>EOR</code>, <code>MVN</code></td>
+                <td style="padding:0.75rem 1rem;">1 cycle</td>
+                <td style="padding:0.75rem 1rem;">Fundamental bitmask primitives for hardware register manipulation.</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Safe Multi-Bit Field Modification
-                Pattern</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#define USART_CR1_M_POS       12U
-#define USART_CR1_M_MASK      (0x3U &lt;&lt; USART_CR1_M_POS)
+        <!-- 4.2 Bitwise Manipulation Primitives -->
+        <h2 id="sec-4-2">4.2 Bitwise Manipulation Primitives: Setting, Clearing, Toggling &amp; Testing</h2>
+        <p>
+          In embedded firmware, microcontrollers interface with hardware through <strong>Memory-Mapped I/O (MMIO)</strong> registers. A 32-bit register controls GPIO pin modes, peripheral clocks, interrupt enables, and status flags. Firmware engineers must manipulate individual bits or bitfields without disturbing unrelated bits in the register.
+        </p>
 
-void usart_set_word_length(volatile uint32_t *cr1, uint32_t mode) {
-    /* 1. Read current register value
-     * 2. Clear target field bits
-     * 3. Mask and OR-in the new setting
-     * 4. Write back atomic value */
-    uint32_t val = *cr1;
-    val &amp;= ~USART_CR1_M_MASK;
-    val |= ((mode &lt;&lt; USART_CR1_M_POS) &amp; USART_CR1_M_MASK);
-    *cr1 = val;
-}</code></pre>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.5rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <h4 style="color:#34D399;margin-top:0;">1. Setting Bits (OR with Mask)</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;">
+              Forces target bit positions to 1 while preserving all other bits:
+            </p>
+            <pre style="background:rgba(0,0,0,0.2);padding:0.75rem;border-radius:6px;font-size:0.85rem;color:var(--text-primary);"><code class="language-c">/* Set bit 5 */
+reg |= (1U &lt;&lt; 5U);
+
+/* Set multiple bits (bits 2, 4, and 7) */
+reg |= ((1U &lt;&lt; 2U) | (1U &lt;&lt; 4U) | (1U &lt;&lt; 7U));</code></pre>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <h4 style="color:var(--brand-coral);margin-top:0;">2. Clearing Bits (AND with Inverted Mask)</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;">
+              Forces target bit positions to 0 while preserving all other bits:
+            </p>
+            <pre style="background:rgba(0,0,0,0.2);padding:0.75rem;border-radius:6px;font-size:0.85rem;color:var(--text-primary);"><code class="language-c">/* Clear bit 5 */
+reg &amp;= ~(1U &lt;&lt; 5U);
+
+/* Clear bitfield (bits [3:0]) */
+reg &amp;= ~0x0FU;</code></pre>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <h4 style="color:#FBBF24;margin-top:0;">3. Toggling Bits (XOR with Mask)</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;">
+              Inverts target bit positions ($0 ightarrow 1$, $1 ightarrow 0$) without branching:
+            </p>
+            <pre style="background:rgba(0,0,0,0.2);padding:0.75rem;border-radius:6px;font-size:0.85rem;color:var(--text-primary);"><code class="language-c">/* Toggle LED on GPIO Pin 13 */
+reg ^= (1U &lt;&lt; 13U);</code></pre>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <h4 style="color:#38BDF8;margin-top:0;">4. Testing &amp; Polling Bits</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;">
+              Tests whether a specific flag is set in a hardware status register:
+            </p>
+            <pre style="background:rgba(0,0,0,0.2);padding:0.75rem;border-radius:6px;font-size:0.85rem;color:var(--text-primary);"><code class="language-c">/* Check if UART Transmission Complete (TC) */
+bool is_tx_complete = (reg &amp; (1U &lt;&lt; 6U)) != 0U;</code></pre>
           </div>
         </div>
 
-        <h2 id="sec-4-2">4.2 Integer Promotions &amp; The "unsigned int" Trap</h2>
+        <!-- Bitfield Extraction & Insertion -->
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">Multi-Bit Bitfield Extraction &amp; Insertion</h3>
         <p>
-          In C, operands smaller than <code>int</code> (such as <code>uint8_t</code> and <code>int16_t</code>) undergo
-          <strong>integer promotion</strong> to signed <code>int</code> before arithmetic or bitwise operations. This
-          frequently introduces security bugs:
+          Microcontroller registers often store configuration values across contiguous multi-bit slices (e.g. 2 bits per GPIO pin in STM32 <code>MODER</code>, or a 4-bit baud rate prescaler). To manipulate bitfields defensively without data corrupting adjacent configuration:
         </p>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Inversion &amp; Comparison
-                Pitfall</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>bitfield_manipulation.c</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;stdint.h&gt;
+            <pre><code class="language-c">#include &lt;stdint.h&gt;
 
-int main(void) {
-    uint8_t a = 0xAA;
-    
-    /* Pitfall: ~a is promoted to signed int (0xFFFFFF55 on 32-bit CPU) */
-    if (~a == 0x55) {
-        printf("Matches!\n");
-    } else {
-        printf("FAILED! Evaluated to: 0x%08X\n", (unsigned int)(~a));
-    }
-    
-    /* Correct Idiom: Explicit cast after promotion */
-    if ((uint8_t)(~a) == 0x55) {
-        printf("Correctly matches 0x55 with explicit cast\n");
-    }
-    return 0;
+#define UART_BAUD_POS  4U       /* Starts at bit 4 */
+#define UART_BAUD_MASK 0x0FU    /* 4-bit wide field (0000 to 1111) */
+
+/* Extract bitfield value: Shift right then mask */
+uint32_t extract_baud_prescaler(uint32_t reg_val) {
+    return (reg_val &gt;&gt; UART_BAUD_POS) &amp; UART_BAUD_MASK;
+}
+
+/* Insert bitfield value: Clear target field first, then OR shifted new value */
+uint32_t set_baud_prescaler(uint32_t reg_val, uint32_t new_prescaler) {
+    /* 1. Clear existing 4-bit field */
+    reg_val &amp;= ~(UART_BAUD_MASK &lt;&lt; UART_BAUD_POS);
+    /* 2. Mask new value to ensure it fits, shift into position, and OR */
+    reg_val |= ((new_prescaler &amp; UART_BAUD_MASK) &lt;&lt; UART_BAUD_POS);
+    return reg_val;
 }</code></pre>
           </div>
         </div>
 
-        <h2 id="sec-4-3">4.3 Sequence Points &amp; Undefined Behavior (UB)</h2>
+        <!-- 4.3 Shift Operators & Undefined Behavior -->
+        <h2 id="sec-4-3">4.3 Shift Operators &amp; Undefined Behavior Hazards</h2>
         <p>
-          Between sequence points, an object's value must not be modified more than once, nor may it be read except to
-          determine the value to be stored. Violating this produces compiler-dependent <strong>Undefined
-            Behavior</strong>:
+          Bit-shifting operations (<code>&lt;&lt;</code>, <code>&gt;&gt;</code>) map to hardware shifts, but C imposes strict rules whose violation triggers dangerous <strong>Undefined Behavior (UB)</strong>:
         </p>
-        <ul>
-          <li><code>i = i++ + 1;</code> &mdash; Undefined behavior.</li>
-          <li><code>arr[i] = i++;</code> &mdash; Undefined behavior.</li>
-          <li><code>printf("%d %d\n", ++i, ++i);</code> &mdash; Undefined parameter evaluation order.</li>
+
+        <div style="background:rgba(239, 68, 68, 0.08);border-left:4px solid var(--brand-coral);padding:1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
+          <h4 style="margin:0 0 0.5rem 0;color:var(--brand-coral);font-size:1rem;">⚠️ Hazard 1: Shifting by $\ge$ Width of the Type</h4>
+          <p style="margin:0 0 0.5rem 0;font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            Shifting a 32-bit integer by 32 or more positions (or by a negative count) is <strong>Undefined Behavior</strong> in ISO C (§6.5.7/3). On x86 processors, the hardware instruction masks the shift count with <code>0x1F</code> (shift by 32 becomes shift by 0, leaving the value unchanged!). On ARM processors, shifting by 32 returns 0. The compiler optimizer assumes you will never shift by $\ge 32$ bits and can eliminate surrounding safety checks!
+          </p>
+          <pre style="margin:0;background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:6px;font-size:0.85rem;color:var(--text-primary);"><code class="language-c">uint32_t x = 1U;
+uint32_t bad_shift = x &lt;&lt; 32U; /* UNDEFINED BEHAVIOR! Hardware results diverge! */</code></pre>
+        </div>
+
+        <div style="background:rgba(239, 68, 68, 0.08);border-left:4px solid var(--brand-coral);padding:1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
+          <h4 style="margin:0 0 0.5rem 0;color:var(--brand-coral);font-size:1rem;">⚠️ Hazard 2: Logical Right Shift (LSR) vs. Arithmetic Right Shift (ASR)</h4>
+          <p style="margin:0 0 0.5rem 0;font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            When right-shifting a <strong>signed negative integer</strong>, the C standard designates the result as <em>Implementation-Defined</em>. Most compilers emit <code>ASR</code> (Arithmetic Shift Right), which shifts in sign bits to preserve negative value. For an <strong>unsigned integer</strong>, the C standard guarantees a logical right shift (<code>LSR</code>), padding upper bits with zeros.
+          </p>
+          <pre style="margin:0;background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:6px;font-size:0.85rem;color:var(--text-primary);"><code class="language-c">int16_t  s = -16;   /* 0xFFF0 */
+int16_t  s_res = s &gt;&gt; 2; /* 0xFFFC (-4) via Arithmetic Shift Right */
+
+uint16_t u = 0xFFF0U;
+uint16_t u_res = u &gt;&gt; 2; /* 0x3FFC (16380) via Logical Shift Right */</code></pre>
+        </div>
+
+        <!-- 4.4 Operator Precedence -->
+        <h2 id="sec-4-4">4.4 Operator Precedence &amp; Associativity Hazards in Systems Code</h2>
+        <p>
+          C's operator precedence table has notorious historical quirks. Specifically, <strong>bitwise operators have lower precedence than relational and equality operators</strong>! In 1974, when B evolved into C, Ritchie separated <code>&amp;&amp;</code> from <code>&amp;</code>, but maintained backward compatibility by keeping bitwise precedence lower than <code>==</code> and <code>!=</code>.
+        </p>
+
+        <div style="background:var(--bg-card);border:2px solid var(--brand-coral);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:var(--brand-coral);">The Lethal Register Poll Bug</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>precedence_bug.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#define STATUS_READY_BIT (1U &lt;&lt; 3U)
+
+/* ENGINEER INTENT: Check if the ready bit is non-zero */
+if (status_reg &amp; STATUS_READY_BIT != 0U) {
+    /* Process data */
+}
+
+/* COMPILER EVALUATION (Equality == has HIGHER precedence than Bitwise &amp;):
+ *   if (status_reg &amp; (STATUS_READY_BIT != 0U))
+ *   ==&gt; if (status_reg &amp; 1U)
+ * Checks bit 0 instead of bit 3! The condition executes on WRONG data!
+ *
+ * DEFENSIVE FIX: Always wrap bitwise expressions in explicit parentheses!
+ */
+if ((status_reg &amp; STATUS_READY_BIT) != 0U) {
+    /* Correctly evaluates bit 3 */
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4.5 MISRA C Guidelines -->
+        <h2 id="sec-4-5">4.5 Safety Standards: MISRA C:2012 Rules on Bitwise Operations</h2>
+        <p>
+          In automotive, medical, and aerospace systems, complying with <strong>MISRA C:2012</strong> prevents undefined behavior and conversion surprises:
+        </p>
+        <ul style="line-height:1.8;font-size:0.95rem;">
+          <li><strong>MISRA C:2012 Rule 10.1:</strong> Operands to bitwise operators (<code>&amp;</code>, <code>|</code>, <code>^</code>, <code>~</code>, <code>&lt;&lt;</code>, <code>&gt;&gt;</code>) shall have an <em>essentially unsigned</em> type. Applying bitwise operators to signed integers is strictly forbidden.</li>
+          <li><strong>MISRA C:2012 Rule 10.4:</strong> Both operands of an operator shall have the same essential type category. Mixing unsigned and signed integers in bitwise expressions triggers violation.</li>
+          <li><strong>MISRA C:2012 Rule 12.2:</strong> The right-hand operand of a shift operator shall be strictly less than the width of the left-hand operand in bits.</li>
         </ul>
 
-        <!-- Next / Prev Module Navigation -->
-        <div
-          style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
-          <a href="mod03-data-types-and-variables.html" class="btn-secondary">← Module 3: C Data Types & Variables</a>
-          <a href="mod05-control-flow.html" class="btn-primary">Module 5: Control Flow & State Machines →</a>
+        <!-- 4.6 Real-Time Case Study -->
+        <h2 id="sec-4-6">4.6 Real-Time Case Study: STM32 GPIO Register Driver with Atomic Bit Set/Reset (BSRR)</h2>
+        <p>
+          A common beginner mistake when toggling GPIO pins is using a Read-Modify-Write operation on the output data register: <code>GPIOA-&gt;ODR |= (1U &lt;&lt; 5)</code>. In a real-time system with concurrent interrupts, an interrupt occurring between the Read and the Write will have its register modifications overwritten and lost!
+        </p>
+        <p>
+          To prevent race conditions without disabling global interrupts, ARM Cortex-M microcontrollers provide an atomic <strong>Bit Set/Reset Register (BSRR)</strong>:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>stm32_gpio_atomic_driver.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+/* Mock Memory-Mapped GPIO Register Layout (STM32 Standard) */
+typedef struct {
+    volatile uint32_t MODER;   /* GPIO port mode register (2 bits per pin) */
+    volatile uint32_t OTYPER;  /* Output type register (1 bit per pin) */
+    volatile uint32_t OSPEEDR; /* Output speed register (2 bits per pin) */
+    volatile uint32_t PUPDR;   /* Pull-up/pull-down register (2 bits per pin) */
+    volatile uint32_t IDR;     /* Input data register (read-only) */
+    volatile uint32_t ODR;     /* Output data register */
+    volatile uint32_t BSRR;    /* Bit set/reset register (write-only, atomic) */
+} gpio_port_reg_t;
+
+#define GPIOA_BASE_ADDR 0x40020000U
+#define GPIOA           ((gpio_port_reg_t *)GPIOA_BASE_ADDR)
+
+/* Pin Mode Definitions */
+typedef enum {
+    GPIO_MODE_INPUT     = 0x00U,
+    GPIO_MODE_OUTPUT    = 0x01U,
+    GPIO_MODE_ALTERNATE = 0x02U,
+    GPIO_MODE_ANALOG    = 0x03U
+} gpio_mode_t;
+
+/**
+ * @brief Configures mode for a specific GPIO pin (0-15).
+ */
+void gpio_set_pin_mode(gpio_port_reg_t *port, uint8_t pin, gpio_mode_t mode) {
+    if (port == NULL || pin &gt; 15U) return;
+    
+    uint32_t shift = (uint32_t)pin * 2U;
+    uint32_t mask = 0x03U &lt;&lt; shift;
+    
+    /* Read-Modify-Write during initialization (interrupts not yet enabled) */
+    uint32_t val = port-&gt;MODER;
+    val &amp;= ~mask;                     /* Clear mode field */
+    val |= ((uint32_t)mode &lt;&lt; shift); /* Set mode */
+    port-&gt;MODER = val;
+}
+
+/**
+ * @brief Atomically drives GPIO pin HIGH.
+ * Writing 1 to bit (pin) sets ODR bit. Writing 0 has no effect.
+ */
+static inline void gpio_write_pin_high(gpio_port_reg_t *port, uint8_t pin) {
+    /* Bits 0-15 of BSRR set corresponding ODR bit atomically in 1 cycle */
+    port-&gt;BSRR = (1U &lt;&lt; pin);
+}
+
+/**
+ * @brief Atomically drives GPIO pin LOW.
+ * Writing 1 to bit (pin + 16) resets ODR bit. Writing 0 has no effect.
+ */
+static inline void gpio_write_pin_low(gpio_port_reg_t *port, uint8_t pin) {
+    /* Bits 16-31 of BSRR reset corresponding ODR bit atomically in 1 cycle */
+    port-&gt;BSRR = (1U &lt;&lt; (pin + 16U));
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- 4.7 Hands-on Lab -->
+        <h2 id="sec-4-7">4.7 Hands-On Lab: Bit Manipulation &amp; Hardware Register Simulator</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:var(--brand-coral);">Lab Exercise: The Bit Manipulation Engine</h3>
+          <p style="font-size:0.9rem;">
+            In this lab, you will author a standalone utility <code>bit_engine_lab.c</code> that validates bit manipulation idioms, measures bit population algorithms (Brian Kernighan's bit-counting algorithm vs hardware <code>__builtin_popcount</code>), tests atomic register writes, and diagnoses precedence traps.
+          </p>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Complete Source Code: bit_engine_lab.c</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>bit_engine_lab.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+/* Displays a 32-bit word in binary format with nibble spacing */
+static void print_binary_32(const char *label, uint32_t val) {
+    printf("%-20s [0x%08X] : ", label, val);
+    for (int i = 31; i &gt;= 0; --i) {
+        printf("%c", (val &amp; (1U &lt;&lt; (uint32_t)i)) ? '1' : '0');
+        if (i % 4 == 0 &amp;&amp; i != 0) printf(" ");
+    }
+    printf("\n");
+}
+
+/* Brian Kernighan's Algorithm: Counts set bits in O(number of set bits) */
+static uint32_t count_set_bits_kernighan(uint32_t n) {
+    uint32_t count = 0;
+    while (n != 0U) {
+        n &amp;= (n - 1U); /* Clears the least significant set bit */
+        count++;
+    }
+    return count;
+}
+
+int main(void) {
+    printf("========================================================\n");
+    printf("    EMBEDDED BITWISE MANIPULATION &amp; REGISTER ENGINE      \n");
+    printf("========================================================\n\n");
+
+    uint32_t reg = 0x00000000U;
+    print_binary_32("Initial Register", reg);
+
+    /* 1. Set Bits 4, 12, 28 */
+    reg |= ((1U &lt;&lt; 4U) | (1U &lt;&lt; 12U) | (1U &lt;&lt; 28U));
+    print_binary_32("Set Bits 4,12,28", reg);
+
+    /* 2. Toggle Bit 12 (turn off) and Bit 1 (turn on) */
+    reg ^= ((1U &lt;&lt; 12U) | (1U &lt;&lt; 1U));
+    print_binary_32("Toggle Bits 12 &amp; 1", reg);
+
+    /* 3. Insert 4-bit field (0xA) at bits [19:16] */
+    uint32_t field_val = 0x0AU;
+    uint32_t pos = 16U;
+    uint32_t mask = 0x0FU;
+    reg = (reg &amp; ~(mask &lt;&lt; pos)) | ((field_val &amp; mask) &lt;&lt; pos);
+    print_binary_32("Insert 0xA at [19:16]", reg);
+
+    /* 4. Bit Counting Verification */
+    uint32_t k_count = count_set_bits_kernighan(reg);
+    uint32_t hw_count = (uint32_t)__builtin_popcount(reg);
+    printf("\nSet Bit Count (Kernighan Algorithm): %u\n", k_count);
+    printf("Set Bit Count (Hardware popcount):     %u\n", hw_count);
+
+    if (k_count == hw_count) {
+        printf("Verification: BIT COUNT ALGORITHMS MATCH PERFECTLY!\n");
+    }
+
+    printf("\n========================================================\n");
+    printf("Bit engine diagnostics completed successfully.\n");
+    return EXIT_SUCCESS;
+}</code></pre>
+            </div>
+          </div>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Build &amp; Run</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">BASH</span><span>Terminal Execution</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-bash">gcc -std=c17 -Wall -Wextra -Werror -pedantic bit_engine_lab.c -o bit_engine
+./bit_engine</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4.8 Knowledge Verification & Quiz -->
+        <h2 id="sec-4-quiz">4.8 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What is the resulting value of evaluating <code>(reg &amp; 1U &lt;&lt; 4U == 0U)</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) Tests whether bit 4 of reg is zero.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) Evaluates <code>(reg &amp; (1U &lt;&lt; (4U == 0U)))</code> which simplifies to <code>reg &amp; 1U</code> (Bit 0) due to operator precedence. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) Compilation error due to multiple operators without parentheses.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Equality <code>==</code> binds tighter than shifts <code>&lt;&lt;</code> and bitwise <code>&amp;</code>. Always parenthesize expressions: <code>((reg &amp; (1U &lt;&lt; 4U)) == 0U)</code>.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: Why does Brian Kernighan's algorithm <code>n &amp;= (n - 1)</code> clear the lowest set bit?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) Subtracting 1 inverts all bits up to and including the lowest set bit; ANDing with original n clears only that bit. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) It shifts the register right by 1 bit.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) It triggers a hardware trap that resets the ALU carry flag.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> In binary subtraction, <code>n - 1</code> flips the lowest 1 bit to 0 and all trailing 0s to 1. Performing bitwise AND with <code>n</code> sets all differing bits to 0, clearing precisely that single lowest set bit.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: Why should hardware GPIO toggling in interrupt-driven systems use BSRR instead of ODR?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) BSRR is atomic in hardware; it eliminates Read-Modify-Write race conditions without needing to disable interrupts. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) ODR cannot drive voltage above 1.8V.</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) BSRR consumes less battery power than ODR.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Writing to BSRR writes directly to the set/reset flip-flops in a single cycle. Modifying ODR requires a load, or, store sequence; if an ISR fires between the load and store, its GPIO updates are overwritten and lost.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What happens under ISO C when shifting a 32-bit unsigned integer by 35 bits (<code>val &lt;&lt; 35U</code>)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) It is guaranteed to return 0.</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) It is Undefined Behavior (UB); the compiler may eliminate the code or generate architecture-divergent machine instructions. (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) The processor automatically calculates 35 modulo 32 and shifts by 3.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> ISO C specifies that shifting by $\ge$ the bitwidth of the operand is undefined. Never shift by $\ge 32$ bits on a 32-bit type.
+            </div>
+          </div>
+
+          <div class="quiz-question">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: According to MISRA C:2012 Rule 10.1, why are bitwise operators prohibited on signed integers?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) Because signed bit shifts and bitwise operations can alter the sign bit, leading to implementation-defined or undefined behavior. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) Because signed integers cannot be loaded into CPU registers.</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) Because MISRA C does not allow negative numbers anywhere.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Shifting or inverting signed types can flip the sign bit, resulting in negative overflow (UB) or implementation-defined arithmetic shifts.
+            </div>
+          </div>
+        </div>
+
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+          <a href="mod03-data-types-and-variables.html" class="btn-secondary">← Module 3: C Data Types &amp; Variables</a>
+          <a href="mod05-control-flow.html" class="btn-primary">Module 5: Control Flow &amp; State Machines →</a>
         </div>
       </article>
     </main>
@@ -530,5 +854,4 @@ int main(void) {
 
   <script src="../js/book.js?v=5"></script>
 </body>
-
 </html>

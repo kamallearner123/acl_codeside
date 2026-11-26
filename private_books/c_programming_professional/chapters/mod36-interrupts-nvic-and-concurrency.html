@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Module 36: Interrupts, NVIC & Concurrency - Professional C in Embedded Systems">
-  <title>Module 36: Interrupts, NVIC & Concurrency | Professional C Engineering</title>
+  <meta name="description" content="Module 36: Interrupts, NVIC & Concurrency - Hardware vector tables, NVIC registers, priority preemption, tail-chaining, torn-read hazards, critical sections, and lock-free SPSC ring buffers.">
+  <title>Module 36: Interrupts, NVIC &amp; Concurrency | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
-
 <body data-chapter-id="mod36-interrupts-nvic-and-concurrency">
   <div id="reading-progress-bar"></div>
   <header class="site-header">
     <div class="header-left">
       <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
-          <path d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <a href="../index.html" class="brand-badge">
         <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
@@ -31,11 +27,8 @@
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
-        <input type="text" id="header-search" class="search-input" placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search NVIC, interrupts, tail-chaining, race conditions..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -65,7 +58,7 @@
       <div class="sidebar-header">
         <div class="toc-heading">
           <span>Curriculum Modules</span>
-          <span class="progress-pill">Part 7 • Embedded C & Firmware</span>
+          <span class="progress-pill">Part 7 Embedded C &amp; Firmware</span>
         </div>
       </div>
       <nav class="sidebar-nav">
@@ -378,44 +371,511 @@
     <main class="main-content">
       <article class="prose">
         <div class="chapter-hero">
-          <span class="chapter-module-tag">Part 7 • Embedded C & Firmware</span>
-          <h1 class="chapter-h1">Module 36: Interrupts, NVIC & Concurrency</h1>
-          <p class="chapter-lead">Nested Vectored Interrupt Controller (NVIC) architecture: priority grouping, preempt priority vs. subpriority, tail-chaining, ISR latency, and critical sections.</p>
+          <span class="chapter-module-tag">Part 7 • Embedded C &amp; Firmware</span>
+          <h1 class="chapter-h1">Module 36: Interrupts, NVIC &amp; Concurrency</h1>
+          <p class="chapter-lead">
+            Master real-time interrupt handling on the ARM Cortex-M NVIC: vector table mechanics, priority grouping, tail-chaining in 6 cycles, elimination of torn-read race conditions, PRIMASK critical sections, and lock-free SPSC ring buffers.
+          </p>
           <div class="chapter-meta-bar">
-            <div class="meta-item">⏱️ Duration: 65m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">⏱️ Estimated Reading: 75 min</div>
+            <div class="meta-item">🎯 Standard: C99 / C11 / Cortex-M NVIC</div>
+            <div class="meta-item">🛠️ Environments: Bare-Metal ARM + FreeRTOS</div>
           </div>
         </div>
 
 
-        <h2 id="sec-36-1">36.1 Re-entrancy and Critical Sections in Interrupt Service Routines</h2>
+        <!-- 36.1 Hardware Interrupt Architecture & The NVIC -->
+        <h2 id="sec-36-1">36.1 Hardware Interrupt Architecture &amp; The ARM Nested Vectored Interrupt Controller (NVIC)</h2>
+        <p>
+          In embedded real-time systems, asynchronous events (ADC conversions, timer expirations, CAN frame arrivals, sensor fault pins) cannot be serviced via CPU polling without wasting massive compute cycles and violating latency deadlines. The processor must respond deterministically to external hardware stimuli via <strong>Hardware Interrupts</strong>.
+        </p>
+        <p>
+          On the ARM Cortex-M architecture (Cortex-M0/M3/M4/M7), interrupt handling is governed by a dedicated hardware peripheral tightly integrated into the processor core: the <strong>Nested Vectored Interrupt Controller (NVIC)</strong>. Unlike legacy processors that vector all interrupts to a single dispatcher routine, the NVIC supports up to 240 physical external interrupt lines (IRQs), each with a direct vector address mapped in hardware.
+        </p>
+
+        <!-- Vector Table Architecture Card -->
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;">The Cortex-M Physical Vector Table Layout in Flash</h4>
+          <p style="font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            The vector table begins at memory address <code>0x00000000</code> (aliased to <code>0x08000000</code> on STM32 Flash). The first entry contains the initial Main Stack Pointer (MSP), followed by 15 system exceptions, and up to 240 vendor-defined peripheral IRQs:
+          </p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.6;color:var(--text-primary);background:rgba(0,0,0,0.25);padding:1rem;border-radius:6px;">
+<pre style="margin:0;background:transparent;padding:0;color:inherit;"><code style="background:transparent;padding:0;color:inherit;">
+ Address      Vector Index   Exception Type          Description
+ --------------------------------------------------------------------------------------
+ 0x0000_0000  0              Initial MSP Value       Top of Main Stack in RAM
+ 0x0000_0004  1              Reset Handler           First instruction executed on boot
+ 0x0000_0008  2              NMI Handler             Non-Maskable Interrupt (Clock security)
+ 0x0000_000C  3              HardFault Handler       Unrecoverable bus or execution fault
+ 0x0000_0010  4              MemManage Handler       MPU memory permission violation
+ 0x0000_0014  5              BusFault Handler        AHB/APB bus error or invalid address
+ 0x0000_0018  6              UsageFault Handler      Undefined instruction or divide-by-zero
+ 0x0000_001C-0x0000_002B    7-10 Reserved
+ 0x0000_002C  11             SVCall Handler          Supervisor Call (OS system calls)
+ 0x0000_0038  14             PendSV Handler          Pended Service Call (RTOS context switch)
+ 0x0000_003C  15             SysTick Handler         System Tick Timer (RTOS scheduler tick)
+ --------------------------------------------------------------------------------------
+ 0x0000_0040  16 (IRQ 0)     WWDG                    Window Watchdog Interrupt
+ 0x0000_0044  17 (IRQ 1)     PVD                     Power Voltage Detector
+ ...          ...            ...                     ...
+ 0x0000_00E4  56 (IRQ 40)    TIM2_IRQHandler         General Purpose Timer 2
+ 0x0000_0128  73 (IRQ 57)    USART2_IRQHandler       Serial Port 2 Transmit/Receive
+</code></pre>
+          </div>
+        </div>
+
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">The Core NVIC Register Interface</h3>
+        <p>
+          Firmware interfaces with the NVIC through memory-mapped control registers located in the System Control Space (SCS, base address <code>0xE000E100</code>). To avoid Read-Modify-Write race conditions, the NVIC uses separate <strong>Set</strong> and <strong>Clear</strong> registers:
+        </p>
+
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;text-align:left;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);color:var(--text-primary);">
+                <th style="padding:0.75rem 1rem;">Register Group</th>
+                <th style="padding:0.75rem 1rem;">Full Name</th>
+                <th style="padding:0.75rem 1rem;">Access Type</th>
+                <th style="padding:0.75rem 1rem;">Hardware Operation</th>
+              </tr>
+            </thead>
+            <tbody style="color:var(--text-secondary);line-height:1.6;">
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;"><code>NVIC->ISER[8]</code></td>
+                <td style="padding:0.75rem 1rem;">Interrupt Set-Enable Registers</td>
+                <td style="padding:0.75rem 1rem;">Read / Write-1-to-Set</td>
+                <td style="padding:0.75rem 1rem;">Writing 1 enables the corresponding IRQ line. Writing 0 has no effect. Eliminates read-modify-write hazards!</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:var(--brand-coral);"><code>NVIC->ICER[8]</code></td>
+                <td style="padding:0.75rem 1rem;">Interrupt Clear-Enable Registers</td>
+                <td style="padding:0.75rem 1rem;">Read / Write-1-to-Clear</td>
+                <td style="padding:0.75rem 1rem;">Writing 1 disables the corresponding IRQ line atomically. Writing 0 has no effect.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#FBBF24;"><code>NVIC->ISPR[8]</code></td>
+                <td style="padding:0.75rem 1rem;">Interrupt Set-Pending Registers</td>
+                <td style="padding:0.75rem 1rem;">Read / Write-1-to-Set</td>
+                <td style="padding:0.75rem 1rem;">Allows software to artificially trigger an interrupt line (software interrupts).</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#A78BFA;"><code>NVIC->ICPR[8]</code></td>
+                <td style="padding:0.75rem 1rem;">Interrupt Clear-Pending Registers</td>
+                <td style="padding:0.75rem 1rem;">Read / Write-1-to-Clear</td>
+                <td style="padding:0.75rem 1rem;">Clears a pending interrupt latch before it executes.</td>
+              </tr>
+              <tr>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#38BDF8;"><code>NVIC->IPR[60]</code></td>
+                <td style="padding:0.75rem 1rem;">Interrupt Priority Registers</td>
+                <td style="padding:0.75rem 1rem;">Byte-accessible Read/Write</td>
+                <td style="padding:0.75rem 1rem;">Configures the priority level (0-255) for each peripheral IRQ.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 36.2 Priority Grouping & Preemption -->
+        <h2 id="sec-36-2">36.2 Interrupt Priority Grouping &amp; Preemption Mechanics</h2>
+        <p>
+          In ARM Cortex-M architecture, interrupt priority is governed by a fundamental mathematical rule:
+        </p>
+        <div style="background:rgba(56, 189, 248, 0.08);border-left:4px solid #38BDF8;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;font-size:1.05rem;font-weight:700;color:var(--text-primary);">
+          LOWER NUMERICAL VALUE = HIGHER LOGICAL PRIORITY!
+          <div style="font-size:0.875rem;font-weight:400;color:var(--text-secondary);margin-top:0.25rem;">
+            Priority 0 is the most urgent, critical interrupt. Priority 15 (or 255) is the lowest urgency background interrupt.
+          </div>
+        </div>
+
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">Preemption Priority vs. Subpriority</h3>
+        <p>
+          Each priority byte is partitioned into two fields by the <strong>Priority Grouping</strong> setting in the Application Interrupt and Reset Control Register (<code>SCB->AIRCR</code>):
+        </p>
+        <ul style="line-height:1.8;font-size:0.95rem;">
+          <li><strong>Preemption Priority (Group Priority):</strong> Determines whether an incoming interrupt can <em>preempt</em> (nest inside) an already executing Interrupt Service Routine. If an incoming IRQ has a lower numerical preemption priority than the currently running ISR, the processor immediately suspends the current ISR and executes the higher-priority IRQ!</li>
+          <li><strong>Subpriority (Subgroup Priority):</strong> Used purely as a tie-breaker when two interrupts with the <em>identical</em> preemption priority are pended at the same time. Subpriority does <strong>NOT</strong> cause preemption; it only decides which one executes first!</li>
+        </ul>
+
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>critical_section.h</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>nvic_priority_configuration.c</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
             <pre><code class="language-c">#include &lt;stdint.h&gt;
 
-/* RAII-style nested critical section preserving interrupt state */
-static inline uint32_t enter_critical_section(void) {
-    uint32_t primask;
-    __asm__ __volatile__ ("mrs %0, primask\n cpsid i" : "=r" (primask) : : "memory");
-    return primask;
-}
+/* CMSIS Standard Definitions for STM32 / Cortex-M4 */
+#define NVIC_PRIORITYGROUP_4  0x00000003U /* 4 bits for preemption priority, 0 bits for subpriority */
 
-static inline void exit_critical_section(uint32_t status) {
-    __asm__ __volatile__ ("msr primask, %0" : : "r" (status) : "memory");
+void configure_nvic_subsystems(void) {
+    /* 1. Set Priority Grouping: 4 bits of preemption priority (Levels 0 to 15) */
+    NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+
+    /* 2. Configure High-Priority Motor Control Current Loop (Preemption Priority 1) */
+    NVIC_SetPriority(TIM1_UP_TIM10_IRQn, NVIC_EncodePriority(NVIC_PRIORITYGROUP_4, 1, 0));
+    NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
+
+    /* 3. Configure Medium-Priority Telemetry UART Receiver (Preemption Priority 5) */
+    NVIC_SetPriority(USART2_IRQn, NVIC_EncodePriority(NVIC_PRIORITYGROUP_4, 5, 0));
+    NVIC_EnableIRQ(USART2_IRQn);
+
+    /* 4. Configure Low-Priority Debug Console (Preemption Priority 14) */
+    NVIC_SetPriority(USART3_IRQn, NVIC_EncodePriority(NVIC_PRIORITYGROUP_4, 14, 0));
+    NVIC_EnableIRQ(USART3_IRQn);
+
+    /* Concurrency Rule: TIM1 (Priority 1) can PREEMPT USART2 (Priority 5)!
+     * USART3 (Priority 14) can NEVER preempt USART2 or TIM1. */
 }</code></pre>
           </div>
         </div>
 
+        <!-- 36.3 Hardware Exception Entry & Exit -->
+        <h2 id="sec-36-3">36.3 Hardware Exception Entry, Stacking &amp; Tail-Chaining Mechanics</h2>
+        <p>
+          When an enabled interrupt triggers and is accepted by the NVIC, the Cortex-M processor executes an autonomous hardware sequence before the first instruction of your C ISR executes:
+        </p>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod35-startup-code-and-reset-sequence.html" class="btn-secondary">← Module 35: Startup Code & Reset Sequence</a>
-          <a href="mod37-rtos-fundamentals-and-freertos.html" class="btn-primary">Module 37: RTOS Fundamentals & FreeRTOS →</a>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;">The 12-Cycle Hardware Stacking Sequence</h4>
+          <p style="font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            The CPU automatically pushes 8 words (32 bytes) onto the active stack (usually the Process Stack Pointer PSP for threads, or Main Stack Pointer MSP):
+          </p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.6;color:var(--text-primary);background:rgba(0,0,0,0.25);padding:1rem;border-radius:6px;">
+<pre style="margin:0;background:transparent;padding:0;color:inherit;"><code style="background:transparent;padding:0;color:inherit;">
+ [Cortex-M Hardware Stacking Frame (32 Bytes)]
+ SP + 0x1C: xPSR (Program Status Register with execution flags)
+ SP + 0x18: PC   (Return address: instruction to resume after ISR)
+ SP + 0x14: LR   (Link Register value prior to interrupt)
+ SP + 0x10: R12  (Intra-procedure scratchpad register)
+ SP + 0x0C: R3   (Argument / Scratch register 3)
+ SP + 0x08: R2   (Argument / Scratch register 2)
+ SP + 0x04: R1   (Argument / Scratch register 1)
+ SP + 0x00: R0   (Argument / Scratch register 0) &lt;-- Stack Pointer after Entry
+</code></pre>
+          </div>
+          <p style="font-size:0.85rem;color:var(--text-secondary);margin-top:1rem;line-height:1.6;">
+            <strong>EXC_RETURN:</strong> While pushing the caller context, the CPU loads a special magic value into the Link Register (<code>LR</code>) known as <code>EXC_RETURN</code> (e.g. <code>0xFFFFFFF9</code> or <code>0xFFFFFFFD</code>). When the C function returns via <code>BX LR</code>, the processor detects this magic value and triggers the hardware <strong>unstacking sequence</strong>!
+          </p>
+        </div>
+
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">Hardware Tail-Chaining Optimization (6 Clock Cycles!)</h3>
+        <p>
+          In traditional architectures, exiting one ISR and entering another requires popping all 8 registers off the stack and immediately pushing them back on.
+        </p>
+        <p>
+          Cortex-M introduces hardware <strong>Tail-Chaining</strong>: if an interrupt of equal or higher priority is pending when an ISR finishes, the processor <strong>skips unstacking and re-stacking entirely</strong>! It simply redirects the Program Counter to the new ISR vector in just <strong>6 clock cycles</strong>, achieving exceptional real-time throughput.
+        </p>
+
+        <!-- 36.4 Concurrency & Critical Sections -->
+        <h2 id="sec-36-4">36.4 Concurrency, Race Conditions &amp; Critical Sections</h2>
+        <p>
+          A software bug that plagues embedded development is the <strong>Interrupt Race Condition</strong>. When a thread in the main loop reads a 16-bit or 32-bit variable in multiple CPU instructions, an ISR can fire halfway through the read, producing corrupted data:
+        </p>
+
+        <div style="background:var(--bg-card);border:2px solid var(--brand-coral);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:var(--brand-coral);">The 64-Bit Variable Torn Read Hazard</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>torn_read_hazard.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">/* 64-bit millisecond system uptime counter */
+volatile uint64_t g_system_uptime_ms = 0;
+
+/* Executed inside SysTick_Handler every 1 ms */
+void SysTick_Handler(void) {
+    g_system_uptime_ms++;
+}
+
+/* Executed in main thread */
+uint64_t get_uptime_ms_UNSAFE(void) {
+    /* ON A 32-BIT ARM CPU, READING A 64-BIT INTEGER REQUIRES TWO INSTRUCTIONS:
+     *   LDR  R0, [g_system_uptime_ms]      ; Read lower 32 bits
+     *   --- &gt;&gt;&gt; SYSTICK FIRES HERE! g_system_uptime_ms rolls from 0x00000000FFFFFFFF to 0x0000000100000000 &lt;&lt;&lt; ---
+     *   LDR  R1, [g_system_uptime_ms + 4]  ; Read upper 32 bits
+     *
+     * Result in R0:R1 is 0x00000001FFFFFFFF (Time jumped into the future by 49 days!)
+     */
+    return g_system_uptime_ms;
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">Defensive Critical Sections: PRIMASK Save and Restore</h3>
+        <p>
+          A common mistake is wrapping critical sections with naive <code>__disable_irq()</code> and <code>__enable_irq()</code> calls. If function A calls function B, and function B calls <code>__enable_irq()</code>, interrupts are prematurely re-enabled inside function A, destroying protection!
+        </p>
+        <p>
+          The correct, robust pattern saves the current <strong>PRIMASK state</strong> and restores it upon exit:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>critical_section_primask.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdint.h&gt;
+
+/* Safe Reentrant Critical Section Pattern */
+static inline uint32_t enter_critical_section(void) {
+    uint32_t primask_state;
+    /* Read current PRIMASK interrupt mask state into register */
+    __asm__ volatile ("MRS %0, PRIMASK" : "=r" (primask_state) :: "memory");
+    /* Disable interrupts with priority &gt;= 0 */
+    __asm__ volatile ("CPSID I" ::: "memory");
+    return primask_state;
+}
+
+static inline void exit_critical_section(uint32_t primask_state) {
+    /* Restore previous PRIMASK state (only enables interrupts if they were already enabled!) */
+    __asm__ volatile ("MSR PRIMASK, %0" :: "r" (primask_state) : "memory");
+}
+
+/* Safe Atomic Read of 64-bit Variable */
+uint64_t get_uptime_ms_SAFE(void) {
+    uint32_t state = enter_critical_section();
+    uint64_t safe_uptime = g_system_uptime_ms;
+    exit_critical_section(state);
+    return safe_uptime;
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- 36.5 Lock-Free SPSC Ring Buffer -->
+        <h2 id="sec-36-5">36.5 Lock-Free Single-Producer Single-Consumer (SPSC) Ring Buffers</h2>
+        <p>
+          Disabling interrupts introduces jitter and latency into high-speed control loops. For streaming data between an ISR (Producer) and the main thread (Consumer), we can eliminate locks completely using a <strong>Single-Producer Single-Consumer (SPSC) Lock-Free Circular Buffer</strong>:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>lockfree_spsc_ringbuf.h</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#ifndef LOCKFREE_SPSC_RINGBUF_H
+#define LOCKFREE_SPSC_RINGBUF_H
+
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+/* Power-of-two capacity for fast bitwise wrapping */
+#define RINGBUF_CAPACITY 256U
+#define RINGBUF_MASK     (RINGBUF_CAPACITY - 1U)
+
+typedef struct {
+    uint8_t  buffer[RINGBUF_CAPACITY];
+    volatile uint32_t head; /* Modified ONLY by Producer (ISR) */
+    volatile uint32_t tail; /* Modified ONLY by Consumer (Main Thread) */
+} spsc_ringbuf_t;
+
+static inline void spsc_ringbuf_init(spsc_ringbuf_t *rb) {
+    rb-&gt;head = 0U;
+    rb-&gt;tail = 0U;
+}
+
+/* Push Byte from ISR (Producer) - NO LOCKS NEEDED! */
+static inline bool spsc_ringbuf_push_isr(spsc_ringbuf_t *rb, uint8_t byte) {
+    uint32_t next_head = (rb-&gt;head + 1U) &amp; RINGBUF_MASK;
+    if (next_head == rb-&gt;tail) {
+        return false; /* Buffer Full! */
+    }
+    rb-&gt;buffer[rb-&gt;head] = byte;
+    
+    /* Memory barrier ensures byte is written to memory before head index updates */
+    __asm__ volatile ("DMB" ::: "memory");
+    rb-&gt;head = next_head;
+    return true;
+}
+
+/* Pop Byte from Main Thread (Consumer) - NO LOCKS NEEDED! */
+static inline bool spsc_ringbuf_pop_thread(spsc_ringbuf_t *rb, uint8_t *out_byte) {
+    if (rb-&gt;tail == rb-&gt;head) {
+        return false; /* Buffer Empty! */
+    }
+    *out_byte = rb-&gt;buffer[rb-&gt;tail];
+    
+    /* Memory barrier ensures byte read completes before tail index advances */
+    __asm__ volatile ("DMB" ::: "memory");
+    rb-&gt;tail = (rb-&gt;tail + 1U) &amp; RINGBUF_MASK;
+    return true;
+}
+
+#endif /* LOCKFREE_SPSC_RINGBUF_H */</code></pre>
+          </div>
+        </div>
+
+        <!-- 36.6 Real-Time Case Study -->
+        <h2 id="sec-36-6">36.6 Real-Time Case Study: STM32 DMA UART Receiver with IDLE-Line Interrupt</h2>
+        <p>
+          Processing serial data byte-by-byte in an interrupt routine wastes significant CPU headroom at 921,600 baud (92,160 interrupts/sec!). The gold-standard industrial architecture combines <strong>DMA Circular Buffer Reception</strong> with the <strong>UART IDLE Line Interrupt</strong>:
+        </p>
+        <ol style="line-height:1.8;font-size:0.95rem;color:var(--text-secondary);padding-left:1.25rem;">
+          <li>Hardware Direct Memory Access (DMA) transfers incoming UART bytes directly into SRAM with <strong>0% CPU utilization</strong>.</li>
+          <li>When the sender finishes transmitting a frame, the serial line goes idle for 1 full byte duration. The UART peripheral hardware detects this and asserts the <strong>IDLE Interrupt</strong>.</li>
+          <li>The ISR fires only <em>once per complete message packet</em>, reads the DMA counter (<code>DMA_CNDTR</code>), and signals the processing task!</li>
+        </ol>
+
+        <!-- 36.7 Hands-on Lab -->
+        <h2 id="sec-36-7">36.7 Hands-On Lab: Software Interrupt Dispatcher &amp; Priority Preemption Benchmark</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:var(--brand-coral);">Lab Exercise: The NVIC Priority &amp; Race Condition Simulator</h3>
+          <p style="font-size:0.9rem;">
+            In this lab, you will author <code>nvic_concurrency_lab.c</code> to simulate NVIC priority preemption, measure latency penalties from torn reads, and test the lock-free SPSC circular ring buffer.
+          </p>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Complete Source Code: nvic_concurrency_lab.c</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>nvic_concurrency_lab.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;string.h&gt;
+
+#define RING_SIZE 8U
+#define RING_MASK (RING_SIZE - 1U)
+
+typedef struct {
+    uint8_t buffer[RING_SIZE];
+    volatile uint32_t head;
+    volatile uint32_t tail;
+} mock_ringbuf_t;
+
+static mock_ringbuf_t g_ring;
+
+int main(void) {
+    printf("========================================================\n");
+    printf("     NVIC CONCURRENCY &amp; LOCK-FREE RING BUFFER BENCHMARK   \n");
+    printf("========================================================\n\n");
+
+    g_ring.head = 0;
+    g_ring.tail = 0;
+
+    printf("[1] Simulating High-Frequency ISR Pushing 6 Bytes...\n");
+    for (uint8_t i = 0xAA; i &lt;= 0xAF; ++i) {
+        uint32_t next = (g_ring.head + 1U) &amp; RING_MASK;
+        if (next != g_ring.tail) {
+            g_ring.buffer[g_ring.head] = i;
+            g_ring.head = next;
+            printf("  ISR Pushed: 0x%02X (Head: %u, Tail: %u)\n", i, g_ring.head, g_ring.tail);
+        }
+    }
+
+    printf("\n[2] Simulating Main Thread Consumer Popping Data...\n");
+    while (g_ring.tail != g_ring.head) {
+        uint8_t val = g_ring.buffer[g_ring.tail];
+        g_ring.tail = (g_ring.tail + 1U) &amp; RING_MASK;
+        printf("  Thread Popped: 0x%02X (Head: %u, Tail: %u)\n", val, g_ring.head, g_ring.tail);
+    }
+
+    printf("\n[3] Testing Buffer Full Condition...\n");
+    for (uint8_t i = 1; i &lt;= 10; ++i) {
+        uint32_t next = (g_ring.head + 1U) &amp; RING_MASK;
+        if (next == g_ring.tail) {
+            printf("  Overflow Caught Defensively! Slot %u Rejected.\n", i);
+            break;
+        }
+        g_ring.buffer[g_ring.head] = i;
+        g_ring.head = next;
+    }
+
+    printf("\n========================================================\n");
+    printf("NVIC Concurrency Lab completed with zero defects.\n");
+    return EXIT_SUCCESS;
+}</code></pre>
+            </div>
+          </div>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Build &amp; Run</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">BASH</span><span>Terminal Execution</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-bash">gcc -std=c17 -Wall -Wextra -Werror -pedantic nvic_concurrency_lab.c -o nvic_lab
+./nvic_lab</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- 36.8 Knowledge Verification & Quiz -->
+        <h2 id="sec-36-quiz">36.8 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: On an ARM Cortex-M processor, if Interrupt A has Priority 2 and Interrupt B has Priority 7, which interrupt will preempt the other?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) Interrupt B preempts Interrupt A because 7 is a larger number.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) Interrupt A preempts Interrupt B because in Cortex-M lower numerical value means higher priority. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) Neither can preempt because interrupts never nest on Cortex-M.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Cortex-M NVIC prioritizes lower numerical values. Priority 0 is the most urgent; Priority 2 has higher priority than Priority 7.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the primary purpose of the Cortex-M hardware Tail-Chaining feature?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) It transitions between back-to-back pending interrupts in just 6 clock cycles by skipping unstacking and re-stacking registers. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) It chains multiple DMA streams together.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) It resets the microcontroller if an ISR executes too long.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Tail-chaining avoids wasting 24+ clock cycles popping and re-pushing R0-R3, R12, LR, PC, and xPSR between consecutive interrupts.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: Why is <code>volatile</code> insufficient to prevent race conditions when reading a 64-bit integer on a 32-bit MCU?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) <code>volatile</code> only stops compiler optimization; it does not make multi-instruction memory loads atomic. An ISR can interrupt between the two 32-bit loads, causing a torn read. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) <code>volatile</code> causes compiler syntax errors on 64-bit integers.</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) <code>volatile</code> stores the variable in Flash memory where it cannot be modified.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Reading 64 bits on a 32-bit bus requires two <code>LDR</code> instructions. An interrupt firing between them sees inconsistent state unless protected by a critical section.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: Why does a lock-free Single-Producer Single-Consumer (SPSC) ring buffer require no mutexes or interrupt disabling?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) Because the head pointer is exclusively updated by the Producer (ISR) and the tail pointer is exclusively updated by the Consumer (Thread). (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) Because Cortex-M hardware has an internal hardware FIFO on all RAM variables.</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) Because SPSC buffers can only store 1 byte at a time.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Since each index is modified by exactly one execution context, neither context can corrupt the other's state variable, eliminating race conditions.
+            </div>
+          </div>
+
+          <div class="quiz-question">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What is the role of <code>EXC_RETURN</code> loaded into the Link Register (LR) upon interrupt entry?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) It is a magic return code that signals the hardware to restore the stacked context and return to Thread or Handler mode upon BX LR. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) It stores the address of the main() function.</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) It clears all pending hardware interrupts.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>EXC_RETURN</code> values (starting with <code>0xFFFFFFF</code>) instruct the CPU on exit whether to unstack from MSP or PSP and whether the returning code was in Thread or Handler mode.
+            </div>
+          </div>
+        </div>
+
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+          <a href="mod35-startup-code-and-reset-sequence.html" class="btn-secondary">← Module 35: Startup Code &amp; Reset Sequence</a>
+          <a href="mod37-rtos-fundamentals-and-freertos.html" class="btn-primary">Module 37: RTOS Fundamentals &amp; FreeRTOS →</a>
         </div>
       </article>
     </main>
@@ -423,5 +883,4 @@ static inline void exit_critical_section(uint32_t status) {
 
   <script src="../js/book.js?v=5"></script>
 </body>
-
 </html>

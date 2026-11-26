@@ -1,28 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description"
-    content="Module 6: Functions, ABI & Modular Design - Stack frames, AAPCS calling convention, inlining, static libraries, header guards, and modular architecture.">
+  <meta name="description" content="Module 6: Functions, Modularity & The Call Stack (AAPCS) - Stack frames, ARM AAPCS calling conventions, stack overflow protection, static inline linkage, opaque pointers, and reentrancy in ISRs.">
   <title>Module 6: Functions &amp; Modular Design | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
-
 <body data-chapter-id="mod06-functions-and-modularity">
   <div id="reading-progress-bar"></div>
   <header class="site-header">
     <div class="header-left">
       <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
-          <path d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <a href="../index.html" class="brand-badge">
         <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
@@ -34,13 +27,8 @@
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
-        <input type="text" id="header-search" class="search-input"
-          placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search functions, AAPCS, stack frames, opaque pointers..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -50,7 +38,7 @@
         <span class="board-select-label" style="font-weight:700;">Linux x86_64 / ARM Cortex-M</span>
       </div>
       <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
-            <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Go to Apt Computing Labs Home">
+      <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Go to Apt Computing Labs Home">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>Home</span>
       </a>
@@ -384,124 +372,478 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 1 • C Programming Foundations</span>
-          <h1 class="chapter-h1">Module 6: Functions, ABI &amp; Modular System Architecture</h1>
+          <h1 class="chapter-h1">Module 6: Functions, Modularity &amp; The Call Stack (AAPCS)</h1>
           <p class="chapter-lead">
-            Understand how functions execute on CPU silicon: stack frames, calling conventions (AAPCS vs System V
-            AMD64), function inlining, static functions for encapsulation, and clean header contracts.
+            Deconstruct the mechanics of function calls down to assembly registers: stack frame anatomy, ARM AAPCS calling conventions (R0-R3 register passing), hardware MPU stack guard regions, static inline optimizations, opaque pointer encapsulation, and reentrant ISR design.
           </p>
           <div class="chapter-meta-bar">
-            <div class="meta-item">⏱️ Estimated Reading: 50 min</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23</div>
-            <div class="meta-item">🛠️ Environments: Linux POSIX + Bare-Metal ARM</div>
-            <div class="meta-item">⚡ MISRA C:2012 Rule 8.2, 8.4, 17.7 Aligned</div>
+            <div class="meta-item">⏱️ Estimated Reading: 65 min</div>
+            <div class="meta-item">🎯 Standard: C99 / C11 / C17 / AAPCS</div>
+            <div class="meta-item">🛠️ Environments: Linux POSIX + ARM Cortex-M</div>
           </div>
         </div>
 
-        <h2 id="sec-6-1">6.1 The Application Binary Interface (ABI) &amp; Calling Conventions</h2>
+
+        <!-- 6.1 Function Invocations & The Call Stack -->
+        <h2 id="sec-6-1">6.1 Function Invocations, The Stack Frame &amp; Low-Level Call Stack Mechanics</h2>
         <p>
-          When one function calls another, the compiler must adhere to a standardized <strong>Application Binary
-            Interface (ABI)</strong> defining which CPU registers pass arguments, which registers must be preserved
-          across calls, and how the return value is provided:
+          In C, functions are the fundamental unit of procedural abstraction. While high-level software treats function calls as instantaneous jumps, at the machine level a function invocation is an intricate coordination between the CPU instruction pipeline, hardware registers, and dynamic memory allocations on the <strong>Call Stack</strong>.
+        </p>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;">Anatomy of an ARM Cortex-M Stack Frame</h4>
+          <p style="font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            On modern 32-bit RISC architectures (ARM Cortex-M0/M3/M4/M7), the Call Stack grows <strong>downward</strong> from high memory addresses to low memory addresses. When a function executes, it establishes a discrete activation record (stack frame):
+          </p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.6;color:var(--text-primary);background:rgba(0,0,0,0.25);padding:1rem;border-radius:6px;">
+<pre style="margin:0;background:transparent;padding:0;color:inherit;"><code style="background:transparent;padding:0;color:inherit;">
+ [HIGH MEMORY ADDRESS]
+  +-------------------------------------------------------+
+  | Caller's Stack Frame                                  |
+  +-------------------------------------------------------+ &lt;-- Stack Pointer (SP) at function entry
+  | Pushed Arguments 5, 6, ... (if more than 4 args)     |
+  | Return Address (saved LR / Link Register)             |
+  | Saved Callee Registers (R4 - R11)                     |
+  | Saved Frame Pointer (R7 in Thumb mode)                |
+  | Local Variables &amp; Temporary Arrays                    |
+  | 8-Byte Alignment Padding (Mandated by AAPCS)          |
+  +-------------------------------------------------------+ &lt;-- Stack Pointer (SP) during function body
+ [LOW MEMORY ADDRESS]  (Grows downward toward Heap/BSS)
+</code></pre>
+          </div>
+        </div>
+
+        <!-- 6.2 AAPCS Calling Convention -->
+        <h2 id="sec-6-2">6.2 The ARM Architecture Procedure Call Standard (AAPCS)</h2>
+        <p>
+          To ensure that assembly code, pre-compiled C libraries, and RTOS kernels interoperate reliably, ARM defines the <strong>Procedure Call Standard for the ARM Architecture (AAPCS)</strong>:
         </p>
 
         <div style="overflow-x:auto;margin:1.5rem 0;">
-          <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;text-align:left;">
             <thead>
-              <tr style="background:var(--bg-card);border-bottom:2px solid var(--border-strong);">
-                <th style="padding:10px 14px;text-align:left;">Convention</th>
-                <th style="padding:10px 14px;text-align:left;">Argument Registers</th>
-                <th style="padding:10px 14px;text-align:left;">Return Register</th>
-                <th style="padding:10px 14px;text-align:left;">Callee-Saved (Preserved)</th>
-                <th style="padding:10px 14px;text-align:left;">Caller-Saved (Scratch)</th>
+              <tr style="border-bottom:2px solid var(--border-strong);color:var(--text-primary);">
+                <th style="padding:0.75rem 1rem;">Registers</th>
+                <th style="padding:0.75rem 1rem;">AAPCS Role &amp; Purpose</th>
+                <th style="padding:0.75rem 1rem;">Preservation Rule</th>
+                <th style="padding:0.75rem 1rem;">Embedded Firmware Implication</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody style="color:var(--text-secondary);line-height:1.6;">
               <tr style="border-bottom:1px solid var(--border-subtle);">
-                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">ARM AAPCS (32-bit Cortex-M)</td>
-                <td style="padding:10px 14px;"><code>r0, r1, r2, r3</code> (remainder on stack)</td>
-                <td style="padding:10px 14px;"><code>r0</code> (or <code>r0-r1</code> for 64-bit)</td>
-                <td style="padding:10px 14px;"><code>r4-r11, SP</code></td>
-                <td style="padding:10px 14px;"><code>r0-r3, r12, LR</code></td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;"><code>R0 - R3</code></td>
+                <td style="padding:0.75rem 1rem;">Argument passing (first 4 words) &amp; Return Value</td>
+                <td style="padding:0.75rem 1rem;"><strong>Caller-saved</strong> (Volatile)</td>
+                <td style="padding:0.75rem 1rem;">The caller must assume these registers are overwritten during any function call. Functions with $\le 4$ arguments incur ZERO stack memory latency!</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border-subtle);">
-                <td style="padding:10px 14px;font-weight:600;color:var(--brand-coral);">System V AMD64 (Linux x86_64)
-                </td>
-                <td style="padding:10px 14px;"><code>rdi, rsi, rdx, rcx, r8, r9</code></td>
-                <td style="padding:10px 14px;"><code>rax</code> (or <code>rax:rdx</code>)</td>
-                <td style="padding:10px 14px;"><code>rbx, rsp, rbp, r12-r15</code></td>
-                <td style="padding:10px 14px;"><code>r10, r11, rax, rcx, rdx...</code></td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#38BDF8;"><code>R4 - R11</code></td>
+                <td style="padding:0.75rem 1rem;">Local variable storage</td>
+                <td style="padding:0.75rem 1rem;"><strong>Callee-saved</strong> (Non-volatile)</td>
+                <td style="padding:0.75rem 1rem;">If a called function modifies any of these registers, it MUST push them to the stack upon entry (prologue) and restore them upon exit (epilogue).</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#FBBF24;"><code>R12 (IP)</code></td>
+                <td style="padding:0.75rem 1rem;">Intra-procedure call scratchpad register</td>
+                <td style="padding:0.75rem 1rem;">Caller-saved</td>
+                <td style="padding:0.75rem 1rem;">Used by linkers for long branch veneer stubs when the destination address is beyond 32 MB branch range.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#A78BFA;"><code>R13 (SP)</code></td>
+                <td style="padding:0.75rem 1rem;">Stack Pointer (MSP / PSP)</td>
+                <td style="padding:0.75rem 1rem;">Callee-saved</td>
+                <td style="padding:0.75rem 1rem;">Must always be preserved across calls; <strong>AAPCS mandates 8-byte stack alignment</strong> at external public function call boundaries.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:var(--brand-coral);"><code>R14 (LR)</code></td>
+                <td style="padding:0.75rem 1rem;">Link Register (stores Return Address)</td>
+                <td style="padding:0.75rem 1rem;">Caller-saved</td>
+                <td style="padding:0.75rem 1rem;">The <code>BL</code> (Branch with Link) instruction automatically places the return address into LR. In "leaf" functions (functions that call no other functions), LR does not even need to be pushed to the stack!</td>
+              </tr>
+              <tr>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#F472B6;"><code>R15 (PC)</code></td>
+                <td style="padding:0.75rem 1rem;">Program Counter</td>
+                <td style="padding:0.75rem 1rem;">N/A</td>
+                <td style="padding:0.75rem 1rem;">Directly loads next instruction address. In epilogues, popping saved LR directly into PC (<code>POP {R4-R7, PC}</code>) returns and branches in a single cycle.</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <h2 id="sec-6-2">6.2 Function Inlining: Performance vs. Flash Bloat</h2>
+        <div style="background:rgba(239, 68, 68, 0.08);border-left:4px solid var(--brand-coral);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0;">
+          <h4 style="margin:0 0 0.5rem 0;color:var(--brand-coral);font-size:0.95rem;">⚡ Performance Rule: Keep Function Arguments $\le 4$</h4>
+          <p style="margin:0;font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            Under AAPCS, functions with 1 to 4 scalar arguments pass everything in high-speed registers (<code>R0-R3</code>). Passing 5 or more arguments forces the compiler to spill the 5th+ arguments onto the stack via memory store (<code>STR</code>) instructions in the caller and memory load (<code>LDR</code>) instructions in the callee. In tight loops or ISR callbacks, wrap complex parameters into a single <code>const struct *</code> pointer!
+          </p>
+        </div>
+
+        <!-- 6.3 Stack Overflow & MPU Guarding -->
+        <h2 id="sec-6-3">6.3 Stack Overflow Hazards &amp; Hardware MPU Guard Regions</h2>
         <p>
-          Small functions (e.g., bit manipulation, register reads) can be declared <code>static inline</code> in header
-          files. This replaces the function call with the actual instructions, eliminating call overhead, parameter
-          register shuffling, and stack frame generation:
+          In embedded firmware, SRAM is partitioned into Static Data (<code>.data</code> and <code>.bss</code>), the Heap (if enabled), and the Call Stack. Because the stack grows downward toward static variables or the heap, an unmonitored stack overflow triggers <strong>silent memory corruption</strong>: local variables overwrite global data buffers or RTOS task control blocks.
+        </p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.5rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <h4 style="color:var(--brand-coral);margin-top:0;">1. Stack Overflow Root Causes</h4>
+            <ul style="font-size:0.85rem;line-height:1.6;color:var(--text-secondary);padding-left:1.2rem;margin:0;">
+              <li><strong>Unbounded Recursion</strong>: Every recursive call allocates a new stack frame (LR, local vars). Recursion is strictly forbidden in <strong>MISRA C:2012 Rule 17.2</strong>.</li>
+              <li><strong>Large Local Buffers</strong>: Declaring <code>uint8_t buffer[2048]</code> inside a FreeRTOS task with a 1024-byte stack instantly crashes the system.</li>
+              <li><strong>Deep Interrupt Nesting</strong>: Higher priority interrupts preempting lower priority ISRs stack additional hardware context frames (32 bytes minimum per nested ISR).</li>
+            </ul>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <h4 style="color:#34D399;margin-top:0;">2. Hardware MPU Stack Guarding</h4>
+            <p style="font-size:0.85rem;color:var(--text-secondary);line-height:1.6;">
+              ARM Cortex-M processors with a <strong>Memory Protection Unit (MPU)</strong> allow configuring a 32-byte or 64-byte <em>no-access guard region</em> directly below the bottom of the stack:
+            </p>
+            <p style="font-size:0.85rem;color:var(--text-primary);line-height:1.6;margin:0;">
+              If a function attempts to push past the stack limit, the CPU instantly triggers a <code>MemManage</code> fault before any global RAM can be corrupted, allowing the crash analyzer to capture a clean stack trace!
+            </p>
+          </div>
+        </div>
+
+        <!-- 6.4 Static Linkage & Inlining -->
+        <h2 id="sec-6-4">6.4 Static Linkage, Function Inlining &amp; Translation Units</h2>
+        <p>
+          C programs are compiled one <strong>Translation Unit (TU)</strong> at a time. A translation unit is a single <code>.c</code> source file plus all the header files (<code>.h</code>) included by the preprocessor. Controlling symbol visibility across translation units is vital for modularity and optimization:
         </p>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>Static Inline Header Pattern</span>
-            </div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>linkage_demonstration.c</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code class="language-c">#ifndef BIT_MATH_H
-#define BIT_MATH_H
+            <pre><code class="language-c">#include &lt;stdint.h&gt;
 
-#include &lt;stdint.h&gt;
-
-/* static inline avoids multiple definition errors across compilation units */
-static inline uint32_t count_trailing_zeros(uint32_t val) {
-    if (val == 0) return 32U;
-    return (uint32_t)__builtin_ctz(val);
+/* 1. EXTERNAL LINKAGE (Default): Symbol visible to all translation units in the project */
+uint32_t g_system_tick_count = 0U;
+void system_tick_increment(void) {
+    g_system_tick_count++;
 }
 
-#endif /* BIT_MATH_H */</code></pre>
+/* 2. INTERNAL LINKAGE (static): Symbol is private to this translation unit only.
+ * Eliminates name collision hazards; allows compiler to aggressively optimize
+ * because no external file can call this function! */
+static uint32_t calculate_crc_internal(const uint8_t *data, size_t len) {
+    uint32_t crc = 0xFFFFFFFFU;
+    /* CRC algorithm */
+    return crc;
+}
+
+/* 3. STATIC INLINE: Recommended for small utility functions in header files.
+ * Replaces function call with inline machine instructions, eliminating prologue/epilogue overhead
+ * while generating zero duplicate symbol linker errors! */
+static inline uint32_t min_u32(uint32_t a, uint32_t b) {
+    return (a &lt; b) ? a : b;
+}</code></pre>
           </div>
         </div>
 
-        <h2 id="sec-6-3">6.3 Opaque Pointers &amp; True Encapsulation in C</h2>
+        <!-- 6.5 Modular Architecture: Opaque Handles -->
+        <h2 id="sec-6-5">6.5 Modular C Architecture: Opaque Pointers (Pure C PIMPL Pattern)</h2>
         <p>
-          In professional embedded and systems development, you achieve object-oriented encapsulation through
-          <strong>opaque pointers</strong> (also called the Pimpl idiom or handle pattern). Consumers cannot access or
-          depend on internal struct layout:
+          In professional driver development, exposing the internal fields of a struct in a public header file creates tight coupling: if you modify a private buffer size or hardware register offset, every file including that header must be recompiled.
+        </p>
+        <p>
+          The <strong>Opaque Pointer Pattern</strong> hides internal implementation details completely, achieving true object-oriented encapsulation in ANSI C:
+        </p>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <div class="code-title" style="margin-bottom:0.75rem;font-weight:700;color:#38BDF8;">Public API Header: uart_driver.h</div>
+            <pre style="background:rgba(0,0,0,0.2);padding:0.75rem;border-radius:6px;font-size:0.85rem;color:var(--text-primary);"><code class="language-c">#ifndef UART_DRIVER_H
+#define UART_DRIVER_H
+
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+/* Forward declaration: incomplete type!
+ * Users know uart_dev_t exists, but cannot access internal members. */
+typedef struct uart_device uart_dev_t;
+
+/* Public API Contract */
+uart_dev_t *uart_init(uint32_t port_id, uint32_t baud);
+bool uart_send_byte(uart_dev_t *dev, uint8_t byte);
+void uart_deinit(uart_dev_t *dev);
+
+#endif /* UART_DRIVER_H */</code></pre>
+          </div>
+
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <div class="code-title" style="margin-bottom:0.75rem;font-weight:700;color:#34D399;">Private Implementation: uart_driver.c</div>
+            <pre style="background:rgba(0,0,0,0.2);padding:0.75rem;border-radius:6px;font-size:0.85rem;color:var(--text-primary);"><code class="language-c">#include "uart_driver.h"
+#include &lt;stdlib.h&gt;
+
+/* Full struct definition ONLY exists inside the C file! */
+struct uart_device {
+    uint32_t hw_base_addr;
+    uint32_t baud_rate;
+    uint8_t  tx_ring_buffer[256];
+    volatile bool is_busy;
+};
+
+uart_dev_t *uart_init(uint32_t port_id, uint32_t baud) {
+    static struct uart_device dev_instance; /* Static allocation in firmware */
+    dev_instance.hw_base_addr = (port_id == 1) ? 0x40011000 : 0x40004400;
+    dev_instance.baud_rate = baud;
+    dev_instance.is_busy = false;
+    return &amp;dev_instance;
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- 6.6 Reentrancy & Thread Safety in ISRs -->
+        <h2 id="sec-6-6">6.6 Reentrancy &amp; Thread Safety in Interrupt Service Routines (ISRs)</h2>
+        <p>
+          A function is <strong>reentrant</strong> if it can be safely interrupted in the middle of execution, called by another execution context (an ISR or separate RTOS thread), and then resume execution without data corruption:
+        </p>
+        <ul style="line-height:1.8;font-size:0.95rem;">
+          <li><strong>Rules for Reentrancy:</strong>
+            <ol style="padding-left:1.2rem;line-height:1.8;">
+              <li>Does NOT rely on non-const static or global variables.</li>
+              <li>Does NOT return a pointer to internal static storage (e.g. standard library <code>strtok()</code> and <code>asctime()</code> are non-reentrant!).</li>
+              <li>Only operates on caller-supplied data or variables allocated on its own local stack frame.</li>
+              <li>Does NOT call any non-reentrant functions.</li>
+            </ol>
+          </li>
+        </ul>
+
+        <!-- 6.7 Real-Time Case Study -->
+        <h2 id="sec-6-7">6.7 Real-Time Case Study: Layered Opaque SPI Sensor Driver with AAPCS Optimization</h2>
+        <p>
+          The following production-grade driver demonstrates AAPCS-optimized parameter passing, reentrant design, and opaque device abstraction for an SPI-driven IMU sensor (accelerometer/gyroscope):
         </p>
 
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>ring_buffer.h (Public Interface)</span>
-            </div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>spi_sensor_driver.c</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code class="language-c">#ifndef RING_BUFFER_H
-#define RING_BUFFER_H
-
-#include &lt;stddef.h&gt;
+            <pre><code class="language-c">#include &lt;stdint.h&gt;
 #include &lt;stdbool.h&gt;
-#include &lt;stdint.h&gt;
+#include &lt;string.h&gt;
 
-/* Forward declaration: struct internals are completely hidden */
-typedef struct RingBuffer RingBuffer_t;
+typedef struct {
+    int16_t accel_x;
+    int16_t accel_y;
+    int16_t accel_z;
+    int16_t gyro_x;
+    int16_t gyro_y;
+    int16_t gyro_z;
+} imu_axes_data_t;
 
-RingBuffer_t* ring_buffer_create(size_t capacity);
-void          ring_buffer_destroy(RingBuffer_t *rb);
-bool          ring_buffer_push(RingBuffer_t *rb, uint8_t byte);
-bool          ring_buffer_pop(RingBuffer_t *rb, uint8_t *byte);
+/* Opaque SPI Bus Controller Structure */
+typedef struct {
+    uint32_t spi_base_addr;
+    uint32_t cs_pin_mask;
+    uint32_t timeout_ticks;
+} spi_bus_controller_t;
 
-#endif /* RING_BUFFER_H */</code></pre>
+/**
+ * @brief Reentrant SPI Read Burst.
+ * Operates strictly on register parameters (AAPCS R0-R3). Zero stack spilling!
+ *
+ * @param bus Pointer to bus controller (R0)
+ * @param reg_addr Starting register address (R1)
+ * @param rx_buf Pointer to destination buffer (R2)
+ * @param len Number of bytes to read (R3)
+ * @return true on success, false on hardware timeout (R0)
+ */
+bool spi_read_burst(const spi_bus_controller_t *bus, uint8_t reg_addr, uint8_t *rx_buf, size_t len) {
+    if (bus == NULL || rx_buf == NULL || len == 0U) {
+        return false;
+    }
+
+    /* Assert Chip Select (CS Low) */
+    /* Hardware register write */
+
+    /* Send Register Address with Read Bit (Bit 7 = 1) */
+    uint8_t tx_cmd = reg_addr | 0x80U;
+    
+    /* In actual hardware: Transfer tx_cmd, then read len bytes into rx_buf */
+    for (size_t i = 0; i &lt; len; ++i) {
+        /* Simulated burst data */
+        rx_buf[i] = (uint8_t)(0x10U + i);
+    }
+
+    /* Release Chip Select (CS High) */
+    return true;
+}
+
+/**
+ * @brief Reentrant IMU Data Parser.
+ * Uses exact-width two's complement decoding.
+ */
+bool imu_decode_axes(const uint8_t raw_burst[12], imu_axes_data_t *out_data) {
+    if (raw_burst == NULL || out_data == NULL) {
+        return false;
+    }
+
+    /* Little-Endian 16-bit signed integer decoding */
+    out_data-&gt;accel_x = (int16_t)(((uint16_t)raw_burst[1] &lt;&lt; 8U) | raw_burst[0]);
+    out_data-&gt;accel_y = (int16_t)(((uint16_t)raw_burst[3] &lt;&lt; 8U) | raw_burst[2]);
+    out_data-&gt;accel_z = (int16_t)(((uint16_t)raw_burst[5] &lt;&lt; 8U) | raw_burst[4]);
+
+    out_data-&gt;gyro_x  = (int16_t)(((uint16_t)raw_burst[7] &lt;&lt; 8U) | raw_burst[6]);
+    out_data-&gt;gyro_y  = (int16_t)(((uint16_t)raw_burst[9] &lt;&lt; 8U) | raw_burst[8]);
+    out_data-&gt;gyro_z  = (int16_t)(((uint16_t)raw_burst[11] &lt;&lt; 8U) | raw_burst[10]);
+
+    return true;
+}</code></pre>
           </div>
         </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div
-          style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod05-control-flow.html" class="btn-secondary">← Module 5: Control Flow & State Machines</a>
-          <a href="mod07-pointers-and-memory-fundamentals.html" class="btn-primary">Module 7: Pointers & Memory Architecture →</a>
+        <!-- 6.8 Hands-on Lab -->
+        <h2 id="sec-6-8">6.8 Hands-On Lab: Stack Frame Analyzer &amp; Reentrant Modular Driver</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:var(--brand-coral);">Lab Exercise: The Call Stack Inspection Engine</h3>
+          <p style="font-size:0.9rem;">
+            In this lab, you will author a standalone program <code>stack_analyzer_lab.c</code> that inspects the current Stack Pointer (SP) address across nested function invocations, calculates stack frame consumption per call, and verifies reentrant behavior.
+          </p>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Complete Source Code: stack_analyzer_lab.c</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>stack_analyzer_lab.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;inttypes.h&gt;
+
+/* Helper to capture current stack pointer address */
+static uintptr_t get_stack_pointer(void) {
+    volatile int dummy = 0;
+    return (uintptr_t)&amp;dummy;
+}
+
+static void level_three(uintptr_t entry_sp) {
+    uintptr_t current_sp = get_stack_pointer();
+    ptrdiff_t total_consumed = (ptrdiff_t)(entry_sp - current_sp);
+    
+    printf("  [Level 3] SP: 0x%016" PRIxPTR " | Cumulative Stack Growth: %td bytes\n",
+           current_sp, total_consumed);
+}
+
+static void level_two(uintptr_t entry_sp) {
+    uintptr_t current_sp = get_stack_pointer();
+    ptrdiff_t frame_size = (ptrdiff_t)(entry_sp - current_sp);
+    
+    printf(" [Level 2]  SP: 0x%016" PRIxPTR " | Delta from Entry: %td bytes\n",
+           current_sp, frame_size);
+    level_three(entry_sp);
+}
+
+static void level_one(void) {
+    uintptr_t entry_sp = get_stack_pointer();
+    printf("[Level 1]   SP: 0x%016" PRIxPTR " (Base Reference)\n", entry_sp);
+    level_two(entry_sp);
+}
+
+int main(void) {
+    printf("========================================================\n");
+    printf("        CALL STACK FRAME &amp; MEMORY USAGE ANALYZER        \n");
+    printf("========================================================\n\n");
+
+    printf("Executing nested function invocation chain...\n");
+    level_one();
+
+    printf("\n========================================================\n");
+    printf("Stack analyzer verification completed successfully.\n");
+    return EXIT_SUCCESS;
+}</code></pre>
+            </div>
+          </div>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Build &amp; Run</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">BASH</span><span>Terminal Execution</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-bash">gcc -std=c17 -O1 -Wall -Wextra -Werror -pedantic stack_analyzer_lab.c -o stack_analyzer
+./stack_analyzer</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6.9 Knowledge Verification & Quiz -->
+        <h2 id="sec-6-quiz">6.9 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Under the ARM Procedure Call Standard (AAPCS), which registers are used to pass the first four 32-bit function arguments?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) R4, R5, R6, R7</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) R0, R1, R2, R3 (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) R8, R9, R10, R11</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> AAPCS designates R0-R3 as argument passing and return value registers. Functions with up to 4 arguments pass data purely in CPU registers with zero stack latency.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: Why does marking a function <code>static inline</code> in a header file avoid linker multiple definition errors?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) <code>static</code> limits the symbol's linkage to the current translation unit, so each C file gets its own private copy without global symbol conflicts. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) <code>static</code> stores the function in Flash memory while non-static functions are placed in RAM.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) The linker deletes all duplicate code automatically.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Internal linkage (<code>static</code>) ensures the symbol is not exported to the global ELF symbol table, preventing multiple definition conflicts during the linking phase.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: What makes a function non-reentrant and therefore dangerous to call inside an Interrupt Service Routine (ISR)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) If it modifies global state, uses static local variables, or returns pointers to internal static buffers. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) If it returns an integer larger than 16 bits.</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) If it is compiled with -O2 optimization.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Non-reentrant functions modify shared state across calls. If interrupted and called again before completing, shared state is corrupted.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: Why does MISRA C:2012 Rule 17.2 strictly prohibit recursion in safety-critical firmware?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) Because recursive call depth cannot be statically bounded, risking unpreventable stack overflow and memory corruption. (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) Because ARM CPUs cannot execute branch-with-link instructions in loops.</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) Because recursion disables the hardware floating point unit.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Safety standards require provable worst-case stack usage (WCSS). Recursion prevents deterministic static stack bounds calculation.
+            </div>
+          </div>
+
+          <div class="quiz-question">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What is the primary software engineering benefit of the Opaque Pointer (PIMPL) pattern in C?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) It achieves strict encapsulation: callers cannot access private struct members, and header changes do not trigger project-wide recompilation. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) It reduces pointer size from 4 bytes to 2 bytes.</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) It automatically encrypts memory pointers in RAM.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> By declaring an incomplete struct type in the public header, callers can only pass pointers, preserving complete decoupling between API and implementation.
+            </div>
+          </div>
+        </div>
+
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+          <a href="mod05-control-flow.html" class="btn-secondary">← Module 5: Control Flow &amp; State Machines</a>
+          <a href="mod07-pointers-and-memory-fundamentals.html" class="btn-primary">Module 7: Pointers &amp; Memory Architecture →</a>
         </div>
       </article>
     </main>
@@ -509,5 +851,4 @@ bool          ring_buffer_pop(RingBuffer_t *rb, uint8_t *byte);
 
   <script src="../js/book.js?v=5"></script>
 </body>
-
 </html>
