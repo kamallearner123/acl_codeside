@@ -98,7 +98,7 @@
           <ul class="chapter-sublist">
             <li><a href="mod01-intro-to-c.html" class="chapter-nav-item active"><span
                   class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 1: Intro to C & Software Dev</span><span
-                  class="chapter-read-time">45m</span></a></li>
+                  class="chapter-read-time">60m</span></a></li>
             <li><a href="mod02-compilation-and-build-process.html" class="chapter-nav-item"><span
                   class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 2: Compilation & Build Process</span><span
                   class="chapter-read-time">60m</span></a></li>
@@ -377,7 +377,7 @@
             Understand the architectural origins, ISO standards evolution, systems rationale, and professional toolchain practices that keep C at the core of operating systems, embedded firmware, automotive microcontrollers, and high-performance computing.
           </p>
           <div class="chapter-meta-bar">
-            <div class="meta-item">⏱️ Estimated Reading: 45 min</div>
+            <div class="meta-item">⏱️ Estimated Reading: 60 min</div>
             <div class="meta-item">🎯 Standard: C11 / C17 / C23</div>
             <div class="meta-item">🛠️ Environments: Linux POSIX + Bare-Metal ARM</div>
           </div>
@@ -505,7 +505,162 @@ brew install gcc llvm gdb cmake</code></pre>
         </div>
 
         <!-- 1.4 Anatomy of a Production C Program -->
-        <h2 id="sec-1-4">1.4 Anatomy of a Production C Program</h2>
+        
+        <!-- 1.4 Software Development Life Cycle (SDLC) for C & Embedded Systems -->
+        <h2 id="sec-1-4">1.4 Software Development Life Cycle (SDLC) &amp; The Embedded V-Model</h2>
+        <p>
+          In enterprise or cloud software, modern development revolves around rapid iteration, automated microservice rollouts, and virtualized runtime environments where memory and compute are virtually elastic. If an unhandled exception or memory leak occurs in a web backend, a container restarts in milliseconds without physical consequence.
+        </p>
+        <p>
+          In <strong>systems programming and embedded firmware</strong>, software cannot be decoupled from physical silicon. A firmware binary executes directly on bare-metal registers, physical flash sectors, and volatile SRAM under microsecond timing deadlines, thermal boundaries, and strict battery budgets. A defect deployed to the field cannot simply be hot-patched—it risks permanent hardware bricking, costly automotive or medical product recalls, or catastrophic physical failure. Consequently, professional C engineering adheres to a disciplined, safety-certified <strong>Embedded Software Development Life Cycle (EDLC / SDLC)</strong>.
+        </p>
+
+        <!-- SDLC vs Web Comparison Card -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:1.5rem;margin:1.5rem 0;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.5rem;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
+              <span style="background:rgba(239, 68, 68, 0.15);color:var(--brand-coral);padding:4px 10px;border-radius:6px;font-size:0.8rem;font-weight:700;">ENTERPRISE / CLOUD SDLC</span>
+            </div>
+            <ul style="margin:0;padding-left:1.2rem;line-height:1.7;font-size:0.9rem;color:var(--text-secondary);">
+              <li><strong>Target Environment:</strong> Elastic VMs, Docker containers, Kubernetes clusters.</li>
+              <li><strong>Resource Constraints:</strong> Gigabytes of RAM; dynamic heap memory is ubiquitous.</li>
+              <li><strong>Failure Mode:</strong> Process crash triggers restart; 500 error logged.</li>
+              <li><strong>Release Velocity:</strong> Continuous deployment (CI/CD) multiple times daily.</li>
+              <li><strong>Regulatory Mandate:</strong> Primarily data privacy (GDPR, DPDP Act 2023).</li>
+            </ul>
+          </div>
+
+          <div style="background:var(--bg-card);border:2px solid var(--brand-coral);border-radius:12px;padding:1.5rem;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
+              <span style="background:var(--brand-coral);color:#fff;padding:4px 10px;border-radius:6px;font-size:0.8rem;font-weight:700;">SYSTEMS &amp; EMBEDDED C SDLC</span>
+            </div>
+            <ul style="margin:0;padding-left:1.2rem;line-height:1.7;font-size:0.9rem;color:var(--text-primary);">
+              <li><strong>Target Environment:</strong> Bare-metal silicon, MPU/MMU, RTOS, POSIX Linux daemons.</li>
+              <li><strong>Resource Constraints:</strong> Fixed flash (e.g. 256 KB) and SRAM (e.g. 64 KB); zero heap leaks tolerated.</li>
+              <li><strong>Failure Mode:</strong> System lockup, watchdog reset, physical motor runaway, battery drain.</li>
+              <li><strong>Release Velocity:</strong> Staged milestone verification, factory ROM flashing, signed dual-bank OTA.</li>
+              <li><strong>Regulatory Mandate:</strong> Functional Safety (ISO 26262 ASIL-D, IEC 61508, DO-178C, IEC 62304).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- The 7 Phases Breakdown -->
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">The 7 Rigorous Phases of the Embedded C Lifecycle</h3>
+        <p>
+          Developing reliable C software follows seven progressive engineering phases, transforming high-level business goals into verified binary machine code:
+        </p>
+
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;text-align:left;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);color:var(--text-primary);">
+                <th style="padding:0.75rem 1rem;">Phase</th>
+                <th style="padding:0.75rem 1rem;">Core Objective</th>
+                <th style="padding:0.75rem 1rem;">Key Engineering Activities &amp; Tools</th>
+                <th style="padding:0.75rem 1rem;">Concrete Deliverable</th>
+              </tr>
+            </thead>
+            <tbody style="color:var(--text-secondary);line-height:1.6;">
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:var(--brand-coral);">1. Requirements &amp; NFRs</td>
+                <td style="padding:0.75rem 1rem;">Establish functional scope and non-negotiable physical constraints.</td>
+                <td style="padding:0.75rem 1rem;">Define sensor sampling frequencies (e.g., 1 kHz PID loop), maximum interrupt latency (&lt; 10 µs), current consumption budget (&lt; 3 µA sleep), and safety integrity level (ASIL-B).</td>
+                <td style="padding:0.75rem 1rem;"><strong>PRD &amp; SRS</strong> (System Requirements Specification) with verifiable metrics.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#38BDF8;">2. System Architecture &amp; Partitioning</td>
+                <td style="padding:0.75rem 1rem;">Allocate responsibilities between physical hardware and C software.</td>
+                <td style="padding:0.75rem 1rem;">Hardware/Software partitioning: assign high-speed pulse capture to timer hardware, memory copy to DMA controllers, and protocol parsing to C firmware. Select MCU family (e.g., STM32 Cortex-M4).</td>
+                <td style="padding:0.75rem 1rem;"><strong>System Architecture Document (SAD)</strong> &amp; Pinout/Clock Tree specification.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#38BDF8;">3. Detailed Firmware Design</td>
+                <td style="padding:0.75rem 1rem;">Design modular subsystem APIs and deterministic execution models.</td>
+                <td style="padding:0.75rem 1rem;">Model Finite State Machines (FSMs), define thread priorities in FreeRTOS, author clean header file contracts (<code>.h</code>) with opaque struct pointers, and specify ring buffer capacities.</td>
+                <td style="padding:0.75rem 1rem;"><strong>Module Interface Specifications</strong> &amp; UML / State Transition Diagrams.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;">4. Implementation &amp; Coding</td>
+                <td style="padding:0.75rem 1rem;">Author robust, defensive C code conforming to safety standards.</td>
+                <td style="padding:0.75rem 1rem;">Strict C11/C17 coding under MISRA C:2012 and SEI CERT C rules. Enforce compiler warning flags (<code>-Wall -Wextra -Werror</code>), static assertions (<code>_Static_assert</code>), and zero dynamic heap.</td>
+                <td style="padding:0.75rem 1rem;"><strong>Production Source Tree</strong> (<code>src/</code>, <code>inc/</code>, <code>Makefile</code>/<code>CMake</code>).</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#FBBF24;">5. Verification &amp; Testing</td>
+                <td style="padding:0.75rem 1rem;">Systematically prove that implementation satisfies all requirements.</td>
+                <td style="padding:0.75rem 1rem;">Unit testing on host with Unity/CMock, code coverage inspection with <code>gcov</code> (100% MC/DC for safety-critical), static analysis (Cppcheck, Clang-Tidy), and Hardware-in-the-Loop (HIL) automated test benches.</td>
+                <td style="padding:0.75rem 1rem;"><strong>Test Execution Reports</strong>, Coverage Metrics &amp; Traceability Matrix.</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#A78BFA;">6. Deployment &amp; Bootloading</td>
+                <td style="padding:0.75rem 1rem;">Flash binary images reliably to production microcontrollers.</td>
+                <td style="padding:0.75rem 1rem;">Dual-bank flash partitioning, cryptographic signature verification (ECDSA SHA-256), CRC32 validation, and fail-safe over-the-air (OTA) bootloaders with automatic fallback upon boot failure.</td>
+                <td style="padding:0.75rem 1rem;"><strong>Signed Production Binaries</strong> (<code>.bin</code>, <code>.hex</code>) &amp; Factory Flashing Scripts.</td>
+              </tr>
+              <tr>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#F472B6;">7. Maintenance &amp; Telemetry</td>
+                <td style="padding:0.75rem 1rem;">Monitor field health, diagnose anomalies, and deliver secure updates.</td>
+                <td style="padding:0.75rem 1rem;">In-field non-volatile flight recorders, Cortex-M <code>HardFault</code> exception register logging, diagnostic trouble code (DTC) reading over CAN bus (UDS ISO 14229), and root cause analysis.</td>
+                <td style="padding:0.75rem 1rem;"><strong>Post-Mortem Crash Dumps</strong> &amp; Security Patch Releases.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- The Embedded V-Model Architecture Diagram -->
+        <h3 style="color:#38BDF8;font-size:1.25rem;margin-top:2rem;margin-bottom:0.75rem;">The Embedded V-Model: Traceability from Specification to Validation</h3>
+        <p>
+          In regulated systems (ISO 26262 automotive, IEC 62304 medical, DO-178C avionics), the standard development paradigm is the <strong>V-Model</strong>. The left descending side represents architectural decomposition and specification refinement, while the right ascending side represents progressive integration and verification against those exact specifications:
+        </p>
+
+        <!-- Clean Interactive Styled V-Model Card -->
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:2rem;margin:1.5rem 0;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:1.5;overflow-x:auto;color:var(--text-primary);">
+<pre style="margin:0;background:transparent;padding:0;color:inherit;"><code style="background:transparent;padding:0;color:inherit;">
+ [1. SYSTEM REQUIREMENTS] ---------------------------------------------&gt; [7. ACCEPTANCE &amp; FIELD TRIALS]
+   • Functional Scope (PRD/SRS)            Bidirectional Traceability        • Vehicle Fleet Validation
+   • Real-Time Latency &lt; 10 µs                                                • Environmental &amp; EMC Testing
+           \                                                                         /
+            \                                                                       /
+    [2. SYSTEM ARCHITECTURE] -------------------------------------&gt; [6. SYSTEM &amp; HIL INTEGRATION]
+      • HW/SW Partitioning                   System Verification             • Hardware-in-the-Loop Test Bench
+      • MCU &amp; Peripheral Allocation                                          • Logic Analyzer Bus Tracing
+              \                                                                     /
+               \                                                                   /
+       [3. DETAILED MODULE DESIGN] ----------------------------&gt; [5. INTEGRATION &amp; DRIVER TESTING]
+         • State Machine Diagrams             Subsystem Verification         • Protocol Stack Verification
+         • Header API Contracts (inc/*.h)                                    • Multi-Task Concurrency Checks
+                 \                                                                 /
+                  \                                                               /
+          [4. DEFENSIVE C CODING] -----------------------------&gt; [4b. UNIT TESTING &amp; STATIC ANALYSIS]
+            • MISRA C:2012 Compliance          Component Verification        • Host Unit Tests (Unity/CMock)
+            • Zero-Warning Compilation                                       • 100% MC/DC Code Coverage (gcov)
+            • Deterministic Memory                                           • Static Checks (Clang-Tidy)
+</code></pre>
+          </div>
+        </div>
+
+        <!-- Real-Time Industry Case Study -->
+        <div style="background:rgba(56, 189, 248, 0.05);border-left:4px solid #38BDF8;border-radius:0 12px 12px 0;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin:0 0 0.5rem 0;font-size:1.05rem;color:#38BDF8;display:flex;align-items:center;gap:8px;">
+            <span>🚗</span> Real-Time Case Study: Automotive Wheel Speed Sensor Subsystem (ABS)
+          </h4>
+          <p style="margin:0 0 1rem 0;font-size:0.92rem;line-height:1.6;color:var(--text-secondary);">
+            Consider how an <strong>Anti-lock Braking System (ABS) wheel speed sensor module</strong> traverses the Embedded SDLC:
+          </p>
+          <ol style="margin:0;padding-left:1.25rem;font-size:0.88rem;line-height:1.7;color:var(--text-primary);">
+            <li><strong>Requirements:</strong> Must measure wheel rotation via variable reluctance magnetic sensor up to 250 km/h with latency under 5 ms. In case of sensor wire disconnect, fail-safe mode must engage within 10 ms.</li>
+            <li><strong>Architecture &amp; Partitioning:</strong> Sensor magnetic pulses trigger an MCU Input Capture Timer (hardware), which feeds a 32-bit DMA circular buffer. The CPU is not interrupted on individual pulses, saving 92% of CPU cycles.</li>
+            <li><strong>Detailed Design:</strong> The calculation module is declared with an opaque API contract <code>abs_speed_calc.h</code>: receives timer tick deltas, filters noise via digital moving average, and outputs linear velocity in m/s.</li>
+            <li><strong>Implementation:</strong> Written in MISRA C:2012 compliant C11 without floating-point math; calculations use 32-bit fixed-point arithmetic (Q16.16) for deterministic single-cycle execution on Cortex-M4.</li>
+            <li><strong>Verification:</strong> Simulated wheel pulse streams are injected by a programmable function generator (HIL). Unity test suites test edge cases: 0 km/h, maximum deceleration, and simulated cable shear.</li>
+            <li><strong>Deployment:</strong> Flashed via CAN bus Unified Diagnostic Services (UDS ISO 14229) with dual-bank flash verification.</li>
+            <li><strong>Maintenance:</strong> If wheel slip persists beyond threshold, a diagnostic trouble code (<code>DTC C0035: Left Front Wheel Speed Sensor Malfunction</code>) is committed to non-volatile EEPROM for technician diagnostics.</li>
+          </ol>
+        </div>
+
+        <!-- 1.5 Anatomy of a Production C Program -->
+        <h2 id="sec-1-5">1.5 Anatomy of a Production C Program</h2>
         <p>
           A toy C script prints <em>"Hello, World!"</em> without validating arguments, handling errors, or inspecting return codes. A <strong>production-grade C engineering program</strong> adheres to strict input verification, deterministic memory lifecycle management, and explicit status codes:
         </p>
@@ -586,7 +741,7 @@ int main(int argc, char *argv[]) {
         </div>
 
         <!-- 1.5 Strict Compiler Flags & Zero Warnings Philosophy -->
-        <h2 id="sec-1-5">1.5 Strict Compiler Flags &amp; Zero Warnings Philosophy</h2>
+        <h2 id="sec-1-6">1.6 Strict Compiler Flags &amp; Zero Warnings Philosophy</h2>
         <p>
           In professional firmware, aerospace, and mission-critical engineering, compiler warnings are treated as defects. The compiler's diagnostic engine should be configured to maximum vigilance:
         </p>
@@ -645,7 +800,7 @@ int main(int argc, char *argv[]) {
         </div>
 
         <!-- 1.6 Hosted vs Freestanding Targets -->
-        <h2 id="sec-1-6">1.6 Hosted vs Freestanding Targets</h2>
+        <h2 id="sec-1-7">1.7 Hosted vs Freestanding Targets</h2>
         <p>
           C standard definitions (ISO C §4) partition all execution targets into two fundamental environments:
         </p>
@@ -672,7 +827,7 @@ int main(int argc, char *argv[]) {
         </div>
 
         <!-- 1.7 Undefined Behavior: Hazard Map -->
-        <h2 id="sec-1-7">1.7 Undefined Behavior (UB): The Systems Hazard Map</h2>
+        <h2 id="sec-1-8">1.8 Undefined Behavior (UB): The Systems Hazard Map</h2>
         <p>
           In C, operations are categorized into three critical classes:
         </p>
@@ -707,7 +862,9 @@ bool check_overflow_safe(int a, int b) {
         </div>
 
         <!-- 1.8 Hands-on Lab -->
-        <h2 id="sec-1-8">1.8 Hands-On Lab: Build, Verify, and Instrument your First Utility</h2>
+        <!-- Compatibility anchor for existing direct links to sec-1-8 -->
+        <a id="sec-1-8" style="position:relative;top:-80px;"></a>
+        <h2 id="sec-1-9">1.9 Hands-On Lab: Build, Verify, and Instrument your First Utility</h2>
         <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
           <h3 style="margin-top:0;color:var(--brand-coral);">Lab Exercise: The Strict System Info Inspector</h3>
           <p style="font-size:0.9rem;">
@@ -761,7 +918,7 @@ echo "Process exit status code: $?"</code></pre>
         </div>
 
         <!-- 1.9 Knowledge Verification & Quiz -->
-        <h2 id="sec-1-quiz">1.9 Knowledge Verification &amp; Quiz</h2>
+        <h2 id="sec-1-quiz">1.10 Knowledge Verification &amp; Quiz</h2>
         <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
           <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
 
