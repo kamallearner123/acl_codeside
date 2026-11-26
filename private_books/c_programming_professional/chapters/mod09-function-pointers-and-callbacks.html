@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 9: Function Pointers, Callbacks & Event Dispatchers - Professional C in Embedded Systems">
+  <title>Module 9: Function Pointers, Callbacks & Event Dispatchers | Professional C Engineering</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css?v=5">
+</head>
+
+<body data-chapter-id="mod09-function-pointers-and-callbacks">
+  <div id="reading-progress-bar"></div>
+  <header class="site-header">
+    <div class="header-left">
+      <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+          <path d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-badge">
+        <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
+        <div>
+          <span class="brand-title">Professional C</span>
+          <span class="brand-subtitle">Apt Computing Labs</span>
+        </div>
+      </a>
+    </div>
+    <div class="header-center">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="board-select-container">
+        <span class="board-select-label">Target:</span>
+        <span class="board-select-label" style="font-weight:700;">Linux x86_64 / ARM Cortex-M</span>
+      </div>
+      <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme"></button>
+      <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Go to Apt Computing Labs Home">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="/courses/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border-subtle);text-decoration:none;" title="Browse All Courses">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>All Courses</span>
+      </a>
+      <a href="/courses/professional-c-in-embedded-systems/" class="back-link" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:0.75rem;font-weight:600;color:var(--brand-coral);border:1px solid var(--brand-coral);text-decoration:none;background:rgba(255,91,91,0.08);" title="Course Overview & Syllabus">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Course Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside class="book-sidebar" id="book-sidebar">
+      <div class="sidebar-header">
+        <div class="toc-heading">
+          <span>Curriculum Modules</span>
+          <span class="progress-pill">Part 2 • Memory & Data Structures</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <!-- Global Portal Navigation -->
+        <div class="nav-module-group" style="margin-bottom:0.75rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border-subtle);">
+          <a href="/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">🏠</span>
+            <span class="chapter-title-text">Home (ACL)</span>
+          </a>
+          <a href="/courses/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">📚</span>
+            <span class="chapter-title-text">All Courses</span>
+          </a>
+          <a href="/courses/professional-c-in-embedded-systems/" class="chapter-nav-item" style="color:var(--text-secondary);">
+            <span class="chapter-check-icon">📋</span>
+            <span class="chapter-title-text">Course Dashboard</span>
+          </a>
+        </div>
+
+        <!-- Overview -->
+        <div class="nav-module-group">
+          <a href="../index.html" class="chapter-nav-item">
+            <span class="chapter-check-icon">📖</span>
+            <span class="chapter-title-text">Handbook Overview</span>
+          </a>
+        </div>
+
+        <!-- P1: C Programming Foundations -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P1</span>
+              <span>C Programming Foundations</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li><a href="mod01-intro-to-c.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 1: Intro to C & Software Dev</span><span
+                  class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod02-compilation-and-build-process.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 2: Compilation & Build Process</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod03-data-types-and-variables.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 3: C Data Types & Variables</span><span
+                  class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod04-operators-and-expressions.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 4: Operators & Expressions</span><span
+                  class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod05-control-flow.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 5: Control Flow & State Machines</span><span
+                  class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod06-functions-and-modularity.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 6: Functions & Modular Design</span><span
+                  class="chapter-read-time">50m</span></a></li>
+          </ul>
+        </div>
+
+        <!-- P2: Memory & Data Structures -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P2</span>
+              <span>Memory & Data Structures</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li><a href="mod07-pointers-and-memory-fundamentals.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 7: Pointers & Memory Architecture</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod08-pointer-arithmetic-and-arrays.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 8: Pointer Arithmetic & Arrays</span><span
+                  class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod09-function-pointers-and-callbacks.html" class="chapter-nav-item active"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 9: Function Pointers & Callbacks</span><span
+                  class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod10-structures-unions-and-bitfields.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 10: Structures, Alignment & Bitfields</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod11-dynamic-memory-and-custom-allocators.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 11: Dynamic Memory & Allocators</span><span
+                  class="chapter-read-time">65m</span></a></li>
+          </ul>
+        </div>
+
+        <!-- P3: Advanced C Programming -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P3</span>
+              <span>Advanced C Programming</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li><a href="mod12-preprocessor-metaprogramming.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 12: Preprocessor Metaprogramming & X-Macros</span><span
+                  class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod13-type-qualifiers-and-storage.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 13: Type Qualifiers & Storage Classes</span><span
+                  class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod14-inline-assembly-and-hardware.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 14: Inline Assembly & Hardware Control</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod15-gnu-c-extensions-and-attributes.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 15: GNU C Extensions & Attributes</span><span
+                  class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod16-compiler-optimizations-and-lto.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 16: Compiler Optimizations & LTO</span><span
+                  class="chapter-read-time">55m</span></a></li>
+          </ul>
+        </div>
+
+        <!-- P4: Linux & Engineering Tools -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P4</span>
+              <span>Linux & Engineering Tools</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li><a href="mod17-build-systems-make-and-cmake.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 17: Build Systems (Make & CMake)</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod18-gdb-debugging-and-core-dumps.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 18: GDB Debugging & Core Dumps</span><span
+                  class="chapter-read-time">65m</span></a></li>
+            <li><a href="mod19-valgrind-and-sanitizers.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 19: Valgrind & Sanitizers (ASan/UBSan)</span><span
+                  class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod20-static-analysis-tools.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 20: Static Analysis (Cppcheck & Clang-Tidy)</span><span
+                  class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod21-linux-profiling-and-perf.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 21: Linux Profiling & perf</span><span
+                  class="chapter-read-time">55m</span></a></li>
+          </ul>
+        </div>
+
+        <!-- P5: Testing & QA Engineering -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P5</span>
+              <span>Testing & QA Engineering</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li><a href="mod22-unit-testing-unity-cmock.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 22: Unit Testing with Unity & CMock</span><span
+                  class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod23-mocking-hardware-and-hal.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 23: Mocking Hardware & HAL</span><span
+                  class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod24-code-coverage-gcov-lcov.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 24: Code Coverage (gcov & lcov)</span><span
+                  class="chapter-read-time">45m</span></a></li>
+            <li><a href="mod25-cicd-for-embedded-c.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 25: CI/CD Pipelines for Embedded C</span><span
+                  class="chapter-read-time">50m</span></a></li>
+          </ul>
+        </div>
+
+        <!-- P6: Linux System Programming -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P6</span>
+              <span>Linux System Programming</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li><a href="mod26-file-descriptors-and-posix-io.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 26: File Descriptors & POSIX I/O</span><span
+                  class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod27-scalable-io-multiplexing-epoll.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 27: Scalable I/O with epoll</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod28-process-lifecycle-and-ipc.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 28: Process Lifecycle & IPC (Pipes, Shared Memory)</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod29-posix-threads-and-concurrency.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 29: POSIX Threads & Multithreading</span><span
+                  class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod30-thread-synchronization-and-locks.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 30: Thread Synchronization & Mutexes</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod31-posix-signals-and-timers.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 31: POSIX Signals & Real-Time Timers</span><span
+                  class="chapter-read-time">50m</span></a></li>
+            <li><a href="mod32-network-sockets-programming.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 32: Sockets & Binary Protocols</span><span
+                  class="chapter-read-time">60m</span></a></li>
+          </ul>
+        </div>
+
+        <!-- P7: Embedded C & Firmware -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P7</span>
+              <span>Embedded C & Firmware</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li><a href="mod33-hardware-interfacing-and-mmio.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 33: Memory-Mapped I/O & Registers</span><span
+                  class="chapter-read-time">65m</span></a></li>
+            <li><a href="mod34-linker-scripts-and-memory-maps.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 34: Linker Scripts & Memory Maps</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod35-startup-code-and-reset-sequence.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 35: Startup Code & Reset Sequence</span><span
+                  class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod36-interrupts-nvic-and-concurrency.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 36: Interrupts, NVIC & Concurrency</span><span
+                  class="chapter-read-time">65m</span></a></li>
+            <li><a href="mod37-rtos-fundamentals-and-freertos.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 37: RTOS Fundamentals & FreeRTOS</span><span
+                  class="chapter-read-time">70m</span></a></li>
+          </ul>
+        </div>
+
+        <!-- P8: Secure C Programming -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P8</span>
+              <span>Secure C Programming</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li><a href="mod38-misra-c-compliance.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 38: MISRA C:2012 Compliance</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod39-cert-c-and-defensive-coding.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 39: CERT C & Defensive Coding</span><span
+                  class="chapter-read-time">55m</span></a></li>
+          </ul>
+        </div>
+
+        <!-- P9: Software Architecture -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P9</span>
+              <span>Software Architecture</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li><a href="mod40-layered-hal-and-driver-design.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 40: Layered HAL & Device Driver Design</span><span
+                  class="chapter-read-time">60m</span></a></li>
+            <li><a href="mod41-oop-patterns-and-interfaces.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 41: OOP Patterns & Interfaces in C</span><span
+                  class="chapter-read-time">55m</span></a></li>
+            <li><a href="mod42-publish-subscribe-event-runtimes.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Mod 42: Event-Driven & Pub/Sub Runtimes</span><span
+                  class="chapter-read-time">55m</span></a></li>
+          </ul>
+        </div>
+
+        <!-- P10: Capstone Projects -->
+        <div class="nav-module-group">
+          <button class="module-title-btn">
+            <div class="module-title-left">
+              <span class="module-badge">P10</span>
+              <span>Capstone Projects</span>
+            </div>
+            <span class="module-chevron">▼</span>
+          </button>
+          <ul class="chapter-sublist">
+            <li><a href="capstone01-bare-metal-bootloader.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Project 1: Bare-Metal Bootloader (CRC32)</span><span
+                  class="chapter-read-time">90m</span></a></li>
+            <li><a href="capstone02-memory-pool-allocator.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Project 2: Deterministic Memory Pool Allocator</span><span
+                  class="chapter-read-time">90m</span></a></li>
+            <li><a href="capstone03-dma-serial-engine.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Project 3: DMA Serial Protocol Engine</span><span
+                  class="chapter-read-time">90m</span></a></li>
+            <li><a href="capstone04-preemptive-rtos-kernel.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Project 4: Preemptive Cooperative RTOS Kernel</span><span
+                  class="chapter-read-time">120m</span></a></li>
+            <li><a href="capstone05-embedded-cli-shell.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Project 5: Embedded CLI Shell with Tab Completion</span><span
+                  class="chapter-read-time">80m</span></a></li>
+            <li><a href="capstone06-misra-sensor-fusion.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Project 6: MISRA-Compliant Sensor Fusion Pipeline</span><span
+                  class="chapter-read-time">90m</span></a></li>
+            <li><a href="capstone07-crash-dump-analyzer.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Project 7: Post-Mortem Crash Dump Diagnostic Engine</span><span
+                  class="chapter-read-time">90m</span></a></li>
+            <li><a href="capstone08-posix-epoll-daemon.html" class="chapter-nav-item"><span
+                  class="chapter-check-icon">●</span><span class="chapter-title-text">Project 8: POSIX Non-Blocking epoll Network Daemon</span><span
+                  class="chapter-read-time">100m</span></a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <article class="prose">
+        <div class="chapter-hero">
+          <span class="chapter-module-tag">Part 2 • Memory & Data Structures</span>
+          <h1 class="chapter-h1">Module 9: Function Pointers, Callbacks & Event Dispatchers</h1>
+          <p class="chapter-lead">Harness function pointers for inversion of control, O(1) jump tables, simulated C++ vtables for swap-in device drivers, and real-time CAN bus message router engines.</p>
+          <div class="chapter-meta-bar">
+            <div class="meta-item">⏱️ Duration: 50m</div>
+            <div class="meta-item">🎯 System: Memory Layout, Bus Faults, MISRA C:2012</div>
+            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+          </div>
+        </div>
+
+
+        <h2 id="sec-9-1">9.1 Function Pointer Syntax, Declarations & Typedefs</h2>
+        <p>
+          Functions in C reside in the <code>.text</code> (Flash/Code) memory segment. A function pointer stores the entry address of that executable block. Because raw C function pointer syntax is notoriously difficult to read, <strong>always use <code>typedef</code></strong>:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>function_pointer_syntax.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdint.h&gt;
+#include &lt;stdio.h&gt;
+
+/* Raw syntax: void (*callback)(uint8_t event_id, void *context); */
+
+/* Clean, professional engineering syntax: */
+typedef void (*EventCallback_t)(uint8_t event_id, void *user_context);
+
+void on_button_press(uint8_t event_id, void *user_context) {
+    printf("Button pressed: Event 0x%02X, Context: %p\n", event_id, user_context);
+}
+
+int main(void) {
+    EventCallback_t handler = on_button_press;
+    handler(0x01, NULL); /* Invocation */
+    return 0;
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-9-2">9.2 Jump Tables for O(1) State Machine & Command Dispatch</h2>
+        <p>
+          Large <code>switch-case</code> statements with dozens of branches produce long chains of conditional comparison instructions (<code>cmp</code> / <code>bne</code>). In deterministic systems, a <strong>jump table array of function pointers</strong> delivers immediate O(1) constant-time execution:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>jump_table_dispatcher.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+typedef enum {
+    CMD_SYSTEM_RESET   = 0,
+    CMD_START_TELEMETRY = 1,
+    CMD_STOP_TELEMETRY  = 2,
+    CMD_CALIBRATE_IMU   = 3,
+    CMD_MAX_COUNT
+} CommandId_t;
+
+typedef void (*CommandHandler_t)(const uint8_t *payload, uint16_t length);
+
+static void handle_reset(const uint8_t *payload, uint16_t length)       { /* Reset HW */ }
+static void handle_start_telem(const uint8_t *payload, uint16_t length) { /* Enable DMA */ }
+static void handle_stop_telem(const uint8_t *payload, uint16_t length)  { /* Disable DMA */ }
+static void handle_calibrate(const uint8_t *payload, uint16_t length)   { /* Calibrate */ }
+
+/* Direct O(1) Jump Table stored in Read-Only Flash (.rodata) */
+static const CommandHandler_t CMD_TABLE[CMD_MAX_COUNT] = {
+    [CMD_SYSTEM_RESET]    = handle_reset,
+    [CMD_START_TELEMETRY] = handle_start_telem,
+    [CMD_STOP_TELEMETRY]  = handle_stop_telem,
+    [CMD_CALIBRATE_IMU]   = handle_calibrate
+};
+
+void dispatch_command(uint8_t cmd_id, const uint8_t *payload, uint16_t len) {
+    if (cmd_id &lt; (uint8_t)CMD_MAX_COUNT) {
+        CommandHandler_t fn = CMD_TABLE[cmd_id];
+        if (fn != NULL) {
+            fn(payload, len); /* Direct indirect call: BLX R3 */
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-9-3">9.3 Simulating Polymorphism & Vtables in Pure C</h2>
+        <p>
+          In embedded software architecture, you frequently need to support interchangeable device drivers (e.g., swapping an I2C Flash memory chip for an SPI EEPROM without altering application code). This is solved through a <strong>Driver Interface Vtable Struct</strong>:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>nvram_driver_interface.h</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#ifndef NVRAM_DRIVER_H
+#define NVRAM_DRIVER_H
+
+#include &lt;stdint.h&gt;
+#include &lt;stddef.h&gt;
+
+typedef struct NVRAM_Driver NVRAM_Driver_t;
+
+struct NVRAM_Driver {
+    int (*init)(void *driver_ctx);
+    int (*read)(void *driver_ctx, uint32_t addr, uint8_t *dest, size_t len);
+    int (*write)(void *driver_ctx, uint32_t addr, const uint8_t *src, size_t len);
+    int (*erase_chip)(void *driver_ctx);
+};
+
+/* Generic application API agnostic to physical bus */
+static inline int nvram_read_record(const NVRAM_Driver_t *driver, void *ctx, 
+                                    uint32_t addr, uint8_t *data, size_t size) {
+    return driver-&gt;read(ctx, addr, data, size);
+}
+
+#endif</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-9-4">9.4 Real-Time Automotive Case: CAN Bus ID Filter & Callback Engine</h2>
+        <p>
+          In automotive ECUs, hundreds of CAN messages arrive per second. The firmware subscribes to specific 11-bit or 29-bit CAN IDs using a binary search callback registry:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>can_message_router.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdint.h&gt;
+#include &lt;stddef.h&gt;
+
+typedef struct {
+    uint32_t id;       /* CAN Arb ID (e.g. 0x18FEE000) */
+    uint8_t  dlc;      /* Data length code */
+    uint8_t  data[8];
+} CAN_Frame_t;
+
+typedef void (*CAN_Subscriber_t)(const CAN_Frame_t *frame);
+
+typedef struct {
+    uint32_t         can_id;
+    CAN_Subscriber_t callback;
+} CAN_Route_t;
+
+static void on_engine_speed(const CAN_Frame_t *frame) {
+    uint16_t rpm_raw = (frame-&gt;data[0] &lt;&lt; 8) | frame-&gt;data[1];
+    /* Process RPM */
+}
+
+static void on_brake_pedal(const CAN_Frame_t *frame) {
+    /* Process Brake Switch */
+}
+
+static const CAN_Route_t ROUTE_TABLE[] = {
+    { 0x100UL, on_engine_speed },
+    { 0x205UL, on_brake_pedal  }
+};
+
+void can_rx_interrupt_handler(const CAN_Frame_t *rx_frame) {
+    for (size_t i = 0; i &lt; (sizeof(ROUTE_TABLE)/sizeof(ROUTE_TABLE[0])); ++i) {
+        if (ROUTE_TABLE[i].can_id == rx_frame-&gt;id) {
+            ROUTE_TABLE[i].callback(rx_frame);
+            break;
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-9-5">9.5 Self-Study Exercise</h2>
+        <p>
+          Build an event dispatcher system with <code>register_listener(event_type, callback, context)</code> and <code>publish_event(event_type, event_data)</code> that supports up to 8 listeners per event type without any heap memory allocations.
+        </p>
+
+
+        <!-- Next / Prev Module Navigation -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
+          <a href="mod08-pointer-arithmetic-and-arrays.html" class="btn-secondary">← Module 8: Pointer Arithmetic & Arrays</a>
+          <a href="mod10-structures-unions-and-bitfields.html" class="btn-primary">Module 10: Structures, Alignment & Bitfields →</a>
+        </div>
+      </article>
+    </main>
+  </div>
+
+  <script src="../js/book.js?v=5"></script>
+</body>
+
+</html>
