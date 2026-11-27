@@ -478,7 +478,7 @@
                         <div>
                             <p class="text-xs text-brand-textSecondary uppercase font-semibold">Timing</p>
                             <p class="font-bold text-brand-coral bg-brand-coral/10 px-2 py-1 rounded inline-block mt-1">
-                                {{ course.timing }}</p>
+                                {% if course.slug == 'professional-c-in-embedded-systems' %}Mon to Fri • 6:00 PM – 7:30 PM IST{% else %}{{ course.timing }}{% endif %}</p>
                         </div>
                     </li>
                     {% endif %}
@@ -525,7 +525,7 @@
                         <div>
                             <p class="text-xs text-brand-textSecondary uppercase font-semibold">Dates</p>
                             <p class="font-bold text-brand-coral bg-brand-coral/10 px-2 py-1 rounded inline-block mt-1">
-                                {{ course.start_date }}</p>
+                                {% if course.slug == 'professional-c-in-embedded-systems' %}Starts 2nd Dec 2026 to 22nd Dec 2026 (Live Interactive Classes){% else %}{{ course.start_date }}{% endif %}</p>
                         </div>
                     </li>
                     {% endif %}
