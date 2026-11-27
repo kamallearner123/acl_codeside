@@ -451,26 +451,26 @@
           </p>
 
           <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.5rem;margin:1.5rem 0;">
-            <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 14px rgba(0,0,0,0.1);">
+            <div class="info-card">
               <div style="font-size:1.75rem;margin-bottom:0.75rem;">🎯</div>
               <h3 style="font-size:1.15rem;margin:0 0 0.5rem 0;color:var(--text-primary);">Deterministic Real-Time Execution</h3>
-              <p style="font-size:0.9rem;line-height:1.6;color:var(--text-secondary);margin:0;">
+              <p class="info-card-lead" style="margin:0;">
                 No hidden runtime garbage collection pauses, no unpredictable JIT warm-ups, and no dynamic heap allocations required. What you write in C directly translates into predictable, single-cycle ARM Thumb-2 or x86 assembly instructions.
               </p>
             </div>
 
-            <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 14px rgba(0,0,0,0.1);">
+            <div class="info-card">
               <div style="font-size:1.75rem;margin-bottom:0.75rem;">🔌</div>
               <h3 style="font-size:1.15rem;margin:0 0 0.5rem 0;color:var(--text-primary);">Direct Hardware &amp; Silicon Access</h3>
-              <p style="font-size:0.9rem;line-height:1.6;color:var(--text-secondary);margin:0;">
+              <p class="info-card-lead" style="margin:0;">
                 Interact directly with memory-mapped I/O (MMIO), volatile hardware control registers, NVIC interrupt controllers, DMA engines, and linker-placed memory segments without intervening abstraction penalties.
               </p>
             </div>
 
-            <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 14px rgba(0,0,0,0.1);">
+            <div class="info-card">
               <div style="font-size:1.75rem;margin-bottom:0.75rem;">🛡️</div>
               <h3 style="font-size:1.15rem;margin:0 0 0.5rem 0;color:var(--text-primary);">Industry Standard in Safety-Critical Systems</h3>
-              <p style="font-size:0.9rem;line-height:1.6;color:var(--text-secondary);margin:0;">
+              <p class="info-card-lead" style="margin:0;">
                 Automotive (ISO 26262), aerospace (DO-178C), industrial automation (IEC 61508), and medical devices (IEC 62304) mandate safety-standard compliance like MISRA C:2012 and SEI CERT C. C is the global universal currency of mission-critical engineering.
               </p>
             </div>
@@ -496,28 +496,28 @@
           </p>
 
           <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;margin:1.5rem 0;">
-            <div style="background:rgba(255,91,91,0.04);border-left:4px solid var(--brand-coral, #ff5b5b);padding:1.25rem;border-radius:0 8px 8px 0;background-color:var(--bg-surface);">
+            <div style="background:rgba(255,91,91,0.04);border-left:4px solid var(--brand-coral, #ff5b5b);padding:1.25rem;border-radius:0 8px 8px 0;background-color:var(--bg-card);">
               <h4 style="margin:0 0 0.5rem 0;color:var(--text-primary);font-size:1.05rem;">1. Full Hardware &amp; System Symbiosis</h4>
               <p style="margin:0;font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
                 We connect high-level C abstractions to physical realities: CPU registers, cache line alignment, bus fault exceptions, ARM Cortex-M NVIC prioritization, DMA ring-buffers, and POSIX epoll event loops.
               </p>
             </div>
 
-            <div style="background:rgba(0,184,212,0.04);border-left:4px solid #00b8d4;padding:1.25rem;border-radius:0 8px 8px 0;background-color:var(--bg-surface);">
+            <div style="background:rgba(0,184,212,0.04);border-left:4px solid #00b8d4;padding:1.25rem;border-radius:0 8px 8px 0;background-color:var(--bg-card);">
               <h4 style="margin:0 0 0.5rem 0;color:var(--text-primary);font-size:1.05rem;">2. Rigorous Safety &amp; Defensive Standards</h4>
               <p style="margin:0;font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
                 Every line of code is held to MISRA C:2012 guidelines and SEI CERT C defensive patterns. Learn how undefined behavior (UB), signed integer overflow, pointer aliasing, and reentrancy bugs destroy systems.
               </p>
             </div>
 
-            <div style="background:rgba(139,92,246,0.04);border-left:4px solid #8b5cf6;padding:1.25rem;border-radius:0 8px 8px 0;background-color:var(--bg-surface);">
+            <div style="background:rgba(139,92,246,0.04);border-left:4px solid #8b5cf6;padding:1.25rem;border-radius:0 8px 8px 0;background-color:var(--bg-card);">
               <h4 style="margin:0 0 0.5rem 0;color:var(--text-primary);font-size:1.05rem;">3. Professional Tooling &amp; Automation</h4>
               <p style="margin:0;font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
                 Move beyond clicking "build" buttons. Master GNU Make, CMake, GCC compiler flags, GDB remote debugging, hardware register inspection, Valgrind, AddressSanitizer (ASan), Cppcheck, and automated Unity/CMock test harnesses in CI/CD.
               </p>
             </div>
 
-            <div style="background:rgba(16,185,129,0.04);border-left:4px solid #10b981;padding:1.25rem;border-radius:0 8px 8px 0;background-color:var(--bg-surface);">
+            <div style="background:rgba(16,185,129,0.04);border-left:4px solid #10b981;padding:1.25rem;border-radius:0 8px 8px 0;background-color:var(--bg-card);">
               <h4 style="margin:0 0 0.5rem 0;color:var(--text-primary);font-size:1.05rem;">4. Scalable Software Architecture</h4>
               <p style="margin:0;font-size:0.875rem;color:var(--text-secondary);line-height:1.6;">
                 Structure complex embedded codebases using clean Hardware Abstraction Layers (HAL), object-oriented encapsulation and polymorphic vtables in pure C, and decoupled zero-copy publish-subscribe event systems.
@@ -536,7 +536,7 @@
           </p>
 
           <div style="margin:2rem 0;display:flex;flex-direction:column;gap:1.25rem;">
-            <div style="display:flex;gap:1.25rem;align-items:flex-start;background:var(--bg-surface);padding:1.25rem;border-radius:10px;border:1px solid var(--border-subtle);">
+            <div style="display:flex;gap:1.25rem;align-items:flex-start;background:var(--bg-card);padding:1.25rem;border-radius:10px;border:1px solid var(--border-subtle);">
               <div style="background:var(--brand-coral);color:#fff;font-weight:800;font-size:1.1rem;min-width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,91,91,0.4);">
                 1
               </div>
@@ -548,7 +548,7 @@
               </div>
             </div>
 
-            <div style="display:flex;gap:1.25rem;align-items:flex-start;background:var(--bg-surface);padding:1.25rem;border-radius:10px;border:1px solid var(--border-subtle);">
+            <div style="display:flex;gap:1.25rem;align-items:flex-start;background:var(--bg-card);padding:1.25rem;border-radius:10px;border:1px solid var(--border-subtle);">
               <div style="background:#00b8d4;color:#fff;font-weight:800;font-size:1.1rem;min-width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,184,212,0.4);">
                 2
               </div>
@@ -560,7 +560,7 @@
               </div>
             </div>
 
-            <div style="display:flex;gap:1.25rem;align-items:flex-start;background:var(--bg-surface);padding:1.25rem;border-radius:10px;border:1px solid var(--border-subtle);">
+            <div style="display:flex;gap:1.25rem;align-items:flex-start;background:var(--bg-card);padding:1.25rem;border-radius:10px;border:1px solid var(--border-subtle);">
               <div style="background:#8b5cf6;color:#fff;font-weight:800;font-size:1.1rem;min-width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(139,92,246,0.4);">
                 3
               </div>
@@ -572,7 +572,7 @@
               </div>
             </div>
 
-            <div style="display:flex;gap:1.25rem;align-items:flex-start;background:var(--bg-surface);padding:1.25rem;border-radius:10px;border:1px solid var(--border-subtle);">
+            <div style="display:flex;gap:1.25rem;align-items:flex-start;background:var(--bg-card);padding:1.25rem;border-radius:10px;border:1px solid var(--border-subtle);">
               <div style="background:#10b981;color:#fff;font-weight:800;font-size:1.1rem;min-width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(16,185,129,0.4);">
                 4
               </div>
@@ -586,7 +586,7 @@
           </div>
 
           <!-- TARGET LEARNING PATHS -->
-          <div style="background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:12px;padding:1.75rem;margin-top:2rem;">
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:12px;padding:1.75rem;margin-top:2rem;">
             <h3 style="margin:0 0 1rem 0;font-size:1.2rem;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
               <span>🎯 Recommended Learning Tracks</span>
             </h3>
@@ -666,391 +666,391 @@
         
         <div class="parts-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.5rem;margin:2rem 0;">
 
-          <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <div class="part-card">
+            <div class="part-card-header">
               <span class="module-badge" style="background:var(--brand-coral, #ff5b5b);color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;">P1</span>
-              <h3 style="margin:0;font-size:1.15rem;color:var(--text-primary);">C Programming Foundations</h3>
+              <h3 class="part-card-title">C Programming Foundations</h3>
             </div>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            <ul class="part-chapter-list">
               <li>
-                <a href="chapters/mod01-intro-to-c.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod01-intro-to-c.html" class="part-chapter-link">
                   <span>Mod 1: Intro to C & Software Dev</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">45m</span>
+                  <span class="part-chapter-time">45m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod02-compilation-and-build-process.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod02-compilation-and-build-process.html" class="part-chapter-link">
                   <span>Mod 2: Compilation & Build Process</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod03-data-types-and-variables.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod03-data-types-and-variables.html" class="part-chapter-link">
                   <span>Mod 3: C Data Types & Variables</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">50m</span>
+                  <span class="part-chapter-time">50m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod04-operators-and-expressions.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod04-operators-and-expressions.html" class="part-chapter-link">
                   <span>Mod 4: Operators & Expressions</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">45m</span>
+                  <span class="part-chapter-time">45m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod05-control-flow.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod05-control-flow.html" class="part-chapter-link">
                   <span>Mod 5: Control Flow & State Machines</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod06-functions-and-modularity.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod06-functions-and-modularity.html" class="part-chapter-link">
                   <span>Mod 6: Functions & Modular Design</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">50m</span>
+                  <span class="part-chapter-time">50m</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <div class="part-card">
+            <div class="part-card-header">
               <span class="module-badge" style="background:var(--brand-coral, #ff5b5b);color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;">P2</span>
-              <h3 style="margin:0;font-size:1.15rem;color:var(--text-primary);">Memory & Data Structures</h3>
+              <h3 class="part-card-title">Memory & Data Structures</h3>
             </div>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            <ul class="part-chapter-list">
               <li>
-                <a href="chapters/mod07-pointers-and-memory-fundamentals.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod07-pointers-and-memory-fundamentals.html" class="part-chapter-link">
                   <span>Mod 7: Pointers & Memory Architecture</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod08-pointer-arithmetic-and-arrays.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod08-pointer-arithmetic-and-arrays.html" class="part-chapter-link">
                   <span>Mod 8: Pointer Arithmetic & Arrays</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod09-function-pointers-and-callbacks.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod09-function-pointers-and-callbacks.html" class="part-chapter-link">
                   <span>Mod 9: Function Pointers & Callbacks</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">50m</span>
+                  <span class="part-chapter-time">50m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod10-structures-unions-and-bitfields.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod10-structures-unions-and-bitfields.html" class="part-chapter-link">
                   <span>Mod 10: Structures, Alignment & Bitfields</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod11-dynamic-memory-and-custom-allocators.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod11-dynamic-memory-and-custom-allocators.html" class="part-chapter-link">
                   <span>Mod 11: Dynamic Memory & Allocators</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">65m</span>
+                  <span class="part-chapter-time">65m</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <div class="part-card">
+            <div class="part-card-header">
               <span class="module-badge" style="background:var(--brand-coral, #ff5b5b);color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;">P3</span>
-              <h3 style="margin:0;font-size:1.15rem;color:var(--text-primary);">Advanced C Programming</h3>
+              <h3 class="part-card-title">Advanced C Programming</h3>
             </div>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            <ul class="part-chapter-list">
               <li>
-                <a href="chapters/mod12-preprocessor-metaprogramming.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod12-preprocessor-metaprogramming.html" class="part-chapter-link">
                   <span>Mod 12: Preprocessor Metaprogramming & X-Macros</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod13-type-qualifiers-and-storage.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod13-type-qualifiers-and-storage.html" class="part-chapter-link">
                   <span>Mod 13: Type Qualifiers & Storage Classes</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">50m</span>
+                  <span class="part-chapter-time">50m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod14-inline-assembly-and-hardware.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod14-inline-assembly-and-hardware.html" class="part-chapter-link">
                   <span>Mod 14: Inline Assembly & Hardware Control</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod15-gnu-c-extensions-and-attributes.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod15-gnu-c-extensions-and-attributes.html" class="part-chapter-link">
                   <span>Mod 15: GNU C Extensions & Attributes</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">50m</span>
+                  <span class="part-chapter-time">50m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod16-compiler-optimizations-and-lto.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod16-compiler-optimizations-and-lto.html" class="part-chapter-link">
                   <span>Mod 16: Compiler Optimizations & LTO</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <div class="part-card">
+            <div class="part-card-header">
               <span class="module-badge" style="background:var(--brand-coral, #ff5b5b);color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;">P4</span>
-              <h3 style="margin:0;font-size:1.15rem;color:var(--text-primary);">Linux & Engineering Tools</h3>
+              <h3 class="part-card-title">Linux & Engineering Tools</h3>
             </div>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            <ul class="part-chapter-list">
               <li>
-                <a href="chapters/mod17-build-systems-make-and-cmake.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod17-build-systems-make-and-cmake.html" class="part-chapter-link">
                   <span>Mod 17: Build Systems (Make & CMake)</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod18-gdb-debugging-and-core-dumps.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod18-gdb-debugging-and-core-dumps.html" class="part-chapter-link">
                   <span>Mod 18: GDB Debugging & Core Dumps</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">65m</span>
+                  <span class="part-chapter-time">65m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod19-valgrind-and-sanitizers.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod19-valgrind-and-sanitizers.html" class="part-chapter-link">
                   <span>Mod 19: Valgrind & Sanitizers (ASan/UBSan)</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">50m</span>
+                  <span class="part-chapter-time">50m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod20-static-analysis-tools.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod20-static-analysis-tools.html" class="part-chapter-link">
                   <span>Mod 20: Static Analysis (Cppcheck & Clang-Tidy)</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">45m</span>
+                  <span class="part-chapter-time">45m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod21-linux-profiling-and-perf.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod21-linux-profiling-and-perf.html" class="part-chapter-link">
                   <span>Mod 21: Linux Profiling & perf</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <div class="part-card">
+            <div class="part-card-header">
               <span class="module-badge" style="background:var(--brand-coral, #ff5b5b);color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;">P5</span>
-              <h3 style="margin:0;font-size:1.15rem;color:var(--text-primary);">Testing & QA Engineering</h3>
+              <h3 class="part-card-title">Testing & QA Engineering</h3>
             </div>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            <ul class="part-chapter-list">
               <li>
-                <a href="chapters/mod22-unit-testing-unity-cmock.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod22-unit-testing-unity-cmock.html" class="part-chapter-link">
                   <span>Mod 22: Unit Testing with Unity & CMock</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod23-mocking-hardware-and-hal.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod23-mocking-hardware-and-hal.html" class="part-chapter-link">
                   <span>Mod 23: Mocking Hardware & HAL</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">50m</span>
+                  <span class="part-chapter-time">50m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod24-code-coverage-gcov-lcov.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod24-code-coverage-gcov-lcov.html" class="part-chapter-link">
                   <span>Mod 24: Code Coverage (gcov & lcov)</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">45m</span>
+                  <span class="part-chapter-time">45m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod25-cicd-for-embedded-c.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod25-cicd-for-embedded-c.html" class="part-chapter-link">
                   <span>Mod 25: CI/CD Pipelines for Embedded C</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">50m</span>
+                  <span class="part-chapter-time">50m</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <div class="part-card">
+            <div class="part-card-header">
               <span class="module-badge" style="background:var(--brand-coral, #ff5b5b);color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;">P6</span>
-              <h3 style="margin:0;font-size:1.15rem;color:var(--text-primary);">Linux System Programming</h3>
+              <h3 class="part-card-title">Linux System Programming</h3>
             </div>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            <ul class="part-chapter-list">
               <li>
-                <a href="chapters/mod26-file-descriptors-and-posix-io.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod26-file-descriptors-and-posix-io.html" class="part-chapter-link">
                   <span>Mod 26: File Descriptors & POSIX I/O</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod27-scalable-io-multiplexing-epoll.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod27-scalable-io-multiplexing-epoll.html" class="part-chapter-link">
                   <span>Mod 27: Scalable I/O with epoll</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod28-process-lifecycle-and-ipc.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod28-process-lifecycle-and-ipc.html" class="part-chapter-link">
                   <span>Mod 28: Process Lifecycle & IPC (Pipes, Shared Memory)</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod29-posix-threads-and-concurrency.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod29-posix-threads-and-concurrency.html" class="part-chapter-link">
                   <span>Mod 29: POSIX Threads & Multithreading</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod30-thread-synchronization-and-locks.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod30-thread-synchronization-and-locks.html" class="part-chapter-link">
                   <span>Mod 30: Thread Synchronization & Mutexes</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod31-posix-signals-and-timers.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod31-posix-signals-and-timers.html" class="part-chapter-link">
                   <span>Mod 31: POSIX Signals & Real-Time Timers</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">50m</span>
+                  <span class="part-chapter-time">50m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod32-network-sockets-programming.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod32-network-sockets-programming.html" class="part-chapter-link">
                   <span>Mod 32: Sockets & Binary Protocols</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <div class="part-card">
+            <div class="part-card-header">
               <span class="module-badge" style="background:var(--brand-coral, #ff5b5b);color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;">P7</span>
-              <h3 style="margin:0;font-size:1.15rem;color:var(--text-primary);">Embedded C & Firmware</h3>
+              <h3 class="part-card-title">Embedded C & Firmware</h3>
             </div>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            <ul class="part-chapter-list">
               <li>
-                <a href="chapters/mod33-hardware-interfacing-and-mmio.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod33-hardware-interfacing-and-mmio.html" class="part-chapter-link">
                   <span>Mod 33: Memory-Mapped I/O & Registers</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">65m</span>
+                  <span class="part-chapter-time">65m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod34-linker-scripts-and-memory-maps.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod34-linker-scripts-and-memory-maps.html" class="part-chapter-link">
                   <span>Mod 34: Linker Scripts & Memory Maps</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod35-startup-code-and-reset-sequence.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod35-startup-code-and-reset-sequence.html" class="part-chapter-link">
                   <span>Mod 35: Startup Code & Reset Sequence</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod36-interrupts-nvic-and-concurrency.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod36-interrupts-nvic-and-concurrency.html" class="part-chapter-link">
                   <span>Mod 36: Interrupts, NVIC & Concurrency</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">65m</span>
+                  <span class="part-chapter-time">65m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod37-rtos-fundamentals-and-freertos.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod37-rtos-fundamentals-and-freertos.html" class="part-chapter-link">
                   <span>Mod 37: RTOS Fundamentals & FreeRTOS</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">70m</span>
+                  <span class="part-chapter-time">70m</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <div class="part-card">
+            <div class="part-card-header">
               <span class="module-badge" style="background:var(--brand-coral, #ff5b5b);color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;">P8</span>
-              <h3 style="margin:0;font-size:1.15rem;color:var(--text-primary);">Secure C Programming</h3>
+              <h3 class="part-card-title">Secure C Programming</h3>
             </div>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            <ul class="part-chapter-list">
               <li>
-                <a href="chapters/mod38-misra-c-compliance.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod38-misra-c-compliance.html" class="part-chapter-link">
                   <span>Mod 38: MISRA C:2012 Compliance</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod39-cert-c-and-defensive-coding.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod39-cert-c-and-defensive-coding.html" class="part-chapter-link">
                   <span>Mod 39: CERT C & Defensive Coding</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <div class="part-card">
+            <div class="part-card-header">
               <span class="module-badge" style="background:var(--brand-coral, #ff5b5b);color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;">P9</span>
-              <h3 style="margin:0;font-size:1.15rem;color:var(--text-primary);">Software Architecture</h3>
+              <h3 class="part-card-title">Software Architecture</h3>
             </div>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            <ul class="part-chapter-list">
               <li>
-                <a href="chapters/mod40-layered-hal-and-driver-design.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod40-layered-hal-and-driver-design.html" class="part-chapter-link">
                   <span>Mod 40: Layered HAL & Device Driver Design</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">60m</span>
+                  <span class="part-chapter-time">60m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod41-oop-patterns-and-interfaces.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod41-oop-patterns-and-interfaces.html" class="part-chapter-link">
                   <span>Mod 41: OOP Patterns & Interfaces in C</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/mod42-publish-subscribe-event-runtimes.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/mod42-publish-subscribe-event-runtimes.html" class="part-chapter-link">
                   <span>Mod 42: Event-Driven & Pub/Sub Runtimes</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">55m</span>
+                  <span class="part-chapter-time">55m</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div style="background:var(--bg-surface, #1e2433);border:1px solid var(--border-subtle, rgba(255,255,255,0.1));border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <div class="part-card">
+            <div class="part-card-header">
               <span class="module-badge" style="background:var(--brand-coral, #ff5b5b);color:#fff;padding:4px 10px;border-radius:6px;font-weight:700;">P10</span>
-              <h3 style="margin:0;font-size:1.15rem;color:var(--text-primary);">Capstone Projects</h3>
+              <h3 class="part-card-title">Capstone Projects</h3>
             </div>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+            <ul class="part-chapter-list">
               <li>
-                <a href="chapters/capstone01-bare-metal-bootloader.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/capstone01-bare-metal-bootloader.html" class="part-chapter-link">
                   <span>Project 1: Bare-Metal Bootloader (CRC32)</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">90m</span>
+                  <span class="part-chapter-time">90m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/capstone02-memory-pool-allocator.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/capstone02-memory-pool-allocator.html" class="part-chapter-link">
                   <span>Project 2: Deterministic Memory Pool Allocator</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">90m</span>
+                  <span class="part-chapter-time">90m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/capstone03-dma-serial-engine.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/capstone03-dma-serial-engine.html" class="part-chapter-link">
                   <span>Project 3: DMA Serial Protocol Engine</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">90m</span>
+                  <span class="part-chapter-time">90m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/capstone04-preemptive-rtos-kernel.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/capstone04-preemptive-rtos-kernel.html" class="part-chapter-link">
                   <span>Project 4: Preemptive Cooperative RTOS Kernel</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">120m</span>
+                  <span class="part-chapter-time">120m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/capstone05-embedded-cli-shell.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/capstone05-embedded-cli-shell.html" class="part-chapter-link">
                   <span>Project 5: Embedded CLI Shell with Tab Completion</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">80m</span>
+                  <span class="part-chapter-time">80m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/capstone06-misra-sensor-fusion.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/capstone06-misra-sensor-fusion.html" class="part-chapter-link">
                   <span>Project 6: MISRA-Compliant Sensor Fusion Pipeline</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">90m</span>
+                  <span class="part-chapter-time">90m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/capstone07-crash-dump-analyzer.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/capstone07-crash-dump-analyzer.html" class="part-chapter-link">
                   <span>Project 7: Post-Mortem Crash Dump Diagnostic Engine</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">90m</span>
+                  <span class="part-chapter-time">90m</span>
                 </a>
               </li>
               <li>
-                <a href="chapters/capstone08-posix-epoll-daemon.html" style="display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:var(--text-secondary);padding:6px 10px;border-radius:6px;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.06)';this.style.color='var(--brand-coral)'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+                <a href="chapters/capstone08-posix-epoll-daemon.html" class="part-chapter-link">
                   <span>Project 8: POSIX Non-Blocking epoll Network Daemon</span>
-                  <span style="font-size:0.75rem;opacity:0.7;">100m</span>
+                  <span class="part-chapter-time">100m</span>
                 </a>
               </li>
             </ul>
