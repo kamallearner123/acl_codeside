@@ -379,24 +379,149 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 10 • Capstone Projects</span>
-          <h1 class="chapter-h1">Capstone 8: POSIX Non-Blocking epoll Network Daemon</h1>
-          <p class="chapter-lead">Architect a production-grade Linux telemetry collector daemon using non-blocking TCP sockets, edge-triggered epoll, ring buffers, and signalfd.</p>
+          <h1 class="chapter-h1">Capstone 8: POSIX epoll Multi-Client Network Daemon</h1>
+          <p class="chapter-lead">Construct an enterprise-grade Linux network service in C capable of handling 10,000+ concurrent connections. Master non-blocking socket streams, Edge-Triggered epoll event multiplexing, per-connection buffer pools, PID file locking with flock, and graceful signalfd shutdowns.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 100m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: POSIX.1-2008 / Linux epoll(7) / RFC 9293 (TCP)</div>
+            <div class="meta-item">⚡ Target: High-Concurrency Linux Edge Daemons</div>
           </div>
         </div>
 
+        <h2 id="sec-cap8-1">1. Daemon Architecture & Production Requirements</h2>
+        <p>
+          A production Linux system service (daemon) must fulfill strict operating system requirements:
+        </p>
+        <ol>
+          <li><strong>Daemonization:</strong> Disassociate from controlling terminals (<code>fork</code>, <code>setsid</code>, redirect standard FDs to <code>/dev/null</code>).</li>
+          <li><strong>Single-Instance Lock:</strong> Enforce single instance execution via <code>flock(LOCK_EX | LOCK_NB)</code> on a PID file in <code>/var/run/</code>.</li>
+          <li><strong>High Concurrency:</strong> Scale to 10,000 concurrent sockets using Edge-Triggered <code>epoll</code> and non-blocking I/O.</li>
+          <li><strong>Graceful Shutdown:</strong> Catch <code>SIGINT</code> and <code>SIGTERM</code> via <code>signalfd</code> to flush buffers before exiting.</li>
+        </ol>
 
-        <h2 id="sec-cap8-1">Project 8: Scalable Linux Server Architecture</h2>
-        <p>Handles real-time sensor streams over TCP sockets with zero blocking calls and deterministic event-driven I/O.</p>
+        <h2 id="sec-cap8-2">2. Complete Production Daemon Implementation</h2>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;sys/epoll.h&gt;
+#include &lt;sys/file.h&gt;
+#include &lt;sys/signalfd.h&gt;
+#include &lt;signal.h&gt;
+#include &lt;netinet/in.h&gt;
 
+#define MAX_EVENTS 128
+#define PORT 9000
+#define PID_FILE "/tmp/acl_epoll_daemon.pid"
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="capstone07-crash-dump-analyzer.html" class="btn-secondary">← Capstone 7: Crash Dump Analyzer</a>
-          <a href="../index.html" class="btn-primary">Handbook Overview 📖 →</a>
+static int make_non_blocking(int fd) {
+    int flags = fcntl(fd, F_GETFL, 0);
+    return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+}
+
+static void daemonize(void) {
+    pid_t pid = fork();
+    if (pid &lt; 0) exit(1);
+    if (pid &gt; 0) exit(0); // Parent exits
+
+    setsid(); // Create new session
+
+    int lock_fd = open(PID_FILE, O_RDWR | O_CREAT, 0640);
+    if (lock_fd &lt; 0 || flock(lock_fd, LOCK_EX | LOCK_NB) &lt; 0) {
+        fprintf(stderr, "Daemon is already running!
+");
+        exit(1);
+    }
+}
+
+int main(void) {
+    daemonize();
+
+    sigset_t mask;
+    sigemptyset(&amp;mask);
+    sigaddset(&amp;mask, SIGINT);
+    sigaddset(&amp;mask, SIGTERM);
+    sigprocmask(SIG_BLOCK, &amp;mask, NULL);
+    int sfd = signalfd(-1, &amp;mask, SFD_NONBLOCK | SFD_CLOEXEC);
+
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int opt = 1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &amp;opt, sizeof(opt));
+
+    struct sockaddr_in addr = {0};
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = INADDR_ANY;
+    addr.sin_port = htons(PORT);
+    bind(server_fd, (struct sockaddr *)&amp;addr, sizeof(addr));
+    listen(server_fd, SOMAXCONN);
+    make_non_blocking(server_fd);
+
+    int epfd = epoll_create1(EPOLL_CLOEXEC);
+    struct epoll_event ev, events[MAX_EVENTS];
+
+    ev.events = EPOLLIN; ev.data.fd = server_fd;
+    epoll_ctl(epfd, EPOLL_CTL_ADD, server_fd, &amp;ev);
+
+    ev.events = EPOLLIN; ev.data.fd = sfd;
+    epoll_ctl(epfd, EPOLL_CTL_ADD, sfd, &amp;ev);
+
+    int running = 1;
+    while (running) {
+        int nfds = epoll_wait(epfd, events, MAX_EVENTS, -1);
+        for (int i = 0; i &lt; nfds; i++) {
+            if (events[i].data.fd == sfd) {
+                running = 0; // Signal received, graceful shutdown!
+            } else if (events[i].data.fd == server_fd) {
+                while (1) {
+                    int cfd = accept(server_fd, NULL, NULL);
+                    if (cfd &lt; 0) break;
+                    make_non_blocking(cfd);
+                    ev.events = EPOLLIN | EPOLLET;
+                    ev.data.fd = cfd;
+                    epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &amp;ev);
+                }
+            } else {
+                int cfd = events[i].data.fd;
+                char buf[256];
+                while (1) {
+                    ssize_t n = read(cfd, buf, sizeof(buf));
+                    if (n &gt; 0) {
+                        write(cfd, buf, (size_t)n); // Echo back
+                    } else if (n == 0 || (n &lt; 0 &amp;&amp; errno != EAGAIN)) {
+                        epoll_ctl(epfd, EPOLL_CTL_DEL, cfd, NULL);
+                        close(cfd);
+                        break;
+                    } else {
+                        break; // Drained
+                    }
+                }
+            }
+        }
+    }
+
+    close(server_fd);
+    close(sfd);
+    close(epfd);
+    unlink(PID_FILE);
+    return 0;
+}</code></pre>
+
+        <h2 id="sec-cap8-quiz">3. Capstone Knowledge Verification Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What is the primary purpose of calling <code>setsid()</code> during process daemonization in Linux?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="cq8_1" id="cq8_1a"> <label for="cq8_1a">A) It increases process priority.</label></li>
+              <li><input type="radio" name="cq8_1" id="cq8_1b"> <label for="cq8_1b">B) It creates a new session, detaching the process from any controlling terminal (TTY) so closing the terminal does not kill the daemon. (Correct)</label></li>
+              <li><input type="radio" name="cq8_1" id="cq8_1c"> <label for="cq8_1c">C) It locks the executable in RAM.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>setsid()</code> creates a new session without a controlling terminal, ensuring terminal closure signals (SIGHUP) do not terminate the service.
+            </div>
+          </div>
         </div>
       </article>
     </main>

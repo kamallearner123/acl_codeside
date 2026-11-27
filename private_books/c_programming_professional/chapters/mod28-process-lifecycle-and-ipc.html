@@ -379,46 +379,213 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 6 • Linux System Programming</span>
-          <h1 class="chapter-h1">Module 28: Process Lifecycle & IPC</h1>
-          <p class="chapter-lead">Process creation with fork/exec, zombie process reaping, and Inter-Process Communication via anonymous pipes, named FIFOs, and POSIX shared memory (shm_open).</p>
+          <h1 class="chapter-h1">Module 28: Process Lifecycle &amp; Inter-Process Communication (IPC)</h1>
+          <p class="chapter-lead">Deep dive into Linux process creation, fork() Copy-on-Write (COW) memory mechanics, execve(), zombie process reaping with waitpid(), daemonization (setsid), anonymous pipes, POSIX shared memory (shm_open, mmap), and POSIX message queues.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 60m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: POSIX.1-2008 / System V &amp; POSIX IPC</div>
+            <div class="meta-item">⚡ Target: Multi-Process Linux Architectures</div>
           </div>
         </div>
 
+        <h2 id="sec-28-1">28.1 Process Creation: fork() & Copy-on-Write (COW)</h2>
+        <p>
+          When a process calls <code>fork()</code>, the Linux kernel does not make an expensive duplicate copy of the parent process's physical RAM. Instead, it duplicates the parent's <strong>page tables</strong> and marks all physical memory pages as <strong>Read-Only</strong>.
+        </p>
 
-        <h2 id="sec-28-1">28.1 Zero-Copy Inter-Process Communication with POSIX Shared Memory</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>shm_producer.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include &lt;sys/mman.h&gt;
-#include &lt;fcntl.h&gt;
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Copy-on-Write (COW) Page Fault Architecture</div>
+          <pre style="margin:0;color:#94A3B8;">
+Parent Page Table ──┐
+                    ├──▶ [ Shared Physical Page (Read-Only) ]
+Child Page Table  ──┘               │
+                                    │ (Child or Parent attempts memory WRITE)
+                                    ▼
+                         [ MMU Write Fault (Page Fault) ]
+                                    │
+                                    ▼
+       [ Kernel Allocates NEW Physical Page &amp; Copies 4 KB Data ]
+Parent Page Table ──▶ [ Original Page (Read/Write) ]
+Child Page Table  ──▶ [ Private Copy Page (Read/Write) ]
+          </pre>
+        </div>
+
+        <h3>Zombie Processes & Reaping Mechanics</h3>
+        <p>
+          When a child process terminates via <code>exit()</code>, its virtual memory, open files, and address space are immediately deallocated. However, its entry in the kernel process table remains (a <strong>Zombie Process</strong>, state <code>Z</code>) so the parent can inspect its exit status code.
+        </p>
+        <p>
+          If the parent fails to call <code>wait()</code> or <code>waitpid()</code>, zombies accumulate, eventually exhausting the kernel PID space (<code>/proc/sys/kernel/pid_max</code>), preventing any new processes from launching!
+        </p>
+
+        <h2 id="sec-28-2">28.2 Anonymous Pipes & Broken Pipe (SIGPIPE)</h2>
+        <p>
+          Pipes are unidirectional byte streams buffered in kernel memory (typically 64 KB). A pipe possesses a read descriptor (<code>pipefd[0]</code>) and a write descriptor (<code>pipefd[1]</code>).
+        </p>
+        <div class="warning-box" style="border-left:4px solid #EF4444;background:rgba(239,68,68,0.08);padding:1rem;margin:1rem 0;border-radius:4px;">
+          <strong style="color:#EF4444;">The Fatal SIGPIPE Default Action:</strong> If a process writes to a pipe whose read end has been closed by the peer, the kernel delivers a <code>SIGPIPE</code> signal. The default disposition of <code>SIGPIPE</code> is <strong>abnormal process termination!</strong> Production daemons must set <code>signal(SIGPIPE, SIG_IGN)</code> so that <code>write()</code> returns <code>-1</code> with <code>errno == EPIPE</code> instead of crashing.
+        </div>
+
+        <h2 id="sec-28-3">28.3 POSIX Shared Memory (shm_open & mmap)</h2>
+        <p>
+          Shared memory is the fastest possible IPC mechanism because data does not pass through the kernel. Once mapped into the virtual address spaces of both processes via <code>mmap()</code>, reads and writes occur directly at RAM hardware speeds (zero system call overhead).
+        </p>
+
+        <h3>Lifecycle of POSIX Shared Memory</h3>
+        <ol>
+          <li><code>shm_open("/telemetry_shm", O_CREAT | O_RDWR, 0660)</code>: Creates a named shared memory object in <code>/dev/shm</code>.</li>
+          <li><code>ftruncate(shm_fd, sizeof(telemetry_data_t))</code>: Sizes the physical allocation.</li>
+          <li><code>mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0)</code>: Maps memory into process address space.</li>
+          <li><code>shm_unlink("/telemetry_shm")</code>: Removes the name from the filesystem namespace (memory persists until all processes unmap).</li>
+        </ol>
+
+        <h2 id="sec-28-4">28.4 Industrial Case Study: Robot Arm Supervisor Crash</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The SIGPIPE Factory Floor Emergency Shutdown</h4>
+          <p>
+            An industrial articulated robotic arm performing automotive welding suddenly stopped mid-weld and collapsed into emergency limp mode.
+          </p>
+          <p>
+            <strong>Investigation:</strong> The robot’s trajectory controller ran as a multi-process architecture. The motion supervisor communicated with a GUI diagnostic display over a local UNIX domain socket pipe.
+          </p>
+          <p>
+            The GUI tablet battery died, closing the receiving socket. 10 milliseconds later, the motion supervisor attempted to write a telemetry frame:
+          </p>
+          <pre><code class="language-c">write(gui_socket_fd, &amp;coords, sizeof(coords)); /* Unshielded write! */</code></pre>
+          <p>
+            Because the receiving socket was closed and the application had not ignored <code>SIGPIPE</code>, the Linux kernel terminated the main motion supervisor immediately.
+          </p>
+          <p>
+            <strong>Corrective Action:</strong> Enforced <code>signal(SIGPIPE, SIG_IGN)</code> across all daemons, and configured socket writes to use <code>send(..., MSG_NOSIGNAL)</code>.
+          </p>
+        </div>
+
+        <h2 id="sec-28-5">28.5 Hands-On Lab: Zero-Copy Shared Memory IPC with Process-Shared Mutex</h2>
+        <p>
+          In this lab, you will create two independent processes communicating over POSIX Shared Memory synchronized by a process-shared pthread mutex.
+        </p>
+
+        <h3>Shared Memory IPC Engine (<code>shm_ipc.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
 #include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;sys/wait.h&gt;
+#include &lt;pthread.h&gt;
 
 typedef struct {
+    pthread_mutex_t mutex;
     uint32_t counter;
-    float    telemetry[4];
-} SharedData_t;
+} shared_block_t;
 
-SharedData_t* init_shared_memory(const char *name) {
-    int fd = shm_open(name, O_CREAT | O_RDWR, 0666);
-    ftruncate(fd, sizeof(SharedData_t));
-    return (SharedData_t*)mmap(NULL, sizeof(SharedData_t), 
-                              PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+int main(void) {
+    const char *shm_name = "/acl_demo_shm";
+    int shm_fd = shm_open(shm_name, O_CREAT | O_RDWR | O_TRUNC, 0666);
+    ftruncate(shm_fd, sizeof(shared_block_t));
+
+    shared_block_t *block = (shared_block_t *)mmap(
+        NULL, sizeof(shared_block_t), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+
+    /* Initialize process-shared mutex */
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&amp;attr);
+    pthread_mutexattr_setpshared(&amp;attr, PTHREAD_PROCESS_SHARED);
+    pthread_mutex_init(&amp;block-&gt;mutex, &amp;attr);
+    block-&gt;counter = 0;
+
+    pid_t pid = fork();
+    if (pid == 0) {
+        /* Child Process: Producer */
+        for (int i = 0; i &lt; 5; i++) {
+            pthread_mutex_lock(&amp;block-&gt;mutex);
+            block-&gt;counter += 10;
+            printf("[CHILD] Incremented counter to: %u
+", block-&gt;counter);
+            pthread_mutex_unlock(&amp;block-&gt;mutex);
+            usleep(100000);
+        }
+        exit(0);
+    } else {
+        /* Parent Process: Consumer */
+        for (int i = 0; i &lt; 5; i++) {
+            pthread_mutex_lock(&amp;block-&gt;mutex);
+            printf("[PARENT] Read counter value: %u
+", block-&gt;counter);
+            pthread_mutex_unlock(&amp;block-&gt;mutex);
+            usleep(100000);
+        }
+        wait(NULL); // Reap child
+    }
+
+    munmap(block, sizeof(shared_block_t));
+    shm_unlink(shm_name);
+    return 0;
 }</code></pre>
+
+        <h2 id="sec-28-quiz">28.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What physical event occurs during <code>fork()</code> under Copy-on-Write (COW)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) All physical RAM pages are duplicated immediately.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) Page table entries are duplicated and marked read-only; physical pages are only copied when a process attempts to write to them. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) The child process runs inside swap space.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Copy-on-Write optimizes process creation by sharing existing physical memory pages until a write triggers a hardware page fault that creates a private copy.
+            </div>
           </div>
-        </div>
 
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What signal is delivered by default when writing to a pipe with no active readers, and what is its default action?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) <code>SIGUSR1</code> (Ignored)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) <code>SIGPIPE</code> (Abnormal termination of the process) (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) <code>SIGSEGV</code> (Core dump)</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>SIGPIPE</code> is delivered when writing to a broken pipe or disconnected socket; because its default action is termination, production systems must ignore it or handle it.
+            </div>
+          </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod27-scalable-io-multiplexing-epoll.html" class="btn-secondary">← Module 27: Scalable I/O with epoll</a>
-          <a href="mod29-posix-threads-and-concurrency.html" class="btn-primary">Module 29: POSIX Threads & Concurrency →</a>
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: What mutex attribute must be enabled to allow a pthread mutex in POSIX shared memory to synchronize two distinct processes?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) <code>PTHREAD_MUTEX_RECURSIVE</code></label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) <code>PTHREAD_PROCESS_SHARED</code> (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) <code>PTHREAD_INHERIT_SCHED</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> By default, pthread mutexes are <code>PTHREAD_PROCESS_PRIVATE</code>; setting <code>PTHREAD_PROCESS_SHARED</code> instructs the kernel futex subsystem to permit multi-process synchronization.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What filesystem directory mounts the POSIX shared memory objects created via <code>shm_open()</code> on Linux?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) <code>/tmp</code></label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) <code>/dev/shm</code> (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) <code>/var/run</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> On Linux, POSIX shared memory is backed by a tmpfs RAM filesystem mounted at <code>/dev/shm</code>.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: How can a parent process clean up finished child processes without blocking if no children have exited yet?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) <code>wait(NULL)</code></label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) <code>waitpid(-1, &amp;status, WNOHANG)</code> (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) <code>sleep(1)</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> The <code>WNOHANG</code> option instructs <code>waitpid()</code> to return immediately with 0 if no child has exited, preventing the parent from stalling.
+            </div>
+          </div>
         </div>
       </article>
     </main>

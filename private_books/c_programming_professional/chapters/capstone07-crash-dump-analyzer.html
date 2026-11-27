@@ -380,43 +380,111 @@
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 10 • Capstone Projects</span>
           <h1 class="chapter-h1">Capstone 7: Post-Mortem Crash Dump Diagnostic Engine</h1>
-          <p class="chapter-lead">Capture ARM Cortex-M HardFault exceptions, extract stacked registers (R0-R3, R12, LR, PC, xPSR), save crash logs to non-volatile Flash, and decode stack traces.</p>
+          <p class="chapter-lead">Build an embedded black-box flight recorder for ARM Cortex-M HardFaults. Capture stacked CPU registers in assembly, decode Configurable Fault Status Registers (CFSR/HFSR/BFAR), persist crash dumps to battery-backed SRAM, and resolve faulting source lines using addr2line.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 90m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: ARMv7-M Fault Architecture / CMSIS SCB</div>
+            <div class="meta-item">⚡ Target: Field HardFault Diagnostic Automation</div>
           </div>
         </div>
 
+        <h2 id="sec-cap7-1">1. Anatomy of an ARM Cortex-M HardFault</h2>
+        <p>
+          When an ARM processor encounters an illegal operation (e.g. executing non-Thumb code, unaligned memory access with traps enabled, or dereferencing unmapped memory), the core traps into <strong>HardFault_Handler</strong>.
+        </p>
 
-        <h2 id="sec-cap7-1">Project 7: HardFault Exception Handler in C and Assembly</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>hardfault_handler.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">void hard_fault_handler_c(uint32_t *stack_args) {
-    uint32_t r0  = stack_args[0];
-    uint32_t r1  = stack_args[1];
-    uint32_t r2  = stack_args[2];
-    uint32_t r3  = stack_args[3];
-    uint32_t r12 = stack_args[4];
-    uint32_t lr  = stack_args[5];
-    uint32_t pc  = stack_args[6];
-    uint32_t psr = stack_args[7];
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Hardware Exception Stack Frame on HardFault</div>
+          <pre style="margin:0;color:#94A3B8;">
+Top of Active Stack (MSP or PSP depending on EXC_RETURN bit 2):
+SP + 0x00: [ Stacked R0   ]
+SP + 0x04: [ Stacked R1   ]
+SP + 0x08: [ Stacked R2   ]
+SP + 0x0C: [ Stacked R3   ]
+SP + 0x10: [ Stacked R12  ]
+SP + 0x14: [ Stacked LR   ] (Link Register: Caller function return address!)
+SP + 0x18: [ Stacked PC   ] (Program Counter: Exact faulting instruction address!)
+SP + 0x1C: [ Stacked xPSR ] (Program Status Register)
+          </pre>
+        </div>
 
-    /* Write crash dump to persistent EEPROM/Flash */
+        <h2 id="sec-cap7-2">2. HardFault Assembly Extractor & C Decoder</h2>
+        <pre><code class="language-c">#include &lt;stdint.h&gt;
+
+typedef struct {
+    uint32_t r0;
+    uint32_t r1;
+    uint32_t r2;
+    uint32_t r3;
+    uint32_t r12;
+    uint32_t lr;
+    uint32_t pc;
+    uint32_t xpsr;
+    uint32_t cfsr;
+    uint32_t hfsr;
+    uint32_t bfar;
+} crash_dump_t;
+
+/* Preserved in battery-backed SRAM across resets */
+__attribute__((section(".noinit")))
+crash_dump_t g_last_crash_dump;
+
+void hard_fault_handler_c(uint32_t *stacked_regs) {
+    g_last_crash_dump.r0   = stacked_regs[0];
+    g_last_crash_dump.r1   = stacked_regs[1];
+    g_last_crash_dump.r2   = stacked_regs[2];
+    g_last_crash_dump.r3   = stacked_regs[3];
+    g_last_crash_dump.r12  = stacked_regs[4];
+    g_last_crash_dump.lr   = stacked_regs[5];
+    g_last_crash_dump.pc   = stacked_regs[6];
+    g_last_crash_dump.xpsr = stacked_regs[7];
+
+    /* System Control Block Status Registers */
+    volatile uint32_t *cfsr = (volatile uint32_t *)0xE000ED28;
+    volatile uint32_t *hfsr = (volatile uint32_t *)0xE000ED2C;
+    volatile uint32_t *bfar = (volatile uint32_t *)0xE000ED38;
+
+    g_last_crash_dump.cfsr = *cfsr;
+    g_last_crash_dump.hfsr = *hfsr;
+    g_last_crash_dump.bfar = *bfar;
+
+    /* Issue hardware system reset */
+    volatile uint32_t *aircr = (volatile uint32_t *)0xE000ED0C;
+    *aircr = (0x5FAUL &lt;&lt; 16) | (1UL &lt;&lt; 2); // Request SYSRESETREQ
     while (1);
+}
+
+/* Assembly entry point to determine MSP vs PSP */
+__attribute__((naked))
+void HardFault_Handler(void) {
+    __asm__ volatile(
+        "tst lr, #4
+"
+        "ite eq
+"
+        "mrseq r0, msp
+"
+        "mrsne r0, psp
+"
+        "b hard_fault_handler_c
+"
+    );
 }</code></pre>
+
+        <h2 id="sec-cap7-quiz">3. Capstone Knowledge Verification Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: How can an engineer determine whether the fault occurred on MSP or PSP inside HardFault_Handler?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="cq7_1" id="cq7_1a"> <label for="cq7_1a">A) By testing bit 2 of the Link Register (LR / EXC_RETURN): if bit 2 is 0, MSP was used; if bit 2 is 1, PSP was used. (Correct)</label></li>
+              <li><input type="radio" name="cq7_1" id="cq7_1b"> <label for="cq7_1b">B) By checking R0.</label></li>
+              <li><input type="radio" name="cq7_1" id="cq7_1c"> <label for="cq7_1c">C) By checking the SysTick flag.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> In ARM Cortex-M architecture, bit 2 of EXC_RETURN (stored in LR upon entering the handler) encodes the active stack pointer prior to the exception.
+            </div>
           </div>
-        </div>
-
-
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="capstone06-misra-sensor-fusion.html" class="btn-secondary">← Capstone 6: MISRA Sensor Fusion</a>
-          <a href="capstone08-posix-epoll-daemon.html" class="btn-primary">Capstone 8: POSIX epoll Daemon →</a>
         </div>
       </article>
     </main>

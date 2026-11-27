@@ -379,43 +379,272 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 6 • Linux System Programming</span>
-          <h1 class="chapter-h1">Module 29: POSIX Threads & Multithreading</h1>
-          <p class="chapter-lead">Thread lifecycle management with pthreads (pthread_create, pthread_join), custom stack allocation, thread affinity, and real-time scheduling policies (SCHED_FIFO/SCHED_RR).</p>
+          <h1 class="chapter-h1">Module 29: POSIX Threads &amp; Multithreading</h1>
+          <p class="chapter-lead">Deep dive into Linux Native POSIX Thread Library (NPTL) internals, clone() system calls, thread creation lifecycle, custom stack sizing and MPU guard pages, thread cancellation, thread-local storage (_Thread_local), and safe worker thread pools.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 55m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: POSIX.1c (pthreads) / ISO C11 / Linux NPTL</div>
+            <div class="meta-item">⚡ Target: Multithreaded Linux &amp; RT-Preempt</div>
           </div>
         </div>
 
+        <h2 id="sec-29-1">29.1 Linux NPTL & The clone() Syscall</h2>
+        <p>
+          In the Linux kernel, there is strictly no difference in internal representation between a process and a thread: both are represented by a <code>struct task_struct</code>.
+        </p>
+        <p>
+          A thread is created via the <strong>clone(2)</strong> system call passing flags that instruct the child task to share the parent's memory, file descriptors, and signal dispositions:
+        </p>
+        <pre><code class="language-c">clone(child_func, stack_top,
+      CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_THREAD,
+      arg);</code></pre>
+        <ul>
+          <li><code>CLONE_VM</code>: Both tasks share the same virtual memory page tables.</li>
+          <li><code>CLONE_FILES</code>: Both tasks share the same file descriptor table.</li>
+          <li><code>CLONE_THREAD</code>: Placed into the same Thread Group (TGID matches PID).</li>
+        </ul>
 
-        <h2 id="sec-29-1">29.1 Configuring Real-Time SCHED_FIFO Threads in Linux</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>realtime_thread_setup.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include &lt;pthread.h&gt;
-#include &lt;sched.h&gt;
+        <h2 id="sec-29-2">29.2 Thread Stacks & Guard Pages</h2>
+        <p>
+          While threads share the heap and data segments, <strong>every thread must have its own independent stack</strong> for function calls and local variables.
+        </p>
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Thread Stack Memory Layout &amp; Guard Page Protection</div>
+          <pre style="margin:0;color:#94A3B8;">
+High Memory (0x7FFF...)
+    │ ┌────────────────────────────────────────────────────────┐
+    │ │ Thread Stack Top (Stack Pointer %rsp starts here)      │
+    │ │ Local variables, return addresses, AAPCS stack frames   │
+    │ │               │ (Stack grows downward)                 │
+    │ │               ▼                                        │
+    │ ├────────────────────────────────────────────────────────┤
+    │ │ Guard Page (4 KB, mprotect(PROT_NONE))                 │ &lt;-- Stack Overflow Traps Here!
+    ▼ └────────────────────────────────────────────────────────┘
+Low Memory
+          </pre>
+        </div>
+        <p>
+          On desktop Linux, the default thread stack is <strong>8 MB</strong>. In memory-constrained embedded Linux gateways (e.g. 64 MB total RAM), spawning 20 threads with default stacks would consume 160 MB of virtual address space!
+        </p>
+        <h3>Configuring Custom Stack Sizes</h3>
+        <pre><code class="language-c">pthread_attr_t attr;
+pthread_attr_init(&amp;attr);
+/* Restrict stack size to 128 KB for embedded tasks */
+pthread_attr_setstacksize(&amp;attr, 128 * 1024);
+pthread_create(&amp;thread_id, &amp;attr, worker_task, NULL);
+pthread_attr_destroy(&amp;attr);</code></pre>
 
-int spawn_realtime_thread(pthread_t *thread, void *(*func)(void*), void *arg) {
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
-    struct sched_param param = { .sched_priority = 80 };
-    pthread_attr_setschedparam(&attr, &param);
-    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
-    return pthread_create(thread, &attr, func, arg);
+        <h2 id="sec-29-3">29.3 Thread Cancellation & Cleanup Handlers</h2>
+        <p>
+          Terminating a thread from the outside using <code>pthread_cancel()</code> is dangerous: if the thread holds an open mutex or malloc buffer, terminating it asynchronously causes resource leaks or deadlocks.
+        </p>
+        <p>
+          <strong>Deferred Cancellation:</strong> By default, cancellation occurs only when the thread reaches a defined POSIX <em>cancellation point</em> (such as <code>read()</code>, <code>sleep()</code>, or <code>pthread_testcancel()</code>).
+        </p>
+        <p>
+          To ensure resources are cleanly released when cancelled, register cleanup handlers:
+        </p>
+        <pre><code class="language-c">void cleanup_handler(void *arg) {
+    int *fd = (int *)arg;
+    if (fd &amp;&amp; *fd &gt;= 0) close(*fd);
+}
+
+void *worker(void *arg) {
+    int fd = open("log.txt", O_WRONLY);
+    pthread_cleanup_push(cleanup_handler, &amp;fd);
+
+    while (1) {
+        pthread_testcancel(); /* Explicit cancellation checkpoint */
+        usleep(10000);
+    }
+
+    pthread_cleanup_pop(1); /* Executes cleanup if cancelled or returned */
+    return NULL;
 }</code></pre>
-          </div>
+
+        <h2 id="sec-29-4">29.4 Industrial Case Study: Drone Embedded Gateway Stack Exhaustion</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The 64 MB RAM Out-Of-Memory Reboot</h4>
+          <p>
+            An autonomous agricultural survey drone running embedded Linux crashed and rebooted every time it engaged all 12 multi-spectral camera channels.
+          </p>
+          <p>
+            <strong>Investigation:</strong> The video capture software spawned a dedicated thread for each camera channel. The developers used default <code>pthread_create()</code> attributes.
+          </p>
+          <p>
+            With 12 camera threads + 6 networking threads + 4 sensor fusion threads = 22 threads. 22 threads &times; 8 MB default stack = <strong>176 MB of virtual memory</strong> requested on a drone board with only 64 MB of physical RAM! The Linux OOM (Out-Of-Memory) killer was triggered, terminating the flight navigation service.
+          </p>
+          <p>
+            <strong>Resolution:</strong> Explicit stack sizes were configured: 256 KB for camera ingestion, 64 KB for sensor telemetry. Total stack footprint dropped from 176 MB to 3.5 MB, resolving the issue completely.
+          </p>
         </div>
 
+        <h2 id="sec-29-5">29.5 Hands-On Lab: Implementing a Worker Thread Pool in C</h2>
+        <p>
+          In this lab, you will write a complete multi-threaded worker pool in C that distributes computational tasks across worker threads using a task queue.
+        </p>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod28-process-lifecycle-and-ipc.html" class="btn-secondary">← Module 28: Process Lifecycle & IPC</a>
-          <a href="mod30-thread-synchronization-and-locks.html" class="btn-primary">Module 30: Thread Synchronization & Locks →</a>
+        <h3>Worker Thread Pool (<code>thread_pool.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pthread.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;unistd.h&gt;
+
+#define POOL_SIZE 4
+#define QUEUE_MAX 16
+
+typedef void (*task_fn)(void *arg);
+
+typedef struct {
+    task_fn function;
+    void *argument;
+} task_t;
+
+typedef struct {
+    pthread_mutex_t lock;
+    pthread_cond_t notify;
+    pthread_t threads[POOL_SIZE];
+    task_t queue[QUEUE_MAX];
+    int head;
+    int tail;
+    int count;
+    bool shutdown;
+} thread_pool_t;
+
+static void *worker_thread(void *arg) {
+    thread_pool_t *pool = (thread_pool_t *)arg;
+    while (1) {
+        pthread_mutex_lock(&amp;pool-&gt;lock);
+        while (pool-&gt;count == 0 &amp;&amp; !pool-&gt;shutdown) {
+            pthread_cond_wait(&amp;pool-&gt;notify, &amp;pool-&gt;lock);
+        }
+        if (pool-&gt;shutdown &amp;&amp; pool-&gt;count == 0) {
+            pthread_mutex_unlock(&amp;pool-&gt;lock);
+            break;
+        }
+
+        task_t task = pool-&gt;queue[pool-&gt;tail];
+        pool-&gt;tail = (pool-&gt;tail + 1) % QUEUE_MAX;
+        pool-&gt;count--;
+        pthread_mutex_unlock(&amp;pool-&gt;lock);
+
+        /* Execute task */
+        task.function(task.argument);
+    }
+    return NULL;
+}
+
+void print_task(void *arg) {
+    int id = (int)(intptr_t)arg;
+    printf("[THREAD %lu] Executed Task ID #%d
+", pthread_self(), id);
+    usleep(50000);
+}
+
+int main(void) {
+    thread_pool_t pool = {0};
+    pthread_mutex_init(&amp;pool.lock, NULL);
+    pthread_cond_init(&amp;pool.notify, NULL);
+
+    pthread_attr_t attr;
+    pthread_attr_init(&amp;attr);
+    pthread_attr_setstacksize(&amp;attr, 128 * 1024); /* 128 KB custom stack */
+
+    for (int i = 0; i &lt; POOL_SIZE; i++) {
+        pthread_create(&amp;pool.threads[i], &amp;attr, worker_thread, &amp;pool);
+    }
+    pthread_attr_destroy(&amp;attr);
+
+    /* Enqueue 8 tasks */
+    pthread_mutex_lock(&amp;pool.lock);
+    for (intptr_t i = 1; i &lt;= 8; i++) {
+        pool.queue[pool.head] = (task_t){print_task, (void *)i};
+        pool.head = (pool.head + 1) % QUEUE_MAX;
+        pool.count++;
+    }
+    pthread_cond_broadcast(&amp;pool.notify);
+    pthread_mutex_unlock(&amp;pool.lock);
+
+    sleep(1);
+
+    /* Clean shutdown */
+    pthread_mutex_lock(&amp;pool.lock);
+    pool.shutdown = true;
+    pthread_cond_broadcast(&amp;pool.notify);
+    pthread_mutex_unlock(&amp;pool.lock);
+
+    for (int i = 0; i &lt; POOL_SIZE; i++) {
+        pthread_join(pool.threads[i], NULL);
+    }
+    printf("Thread pool shut down cleanly.
+");
+    return 0;
+}</code></pre>
+
+        <h2 id="sec-29-quiz">29.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What underlying Linux system call creates POSIX threads in the Native POSIX Thread Library (NPTL)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) <code>fork()</code></label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) <code>clone()</code> (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) <code>vfork()</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>pthread_create()</code> invokes <code>clone()</code> passing flags that share virtual memory, file descriptors, and signal handlers with the calling process.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the typical default thread stack size allocated on 64-bit Linux distributions?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) 64 KB</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) 8 MB (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) 1 GB</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> The standard Linux pthreads default stack is 8 megabytes, which must be configured lower in embedded systems with limited RAM.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: What ISO C11 keyword defines a variable that is instantiated uniquely per thread?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) <code>volatile</code></label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) <code>_Thread_local</code> (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) <code>_Atomic</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>_Thread_local</code> (or <code>thread_local</code> in <code>&lt;threads.h&gt;</code>) gives the variable thread-local storage duration.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What happens if a detached thread (<code>pthread_detach()</code>) terminates?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) Its thread ID remains in a zombie state until <code>pthread_join()</code> is called.</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) Its resources and stack memory are reclaimed immediately and automatically by the system. (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) The entire parent process crashes.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Detached threads automatically clean up their own resources upon termination without requiring another thread to join them.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: Why should thread cancellation cleanup handlers be registered via <code>pthread_cleanup_push()</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) To ensure that acquired mutexes and open file handles are unlocked and freed if the thread is cancelled midway. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) To make threads run at high priority.</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) To restart the thread automatically.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Cleanup handlers act like <code>finally</code> blocks in C, guaranteeing that held locks or allocated memory are not leaked if cancellation occurs.
+            </div>
+          </div>
         </div>
       </article>
     </main>

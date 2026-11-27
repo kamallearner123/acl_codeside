@@ -379,56 +379,386 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 4 • Linux & Engineering Tools</span>
-          <h1 class="chapter-h1">Module 18: GDB Debugging & Core Dumps</h1>
-          <p class="chapter-lead">Command-line GDB mastery: hardware watchpoints, backtraces, registers inspection, remote OpenOCD target debugging, and post-mortem Linux core dump analysis.</p>
+          <h1 class="chapter-h1">Module 18: GDB Debugging & Core Dump Analysis</h1>
+          <p class="chapter-lead">Deep dive into debugger architecture, the Linux ptrace system call, ARM Remote Serial Protocol (RSP) hardware debugging, hardware watchpoints vs software breakpoints, post-mortem Linux core dump analysis, and automated GDB Python scripting.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 65m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: POSIX ptrace / GDB RSP / DWARF 4 &amp; 5</div>
+            <div class="meta-item">⚡ Target: Linux x86_64 / ARM Cortex-M (OpenOCD/JTAG)</div>
           </div>
         </div>
 
+        <h2 id="sec-18-1">18.1 Debugger Architecture: ptrace & Remote Serial Protocol</h2>
+        <p>
+          To master debugging, an engineer must understand how the debugger manipulates the target program. On Linux, GDB relies on the <strong>ptrace(2)</strong> system call. On bare-metal microcontrollers (ARM Cortex-M), GDB communicates across a TCP socket or UART with a debug agent (OpenOCD, J-Link, or pyOCD) using the <strong>GDB Remote Serial Protocol (RSP)</strong>.
+        </p>
 
-        <h2 id="sec-18-1">18.1 Core GDB Commands for Systems Engineers</h2>
-        <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>GDB Command</th>
-                <th>Purpose</th>
-                <th>Embedded Systems Application</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>watch *0x20000040</code></td>
-                <td>Hardware watchpoint</td>
-                <td>Trap when a rogue task or DMA overwrites a variable</td>
-              </tr>
-              <tr>
-                <td><code>x/16xw 0x40020000</code></td>
-                <td>Examine memory (hex words)</td>
-                <td>Directly read GPIOA peripheral register values</td>
-              </tr>
-              <tr>
-                <td><code>bt full</code></td>
-                <td>Full backtrace with local vars</td>
-                <td>Diagnose exact crash frame on HardFault or SIGSEGV</td>
-              </tr>
-              <tr>
-                <td><code>info registers</code></td>
-                <td>Dump CPU registers</td>
-                <td>Inspect PC, LR, SP, xPSR state during crash</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Debugger Architectural Paradigms</div>
+          <pre style="margin:0;color:#94A3B8;">
+1. Linux Host Debugging (ptrace):
+   [ GDB User Process ] ──ptrace(PTRACE_PEEKTEXT/POKEDATA, pid)──▶ [ Linux Kernel ]
+                                                                          │
+                                                                   Controls CPU context
+                                                                          ▼
+                                                                [ Target Process (SIGTRAP) ]
+
+2. Embedded Bare-Metal Remote Debugging (RSP):
+   [ arm-none-eabi-gdb ] ──TCP Port 3333 ($vCont?#49)──▶ [ OpenOCD / GDB Server ]
+                                                                  │
+                                                           SWD / JTAG Bus
+                                                                  ▼
+                                                      [ ARM Cortex-M Core (DWT/FPB) ]
+          </pre>
         </div>
 
+        <h3>Linux ptrace Mechanics</h3>
+        <p>
+          When GDB attaches to a target process via <code>ptrace(PTRACE_ATTACH, pid, ...)</code>, the kernel suspends the target thread and delivers a <code>SIGSTOP</code> signal. GDB then reads or writes target memory using <code>PTRACE_PEEKDATA</code> and <code>PTRACE_POKEDATA</code>, and inspects or alters CPU register state using <code>PTRACE_GETREGS</code> and <code>PTRACE_SETREGS</code>.
+        </p>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod17-build-systems-make-and-cmake.html" class="btn-secondary">← Module 17: Build Systems (Make & CMake)</a>
-          <a href="mod19-valgrind-and-sanitizers.html" class="btn-primary">Module 19: Valgrind & Sanitizers →</a>
+        <h3>ARM GDB Remote Serial Protocol (RSP)</h3>
+        <p>
+          In embedded systems, the target hardware cannot run a full Linux kernel. Instead, a host-side GDB server (such as OpenOCD) translates GDB's ASCII packets into low-level Serial Wire Debug (SWD) or JTAG register access commands:
+        </p>
+        <ul>
+          <li><code>$g#67</code>: Read all general-purpose registers (R0-R15, xPSR).</li>
+          <li><code>$m20000000,4#XX</code>: Read 4 bytes from SRAM address <code>0x20000000</code>.</li>
+          <li><code>$Z0,08000100,2#XX</code>: Insert a software breakpoint at flash address <code>0x08000100</code>.</li>
+        </ul>
+
+        <h2 id="sec-18-2">18.2 Hardware Watchpoints vs. Software Breakpoints</h2>
+        <p>
+          One of the most critical low-level distinctions is the difference between a <strong>Software Breakpoint</strong> and a <strong>Hardware Breakpoint / Watchpoint</strong>.
+        </p>
+
+        <table style="width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.9rem;">
+          <thead>
+            <tr style="background:#1E293B;color:#F8FAFC;border-bottom:2px solid #334155;">
+              <th style="padding:10px;text-align:left;">Feature</th>
+              <th style="padding:10px;text-align:left;">Software Breakpoint (<code>break</code>)</th>
+              <th style="padding:10px;text-align:left;">Hardware Breakpoint (<code>hbreak</code>)</th>
+              <th style="padding:10px;text-align:left;">Hardware Watchpoint (<code>watch</code>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Mechanism</strong></td>
+              <td style="padding:10px;">Replaces instruction opcode with a trap instruction: <code>INT 3</code> (0xCC) on x86, <code>BKPT</code> (0xBE00) on ARM.</td>
+              <td style="padding:10px;">Configures silicon comparator registers (ARM FPB: Flash Patch &amp; Breakpoint unit).</td>
+              <td style="padding:10px;">Configures silicon memory comparators (ARM DWT: Data Watchpoint and Trace).</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Flash / ROM Compatible?</strong></td>
+              <td style="padding:10px;"><span style="color:#EF4444;font-weight:bold;">No</span> (Flash cannot be overwritten without an erase cycle).</td>
+              <td style="padding:10px;"><span style="color:#10B981;font-weight:bold;">Yes</span> (Silicon unit intercepts instruction fetch address on bus).</td>
+              <td style="padding:10px;"><span style="color:#10B981;font-weight:bold;">Yes</span> (Intercepts data read/write bus transactions).</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Quantity Available</strong></td>
+              <td style="padding:10px;">Virtually unlimited (in RAM).</td>
+              <td style="padding:10px;">Limited by silicon (Typically 4 to 8 on Cortex-M4).</td>
+              <td style="padding:10px;">Limited by silicon (Typically 2 to 4 on Cortex-M4).</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Using Watchpoints to Catch Silent Memory Corruption</h3>
+        <p>
+          When an unknown bug randomly overwrites a global variable or buffer, stepping through thousands of lines of code is useless. Instead, set a hardware data watchpoint:
+        </p>
+        <pre><code class="language-gdb">(gdb) watch g_system_state.telemetry_counter
+Hardware watchpoint 1: g_system_state.telemetry_counter
+(gdb) continue
+Continuing.
+
+Hardware watchpoint 1: g_system_state.telemetry_counter
+Old value = 14
+New value = 3735928559
+0x08001a42 in faulty_buffer_copy (src=0x20000100, len=128) at drivers/dma.c:45
+45          dest[i] = src[i]; /* Overflow stepped on g_system_state! */</code></pre>
+
+        <h2 id="sec-18-3">18.3 Memory Inspection, Stack Unwinding & Disassembly</h2>
+        <p>
+          Mastery of GDB requires instant fluency in reading memory and disassembly:
+        </p>
+
+        <h3>1. The <code>x</code> (Examine Memory) Command</h3>
+        <p>
+          Syntax: <code>x / [RepeatCount] [Format] [UnitSize] [Address]</code><br>
+          Format specifiers: <code>x</code> (hex), <code>d</code> (signed dec), <code>u</code> (unsigned dec), <code>s</code> (string), <code>i</code> (instruction).<br>
+          Unit size: <code>b</code> (byte), <code>h</code> (halfword/16-bit), <code>w</code> (word/32-bit), <code>g</code> (giant/64-bit).
+        </p>
+        <pre><code class="language-gdb"># Dump 16 32-bit words in hex from peripheral base address
+(gdb) x/16xw 0x40020000
+0x40020000: 0x00000000 0x00000000 0x00000000 0x00000000
+0x40020010: 0x00000000 0x00000000 0x00000000 0x00000000
+
+# Disassemble the next 8 instructions at the Program Counter
+(gdb) x/8i $pc
+=&gt; 0x8000450 &lt;HardFault_Handler&gt;:    tst.w   lr, #4
+   0x8000454 &lt;HardFault_Handler+4&gt;:  ite     eq
+   0x8000456 &lt;HardFault_Handler+6&gt;:  mrseq   r0, msp
+   0x800045a &lt;HardFault_Handler+10&gt;: mrsne   r0, psp
+   0x800045e &lt;HardFault_Handler+14&gt;: b.w     0x80005a0 &lt;prvGetRegistersFromStack&gt;</code></pre>
+
+        <h3>2. Stack Unwinding with AAPCS Calling Conventions</h3>
+        <p>
+          When an execution halts, <code>backtrace full</code> (or <code>bt full</code>) decodes the DWARF call frame information (CFI) to reconstruct the active stack frames, arguments, and local variables.
+        </p>
+        <pre><code class="language-gdb">(gdb) bt full
+#0  ring_buffer_pop (rb=0x20000400, out_byte=0x0) at src/ring_buffer.c:52
+        tail = 4
+        head = 12
+#1  0x080003b4 in uart_rx_isr () at src/uart.c:120
+        received_char = 65 'A'
+#2  &lt;signal handler called&gt;
+#3  0x080001f0 in main () at src/main.c:88
+        i = 100</code></pre>
+
+        <h2 id="sec-18-4">18.4 Linux Core Dumps & Post-Mortem Analysis</h2>
+        <p>
+          In production Linux deployments (such as embedded gateways, robotics controllers, or telecom boxes), applications run unattended without an attached interactive debugger. When an application crashes via <code>SIGSEGV</code>, <code>SIGBUS</code>, or <code>SIGABRT</code>, the Linux kernel can dump the process’s complete memory address space, register state, and stack traces into an ELF file known as a <strong>Core Dump</strong>.
+        </p>
+
+        <h3>Enabling Core Dumps in Linux</h3>
+        <pre><code class="language-bash"># Set maximum core dump size to unlimited (for current shell session)
+ulimit -c unlimited
+
+# Configure kernel core dump naming pattern (PID, executable name, timestamp)
+sudo sysctl -w kernel.core_pattern="/var/crash/core-%e-%p-%t"</code></pre>
+
+        <h3>Post-Mortem Investigation Workflow</h3>
+        <p>
+          Once a crash occurs, load the binary executable alongside the generated core dump into GDB:
+        </p>
+        <pre><code class="language-bash">gdb ./bin/telemetry_daemon /var/crash/core-telemetry_daemon-4512-1718002000</code></pre>
+        <pre><code class="language-gdb">[New LWP 4512]
+Core was generated by `./bin/telemetry_daemon --config /etc/telemetry.conf`.
+Program terminated with signal SIGSEGV, Segmentation fault.
+#0  0x0000555555555234 in process_packet (pkt=0x0) at src/packet.c:78
+78          uint32_t magic = pkt-&gt;magic_number; /* Crash: dereferencing NULL pkt! */
+(gdb) info registers
+rax            0x0                 0
+rbx            0x7fffffffe200      140737488347648
+rcx            0x555555556010      93824992239632
+rdx            0x0                 0
+rsp            0x7fffffffe1a0      0x7fffffffe1a0
+rip            0x555555555234      0x555555555234 &lt;process_packet+20&gt;</code></pre>
+
+        <h2 id="sec-18-5">18.5 GDB Automation & Python Scripting</h2>
+        <p>
+          Modern GDB includes an integrated Python 3 interpreter. Engineers can write Python scripts to inspect complex embedded data structures, automate register validation, and produce clean visualizations of circular ring buffers or RTOS task lists.
+        </p>
+
+        <h3>Custom Ring Buffer Visualizer in GDB Python</h3>
+        <pre><code class="language-python"># save as print_ringbuf.py
+import gdb
+
+class PrintRingBuffer(gdb.Command):
+    """Inspect and pretty-print an embedded circular ring buffer."""
+    
+    def __init__(self):
+        super(PrintRingBuffer, self).__init__("print-ringbuf", gdb.COMMAND_USER)
+
+    def invoke(self, arg, from_tty):
+        val = gdb.parse_and_eval(arg)
+        head = int(val['head'])
+        tail = int(val['tail'])
+        capacity = int(val['capacity'])
+        buffer_ptr = val['buffer']
+        
+        count = (head - tail + capacity) % capacity
+        print(f"--- RingBuffer [{arg}] ---")
+        print(f" Capacity: {capacity} | Head: {head} | Tail: {tail} | Items Pending: {count}")
+        
+        items = []
+        idx = tail
+        while idx != head:
+            byte_val = int(buffer_ptr[idx])
+            items.append(f"0x{byte_val:02X}")
+            idx = (idx + 1) % capacity
+        print(" Contents: [" + ", ".join(items) + "]")
+
+PrintRingBuffer()</code></pre>
+        <p>Load and invoke the script directly inside GDB:</p>
+        <pre><code class="language-gdb">(gdb) source print_ringbuf.py
+(gdb) print-ringbuf g_uart_rx_buf
+--- RingBuffer [g_uart_rx_buf] ---
+ Capacity: 128 | Head: 5 | Tail: 2 | Items Pending: 3
+ Contents: [0x53, 0x59, 0x4E]</code></pre>
+
+        <h2 id="sec-18-6">18.6 Industrial Case Study: Subsea Sensor Watchdog HardFault</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The Deep-Sea Oceanographic Acoustic Logger Failure</h4>
+          <p>
+            An acoustic hydrophone array operating at 2,000 meters depth suffered sporadic system reboots every 18 to 36 hours. The hardware watchdog triggered an emergency reset, preventing acoustic data loss but corrupting the current flash sector.
+          </p>
+          <p>
+            <strong>Investigation via Embedded Crash Dump:</strong>
+            The firmware was equipped with a custom HardFault handler that saved the CPU register frame (R0-R3, R12, LR, PC, xPSR) and Configurable Fault Status Register (CFSR) into a reserved battery-backed SRAM region.
+          </p>
+          <p>
+            Upon recovery, engineers dumped the fault registers:
+          </p>
+          <pre><code class="language-text">CFSR: 0x00008200 (BFARVALID | PRECISERR - Precise Data Bus Error)
+BFAR: 0x20008004 (Bus Fault Address Register - Attempted access at 0x20008004)
+PC:   0x0800318C
+LR:   0x08003107</code></pre>
+          <p>
+            Loading the ELF file into <code>arm-none-eabi-gdb</code>:
+          </p>
+          <pre><code class="language-gdb">(gdb) info line *0x0800318C
+Line 142 of "src/hydrophone_dma.c" starts at address 0x8003184 &lt;dma_ping_pong_swap+16&gt;
+(gdb) disassemble 0x8003184
+0x08003188 &lt;+20&gt;: ldr   r3, [r0, #4]
+0x0800318a &lt;+22&gt;: ldr   r2, [r3, #0]
+0x0800318c &lt;+24&gt;: str   r1, [r2, #4]  &lt;-- CRASH HERE (BFAR = 0x20008004)</code></pre>
+          <p>
+            <strong>Root Cause:</strong> The hydrophone SRAM size was 32 KB (ending at <code>0x20007FFF</code>). A DMA ping-pong buffer pointer calculation suffered an off-by-one pointer arithmetic overflow during sample rates exceeding 96 kHz, writing to <code>0x20008004</code>. Because that address was unmapped physical memory, the Cortex-M bus matrix generated an immediate <code>PRECISERR</code> Data Bus Fault.
+          </p>
+        </div>
+
+        <h2 id="sec-18-7">18.7 Hands-On Lab: Debugging a Real Segfaulting C Daemon</h2>
+        <p>
+          In this lab, you will compile a multi-threaded C program with a latent pointer corruption defect, generate a core dump, and isolate the exact faulting line using GDB.
+        </p>
+
+        <h3>Faulty C Code (<code>lab_crash.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+typedef struct node {
+    int id;
+    char tag[16];
+    struct node *next;
+} node_t;
+
+static node_t *create_node(int id, const char *tag) {
+    node_t *n = (node_t *)malloc(sizeof(node_t));
+    if (!n) return NULL;
+    n-&gt;id = id;
+    strncpy(n-&gt;tag, tag, sizeof(n-&gt;tag) - 1);
+    n-&gt;next = NULL;
+    return n;
+}
+
+static void print_list(node_t *head) {
+    node_t *curr = head;
+    while (curr != NULL) {
+        printf("Node [%d]: %s
+", curr-&gt;id, curr-&gt;tag);
+        curr = curr-&gt;next; /* Will crash if curr pointer was corrupted */
+    }
+}
+
+int main(void) {
+    node_t *first = create_node(1, "Alpha");
+    node_t *second = create_node(2, "Beta");
+    first-&gt;next = second;
+
+    /* Simulating a silent heap corruption bug */
+    char *corrupter = (char *)second;
+    memset(corrupter + sizeof(int) + 16, 0xAA, sizeof(void *)); /* Overwrites second-&gt;next with 0xAAAAAAAAAAAAAAAA */
+
+    printf("Traversing list...
+");
+    print_list(first);
+
+    return 0;
+}</code></pre>
+
+        <h3>Build & Debug Script</h3>
+        <pre><code class="language-bash"># 1. Compile with debugging symbols (-g3) and frame pointers
+gcc -O0 -g3 -fno-omit-frame-pointer lab_crash.c -o lab_crash
+
+# 2. Enable core dumps
+ulimit -c unlimited
+
+# 3. Execute and trigger crash
+./lab_crash
+# Output:
+# Traversing list...
+# Node [1]: Alpha
+# Node [2]: Beta
+# Segmentation fault (core dumped)
+
+# 4. Load core dump in GDB
+gdb -q ./lab_crash core
+
+# 5. Inside GDB:
+# (gdb) bt
+# #0  print_list (head=0x5555555592a0) at lab_crash.c:23
+# #1  main () at lab_crash.c:37
+# (gdb) print curr
+# $1 = (node_t *) 0xaaaaaaaaaaaaaaaa
+# (gdb) x/16xb second
+# Displays exact bytes showing how second-&gt;next was overwritten with 0xAA!</code></pre>
+
+        <h2 id="sec-18-quiz">18.8 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Why cannot a standard software breakpoint be set in microcontroller NOR Flash memory without special hardware assistance?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) Flash memory cannot execute Thumb-2 instructions.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) Software breakpoints require overwriting the instruction with a BKPT opcode (0xBE), which fails because NOR flash requires sector erases prior to writes. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) The NVIC vector table disables breakpoints in flash memory.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Software breakpoints require dynamically patching the opcode at the target address. NOR flash bits cannot be toggled from 0 to 1 without a block erase operation, requiring dedicated hardware comparators (ARM Flash Patch & Breakpoint unit).
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the purpose of setting <code>ulimit -c unlimited</code> in Linux?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) It removes execution time limits for CPU-intensive algorithms.</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) It allows the kernel to generate core dump files of unrestricted size upon abnormal program termination. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) It allocates unlimited virtual heap memory for malloc.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> By default on many Linux distributions, the maximum core dump size is set to 0, which silently prevents core file creation when crashes occur.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: What GDB command sequence inspects 8 contiguous 32-bit memory words in hexadecimal starting at pointer <code>ptr</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) <code>dump 8 ptr</code></label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) <code>x/8xw ptr</code> (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) <code>read memory 32 8 ptr</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>x/8xw</code> specifies: examine (<code>x</code>), 8 elements (<code>8</code>), in hexadecimal format (<code>x</code>), of word unit size (<code>w</code> = 4 bytes).
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What silicon block provides hardware data watchpoints on an ARM Cortex-M4 microcontroller?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) SysTick timer</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) DWT (Data Watchpoint and Trace) unit (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) RCC (Reset and Clock Control)</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> The Cortex-M DWT contains address comparator registers that continuously monitor data address bus transactions and halt the core when a match occurs.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: When analyzing a multithreaded crash dump in GDB, how do you switch the execution context to thread 3?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) <code>thread 3</code> (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) <code>switch 3</code></label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) <code>pid 3</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>info threads</code> lists all active threads, and <code>thread &lt;id&gt;</code> switches GDB's inspection context to examine that specific thread's registers and stack trace.
+            </div>
+          </div>
         </div>
       </article>
     </main>

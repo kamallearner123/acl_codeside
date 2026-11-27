@@ -379,36 +379,322 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 4 • Linux & Engineering Tools</span>
-          <h1 class="chapter-h1">Module 19: Valgrind & Sanitizers (ASan/UBSan)</h1>
-          <p class="chapter-lead">Detect memory leaks, use-after-free, out-of-bounds array access, and undefined behavior dynamically with Valgrind Memcheck and LLVM/GCC Sanitizers (-fsanitize=address,undefined).</p>
+          <h1 class="chapter-h1">Module 19: Dynamic Analysis &amp; Compiler Sanitizers</h1>
+          <p class="chapter-lead">Master runtime verification of memory safety, undefined behavior, and concurrency hazards using Valgrind Memcheck, AddressSanitizer (ASan), UndefinedBehaviorSanitizer (UBSan), and ThreadSanitizer (TSan). Understand shadow memory mechanics, redzone insertion, and production triage workflows.</p>
           <div class="chapter-meta-bar">
-            <div class="meta-item">⏱️ Duration: 50m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">⏱️ Duration: 55m</div>
+            <div class="meta-item">🎯 Standard: C11 / POSIX / LLVM Compiler-RT</div>
+            <div class="meta-item">⚡ Target: Linux x86_64 / ARM AArch64 / QEMU</div>
           </div>
         </div>
 
-
-        <h2 id="sec-19-1">19.1 AddressSanitizer (ASan) vs Valgrind</h2>
+        <h2 id="sec-19-1">19.1 Dynamic Binary Translation vs. Compiler Instrumentation</h2>
         <p>
-          AddressSanitizer (ASan) instruments compiler binaries at build time, catching memory errors with 2x slowdown compared to Valgrind's 20x slowdown:
+          Detecting memory corruption, invalid pointer dereferences, and thread race conditions at runtime historically required two distinct engineering philosophies:
         </p>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">Bash</span><span>Compiling with ASan & UBSan</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-bash">gcc -fsanitize=address,undefined -g -O1 server.c -o server_sanitized
-./server_sanitized</code></pre>
-          </div>
+
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Dynamic Verification Approaches Compared</div>
+          <pre style="margin:0;color:#94A3B8;">
+1. Dynamic Binary Translation (Valgrind):
+   Unmodified ELF Binary ──▶ [ Valgrind JIT Core ] ──▶ Instruments machine instructions in RAM
+                                                      └── Shadow Memory tracking (V-bits &amp; A-bits)
+   Overhead: ~10x to 25x execution slowdown; high memory penalty (2x-4x RAM).
+
+2. Compile-Time Instrumentation (Compiler Sanitizers - ASan, UBSan, TSan):
+   Source Code (.c) ──▶ [ GCC / Clang -fsanitize=... ] ──▶ Instrumented ELF Binary
+                                                           ├── Injects Redzones around buffers
+                                                           └── Direct Shadow Memory Lookups
+   Overhead: ~1.5x to 2x execution slowdown; minimal runtime penalty.
+          </pre>
         </div>
 
+        <table style="width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.9rem;">
+          <thead>
+            <tr style="background:#1E293B;color:#F8FAFC;border-bottom:2px solid #334155;">
+              <th style="padding:10px;text-align:left;">Capability / Defect Type</th>
+              <th style="padding:10px;text-align:left;">Valgrind Memcheck</th>
+              <th style="padding:10px;text-align:left;">AddressSanitizer (ASan)</th>
+              <th style="padding:10px;text-align:left;">UBSan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Heap Buffer Overflow</strong></td>
+              <td style="padding:10px;"><span style="color:#10B981;">Yes</span></td>
+              <td style="padding:10px;"><span style="color:#10B981;">Yes (Instant SIGSEGV)</span></td>
+              <td style="padding:10px;">No</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Stack Buffer Overflow</strong></td>
+              <td style="padding:10px;"><span style="color:#EF4444;font-weight:bold;">No</span> (Cannot see stack layout)</td>
+              <td style="padding:10px;"><span style="color:#10B981;">Yes</span> (Inserts stack redzones)</td>
+              <td style="padding:10px;">No</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Global / Static Buffer Overflow</strong></td>
+              <td style="padding:10px;"><span style="color:#EF4444;font-weight:bold;">No</span></td>
+              <td style="padding:10px;"><span style="color:#10B981;">Yes</span> (Pads .bss/.data)</td>
+              <td style="padding:10px;">No</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Heap Use-After-Free</strong></td>
+              <td style="padding:10px;"><span style="color:#10B981;">Yes</span></td>
+              <td style="padding:10px;"><span style="color:#10B981;">Yes (Quarantine pool)</span></td>
+              <td style="padding:10px;">No</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Uninitialized Memory Read</strong></td>
+              <td style="padding:10px;"><span style="color:#10B981;">Yes</span> (V-bit tracking)</td>
+              <td style="padding:10px;">Requires MSan (MemorySanitizer)</td>
+              <td style="padding:10px;">No</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Signed Integer Overflow / UB</strong></td>
+              <td style="padding:10px;"><span style="color:#EF4444;">No</span></td>
+              <td style="padding:10px;">No</td>
+              <td style="padding:10px;"><span style="color:#10B981;">Yes</span></td>
+            </tr>
+          </tbody>
+        </table>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod18-gdb-debugging-and-core-dumps.html" class="btn-secondary">← Module 18: GDB Debugging & Core Dumps</a>
-          <a href="mod20-static-analysis-tools.html" class="btn-primary">Module 20: Static Analysis Tools →</a>
+        <h2 id="sec-19-2">19.2 AddressSanitizer (ASan) Internals & Shadow Memory</h2>
+        <p>
+          AddressSanitizer achieves unprecedented performance through an ingenious mathematical abstraction: <strong>Shadow Memory</strong>.
+        </p>
+        <p>
+          In a 64-bit architecture, every 8 bytes of application virtual memory are mapped to exactly <strong>1 byte of shadow memory</strong>. The shadow byte encodes the accessibility of those 8 bytes:
+        </p>
+        <ul>
+          <li><code>0x00</code>: All 8 bytes are valid and unpoisoned.</li>
+          <li><code>0x01 .. 0x07</code>: The first <code>k</code> bytes are addressable; the remaining bytes are poisoned redzones.</li>
+          <li>Negative / Special values (e.g., <code>0xFA</code>, <code>0xFB</code>, <code>0xFD</code>): The entire 8-byte chunk is poisoned (Heap redzone, Stack redzone, Freed heap quarantine).</li>
+        </ul>
+
+        <h3>Mathematical Translation Formula</h3>
+        <p>
+          Given any 64-bit application memory address <code>Addr</code>, the corresponding shadow memory byte is located in <code>O(1)</code> time via a fast bit-shift and constant offset addition:
+        </p>
+        <pre><code class="language-c">char *shadow_byte = (char *)((Addr &gt;&gt; 3) + 0x7fff8000);</code></pre>
+
+        <h3>Compiler Instrumentation Example</h3>
+        <p>When you write an ordinary memory write in C:</p>
+        <pre><code class="language-c">*address = 0xAA;</code></pre>
+        <p>Under <code>-fsanitize=address</code>, GCC/Clang transforms the instruction into:</p>
+        <pre><code class="language-c">char *shadow = (char *)(((uintptr_t)address &gt;&gt; 3) + 0x7fff8000);
+if (*shadow != 0) {
+    if (((uintptr_t)address &amp; 7) &gt;= *shadow) {
+        __asan_report_store1(address); /* Traps immediately with backtrace! */
+    }
+}
+*address = 0xAA;</code></pre>
+
+        <h2 id="sec-19-3">19.3 UndefinedBehaviorSanitizer (UBSan)</h2>
+        <p>
+          C allows undefined behavior (UB) for maximum compiler optimization liberty. When UB occurs, modern compilers (GCC/Clang) assume the path is dead code, often silently omitting safety checks. <strong>UBSan</strong> instruments the binary to abort or log errors when UB occurs.
+        </p>
+
+        <h3>Critical Flaws Caught by UBSan (<code>-fsanitize=undefined</code>)</h3>
+        <ol>
+          <li><strong>Signed Integer Overflow:</strong> Exceeding <code>INT_MAX</code> is undefined in ISO C §6.5.6.</li>
+          <li><strong>Misaligned Pointer Access:</strong> Dereferencing a <code>uint32_t *</code> on an odd byte address (e.g. <code>0x20000003</code>) triggers bus faults on ARM Cortex-M0/M3/M4.</li>
+          <li><strong>Shift Out-of-Bounds:</strong> Shifting a 32-bit integer by &ge; 32 bits (e.g., <code>1U &lt;&lt; 32</code>).</li>
+          <li><strong>NULL Pointer Arithmetic:</strong> Computing <code>NULL + offset</code> even if not dereferenced.</li>
+          <li><strong>Type Punning Violations:</strong> Violating the strict aliasing rule (ISO C §6.5).</li>
+        </ol>
+
+        <h2 id="sec-19-4">19.4 ThreadSanitizer (TSan) & Concurrency Data Races</h2>
+        <p>
+          A <strong>Data Race</strong> occurs whenever two threads concurrently access the same shared memory location, at least one of the accesses is a write, and the threads do not use any synchronization (mutexes, atomics, or memory barriers).
+        </p>
+        <p>
+          ThreadSanitizer (<code>-fsanitize=thread</code>) tracks the <em>happens-before</em> partial order using vector clocks. When TSan detects two conflicting accesses unsynchronized by synchronization primitives, it prints a complete diagnostic listing both threads, their allocation call stacks, and the exact source code lines.
+        </p>
+
+        <h2 id="sec-19-5">19.5 Valgrind Memcheck & Massif in Production</h2>
+        <p>
+          While ASan is superior for catching buffer overflows in developer builds, <strong>Valgrind Memcheck</strong> remains indispensable because:
+        </p>
+        <ul>
+          <li>It requires <strong>zero recompilation</strong> (can run on vendor pre-compiled binaries).</li>
+          <li>It detects <strong>uninitialized memory reads</strong> (passing uninitialized struct padding to network sockets).</li>
+          <li><strong>Valgrind Massif</strong> generates visual heap allocation profiles over time, identifying insidious memory leaks that evade simple threshold checks.</li>
+        </ul>
+
+        <h2 id="sec-19-6">19.6 Industrial Case Study: The Heartbleed Vulnerability (CVE-2014-0160)</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The OpenSSL Heartbleed Buffer Over-Read Catastrophe</h4>
+          <p>
+            In April 2014, the Heartbleed bug in OpenSSL exposed millions of private encryption keys, passwords, and sessions worldwide. The flaw resided in the TLS Heartbeat extension.
+          </p>
+          <p>
+            <strong>The Defect:</strong> The client sends a payload length field (a 16-bit integer up to 65,535 bytes) along with a small 1-byte payload. The server allocated an output buffer and copied the specified length without validating whether the actual received packet contained that many bytes:
+          </p>
+          <pre><code class="language-c">/* Faulty OpenSSL Code */
+unsigned int payload = 0;
+n2s(p, payload); /* Extracts length from client header (e.g. 64 KB) */
+/* ... */
+unsigned char *buffer = malloc(1 + 2 + payload + padding);
+memcpy(bp, pl, payload); /* pl was only 1 byte! Over-reads 64 KB of heap! */</code></pre>
+          <p>
+            The server dutifully copied 64 KB of adjacent heap memory—which contained private RSA keys and user credentials—and transmitted it back to the client!
+          </p>
+          <p>
+            <strong>Why Standard Tests Missed It:</strong> Reading beyond a heap buffer boundary does not cause a crash unless it hits an unmapped virtual memory page.
+          </p>
+          <p>
+            <strong>How ASan Instantly Prevents It:</strong> Because ASan surrounds every heap allocation with poisoned redzones, <code>memcpy</code> reading into the poisoned shadow memory triggers an immediate, unmaskable ASan abort:
+          </p>
+          <pre><code class="language-text">=================================================================
+==4210==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000041
+READ of size 65535 at 0x602000000041 thread T0
+    #0 0x7f4b82 in memcpy /usr/include/bits/string3.h:51
+    #1 0x7f4b82 in tls1_process_heartbeat ssl/t1_lib.c:2586
+=================================================================</code></pre>
+        </div>
+
+        <h2 id="sec-19-7">19.7 Hands-On Lab: Diagnosing 4 Memory Safety Defects with ASan & UBSan</h2>
+        <p>
+          In this lab, you will compile a diagnostic test suite containing 4 subtle, real-world C bugs. You will use GCC sanitizers to catch all 4 bugs without stepping through a single line in a debugger.
+        </p>
+
+        <h3>Test Harness (<code>lab_sanitizer.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;limits.h&gt;
+
+static void bug1_heap_uaf(void) {
+    char *buf = (char *)malloc(32);
+    strcpy(buf, "Safety-Critical");
+    free(buf);
+    printf("[BUG 1] Read after free: %c
+", buf[0]); /* Use-After-Free! */
+}
+
+static void bug2_stack_overflow(void) {
+    int arr[4] = {10, 20, 30, 40};
+    int val = arr[5]; /* Stack Buffer Overflow! */
+    printf("[BUG 2] Out of bounds: %d
+", val);
+}
+
+static void bug3_signed_overflow(void) {
+    int max = INT_MAX;
+    int result = max + 1; /* Undefined Behavior: Signed Overflow! */
+    printf("[BUG 3] Overflow result: %d
+", result);
+}
+
+static void bug4_unaligned_access(void) {
+    char raw_bytes[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+    /* Misaligned 32-bit pointer on odd byte boundary */
+    int *unaligned_ptr = (int *)&amp;raw_bytes[1];
+    printf("[BUG 4] Misaligned value: 0x%08X
+", *unaligned_ptr);
+}
+
+int main(int argc, char **argv) {
+    if (argc &lt; 2) {
+        printf("Usage: %s &lt;1|2|3|4&gt;
+", argv[0]);
+        return 1;
+    }
+    int choice = atoi(argv[1]);
+    switch (choice) {
+        case 1: bug1_heap_uaf(); break;
+        case 2: bug2_stack_overflow(); break;
+        case 3: bug3_signed_overflow(); break;
+        case 4: bug4_unaligned_access(); break;
+        default: printf("Invalid choice
+"); break;
+    }
+    return 0;
+}</code></pre>
+
+        <h3>Build & Test Commands</h3>
+        <pre><code class="language-bash"># Compile with AddressSanitizer and UndefinedBehaviorSanitizer
+gcc -O1 -g -fsanitize=address,undefined -fno-omit-frame-pointer lab_sanitizer.c -o lab_sanitizer
+
+# Test Bug 1: Heap Use-After-Free
+./lab_sanitizer 1
+# ASan reports: heap-use-after-free on address 0x... freed by thread T0 here: ...
+
+# Test Bug 2: Stack Buffer Overflow
+./lab_sanitizer 2
+# ASan reports: stack-buffer-overflow on address 0x... in bug2_stack_overflow
+
+# Test Bug 3: Signed Integer Overflow
+./lab_sanitizer 3
+# UBSan reports: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'
+
+# Test Bug 4: Misaligned Access
+./lab_sanitizer 4
+# UBSan reports: load of misaligned address 0x... for type 'int', which requires 4 byte alignment</code></pre>
+
+        <h2 id="sec-19-quiz">19.8 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Why is AddressSanitizer (ASan) capable of detecting stack buffer overflows while Valgrind Memcheck cannot?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) Valgrind only instruments 32-bit software.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) ASan is a compiler pass that restructures stack frames by inserting poisoned redzones between local variables; Valgrind runs on precompiled binaries without stack frame layout insight. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) Valgrind disables the CPU stack pointer register.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Valgrind operates on unmodified binaries and only monitors heap allocation hooks (<code>malloc</code>/<code>free</code>) and system call buffers. It cannot differentiate between adjacent variables inside an allocated stack frame.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the shadow memory scale factor utilized by AddressSanitizer on 64-bit platforms?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) 1 shadow byte tracks 1 application byte.</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) 1 shadow byte tracks 8 application bytes (1:8 scale factor). (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) 1 shadow bit tracks 32 application words.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> ASan maps 8 bytes of virtual memory to 1 shadow byte, resulting in a compact shadow memory layout representing exactly 1/8th of the address space.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: Which sanitizer should be deployed to detect multithreaded data races on shared memory without locks?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) <code>-fsanitize=address</code></label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) <code>-fsanitize=undefined</code></label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) <code>-fsanitize=thread</code> (TSan) (Correct)</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> ThreadSanitizer (TSan) instruments memory reads and writes with vector clocks to identify conflicting, unsynchronized accesses between concurrent threads.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What happens when signed integer overflow occurs in a binary compiled with <code>-fsanitize=undefined</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) The CPU wraps silently using two's complement arithmetic.</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) UBSan traps the operation and prints an error diagnostic detailing the file, line number, and invalid values. (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) The program switches to 64-bit integers automatically.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> UBSan inserts checks prior to arithmetic operations and intercepts undefined behavior before the CPU or compiler can trigger erroneous execution paths.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: Can AddressSanitizer and ThreadSanitizer be enabled simultaneously in the same GCC build invocation?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) Yes, they seamlessly merge shadow memory mappings.</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) No, ASan and TSan are mutually exclusive because both define conflicting shadow memory layouts and runtime interceptors. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) Yes, provided <code>-O3</code> is passed.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> ASan and TSan cannot be linked into the same executable; developers must execute separate test runs for memory errors (ASan) and concurrency races (TSan).
+            </div>
+          </div>
         </div>
       </article>
     </main>

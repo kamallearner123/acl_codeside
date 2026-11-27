@@ -378,52 +378,335 @@
     <main class="main-content">
       <article class="prose">
         <div class="chapter-hero">
-          <span class="chapter-module-tag">Part 5 • Testing & QA Engineering</span>
-          <h1 class="chapter-h1">Module 22: Unit Testing with Unity & CMock</h1>
-          <p class="chapter-lead">Test-Driven Development (TDD) for embedded firmware: writing unit tests on host x86 machines with Unity framework and mocking hardware interfaces with CMock.</p>
+          <span class="chapter-module-tag">Part 5 • Testing &amp; QA Engineering</span>
+          <h1 class="chapter-h1">Module 22: Unit Testing with Unity &amp; CMock</h1>
+          <p class="chapter-lead">Master embedded unit testing architectures using the industry-standard Unity test framework and CMock function mocking engine. Learn how to decouple hardware dependencies, execute test suites 1,000x faster on development hosts, and assert memory buffers, struct layouts, and error states.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 55m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: ISO 26262 Part 6 / DO-178C Level B / Unity 2.5+</div>
+            <div class="meta-item">⚡ Target: Host x86_64 / Cross-Compiled QEMU</div>
           </div>
         </div>
 
+        <h2 id="sec-22-1">22.1 The Embedded Testing Pyramid & Host-Based Verification</h2>
+        <p>
+          In traditional embedded workflows, engineers write firmware, flash a physical target board over JTAG/SWD, and probe with an oscilloscope or printf. This workflow is painfully slow (15-60 seconds per debug iteration) and fails to scale across complex state machines.
+        </p>
 
-        <h2 id="sec-22-1">22.1 TDD Workflow with the Unity Test Framework</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>test_ring_buffer.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include "unity.h"
-#include "ring_buffer.h"
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">The Embedded Software Testing Pyramid</div>
+          <pre style="margin:0;color:#94A3B8;">
+                 ▲
+                ╱ ╲
+               ╱ HIL╲          Hardware-In-The-Loop: Real physical silicon, oscilloscopes,
+              ╱──────╲         environmental chambers. (~10-50 tests/day)
+             ╱ System ╲        Board-level firmware execution, complete peripherals.
+            ╱──────────╲       (~100-500 tests/day)
+           ╱ Integration╲      Subsystem interaction, simulated buses, RTOS tasks.
+          ╱──────────────╲     (~1,000 tests/hour)
+         ╱   Unit Tests   ╲    Host-compiled pure C algorithms, Unity/CMock, 100% mocks.
+        ╱──────────────────╲   (&gt; 10,000 tests in under 2 seconds!)
+          </pre>
+        </div>
 
-static RingBuffer_t rb;
+        <p>
+          By isolating hardware register accesses behind abstract HAL boundaries, <strong>90% of embedded firmware algorithms</strong> (parsers, state machines, protocol decoders, PID loops, memory managers) can be compiled with host GCC or Clang and validated in fractions of a second on developer workstations and in CI/CD pipelines.
+        </p>
 
-void setUp(void)    { ring_buffer_init(&rb); }
-void tearDown(void) { }
+        <h2 id="sec-22-2">22.2 The Unity Test Framework Architecture</h2>
+        <p>
+          <strong>Unity</strong> is an ultra-lightweight, ANSI C-compliant test harness engineered specifically for embedded and resource-constrained environments. It requires zero dynamic memory allocation and outputs standardized ASCII or TAP test reports.
+        </p>
 
-void test_ring_buffer_put_get_single_byte(void) {
-    uint8_t out = 0;
-    TEST_ASSERT_TRUE(ring_buffer_put(&rb, 0x42));
-    TEST_ASSERT_TRUE(ring_buffer_get(&rb, &out));
-    TEST_ASSERT_EQUAL_HEX8(0x42, out);
+        <h3>Unity Execution Lifecycle</h3>
+        <p>
+          Each individual test case executes inside a strictly defined lifecycle sandwich:
+        </p>
+        <ol>
+          <li><code>setUp(void)</code>: Invoked automatically prior to <em>every</em> single test function. Resets global state, reinitializes circular buffers, and zeroes mock expectations.</li>
+          <li><code>test_FunctionName(void)</code>: The unit test body containing assertions.</li>
+          <li><code>tearDown(void)</code>: Invoked automatically following <em>every</em> single test function. Frees allocated test buffers and validates that no unhandled mock calls remain.</li>
+        </ol>
+
+        <h3>Production Unity Assertions</h3>
+        <pre><code class="language-c">/* Exact integer comparisons */
+TEST_ASSERT_EQUAL_INT32(expected_int, actual_int);
+TEST_ASSERT_EQUAL_HEX32(0xDEADBEEF, register_val);
+
+/* Null pointer checks */
+TEST_ASSERT_NOT_NULL(sensor_handle);
+TEST_ASSERT_NULL(invalid_handle);
+
+/* Float comparisons with delta tolerances */
+TEST_ASSERT_FLOAT_WITHIN(0.001f, 3.300f, measured_voltage);
+
+/* Memory and byte-array comparisons */
+TEST_ASSERT_EQUAL_MEMORY(expected_packet, received_packet, sizeof(packet_t));
+TEST_ASSERT_EQUAL_UINT8_ARRAY(expected_bytes, buffer, 16);</code></pre>
+
+        <h2 id="sec-22-3">22.3 CMock & Function Mocking Mechanics</h2>
+        <p>
+          Unit testing requires isolating the <strong>Unit Under Test (UUT)</strong> from its external collaborators. When testing a temperature telemetry module that writes to I2C, you must not invoke physical I2C hardware. Instead, you link against a <strong>Mock Object</strong>.
+        </p>
+        <p>
+          <strong>CMock</strong> parses C header files (such as <code>i2c_driver.h</code>) and automatically generates mock implementations of every declared function.
+        </p>
+
+        <h3>CMock Expectation Patterns</h3>
+        <pre><code class="language-c">/* 1. Expect call with exact parameters and return a specific status */
+i2c_write_ExpectAndReturn(0x48, expected_payload, 2, I2C_STATUS_OK);
+
+/* 2. Expect call and validate an array parameter */
+i2c_write_ExpectWithArray(0x48, 1, expected_data, 1, 1, 4, I2C_STATUS_OK);
+
+/* 3. Ignore arguments and return error (simulating hardware bus failure) */
+i2c_read_IgnoreAndReturn(I2C_STATUS_BUS_ERROR);</code></pre>
+
+        <h2 id="sec-22-4">22.4 Decoupling Time & Interrupts in Unit Tests</h2>
+        <p>
+          Embedded code frequently uses hardware timers or delay loops (such as <code>HAL_Delay(100)</code>). If executed naively on a host machine, unit tests would crawl at real-time speeds, and testing a 10-minute timeout would take 10 minutes.
+        </p>
+        <p>
+          <strong>The Solution: Time Injection.</strong> Provide a virtual clock interface:
+        </p>
+        <pre><code class="language-c">/* Virtual Time Interface */
+typedef uint32_t (*time_get_ticks_fn)(void);
+
+static uint32_t g_fake_ticks = 0;
+uint32_t mock_get_ticks(void) { return g_fake_ticks; }
+
+void test_telemetry_timeout(void) {
+    g_fake_ticks = 0;
+    telemetry_start();
+    
+    /* Warp time forward by 5000 milliseconds instantaneously! */
+    g_fake_ticks += 5000;
+    telemetry_process();
+    
+    TEST_ASSERT_EQUAL(TELEMETRY_STATE_TIMEOUT, telemetry_get_state());
+}</code></pre>
+
+        <h2 id="sec-22-5">22.5 Industrial Case Study: Therac-25 Medical Radiation Disaster</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The Lethal Software Race Condition in Medical Linear Accelerators</h4>
+          <p>
+            Between 1985 and 1987, the Therac-25 medical radiation machine administered massive radiation overdoses (over 100 times the intended therapeutic dose) to multiple oncology patients, causing severe radiation poisoning and deaths.
+          </p>
+          <p>
+            <strong>The Software Defect:</strong>
+            The operator console allowed the technician to select "X-Ray Mode" (which uses a high-energy electron beam deflected by a physical tungsten target plate) or "Electron Mode" (which uses a low-energy beam without the target).
+          </p>
+          <p>
+            If a skilled technician accidentally pressed "X-Ray", quickly hit "Up Arrow", and corrected it to "Electron Mode" within an eight-second window, an unhandled race condition occurred:
+          </p>
+          <ul>
+            <li>The software reset the machine state variables indicating Electron Mode.</li>
+            <li>However, the subroutine positioning the heavy mechanical tungsten shield took several seconds to respond and did not move the shield into place!</li>
+            <li>The software fired the raw, unattenuated 25 MeV high-current beam directly into human tissue without the attenuating target in place.</li>
+          </ul>
+          <p>
+            <strong>How Unit Testing Prevents This:</strong>
+            Therac-25 was tested almost exclusively as a whole integrated machine; developers never unit-tested the keyboard entry parser and motor positioning state transitions independently. Host-based unit testing with randomized input fuzzing would have executed millions of rapid state transitions, instantly uncovering the missing synchronization between user input validation and mechanical actuator interlocks.
+          </p>
+        </div>
+
+        <h2 id="sec-22-6">22.6 Hands-On Lab: Complete Unity Test Suite for an Embedded Circular Ring Buffer</h2>
+        <p>
+          In this laboratory, you will construct a production FIFO circular ring buffer and develop an exhaustive Unity test harness verifying boundary conditions: initialization, full buffer rejection, FIFO order preservation, and wrap-around mechanics.
+        </p>
+
+        <h3>1. Production Ring Buffer Header (<code>ring_buf.h</code>)</h3>
+        <pre><code class="language-c">#ifndef RING_BUF_H_
+#define RING_BUF_H_
+
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+#define RING_BUF_CAPACITY 8U
+
+typedef struct {
+    uint8_t buffer[RING_BUF_CAPACITY];
+    uint32_t head;
+    uint32_t tail;
+    uint32_t count;
+} ring_buf_t;
+
+void ring_buf_init(ring_buf_t *rb);
+bool ring_buf_push(ring_buf_t *rb, uint8_t byte);
+bool ring_buf_pop(ring_buf_t *rb, uint8_t *out_byte);
+bool ring_buf_is_empty(const ring_buf_t *rb);
+bool ring_buf_is_full(const ring_buf_t *rb);
+
+#endif /* RING_BUF_H_ */</code></pre>
+
+        <h3>2. Production Implementation (<code>ring_buf.c</code>)</h3>
+        <pre><code class="language-c">#include "ring_buf.h"
+
+void ring_buf_init(ring_buf_t *rb) {
+    if (!rb) return;
+    rb-&gt;head = 0;
+    rb-&gt;tail = 0;
+    rb-&gt;count = 0;
+}
+
+bool ring_buf_push(ring_buf_t *rb, uint8_t byte) {
+    if (!rb || ring_buf_is_full(rb)) return false;
+    rb-&gt;buffer[rb-&gt;head] = byte;
+    rb-&gt;head = (rb-&gt;head + 1U) % RING_BUF_CAPACITY;
+    rb-&gt;count++;
+    return true;
+}
+
+bool ring_buf_pop(ring_buf_t *rb, uint8_t *out_byte) {
+    if (!rb || !out_byte || ring_buf_is_empty(rb)) return false;
+    *out_byte = rb-&gt;buffer[rb-&gt;tail];
+    rb-&gt;tail = (rb-&gt;tail + 1U) % RING_BUF_CAPACITY;
+    rb-&gt;count--;
+    return true;
+}
+
+bool ring_buf_is_empty(const ring_buf_t *rb) {
+    return (rb != (void *)0) ? (rb-&gt;count == 0U) : true;
+}
+
+bool ring_buf_is_full(const ring_buf_t *rb) {
+    return (rb != (void *)0) ? (rb-&gt;count &gt;= RING_BUF_CAPACITY) : false;
+}</code></pre>
+
+        <h3>3. Exhaustive Unity Test Suite (<code>test_ring_buf.c</code>)</h3>
+        <pre><code class="language-c">#include "unity.h"
+#include "ring_buf.h"
+
+static ring_buf_t g_rb;
+
+void setUp(void) {
+    ring_buf_init(&amp;g_rb);
+}
+
+void tearDown(void) {
+    /* Cleanup after each test */
+}
+
+void test_initial_state_is_empty(void) {
+    TEST_ASSERT_TRUE(ring_buf_is_empty(&amp;g_rb));
+    TEST_ASSERT_FALSE(ring_buf_is_full(&amp;g_rb));
+    TEST_ASSERT_EQUAL_UINT32(0, g_rb.count);
+}
+
+void test_push_and_pop_single_byte(void) {
+    uint8_t popped = 0;
+    TEST_ASSERT_TRUE(ring_buf_push(&amp;g_rb, 0x42));
+    TEST_ASSERT_EQUAL_UINT32(1, g_rb.count);
+    TEST_ASSERT_FALSE(ring_buf_is_empty(&amp;g_rb));
+
+    TEST_ASSERT_TRUE(ring_buf_pop(&amp;g_rb, &amp;popped));
+    TEST_ASSERT_EQUAL_HEX8(0x42, popped);
+    TEST_ASSERT_TRUE(ring_buf_is_empty(&amp;g_rb));
+}
+
+void test_buffer_overflow_rejection(void) {
+    for (uint8_t i = 0; i &lt; RING_BUF_CAPACITY; i++) {
+        TEST_ASSERT_TRUE(ring_buf_push(&amp;g_rb, i));
+    }
+    TEST_ASSERT_TRUE(ring_buf_is_full(&amp;g_rb));
+
+    /* Attempting to push past capacity must fail gracefully */
+    TEST_ASSERT_FALSE(ring_buf_push(&amp;g_rb, 0xFF));
+    TEST_ASSERT_EQUAL_UINT32(RING_BUF_CAPACITY, g_rb.count);
+}
+
+void test_fifo_wrap_around_preserves_order(void) {
+    uint8_t byte = 0;
+    /* Fill 4 bytes, pop 4 bytes to advance tail */
+    for (uint8_t i = 1; i &lt;= 4; i++) ring_buf_push(&amp;g_rb, i);
+    for (uint8_t i = 1; i &lt;= 4; i++) ring_buf_pop(&amp;g_rb, &amp;byte);
+
+    /* Now push across the array wrap-around boundary */
+    for (uint8_t i = 10; i &lt; 18; i++) {
+        TEST_ASSERT_TRUE(ring_buf_push(&amp;g_rb, i));
+    }
+    TEST_ASSERT_TRUE(ring_buf_is_full(&amp;g_rb));
+
+    /* Verify FIFO extraction across wrap-around */
+    for (uint8_t expected = 10; expected &lt; 18; expected++) {
+        TEST_ASSERT_TRUE(ring_buf_pop(&amp;g_rb, &amp;byte));
+        TEST_ASSERT_EQUAL_UINT8(expected, byte);
+    }
+    TEST_ASSERT_TRUE(ring_buf_is_empty(&amp;g_rb));
 }
 
 int main(void) {
     UNITY_BEGIN();
-    RUN_TEST(test_ring_buffer_put_get_single_byte);
+    RUN_TEST(test_initial_state_is_empty);
+    RUN_TEST(test_push_and_pop_single_byte);
+    RUN_TEST(test_buffer_overflow_rejection);
+    RUN_TEST(test_fifo_wrap_around_preserves_order);
     return UNITY_END();
 }</code></pre>
+
+        <h2 id="sec-22-quiz">22.7 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: In the Unity test framework, what function is guaranteed to run before each and every individual test case?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) <code>main()</code></label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) <code>setUp()</code> (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) <code>tearDown()</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>setUp()</code> resets environmental prerequisites and state variables immediately prior to executing every single test case, ensuring complete isolation between tests.
+            </div>
           </div>
-        </div>
 
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the primary architectural purpose of a Mock Object generated by CMock?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) To accelerate the clock frequency of physical microcontrollers.</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) To substitute physical hardware drivers with controllable, software-defined stubs that verify call counts, arguments, and return synthesized statuses. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) To translate C into assembly language.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Mocks decouple the Unit Under Test from real peripheral drivers and buses, allowing tests to run purely on PC development machines.
+            </div>
+          </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod21-linux-profiling-and-perf.html" class="btn-secondary">← Module 21: Linux Profiling & perf</a>
-          <a href="mod23-mocking-hardware-and-hal.html" class="btn-primary">Module 23: Mocking Hardware & HAL →</a>
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: Why is host-based unit testing significantly faster than testing on physical target evaluation boards?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) It eliminates the multi-second overhead of JTAG/SWD flash erase/programming cycles and runs at gigahertz host CPU speeds. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) Host C compilers omit memory bounds checks.</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) Unity tests bypass the C preprocessor.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Erasing and flashing microcontroller flash memory over SWD typically takes 5 to 30 seconds per iteration; compiling and running on an x86/ARM64 host takes under 50 milliseconds.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What assertion macro should be used to verify that an unattenuated floating-point calculation yields 3.1415 within a margin of 0.0001?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) <code>TEST_ASSERT_EQUAL(3.1415f, actual)</code></label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) <code>TEST_ASSERT_FLOAT_WITHIN(0.0001f, 3.1415f, actual)</code> (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) <code>TEST_ASSERT_HEX32_WITHIN(...)</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Due to IEEE-754 floating-point rounding imprecision, floats should never be compared with exact equality (<code>==</code>); delta-tolerance assertions must always be used.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: How can a unit test verify firmware behavior across a 1-hour timeout without stalling test execution for an hour?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) By speeding up the workstation CPU fan.</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) By mocking the tick timer getter function and advancing the fake tick counter programmatically by 3,600,000 milliseconds. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) Time manipulation is impossible in C unit tests.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Decoupling firmware from real wall-clock hardware timers allows unit tests to inject arbitrary time leaps instantaneously.
+            </div>
+          </div>
         </div>
       </article>
     </main>

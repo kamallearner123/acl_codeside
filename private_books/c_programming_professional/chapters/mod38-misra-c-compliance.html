@@ -379,56 +379,230 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 8 • Secure C Programming</span>
-          <h1 class="chapter-h1">Module 38: MISRA C:2012 Compliance</h1>
-          <p class="chapter-lead">Adopt the mandatory and required rules of MISRA C:2012: fixed-width types, implicit conversion restrictions, side-effect controls, and single-exit safety practices.</p>
+          <h1 class="chapter-h1">Module 38: MISRA C:2012 &amp; MISRA C:2023 Compliance</h1>
+          <p class="chapter-lead">Master safety-critical C standards mandated across automotive (ISO 26262), aerospace (DO-178C), and medical devices (IEC 62304). Deep dive into MISRA rule classifications (Mandatory, Required, Advisory), essential type models, pointer conversion restrictions, dynamic allocation bans, and formal deviation permits.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 60m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: MISRA C:2012 (AMD 1-3) / MISRA C:2023</div>
+            <div class="meta-item">⚡ Target: ISO 26262 ASIL-D &amp; DO-178C Level A Systems</div>
           </div>
         </div>
 
+        <h2 id="sec-38-1">38.1 Why MISRA C is Mandatory in High-Reliability Systems</h2>
+        <p>
+          The ISO C standard is renowned for its expressive power and runtime performance. However, ISO C contains <strong>hundreds of undefined, unspecified, and implementation-defined behaviors</strong> (such as integer promotion traps, signed overflow, and unsequenced side-effects).
+        </p>
+        <p>
+          The <strong>Motor Industry Software Reliability Association (MISRA)</strong> established MISRA C to define a disciplined, mathematically verifiable subset of C that eliminates dangerous language ambiguities without sacrificing low-level hardware control.
+        </p>
 
-        <h2 id="sec-38-1">38.1 Essential MISRA C:2012 Rules for Firmware Engineers</h2>
-        <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>MISRA Rule</th>
-                <th>Requirement</th>
-                <th>Rationale</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Rule 4.6 (Adv)</td>
-                <td>Use fixed-width types (<code>stdint.h</code>)</td>
-                <td>Eliminates 16-bit vs 32-bit int ambiguity</td>
-              </tr>
-              <tr>
-                <td>Rule 10.1 (Req)</td>
-                <td>No inappropriate operand promotions</td>
-                <td>Prevents unintended sign extension bugs</td>
-              </tr>
-              <tr>
-                <td>Rule 14.4 (Req)</td>
-                <td>Condition must be purely boolean</td>
-                <td>Forbids <code>if (x)</code> when x is integer</td>
-              </tr>
-              <tr>
-                <td>Rule 21.3 (Req)</td>
-                <td>No stdlib dynamic memory allocation</td>
-                <td>Prevents heap fragmentation in 24/7 runtimes</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">MISRA Rule Categorization Hierarchy</div>
+          <pre style="margin:0;color:#94A3B8;">
+1. Mandatory Rules:
+   Zero tolerance. Cannot be deviated under any circumstances!
+   Example: Rule 9.1 (Uninitialized variables), Rule 22.1 (Freeing reserved memory).
+
+2. Required Rules:
+   Must be obeyed unless a formal, documented Engineering Deviation Permit is approved.
+   Example: Rule 11.4 (Pointer to integer casting for MMIO registers).
+
+3. Advisory Rules:
+   Best-practice engineering recommendations; deviations do not require formal customer sign-off.
+   Example: Rule 16.4 (Every switch statement should have a default clause).
+          </pre>
         </div>
 
+        <h2 id="sec-38-2">38.2 Core Safety Rules in MISRA C:2012</h2>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod37-rtos-fundamentals-and-freertos.html" class="btn-secondary">← Module 37: RTOS Fundamentals & FreeRTOS</a>
-          <a href="mod39-cert-c-and-defensive-coding.html" class="btn-primary">Module 39: CERT C & Defensive Coding →</a>
+        <h3>1. Rule 17.7 (Required): Non-Void Return Values Must Be Tested</h3>
+        <p>
+          Every non-void function return value must be checked. If deliberately ignored, it must be explicitly cast to <code>(void)</code>:
+        </p>
+        <pre><code class="language-c">/* VIOLATION */
+memcpy(dest, src, 16);
+
+/* COMPLIANT */
+(void)memcpy(dest, src, 16);</code></pre>
+
+        <h3>2. Rule 21.3 (Required): Banning Dynamic Memory Allocation</h3>
+        <p>
+          Functions <code>malloc()</code>, <code>calloc()</code>, <code>realloc()</code>, and <code>free()</code> are strictly prohibited after system initialization. Heap fragmentation, unbounded allocation latency, and out-of-memory states cannot be tolerated in hard real-time controllers. All buffers must be statically allocated.
+        </p>
+
+        <h3>3. Rule 14.4 (Required): Boolean Expressions in Control Flow</h3>
+        <p>
+          The controlling expression of an <code>if</code>, <code>while</code>, or <code>for</code> statement must have explicit boolean type:
+        </p>
+        <pre><code class="language-c">/* VIOLATION: Using integer as boolean */
+if (ptr) { ... }
+if (count) { ... }
+
+/* COMPLIANT */
+if (ptr != NULL) { ... }
+if (count &gt; 0U) { ... }</code></pre>
+
+        <h3>4. Rule 10.4 (Required): Essential Type Model</h3>
+        <p>
+          Both operands of a binary operator must belong to the exact same <em>Essential Type Category</em>:
+        </p>
+        <pre><code class="language-c">uint8_t a = 5U;
+uint16_t b = 100U;
+/* VIOLATION: Mismatched unsigned types */
+uint16_t c = a + b;
+
+/* COMPLIANT: Explicit cast to identical type */
+uint16_t c = (uint16_t)a + b;</code></pre>
+
+        <h2 id="sec-38-3">38.3 Writing Formal Deviation Permits for MMIO</h2>
+        <p>
+          In bare-metal embedded systems, hardware registers exist at physical addresses. Casting an integer literal like <code>0x40020000UL</code> to a pointer violates <strong>Rule 11.4</strong> (conversion between integer and pointer).
+        </p>
+        <p>
+          To write valid firmware, engineers document a formal <strong>MISRA Deviation Record (MDR)</strong>:
+        </p>
+        <pre><code class="language-c">/*
+ * DEVIATION PERMIT: MDR-GPIO-001
+ * MISRA Rule: 11.4 (A conversion should not be performed between a pointer to object and an integer)
+ * Justification: Hardware peripheral registers on STM32F4 are memory-mapped to fixed physical addresses.
+ * Safety Case: Register definitions are verified against the STM32F4 Reference Manual and tested in HIL.
+ */
+#define GPIOA ((GPIO_TypeDef *)0x40020000UL) /* Deviation Permitted */</code></pre>
+
+        <h2 id="sec-38-4">38.4 Industrial Case Study: The Toyota Unintended Acceleration Assessment</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The NASA Software Analysis of Electronic Throttle Control</h4>
+          <p>
+            Following lawsuits alleging unintended acceleration in consumer vehicles, NASA and independent software safety experts audited the vehicle’s Electronic Throttle Control System (ETCS) C codebase.
+          </p>
+          <p>
+            <strong>Audit Findings:</strong>
+            The software failed to adhere to MISRA coding guidelines:
+          </p>
+          <ul>
+            <li>Over <strong>2,200 global variables</strong> shared across concurrent tasks with inadequate synchronization.</li>
+            <li>Cyclomatic complexity of key throttle angle routines exceeded <strong>50</strong> (safety guidelines mandate &le; 10).</li>
+            <li>Ignoring function return codes for safety-critical checks.</li>
+            <li>Recursion and unbounded task stack depth risking silent stack overflow into global memory.</li>
+          </ul>
+          <p>
+            The trial resulted in a $1.2 billion settlement, cementing MISRA C compliance as a non-negotiable legal and engineering requirement across the global automotive and aerospace supply chain.
+          </p>
+        </div>
+
+        <h2 id="sec-38-5">38.5 Hands-On Lab: Refactoring Non-Compliant C Code to 100% MISRA Compliance</h2>
+        <p>
+          In this lab, you will audit a buggy sensor reading function violating 5 MISRA C rules, and refactor it into clean, compliant production code.
+        </p>
+
+        <h3>1. Non-Compliant Code (<code>dirty_code.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int read_voltage(int *out) {
+    if (out) { // MISRA 14.4 Violation: not explicit boolean
+        *out = 3300;
+        return 1;
+    }
+    // MISRA 17.4 Violation: function does not exit through single point
+}
+
+void process(void) {
+    int v;
+    read_voltage(&amp;v); // MISRA 17.7 Violation: Return value ignored
+}</code></pre>
+
+        <h3>2. Fully Refactored MISRA C:2012 Compliant Code</h3>
+        <pre><code class="language-c">#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+typedef enum {
+    STATUS_OK = 0,
+    STATUS_ERR_NULL_PARAM = 1
+} status_code_t;
+
+status_code_t read_voltage(int32_t * const out_milli_volts) {
+    status_code_t status = STATUS_ERR_NULL_PARAM;
+
+    if (out_milli_volts != (void *)0) {
+        *out_milli_volts = 3300;
+        status = STATUS_OK;
+    }
+
+    return status; /* Single exit point */
+}
+
+void process(void) {
+    int32_t voltage_mV = 0;
+    status_code_t result = read_voltage(&amp;voltage_mV);
+    if (result != STATUS_OK) {
+        /* Handled error status defensively */
+        voltage_mV = 0;
+    }
+}</code></pre>
+
+        <h2 id="sec-38-quiz">38.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Under MISRA C:2012, which classification of rule can NEVER be deviated under any circumstances?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) Advisory</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) Mandatory (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) Required</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Mandatory rules permit zero deviations; any codebase violating a Mandatory rule fails compliance automatically.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: Why does MISRA C Rule 21.3 prohibit dynamic memory allocation (<code>malloc</code>/<code>free</code>) in safety-critical systems?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) Dynamic allocation can cause unbounded allocation latency, heap fragmentation, and unhandled out-of-memory faults. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) Microcontrollers lack heap memory.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) C11 removed malloc.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Heap allocation is non-deterministic and can fail unpredictably at runtime; deterministic safety requires static memory sizing.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: How must a function call be structured under MISRA Rule 17.7 if its return value is intentionally ignored?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) Prefix with <code>ignore</code>.</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) Explicitly cast the function call to <code>(void)</code>. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) Place inside comments.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Explicitly casting to <code>(void)</code> documents to reviewers and static analyzers that discarding the return value was deliberate.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: Under MISRA Rule 14.4, is <code>if (status)</code> legal if <code>status</code> is an <code>int</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) Yes, because in C non-zero is true.</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) No; controlling expressions must have an explicit boolean type (e.g. <code>if (status != 0)</code>). (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) Only if compiled with <code>-O3</code>.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> MISRA mandates that control expressions evaluate an essentially boolean expression to prevent subtle logical errors.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What document justifies an intentional deviation from a Required MISRA rule in safety-critical projects?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) Git commit message</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) Formal Deviation Permit / Record with technical safety rationale. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) Makefile comment</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Required rules can be deviated only with formal, signed engineering documentation detailing why the deviation is necessary and why it is safe.
+            </div>
+          </div>
         </div>
       </article>
     </main>

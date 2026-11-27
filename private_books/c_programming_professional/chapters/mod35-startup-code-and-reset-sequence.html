@@ -378,57 +378,244 @@
     <main class="main-content">
       <article class="prose">
         <div class="chapter-hero">
-          <span class="chapter-module-tag">Part 7 • Embedded C & Firmware</span>
-          <h1 class="chapter-h1">Module 35: Startup Code & Reset Sequence</h1>
-          <p class="chapter-lead">The journey from power-on reset to main(): initializing the Main Stack Pointer (MSP), copying .data from Flash to SRAM, zeroing .bss, and invoking SystemInit.</p>
+          <span class="chapter-module-tag">Part 7 • Embedded C &amp; Firmware</span>
+          <h1 class="chapter-h1">Module 35: Startup Code &amp; Reset Sequence (crt0)</h1>
+          <p class="chapter-lead">Deep dive into the silicon reset lifecycle of ARM Cortex-M microcontrollers. Master the hardware reset sequence, writing the pure C Reset_Handler, copying .data from Flash to RAM, zero-filling .bss, hardware FPU coprocessor initialization, and calling main().</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 55m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: ARMv7-M Architecture / C11 Runtime Init</div>
+            <div class="meta-item">⚡ Target: Bare-Metal ARM Cortex-M4F / STM32F4</div>
           </div>
         </div>
 
+        <h2 id="sec-35-1">35.1 The Hardware Reset Sequence</h2>
+        <p>
+          When power is applied to an ARM Cortex-M processor (or when the hardware NRST pin is released), the core executes a strict, unalterable hardware sequence hardwired into the silicon:
+        </p>
 
-        <h2 id="sec-35-1">35.1 Reset_Handler Implementation in Pure C</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>startup_stm32.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include &lt;stdint.h&gt;
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Cortex-M Hardware Power-On Execution Sequence</div>
+          <pre style="margin:0;color:#94A3B8;">
+Power On / Reset Pin Released
+          │
+          ▼
+Hardware samples BOOT pins (determines whether vector table alias is Flash, System ROM, or SRAM)
+          │
+          ▼
+Step 1: Hardware reads 32-bit word from address 0x00000000 ──▶ Loads into MSP (Main Stack Pointer %sp)
+          │
+          ▼
+Step 2: Hardware reads 32-bit word from address 0x00000004 ──▶ Loads into PC (Program Counter %pc)
+          │                                                    (LSB must be 1 to indicate Thumb mode!)
+          ▼
+Step 3: CPU begins executing machine instructions at Reset_Handler()
+          </pre>
+        </div>
 
-extern uint32_t _etext, _sdata, _edata, _sbss, _ebss;
-extern int main(void);
+        <h2 id="sec-35-2">35.2 The 4 Mandatory Steps of Reset_Handler (crt0)</h2>
+        <p>
+          Before any high-level C code (like <code>main()</code>) can execute, the C runtime environment (<code>crt0</code>) must establish memory invariants guaranteed by the ISO C standard:
+        </p>
 
+        <ol>
+          <li><strong>Copy <code>.data</code> from Flash to RAM:</strong> Initialized global and static variables have their initial values stored in Flash ROM. The startup code copies them word-by-word into SRAM.</li>
+          <li><strong>Zero-Fill <code>.bss</code> in RAM:</strong> The ISO C standard guarantees that all uninitialized global/static variables start with value zero. The startup code loops through the <code>.bss</code> memory region and fills it with <code>0x00000000</code>.</li>
+          <li><strong>Enable the Hardware Floating-Point Unit (FPU):</strong> On Cortex-M4F, the hardware FPU coprocessor is powered down by default on reset. Any floating-point instruction executed before enabling CP10/CP11 triggers an immediate <code>NOCP (No Coprocessor) UsageFault</code>!</li>
+          <li><strong>Branch to <code>main()</code>:</strong> With stacks initialized and global memory established, execution branches to <code>main()</code>.</li>
+        </ol>
+
+        <h2 id="sec-35-3">35.3 Writing a Pure C <code>startup_stm32f4.c</code> from Scratch</h2>
+        <pre><code class="language-c">#include &lt;stdint.h&gt;
+
+/* Symbols defined in Linker Script */
+extern uint32_t _estack;
+extern uint32_t _sidata;
+extern uint32_t _sdata;
+extern uint32_t _edata;
+extern uint32_t _sbss;
+extern uint32_t _ebss;
+
+/* Function prototypes */
+int main(void);
+void Reset_Handler(void);
+void Default_Handler(void);
+
+/* Weak aliases for Exception Handlers */
+void NMI_Handler(void)        __attribute__((weak, alias("Default_Handler")));
+void HardFault_Handler(void)  __attribute__((weak, alias("Default_Handler")));
+void MemManage_Handler(void)  __attribute__((weak, alias("Default_Handler")));
+void BusFault_Handler(void)   __attribute__((weak, alias("Default_Handler")));
+void UsageFault_Handler(void) __attribute__((weak, alias("Default_Handler")));
+void SVC_Handler(void)        __attribute__((weak, alias("Default_Handler")));
+void PendSV_Handler(void)     __attribute__((weak, alias("Default_Handler")));
+void SysTick_Handler(void)    __attribute__((weak, alias("Default_Handler")));
+
+/* Vector Table placed into .isr_vector section */
+__attribute__((section(".isr_vector"), used))
+uint32_t * const g_pfnVectors[] = {
+    (uint32_t *)&amp;_estack,            /* 0x00: Initial Main Stack Pointer */
+    (uint32_t *)Reset_Handler,        /* 0x04: Reset Handler */
+    (uint32_t *)NMI_Handler,          /* 0x08: Non-Maskable Interrupt */
+    (uint32_t *)HardFault_Handler,    /* 0x0C: HardFault Handler */
+    (uint32_t *)MemManage_Handler,    /* 0x10: Memory Management Fault */
+    (uint32_t *)BusFault_Handler,     /* 0x14: Bus Fault */
+    (uint32_t *)UsageFault_Handler,   /* 0x18: Usage Fault */
+    0, 0, 0, 0,                       /* Reserved */
+    (uint32_t *)SVC_Handler,          /* 0x2C: SVCall */
+    0, 0,                             /* Reserved */
+    (uint32_t *)PendSV_Handler,       /* 0x38: PendSV */
+    (uint32_t *)SysTick_Handler       /* 0x3C: SysTick */
+};
+
+/* The C Runtime Reset Entry Point */
 void Reset_Handler(void) {
-    /* 1. Copy initialized data section from Flash (LMA) to SRAM (VMA) */
-    uint32_t *pSrc = &_etext;
-    uint32_t *pDest = &_sdata;
-    while (pDest &lt; &_edata) {
-        *pDest++ = *pSrc++;
+    /* Step 1: Copy .data from Flash ROM to SRAM */
+    uint32_t *src = &amp;_sidata;
+    uint32_t *dst = &amp;_sdata;
+    while (dst &lt; &amp;_edata) {
+        *dst++ = *src++;
     }
 
-    /* 2. Zero-fill uninitialized BSS section in SRAM */
-    pDest = &_sbss;
-    while (pDest &lt; &_ebss) {
-        *pDest++ = 0U;
+    /* Step 2: Zero-fill .bss section in SRAM */
+    dst = &amp;_sbss;
+    while (dst &lt; &amp;_ebss) {
+        *dst++ = 0U;
     }
 
-    /* 3. Jump to application entry point */
+    /* Step 3: Enable Hardware FPU Coprocessor (CP10 and CP11) */
+    /* System Control Space: CPACR register at 0xE000ED88 */
+    volatile uint32_t *cpacr = (volatile uint32_t *)0xE000ED88;
+    *cpacr |= ((3UL &lt;&lt; (10 * 2)) | (3UL &lt;&lt; (11 * 2))); /* Full access */
+    __asm__ volatile("dsb
+isb" ::: "memory");
+
+    /* Step 4: Branch to Application Entry Point */
     main();
 
-    /* Trap if main returns */
-    while (1);
+    /* Trap if main ever returns */
+    while (1) {
+        __asm__ volatile("wfi");
+    }
+}
+
+void Default_Handler(void) {
+    while (1) {
+        /* Infinite loop for unhandled interrupts */
+    }
 }</code></pre>
-          </div>
+
+        <h2 id="sec-35-4">35.4 Industrial Case Study: Sub-Zero Smart Meter Reset Failure</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The Uninitialized Pointer Winter Blackout Incident</h4>
+          <p>
+            An electrical utility deployed 100,000 smart grid electricity meters. During a severe polar vortex (-30°C), thousands of meters experienced power glitches and rebooted into a corrupted state with spinning fans and disabled metering.
+          </p>
+          <p>
+            <strong>Investigation:</strong> The developers optimized boot time by commenting out the <code>.bss</code> zeroing loop in the startup file to shave 3 milliseconds off reset!
+          </p>
+          <p>
+            They reasoned: <em>"We explicitly initialize all critical variables in C anyway."</em>
+          </p>
+          <p>
+            However, a secondary flash write lock flag was declared as a global:
+          </p>
+          <pre><code class="language-c">static bool g_flash_write_in_progress; /* Depended on ISO C zero-init! */</code></pre>
+          <p>
+            During a cold power glitch, unpowered SRAM cells decayed to arbitrary random patterns (often <code>0xFF</code> or <code>0xAA</code>). When the meter rebooted without <code>.bss</code> zeroing, <code>g_flash_write_in_progress</code> woke up with value <code>true</code>! The metering task assumed an ongoing write and refused to log power readings forever.
+          </p>
+          <p>
+            <strong>Corrective Action:</strong> Strict compliance with the ISO C <code>crt0</code> specification was mandated. Zeroing <code>.bss</code> was permanently re-enabled across all firmware projects.
+          </p>
         </div>
 
+        <h2 id="sec-35-5">35.5 Hands-On Lab: Verifying BSS and DATA Initialization via GDB</h2>
+        <p>
+          In this lab, you will compile the custom startup file, set a breakpoint at the entry of <code>Reset_Handler</code> in GDB, inspect SRAM before and after the copy/zero loops, and prove that <code>main()</code> receives pristine memory.
+        </p>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod34-linker-scripts-and-memory-maps.html" class="btn-secondary">← Module 34: Linker Scripts & Memory Maps</a>
-          <a href="mod36-interrupts-nvic-and-concurrency.html" class="btn-primary">Module 36: Interrupts, NVIC & Concurrency →</a>
+        <h3>Verification Script</h3>
+        <pre><code class="language-bash"># Connect GDB to running QEMU or OpenOCD target
+arm-none-eabi-gdb -q build/firmware.elf
+
+# Set breakpoint at Reset_Handler
+(gdb) target remote localhost:3333
+(gdb) break Reset_Handler
+(gdb) continue
+
+# Inspect uninitialized SRAM at _sdata before copy loop
+(gdb) print &amp;_sdata
+$1 = (uint32_t *) 0x20000000
+(gdb) x/4xw 0x20000000
+0x20000000: 0x00000000 0x00000000 0x00000000 0x00000000
+
+# Step past copy loop
+(gdb) until main
+(gdb) x/4xw 0x20000000
+# Displays populated initialized data copied faithfully from Flash!</code></pre>
+
+        <h2 id="sec-35-quiz">35.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Why must the least-significant bit (LSB) of function pointers in the ARM Cortex-M vector table be set to 1?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) To indicate parity.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) To instruct the ARM CPU to execute in Thumb instruction mode; an LSB of 0 triggers an immediate UsageFault exception. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) It represents 32-bit alignment.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Cortex-M processors exclusively support Thumb-2 instructions; setting LSB=1 signals Thumb mode to the processor core.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What happens if an application executes a hardware floating-point instruction on Cortex-M4F without first enabling CP10/CP11 in the CPACR register?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) The CPU converts the float to an integer.</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) An immediate NOCP UsageFault exception is generated. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) The calculation returns NaN.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> The FPU coprocessor is powered down on reset; executing FPU opcodes without enabling access triggers a No Coprocessor UsageFault.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: What memory operations are performed by the Reset_Handler loop handling the <code>.data</code> section?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) Zeroing out memory in RAM.</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) Copying initialized variable values from Flash ROM (LMA) into volatile SRAM (VMA). (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) Decrypting firmware.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Initialized variables must be copied from non-volatile flash into writeable SRAM before <code>main()</code> executes.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What attribute is used to provide default fallback implementations for interrupt service routines that can be overridden by user drivers?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) <code>__attribute__((weak, alias("Default_Handler")))</code> (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) <code>__attribute__((naked))</code></label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) <code>__attribute__((packed))</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Weak symbols allow the linker to bind to <code>Default_Handler</code> unless a strong definition (such as a custom <code>USART1_IRQHandler</code>) is supplied elsewhere.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What instruction should be placed in an infinite loop after <code>main()</code> in bare-metal startup code to conserve electrical power?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) <code>NOP</code></label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) <code>WFI</code> (Wait For Interrupt) (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) <code>RESET</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>WFI</code> suspends CPU core clocks until an interrupt arrives, drastically reducing power consumption compared to a busy spin loop.
+            </div>
+          </div>
         </div>
       </article>
     </main>

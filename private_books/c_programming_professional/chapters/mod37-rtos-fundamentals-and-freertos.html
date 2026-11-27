@@ -378,46 +378,219 @@
     <main class="main-content">
       <article class="prose">
         <div class="chapter-hero">
-          <span class="chapter-module-tag">Part 7 • Embedded C & Firmware</span>
-          <h1 class="chapter-h1">Module 37: RTOS Fundamentals & FreeRTOS</h1>
-          <p class="chapter-lead">Real-Time Operating System internals: task control blocks (TCB), context switching via PendSV, preemptive scheduling, queues, binary/counting semaphores, and mutex priority inheritance.</p>
+          <span class="chapter-module-tag">Part 7 • Embedded C &amp; Firmware</span>
+          <h1 class="chapter-h1">Module 37: RTOS Fundamentals &amp; FreeRTOS Internals</h1>
+          <p class="chapter-lead">Deep dive into real-time operating system kernel architecture on ARM Cortex-M. Master SysTick, PendSV, and SVC context switching mechanics, dual-stack pointers (MSP vs PSP), task control blocks (TCBs), FreeRTOS queues, semaphores, mutex priority inheritance, and the critical FromISR rules.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 70m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: FreeRTOS V10.x+ / ARM CMSIS-RTOS2</div>
+            <div class="meta-item">⚡ Target: Hard Real-Time ARM Cortex-M Firmware</div>
           </div>
         </div>
 
-
-        <h2 id="sec-37-1">37.1 Priority Inversion & Mutex Priority Inheritance</h2>
+        <h2 id="sec-37-1">37.1 Hard vs. Soft Real-Time & Determinism</h2>
         <p>
-          Priority inversion occurs when a low-priority task holds a mutex needed by a high-priority task, while a medium-priority task starves both! FreeRTOS mutexes automatically boost the low-priority task's priority until it releases the mutex.
+          A common misconception is that a Real-Time Operating System (RTOS) makes code execute faster. <strong>An RTOS does not guarantee high speed; it guarantees mathematical determinism!</strong>
         </p>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>freertos_mutex_example.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include "FreeRTOS.h"
-#include "semphr.h"
+        <ul>
+          <li><strong>Hard Real-Time:</strong> Missing a deadline constitutes a total system failure (e.g., deploying an automotive airbag within 15 ms, pacemaker cardiac pacing).</li>
+          <li><strong>Soft Real-Time:</strong> Missing a deadline degrades quality of service but does not cause catastrophic damage (e.g., video streaming frame drop).</li>
+        </ul>
 
-SemaphoreHandle_t g_i2c_mutex;
+        <h2 id="sec-37-2">37.2 Preemptive Context Switching on ARM Cortex-M</h2>
+        <p>
+          How does FreeRTOS switch execution between two tasks without an MMU? Cortex-M silicon provides three dedicated architectural features designed explicitly for RTOS kernels:
+        </p>
 
-void task_sensor_read(void *params) {
-    if (xSemaphoreTake(g_i2c_mutex, pdMS_TO_TICKS(100)) == pdTRUE) {
-        /* Safely communicate with shared I2C bus */
-        xSemaphoreGive(g_i2c_mutex);
-    }
-}</code></pre>
-          </div>
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Cortex-M Dual Stack &amp; Context Switch Pipeline</div>
+          <pre style="margin:0;color:#94A3B8;">
+1. Dual Stack Pointers:
+   MSP (Main Stack Pointer): Used exclusively by OS Kernel &amp; Hardware Interrupt ISRs.
+   PSP (Process Stack Pointer): Used exclusively by User RTOS Tasks (Thread Mode).
+
+2. Context Switch Trigger (SysTick -&gt; PendSV):
+   [ Running Task A (PSP) ]
+             │
+             ├──▶ [ SysTick Interrupt (1 kHz) ] ──▶ Decides Task B should run
+             │                                       Pends PendSV exception (lowest priority!)
+             │                                       Returns to Task A immediately
+             ▼
+   [ PendSV Exception Executes ] (Runs when NO other ISRs are active!)
+     ├── Hardware automatically pushed: R0-R3, R12, LR, PC, xPSR onto Task A's stack
+     ├── PendSV software handler pushes: R4-R11 onto Task A's stack
+     ├── Saves Task A's SP into Task A's TCB (Task Control Block)
+     ├── Loads Task B's SP from Task B's TCB
+     ├── Pops: R4-R11 from Task B's stack
+     └── Returns from exception (EXC_RETURN) ──▶ Hardware pops R0-R3, R12, LR, PC, xPSR
+                                                 Execution resumes seamlessly in Task B!
+          </pre>
         </div>
 
+        <h2 id="sec-37-3">37.3 The Critical FromISR API Rules</h2>
+        <p>
+          In FreeRTOS, every queue, semaphore, and notification API comes in two distinct variants:
+        </p>
+        <ul>
+          <li>Standard API (e.g. <code>xQueueSend()</code>, <code>xSemaphoreGive()</code>): May only be called from <strong>Task context</strong>. These functions can block and put the calling task to sleep.</li>
+          <li>FromISR API (e.g. <code>xQueueSendFromISR()</code>, <code>xSemaphoreGiveFromISR()</code>): Must be used inside <strong>Interrupt Service Routines</strong>. These functions can <strong>NEVER block</strong>!</li>
+        </ul>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod36-interrupts-nvic-and-concurrency.html" class="btn-secondary">← Module 36: Interrupts, NVIC & Concurrency</a>
-          <a href="mod38-misra-c-compliance.html" class="btn-primary">Module 38: MISRA C:2012 Compliance →</a>
+        <h3>Immediate Preemption upon ISR Exit</h3>
+        <p>
+          If an ISR wakes up a higher-priority task, the ISR must request a context switch before returning using <code>portYIELD_FROM_ISR()</code>:
+        </p>
+        <pre><code class="language-c">void USART1_IRQHandler(void) {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    uint8_t byte = (uint8_t)USART1-&gt;DR;
+
+    /* Push byte to queue; do NOT block! */
+    xQueueSendFromISR(g_uart_queue, &amp;byte, &amp;xHigherPriorityTaskWoken);
+
+    /* If consumer task has higher priority, trigger immediate context switch! */
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+}</code></pre>
+
+        <h2 id="sec-37-4">37.4 Industrial Case Study: Autonomous AGV Steering Jitter</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The 50 ms Mutex Deadlock on Factory Floor Vehicles</h4>
+          <p>
+            An autonomous guided vehicle (AGV) in a distribution warehouse experienced periodic violent steering twitching when navigating optical floor markers.
+          </p>
+          <p>
+            <strong>Investigation:</strong> The AGV executed FreeRTOS. The LiDAR obstacle detection task (Priority 2) and the Motor Control task (Priority 5) shared an internal CAN bus transmission mutex.
+          </p>
+          <p>
+            The developers created the mutex using:
+          </p>
+          <pre><code class="language-c">g_can_lock = xSemaphoreCreateBinary(); /* Missing Priority Inheritance! */</code></pre>
+          <p>
+            Because a binary semaphore was used instead of a true Mutex (<code>xSemaphoreCreateMutex()</code>), the system suffered classic Priority Inversion. A telemetry WiFi logging task (Priority 3) preempted the LiDAR task while it held the CAN lock, delaying the Motor Control task by 50 ms.
+          </p>
+          <p>
+            <strong>Resolution:</strong> Converted the synchronization object to <code>xSemaphoreCreateMutex()</code>, enabling FreeRTOS priority inheritance and eliminating steering jitter.
+          </p>
+        </div>
+
+        <h2 id="sec-37-5">37.5 Hands-On Lab: FreeRTOS Producer-Consumer Sensor Pipeline</h2>
+        <p>
+          In this laboratory, you will implement a multi-task FreeRTOS architecture featuring a sensor polling task, a thread-safe message queue, and a high-priority telemetry transmitter task.
+        </p>
+
+        <h3>Complete FreeRTOS Application (<code>freertos_app.c</code>)</h3>
+        <pre><code class="language-c">#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include &lt;stdio.h&gt;
+
+typedef struct {
+    uint32_t sample_id;
+    int16_t  temperature;
+} sensor_msg_t;
+
+static QueueHandle_t g_sensor_queue = NULL;
+
+void vSensorTask(void *pvParameters) {
+    sensor_msg_t msg = {0};
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    const TickType_t xFrequency = pdMS_TO_TICKS(100); // 10 Hz exact
+
+    for (;;) {
+        vTaskDelayUntil(&amp;xLastWakeTime, xFrequency); // Strict periodic execution
+        msg.sample_id++;
+        msg.temperature = 245; // 24.5 C
+
+        /* Send to queue, wait up to 10 ms if full */
+        xQueueSend(g_sensor_queue, &amp;msg, pdMS_TO_TICKS(10));
+    }
+}
+
+void vTelemetryTask(void *pvParameters) {
+    sensor_msg_t received_msg;
+    for (;;) {
+        /* Block indefinitely until a sensor reading arrives */
+        if (xQueueReceive(g_sensor_queue, &amp;received_msg, portMAX_DELAY) == pdPASS) {
+            printf("[TELEMETRY] Transmitted Sample #%u: Temp=%d
+",
+                   received_msg.sample_id, received_msg.temperature);
+        }
+    }
+}
+
+int main(void) {
+    g_sensor_queue = xQueueCreate(8, sizeof(sensor_msg_t));
+
+    xTaskCreate(vSensorTask, "Sensor", configMINIMAL_STACK_SIZE + 128, NULL, 2, NULL);
+    xTaskCreate(vTelemetryTask, "Telem", configMINIMAL_STACK_SIZE + 128, NULL, 3, NULL);
+
+    vTaskStartScheduler(); // Starts FreeRTOS Kernel!
+
+    for (;;); // Should never reach here
+}</code></pre>
+
+        <h2 id="sec-37-quiz">37.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Why does FreeRTOS execute context switches inside the PendSV exception handler rather than directly inside the SysTick handler?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) SysTick has no stack.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) PendSV is configured to the lowest possible interrupt priority, ensuring context switches are deferred until all higher-priority physical ISRs have finished. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) PendSV runs in hardware floating-point mode.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Deferring context switching to PendSV prevents preempting active interrupt service routines, avoiding nested stack corruption.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the primary functional difference between a FreeRTOS Binary Semaphore and a Mutex?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) Mutexes include automatic priority inheritance to eliminate priority inversion; binary semaphores do not. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) Binary semaphores can hold up to 256 items.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) Mutexes can be unlocked by any task.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> FreeRTOS mutexes implement priority inheritance and strict ownership semantics; binary semaphores are intended for task synchronization and lack priority inheritance.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: What stack pointer register is actively used when a Cortex-M core is executing in Thread mode running a FreeRTOS user task?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) MSP (Main Stack Pointer)</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) PSP (Process Stack Pointer) (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) USP (User Stack Pointer)</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> FreeRTOS configures user tasks to run with PSP; interrupts and OS kernel startup execute with MSP.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What happens if an engineer calls standard <code>xQueueSend()</code> with a non-zero timeout inside an Interrupt Service Routine?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) The queue sends the item immediately.</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) System crash or assertion failure: hardware interrupts cannot block or sleep. (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) The interrupt frequency doubles.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> ISRs must never block; only non-blocking <code>FromISR</code> variants may be called from interrupt handlers.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What function guarantees strict, drift-free periodic execution of an RTOS task?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) <code>vTaskDelay()</code></label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) <code>vTaskDelayUntil()</code> (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) <code>sleep()</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>vTaskDelayUntil()</code> calculates delays relative to the previous wake time, avoiding cumulative timing drift caused by task execution duration.
+            </div>
+          </div>
         </div>
       </article>
     </main>

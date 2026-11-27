@@ -378,63 +378,295 @@
     <main class="main-content">
       <article class="prose">
         <div class="chapter-hero">
-          <span class="chapter-module-tag">Part 7 • Embedded C & Firmware</span>
-          <h1 class="chapter-h1">Module 34: Linker Scripts & Memory Maps</h1>
-          <p class="chapter-lead">Custom GNU ld linker scripts: defining MEMORY regions (FLASH, SRAM, CCMRAM), SECTIONS (.text, .rodata, .data, .bss), load addresses (AT>FLASH), and stack/heap boundary symbols.</p>
+          <span class="chapter-module-tag">Part 7 • Embedded C &amp; Firmware</span>
+          <h1 class="chapter-h1">Module 34: Linker Scripts &amp; Memory Maps</h1>
+          <p class="chapter-lead">Master bare-metal GNU ld linker script architecture for embedded microcontrollers. Deep dive into MEMORY and SECTIONS directives, VMA vs LMA address translation, copying .data from Flash to SRAM (AT>FLASH), zero-initializing .bss, stack placement (_estack), and custom memory regions.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 60m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: GNU ld Script Syntax / ELF Object Format</div>
+            <div class="meta-item">⚡ Target: ARM Cortex-M Flash &amp; SRAM Layouts</div>
           </div>
         </div>
 
+        <h2 id="sec-34-1">34.1 The Linker's Role in Bare-Metal Systems</h2>
+        <p>
+          In a hosted operating system (such as Linux), the OS kernel’s ELF loader (<code>ld-linux.so</code>) allocates virtual memory pages, loads binary sections, and dynamically relocates symbols at runtime.
+        </p>
+        <p>
+          In a <strong>bare-metal microcontroller</strong>, there is no operating system and no loader. The silicon powers up directly into physical Flash ROM. The <strong>GNU Linker Script (<code>.ld</code>)</strong> is the master architectural blueprint that binds compiled object files into physical silicon addresses.
+        </p>
 
-        <h2 id="sec-34-1">34.1 Production ARM Cortex-M Linker Script</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">ld</span><span>stm32f401.ld</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-ld">MEMORY
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Linker Script Section Mapping: Flash to SRAM</div>
+          <pre style="margin:0;color:#94A3B8;">
+Physical Flash ROM (0x08000000 - Non-Volatile)
+┌────────────────────────────────────────────────────────┐
+│ Vector Table (.isr_vector)                             │
+├────────────────────────────────────────────────────────┤
+│ Executable Machine Code (.text)                        │
+├────────────────────────────────────────────────────────┤
+│ Constants &amp; String Literals (.rodata)                  │
+├────────────────────────────────────────────────────────┤
+│ Initial values for .data (LMA: Load Memory Address)    │ ──(Copied to SRAM during startup!)──┐
+└────────────────────────────────────────────────────────┘                                     │
+                                                                                               │
+Physical SRAM (0x20000000 - Volatile RAM)                                                      │
+┌────────────────────────────────────────────────────────┐ &lt;──────────────────────────────────┘
+│ Initialized Variables (.data - VMA: Execution Address) │ (Holds non-zero globals: int g_val = 42;)
+├────────────────────────────────────────────────────────┤
+│ Zero-Initialized Variables (.bss)                      │ (Cleared to 0x00 by Reset_Handler!)
+├────────────────────────────────────────────────────────┤
+│ Dynamic Heap (.heap) ──▶ (Grows upward)               │
+│                                                        │
+│                          ▲                             │
+│                          └── (Stack Collision Guard)   │
+│                                                        │
+│ Main Stack (.stack)  ◀── (Grows downward)              │
+└────────────────────────────────────────────────────────┘ &lt;-- Top of RAM (_estack = 0x20020000)
+          </pre>
+        </div>
+
+        <h2 id="sec-34-2">34.2 VMA vs. LMA: The AT>FLASH Directive</h2>
+        <p>
+          One of the most crucial concepts in embedded linker scripts is the distinction between:
+        </p>
+        <ul>
+          <li><strong>VMA (Virtual / Execution Memory Address):</strong> The memory address where the code expects the data to reside when running (e.g. SRAM: <code>0x20000000</code>).</li>
+          <li><strong>LMA (Load Memory Address):</strong> The physical address where the data is permanently stored in the flashed binary image (e.g. Flash ROM: <code>0x08040000</code>).</li>
+        </ul>
+        <p>
+          Initialized global variables (such as <code>uint32_t g_timeout = 5000;</code>) must retain their initial value even after power loss. Therefore, their values must be stored in Flash ROM (LMA). However, because they are mutable variables, they must execute in volatile SRAM (VMA). The linker script expresses this dual-address relationship using <code>AT &gt; FLASH</code>:
+        </p>
+        <pre><code class="language-ld">.data :
 {
-  FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 512K
-  SRAM (rwx) : ORIGIN = 0x20000000, LENGTH = 96K
+  . = ALIGN(4);
+  _sdata = .;        /* Create symbol for start of .data in RAM */
+  *(.data*)
+  . = ALIGN(4);
+  _edata = .;        /* Create symbol for end of .data in RAM */
+} &gt;RAM AT&gt; FLASH     /* VMA is RAM; LMA is FLASH! */
+
+_sidata = LOADADDR(.data); /* LMA address of .data in Flash */</code></pre>
+
+        <h2 id="sec-34-3">34.3 Production STM32F4 Linker Script</h2>
+        <pre><code class="language-ld">/* ==============================================================================
+ * Production GNU ld Linker Script for STM32F401RETx (512 KB Flash, 96 KB SRAM)
+ * ============================================================================== */
+
+ENTRY(Reset_Handler)
+
+/* Highest address of the user mode stack (Top of RAM) */
+_estack = ORIGIN(RAM) + LENGTH(RAM);
+
+/* Minimum stack and heap sizes */
+_Min_Heap_Size = 0x200;  /* 512 bytes */
+_Min_Stack_Size = 0x400; /* 1024 bytes */
+
+MEMORY
+{
+  FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 512K
+  RAM   (rwx) : ORIGIN = 0x20000000, LENGTH = 96K
 }
 
 SECTIONS
 {
-  .isr_vector : {
+  /* The startup vector table goes first into FLASH */
+  .isr_vector :
+  {
+    . = ALIGN(4);
     KEEP(*(.isr_vector))
-  } > FLASH
+    . = ALIGN(4);
+  } &gt;FLASH
 
-  .text : {
+  /* Program code and read-only data */
+  .text :
+  {
+    . = ALIGN(4);
     *(.text*)
-    *(.rodata*)
-    _etext = .;
-  } > FLASH
+    *(.glue_7)         /* Glue ARM to Thumb code */
+    *(.glue_7t)
+    *(.eh_frame)
+    KEEP (*(.init))
+    KEEP (*(.fini))
+    . = ALIGN(4);
+    _etext = .;        /* End of text section */
+  } &gt;FLASH
 
-  .data : AT(_etext) {
+  .rodata :
+  {
+    . = ALIGN(4);
+    *(.rodata*)
+    . = ALIGN(4);
+  } &gt;FLASH
+
+  /* Initialized data sections copied into RAM at startup */
+  .data :
+  {
+    . = ALIGN(4);
     _sdata = .;
     *(.data*)
+    . = ALIGN(4);
     _edata = .;
-  } > SRAM
+  } &gt;RAM AT&gt; FLASH
 
-  .bss : {
+  _sidata = LOADADDR(.data);
+
+  /* Uninitialized data section (.bss) zeroed at startup */
+  .bss :
+  {
+    . = ALIGN(4);
     _sbss = .;
     *(.bss*)
     *(COMMON)
+    . = ALIGN(4);
     _ebss = .;
-  } > SRAM
+  } &gt;RAM
+
+  /* Check that there is enough space left for Stack and Heap */
+  ._user_heap_stack :
+  {
+    . = ALIGN(8);
+    PROVIDE ( end = . );
+    PROVIDE ( _end = . );
+    . = . + _Min_Heap_Size;
+    . = . + _Min_Stack_Size;
+    . = ALIGN(8);
+  } &gt;RAM
 }</code></pre>
-          </div>
+
+        <h2 id="sec-34-4">34.4 Industrial Case Study: The Misaligned Flash DMA HardFault</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The 4-Byte Unaligned Flash Sector Corruption</h4>
+          <p>
+            An automotive electronic control unit (ECU) experienced random HardFault crashes immediately following an Over-The-Air (OTA) firmware update in cold weather testing.
+          </p>
+          <p>
+            <strong>Investigation:</strong> The developers added a raw binary cryptographic certificate into Flash using a custom linker section:
+          </p>
+          <pre><code class="language-ld">.crypto_cert :
+{
+  *(.crypto_cert)
+} &gt;FLASH</code></pre>
+          <p>
+            The certificate file was 387 bytes (not a multiple of 4). Because the linker section lacked <code>. = ALIGN(4);</code>, the subsequent <code>.text</code> section began on an <strong>odd 2-byte boundary (<code>0x08010183</code>)</strong>.
+          </p>
+          <p>
+            When the CPU attempted to fetch a 32-bit Thumb-2 instruction from an unaligned address across flash word boundaries, the flash memory controller’s 128-bit prefetch buffer generated a bus error, crashing the ECU!
+          </p>
+          <p>
+            <strong>Resolution:</strong> Mandated explicit <code>. = ALIGN(4);</code> before and after every single section declaration in all linker scripts.
+          </p>
         </div>
 
+        <h2 id="sec-34-5">34.5 Hands-On Lab: Custom Section for Non-Volatile Bootloader Calibration</h2>
+        <p>
+          In this lab, you will define a custom flash memory region (<code>CALIBRATION_ROM</code>) in a linker script, and place a C configuration structure directly into it using GCC <code>__attribute__((section(".cal_data")))</code>.
+        </p>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod33-hardware-interfacing-and-mmio.html" class="btn-secondary">← Module 33: Memory-Mapped I/O & Registers</a>
-          <a href="mod35-startup-code-and-reset-sequence.html" class="btn-primary">Module 35: Startup Code & Reset Sequence →</a>
+        <h3>1. Linker Script Snippet</h3>
+        <pre><code class="language-ld">MEMORY
+{
+  FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 480K
+  CAL_ROM (r)     : ORIGIN = 0x08078000, LENGTH = 32K  /* Dedicated calibration sector */
+  RAM (rwx)       : ORIGIN = 0x20000000, LENGTH = 96K
+}
+
+SECTIONS
+{
+  /* Standard sections ... */
+
+  .cal_data :
+  {
+    . = ALIGN(4);
+    _scal_data = .;
+    KEEP(*(.cal_data))
+    . = ALIGN(4);
+    _ecal_data = .;
+  } &gt;CAL_ROM
+}</code></pre>
+
+        <h3>2. C Source Code (<code>calibration.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdint.h&gt;
+
+typedef struct {
+    uint32_t magic_header;
+    float    adc_voltage_scale;
+    float    temperature_offset;
+    uint32_t serial_number;
+} device_calibration_t;
+
+/* Explicitly locate this struct into the CAL_ROM sector */
+__attribute__((section(".cal_data"), used))
+const device_calibration_t g_factory_calibration = {
+    .magic_header = 0xC001CAFE,
+    .adc_voltage_scale = 3.3005f,
+    .temperature_offset = -0.42f,
+    .serial_number = 981245
+};</code></pre>
+
+        <h2 id="sec-34-quiz">34.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What does the <code>LOADADDR(.data)</code> linker script built-in function return?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) The RAM execution address (VMA) of .data.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) The Flash ROM load address (LMA) where the initial values of .data are permanently stored. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) The size of the RAM section.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>LOADADDR()</code> returns the Load Memory Address (LMA), which the startup code reads to copy initial values from Flash into RAM.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: Why must the <code>KEEP()</code> directive be applied to the vector table in the linker script (<code>KEEP(*(.isr_vector))</code>)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) It compresses the vector table.</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) It prevents the linker from stripping the vector table when link-time garbage collection (<code>--gc-sections</code>) is enabled. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) It encrypts the reset vector.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Because the vector table is referenced by hardware silicon rather than by explicit C code calls, the linker's dead-code elimination (<code>--gc-sections</code>) would discard it without <code>KEEP()</code>.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: What represents the initial value of the Main Stack Pointer (MSP) in ARM Cortex-M microcontrollers?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) The first 32-bit word at offset 0x00000000 in Flash (typically <code>_estack</code> at top of RAM). (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) Address 0x00000004.</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) Hardcoded register R13.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> On reset, the ARM core hardware loads SP from memory address 0x00000000 and the initial Program Counter (PC) from address 0x00000004.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What symbol in a linker script represents the current memory location counter?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) <code>$</code></label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) <code>.</code> (period / dot) (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) <code>@</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> The dot (<code>.</code>) represents the location counter; modifying it advances or aligns memory allocation addresses.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What section contains global variables that are uninitialized or initialized to zero?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) <code>.text</code></label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) <code>.bss</code> (Block Started by Symbol) (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) <code>.rodata</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> The <code>.bss</code> section occupies RAM but zero bytes in the flash binary image; it is zeroed out in RAM by the startup code.
+            </div>
+          </div>
         </div>
       </article>
     </main>

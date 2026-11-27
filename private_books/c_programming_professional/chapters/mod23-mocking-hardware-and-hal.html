@@ -378,50 +378,327 @@
     <main class="main-content">
       <article class="prose">
         <div class="chapter-hero">
-          <span class="chapter-module-tag">Part 5 • Testing & QA Engineering</span>
-          <h1 class="chapter-h1">Module 23: Mocking Hardware & HAL</h1>
-          <p class="chapter-lead">Decouple business logic from silicon registers. Mock I2C/SPI sensors, flash memories, and UART transceivers to test firmware on CI runners without physical hardware.</p>
+          <span class="chapter-module-tag">Part 5 • Testing &amp; QA Engineering</span>
+          <h1 class="chapter-h1">Module 23: Hardware Mocking &amp; HAL Emulation</h1>
+          <p class="chapter-lead">Deep dive into simulating peripheral hardware, link-time function interposition via GNU ld --wrap, memory-mapped I/O (MMIO) register emulation in host RAM, and synthetic asynchronous interrupt injection.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 50m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: POSIX / GNU ld Linker Interposition</div>
+            <div class="meta-item">⚡ Target: Linux x86_64 Host Testing</div>
           </div>
         </div>
 
+        <h2 id="sec-23-1">23.1 The Silicon Dependency Dilemma</h2>
+        <p>
+          In embedded C, drivers interact directly with hardware through physical memory addresses:
+        </p>
+        <pre><code class="language-c">#define USART1_BASE  (0x40011000UL)
+#define USART1_DR    (*(volatile uint32_t *)(USART1_BASE + 0x04))
 
-        <h2 id="sec-23-1">23.1 Mocking I2C Bus Transfers for Sensor Drivers</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>mock_i2c_driver.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include &lt;stdint.h&gt;
+void uart_send_char(char c) {
+    USART1_DR = (uint32_t)c; /* Crashes on x86 Linux! */
+}</code></pre>
+        <p>
+          If you compile and execute this code on an x86 development PC, the CPU encounters address <code>0x40011000UL</code>. Because this physical address is not mapped into the user-space process's virtual memory page tables, the MMU triggers an immediate <strong>Page Fault</strong>, terminating the test suite with <code>SIGSEGV (Segmentation Fault)</code>.
+        </p>
+
+        <h2 id="sec-23-2">23.2 Hardware Emulation Strategies</h2>
+        <p>
+          Three primary design patterns allow hardware drivers to execute flawlessly on host development platforms:
+        </p>
+
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Hardware Mocking Architectures Compared</div>
+          <pre style="margin:0;color:#94A3B8;">
+Strategy 1: Virtual Memory Struct Redirection
+  #ifdef HOST_TEST
+    static USART_TypeDef virtual_usart;
+    #define USART1 (&amp;virtual_usart)
+  #else
+    #define USART1 ((USART_TypeDef *)0x40011000UL)
+  #endif
+
+Strategy 2: Link-Time Interposition (GNU ld --wrap)
+  Production Call: HAL_I2C_Transmit(...) ──▶ Linker redirects to ──▶ __wrap_HAL_I2C_Transmit(...)
+  Original Call:   Can still invoke __real_HAL_I2C_Transmit(...) if needed.
+
+Strategy 3: Dependency Injection via VTable (OOP Interface)
+  Application ──▶ [ i2c_bus_ops_t *bus ] ──▶ Real Driver: stm32_i2c_write()
+                                        └──▶ Mock Driver: mock_i2c_write()
+          </pre>
+        </div>
+
+        <h2 id="sec-23-3">23.3 Link-Time Wrapping with GNU ld (<code>--wrap</code>)</h2>
+        <p>
+          The most powerful, non-invasive mocking technique supported by the GNU linker is <strong>symbol wrapping</strong> (<code>-Wl,--wrap=&lt;symbol&gt;</code>). This requires <em>zero modifications</em> to your production C source code!
+        </p>
+        <p>
+          When you link with <code>-Wl,--wrap=HAL_I2C_Master_Transmit</code>:
+        </p>
+        <ol>
+          <li>Any call to <code>HAL_I2C_Master_Transmit</code> is resolved to <code>__wrap_HAL_I2C_Master_Transmit</code>.</li>
+          <li>The original implementation remains accessible via the synthetic symbol <code>__real_HAL_I2C_Master_Transmit</code>.</li>
+        </ol>
+
+        <h3>Production Linker Wrap Example</h3>
+        <pre><code class="language-c">/* mock_i2c.c */
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;string.h&gt;
+
+/* Capture structures for assertions */
+typedef struct {
+    uint16_t dev_addr;
+    uint8_t  last_data[64];
+    uint16_t last_size;
+    uint32_t call_count;
+    int      injected_return_code;
+} i2c_mock_state_t;
+
+static i2c_mock_state_t g_i2c_mock = {0};
+
+void mock_i2c_reset(void) {
+    memset(&amp;g_i2c_mock, 0, sizeof(g_i2c_mock));
+}
+
+void mock_i2c_inject_error(int err) {
+    g_i2c_mock.injected_return_code = err;
+}
+
+/* Intercepted function! */
+int __wrap_HAL_I2C_Master_Transmit(void *hi2c, uint16_t DevAddress, uint8_t *pData, uint16_t Size, uint32_t Timeout) {
+    (void)hi2c;
+    (void)Timeout;
+    g_i2c_mock.call_count++;
+    g_i2c_mock.dev_addr = DevAddress;
+    g_i2c_mock.last_size = Size;
+    if (Size &lt;= sizeof(g_i2c_mock.last_data)) {
+        memcpy(g_i2c_mock.last_data, pData, Size);
+    }
+    return g_i2c_mock.injected_return_code;
+}</code></pre>
+
+        <h2 id="sec-23-4">23.4 Simulating Asynchronous Interrupts</h2>
+        <p>
+          Testing interrupt-driven protocols (such as UART DMA ring buffers) requires testing how the driver behaves when an interrupt fires midway through a calculation.
+        </p>
+        <p>
+          On host platforms, we can simulate interrupts synchronously by directly invoking the ISR function pointer:
+        </p>
+        <pre><code class="language-c">void test_uart_rx_overflow_recovery(void) {
+    uart_driver_init();
+
+    /* Simulate 10 rapid UART RX interrupts firing from hardware */
+    for (int i = 0; i &lt; 10; i++) {
+        /* Inject fake received byte into virtual hardware register */
+        VIRTUAL_UART-&gt;DR = (uint32_t)('A' + i);
+        /* Directly trigger the interrupt service routine */
+        USART1_IRQHandler();
+    }
+
+    TEST_ASSERT_EQUAL_UINT32(10, uart_get_rx_count());
+}</code></pre>
+
+        <h2 id="sec-23-5">23.5 Industrial Case Study: Implantable Cardiac Defibrillator Simulation</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">Validating Arrhythmia Detection Algorithms via Synthesized Signals</h4>
+          <p>
+            An implantable cardioverter-defibrillator (ICD) monitors cardiac electrical activity (ECG) and delivers a high-voltage electrical shock to defibrillate the heart during ventricular fibrillation.
+          </p>
+          <p>
+            <strong>The Engineering Challenge:</strong>
+            Testing defibrillation algorithms cannot be done on live animal models for every code commit. Furthermore, validating brownout recovery when the battery voltage sags from 3.2V to 2.1V during capacitor charging cannot be done on evaluation boards without permanently damaging micro-batteries.
+          </p>
+          <p>
+            <strong>The Virtual HAL Solution:</strong>
+            The engineering team implemented a host-compiled virtual ADC and virtual Power Management IC (PMIC). The host test suite injected recorded human clinical ECG waveforms (from the MIT-BIH Arrhythmia Database) through the virtual ADC at 10,000 samples per second.
+          </p>
+          <p>
+            The test harness verified:
+          </p>
+          <ul>
+            <li>Ventricular fibrillation was detected in under 1.2 seconds across 5,000 distinct patient waveforms.</li>
+            <li>Simulated battery impedance sags never triggered unhandled CPU resets.</li>
+            <li>Zero false-positive shock commands were issued during sinus tachycardia.</li>
+          </ul>
+        </div>
+
+        <h2 id="sec-23-6">23.6 Hands-On Lab: Implementing GNU ld <code>--wrap</code> for an I2C Sensor Driver</h2>
+        <p>
+          In this lab, you will write a complete, standalone C temperature sensor driver, create a mock using GNU linker symbol wrapping, and test both success and bus-error recovery branches.
+        </p>
+
+        <h3>1. Sensor Driver Header (<code>sensor_i2c.h</code>)</h3>
+        <pre><code class="language-c">#ifndef SENSOR_I2C_H_
+#define SENSOR_I2C_H_
+
+#include &lt;stdint.h&gt;
 #include &lt;stdbool.h&gt;
 
-typedef struct {
-    uint8_t expected_addr;
-    uint8_t simulated_rx_data[16];
-    bool    was_called;
-} MockI2C_State_t;
+#define TEMP_SENSOR_I2C_ADDR (0x90U)
 
-static MockI2C_State_t g_mock_state;
+/* Declared HAL function (to be wrapped during host tests) */
+int HAL_I2C_Master_Transmit(uint16_t addr, const uint8_t *data, uint16_t len);
+int HAL_I2C_Master_Receive(uint16_t addr, uint8_t *data, uint16_t len);
 
-int mock_i2c_read(uint8_t dev_addr, uint8_t *data, uint16_t len) {
-    g_mock_state.was_called = true;
-    for(uint16_t i=0; i&lt;len; ++i) {
-        data[i] = g_mock_state.simulated_rx_data[i];
+/* Production Driver API */
+int sensor_read_temperature_mC(int32_t *out_mC);
+
+#endif /* SENSOR_I2C_H_ */</code></pre>
+
+        <h3>2. Production Driver Implementation (<code>sensor_i2c.c</code>)</h3>
+        <pre><code class="language-c">#include "sensor_i2c.h"
+
+int sensor_read_temperature_mC(int32_t *out_mC) {
+    if (!out_mC) return -1;
+
+    uint8_t reg = 0x00; // Temperature register pointer
+    if (HAL_I2C_Master_Transmit(TEMP_SENSOR_I2C_ADDR, &amp;reg, 1) != 0) {
+        return -2; // I2C Bus Error on write
     }
-    return 0; /* Success */
+
+    uint8_t raw[2] = {0};
+    if (HAL_I2C_Master_Receive(TEMP_SENSOR_I2C_ADDR, raw, 2) != 0) {
+        return -3; // I2C Bus Error on read
+    }
+
+    /* Convert 12-bit raw value to milli-Celsius (0.0625 deg C per LSB) */
+    int16_t raw_temp = (int16_t)((raw[0] &lt;&lt; 8) | raw[1]) &gt;&gt; 4;
+    *out_mC = (int32_t)raw_temp * 625 / 10;
+    return 0; // Success
 }</code></pre>
+
+        <h3>3. Host Test Harness with <code>__wrap</code> (<code>test_sensor.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;assert.h&gt;
+#include &lt;string.h&gt;
+#include "sensor_i2c.h"
+
+static int g_injected_tx_error = 0;
+static int g_injected_rx_error = 0;
+static uint8_t g_fake_rx_bytes[2] = {0x19, 0x00}; // 25.0 deg C
+
+/* Intercepted Transmit */
+int __wrap_HAL_I2C_Master_Transmit(uint16_t addr, const uint8_t *data, uint16_t len) {
+    (void)addr; (void)data; (void)len;
+    return g_injected_tx_error;
+}
+
+/* Intercepted Receive */
+int __wrap_HAL_I2C_Master_Receive(uint16_t addr, uint8_t *data, uint16_t len) {
+    (void)addr;
+    if (g_injected_rx_error != 0) return g_injected_rx_error;
+    memcpy(data, g_fake_rx_bytes, len);
+    return 0;
+}
+
+int main(void) {
+    int32_t temp_mC = 0;
+
+    /* Test Case 1: Successful read */
+    g_injected_tx_error = 0;
+    g_injected_rx_error = 0;
+    int status = sensor_read_temperature_mC(&amp;temp_mC);
+    assert(status == 0);
+    assert(temp_mC == 25000); // 25.0 C
+    printf("[PASS] Nominal temperature read (25000 mC)
+");
+
+    /* Test Case 2: Bus Error on Transmit */
+    g_injected_tx_error = -1;
+    status = sensor_read_temperature_mC(&amp;temp_mC);
+    assert(status == -2);
+    printf("[PASS] Handled Transmit Bus Error cleanly
+");
+
+    /* Test Case 3: Bus Error on Receive */
+    g_injected_tx_error = 0;
+    g_injected_rx_error = -1;
+    status = sensor_read_temperature_mC(&amp;temp_mC);
+    assert(status == -3);
+    printf("[PASS] Handled Receive Bus Error cleanly
+");
+
+    printf("
+All hardware mock assertions passed successfully!
+");
+    return 0;
+}</code></pre>
+
+        <h3>Build & Execute Commands</h3>
+        <pre><code class="language-bash"># Link with GNU ld --wrap flags
+gcc -Wall -Wextra sensor_i2c.c test_sensor.c     -Wl,--wrap=HAL_I2C_Master_Transmit     -Wl,--wrap=HAL_I2C_Master_Receive     -o test_sensor
+
+./test_sensor
+# Output:
+# [PASS] Nominal temperature read (25000 mC)
+# [PASS] Handled Transmit Bus Error cleanly
+# [PASS] Handled Receive Bus Error cleanly
+# All hardware mock assertions passed successfully!</code></pre>
+
+        <h2 id="sec-23-quiz">23.7 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What happens when an x86 Linux process attempts to dereference a physical ARM peripheral register address like <code>0x40011000</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) The CPU writes the data to the hard drive.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) The hardware MMU flags an unmapped virtual address, generating a Page Fault and delivering SIGSEGV to the process. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) The value is stored in CPU cache line 0.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> On operating systems with virtual memory management (x86/x64 Linux), physical address spaces are not mapped into user space by default; attempting to dereference unmapped addresses triggers an immediate segmentation fault.
+            </div>
           </div>
-        </div>
 
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What GNU linker flag instructs the linker to resolve calls to <code>foo()</code> to <code>__wrap_foo()</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) <code>-Wl,--redirect=foo</code></label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) <code>-Wl,--wrap=foo</code> (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) <code>-Wl,--mock=foo</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>--wrap=&lt;symbol&gt;</code> is a standard feature of GNU ld that interposes wrapper functions around unresolved symbol references at link time.
+            </div>
+          </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod22-unit-testing-unity-cmock.html" class="btn-secondary">← Module 22: Unit Testing with Unity & CMock</a>
-          <a href="mod24-code-coverage-gcov-lcov.html" class="btn-primary">Module 24: Code Coverage (gcov & lcov) →</a>
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: Inside a wrapper function <code>__wrap_read()</code>, how can the code invoke the actual underlying original system implementation of <code>read()</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) By calling <code>original_read()</code></label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) By calling <code>__real_read()</code> (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) By calling <code>sys_read()</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> When <code>--wrap=symbol</code> is enabled, GNU ld maps the original symbol definition to <code>__real_symbol</code>, allowing wrappers to forward calls when needed.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What is the primary benefit of link-time function wrapping over compile-time preprocessor macro replacement?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) It requires zero modifications or <code>#ifdef</code> guards inside production source files. (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) It reduces flash ROM memory usage.</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) It executes faster on bare metal.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Linker wrapping acts upon compiled object files; production code remains pristine, clean, and free of test-specific preprocessor spaghetti.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: How can an ISR be safely tested in a single-threaded host unit test?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) By directly calling the ISR function name as a standard C function after setting up virtual registers. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) By writing to physical host interrupt lines.</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) ISRs cannot be tested on host machines.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> In C, an ISR is simply a function with <code>void (*)(void)</code> signature; invoking it synchronously allows deterministic validation of internal buffer mutations.
+            </div>
+          </div>
         </div>
       </article>
     </main>

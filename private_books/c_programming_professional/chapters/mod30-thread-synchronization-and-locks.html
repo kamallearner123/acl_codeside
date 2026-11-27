@@ -379,42 +379,252 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 6 • Linux System Programming</span>
-          <h1 class="chapter-h1">Module 30: Thread Synchronization & Mutexes</h1>
-          <p class="chapter-lead">Race condition prevention: pthread_mutex, reader-writer locks, condition variables, atomic operations (C11 stdatomic.h), and deadlock avoidance.</p>
+          <h1 class="chapter-h1">Module 30: Thread Synchronization &amp; Locks</h1>
+          <p class="chapter-lead">Deep dive into Linux synchronization primitives: futex(2) mechanics, mutex types (normal, recursive, error-checking), condition variables and the lost wakeup problem, read-write locks (pthread_rwlock_t), deadlock prevention hierarchies, and priority inheritance (PTHREAD_PRIO_INHERIT).</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 60m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: POSIX.1c / Linux futex(2) / ISO 26262</div>
+            <div class="meta-item">⚡ Target: High-Reliability Concurrent Systems</div>
           </div>
         </div>
 
+        <h2 id="sec-30-1">30.1 Fast Userspace Mutexes: Linux futex(2) Internals</h2>
+        <p>
+          In early Unix kernels, every mutex lock/unlock required an expensive system call into the kernel (costing hundreds of CPU cycles for context switching).
+        </p>
+        <p>
+          Modern Linux synchronization relies on <strong>futex (Fast Userspace Mutex)</strong>:
+        </p>
+        <ul>
+          <li><strong>Uncontended Case (99% of time):</strong> An atomic Compare-And-Swap (CAS) instruction updates a 32-bit integer in user space memory. <em>Zero system calls! Execution takes ~10 nanoseconds!</em></li>
+          <li><strong>Contended Case (Collision):</strong> Only when a thread discovers the lock is already held does it invoke <code>futex(FUTEX_WAIT)</code> to put itself to sleep in a kernel wait-queue. Upon release, the holder calls <code>futex(FUTEX_WAKE)</code>.</li>
+        </ul>
 
-        <h2 id="sec-30-1">30.1 Lock-Free Synchronization with C11 Atomics</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>atomic_counter.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include &lt;stdatomic.h&gt;
-#include &lt;stdint.h&gt;
+        <h2 id="sec-30-2">30.2 Condition Variables & The Lost Wakeup Bug</h2>
+        <p>
+          A condition variable (<code>pthread_cond_t</code>) allows a thread to sleep until a specific application condition becomes true.
+        </p>
+        <div class="warning-box" style="border-left:4px solid #EF4444;background:rgba(239,68,68,0.08);padding:1rem;margin:1rem 0;border-radius:4px;">
+          <strong style="color:#EF4444;">The Spurious Wakeup Hazard:</strong> In POSIX, <code>pthread_cond_wait()</code> may wake up even if NO thread signaled the condition (due to kernel signal interrupts or multi-processor races). Therefore, you must <strong>NEVER use an <code>if</code> statement</strong> with condition variables! Always use a <strong><code>while</code> loop</strong>!
+        </div>
+
+        <pre><code class="language-c">/* FATAL BUG: Using 'if' can lead to processing empty queue */
+if (queue_is_empty()) {
+    pthread_cond_wait(&amp;cond, &amp;mutex); /* May wake up spuriously! */
+}
+item = dequeue(); /* CRASH! Queue might still be empty! */
+
+/* PRODUCTION PATTERN: Mandatory 'while' loop */
+while (queue_is_empty()) {
+    pthread_cond_wait(&amp;cond, &amp;mutex); /* Re-checks condition upon waking! */
+}
+item = dequeue(); /* Guaranteed safe! */</code></pre>
+
+        <h2 id="sec-30-3">30.3 Deadlock Prevention & Coffman's Conditions</h2>
+        <p>
+          A deadlock occurs when two or more threads are permanently blocked waiting for resources held by each other. A deadlock requires four simultaneous conditions (Coffman Conditions):
+        </p>
+        <ol>
+          <li><strong>Mutual Exclusion:</strong> Exclusive resource locking.</li>
+          <li><strong>Hold and Wait:</strong> Holding lock A while requesting lock B.</li>
+          <li><strong>No Preemption:</strong> Locks cannot be forcibly confiscated.</li>
+          <li><strong>Circular Wait:</strong> Thread 1 holds A and wants B; Thread 2 holds B and wants A.</li>
+        </ol>
+
+        <p>
+          <strong>The Universal Solution: Strict Lock Ordering Hierarchy.</strong> Assign every mutex in your system a strict integer rank. Never acquire a lock with rank <code>N</code> while already holding a lock with rank <code>&ge; N</code>.
+        </p>
+
+        <h2 id="sec-30-4">30.4 Priority Inversion & Priority Inheritance Mutexes</h2>
+        <p>
+          <strong>Priority Inversion</strong> occurs when a low-priority thread holds a lock needed by a high-priority real-time thread, but a medium-priority thread preempts the low-priority thread, effectively starving the high-priority thread!
+        </p>
+        <p>
+          <strong>The Solution: Priority Inheritance (<code>PTHREAD_PRIO_INHERIT</code>)</strong>. When a high-priority thread blocks on a lock held by a low-priority thread, the kernel dynamically boosts the low-priority thread's priority to match the blocked thread until the lock is released.
+        </p>
+        <pre><code class="language-c">pthread_mutexattr_t attr;
+pthread_mutexattr_init(&amp;attr);
+pthread_mutexattr_setprotocol(&amp;attr, PTHREAD_PRIO_INHERIT);
+pthread_mutex_init(&amp;rt_mutex, &amp;attr);</code></pre>
+
+        <h2 id="sec-30-5">30.5 Industrial Case Study: The Mars Pathfinder Priority Inversion</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The 1997 Mars Rover Watchdog Reset Incident</h4>
+          <p>
+            Days after landing on Mars, the Mars Pathfinder spacecraft began experiencing repeated total system resets. The watchdog timer triggered an emergency reboot, threatening the mission.
+          </p>
+          <p>
+            <strong>Root Cause:</strong>
+            Three tasks competed on the real-time kernel:
+          </p>
+          <ul>
+            <li><strong>High-Priority Task:</strong> Attitude control &amp; bus communication (ran periodically).</li>
+            <li><strong>Medium-Priority Task:</strong> Long-running communications task (no shared lock).</li>
+            <li><strong>Low-Priority Task:</strong> Meteorological data gathering (infrequently acquired shared Information Bus mutex).</li>
+          </ul>
+          <p>
+            The low-priority task acquired the bus mutex. The high-priority task woke up, requested the bus mutex, and blocked. Before the low-priority task could release the lock, the medium-priority task woke up and preempted it!
+          </p>
+          <p>
+            The high-priority task was starved of CPU time for seconds. The watchdog timer assumed the system was hung and executed a hard reset!
+          </p>
+          <p>
+            <strong>The Fix:</strong> JPL engineers remotely uploaded a C patch enabling <strong>Priority Inheritance</strong> on the Information Bus mutex, permanently resolving the issue.
+          </p>
+        </div>
+
+        <h2 id="sec-30-6">30.6 Hands-On Lab: Bounded Thread-Safe Blocking Queue in C</h2>
+        <p>
+          In this lab, you will write a complete, bounded blocking queue in C that synchronizes producer and consumer threads using a mutex and two condition variables (<code>not_full</code> and <code>not_empty</code>).
+        </p>
+
+        <h3>Blocking Queue Implementation (<code>blocking_queue.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;pthread.h&gt;
+#include &lt;unistd.h&gt;
+
+#define QUEUE_CAPACITY 4
 
 typedef struct {
-    atomic_uint_fast32_t packet_count;
-    atomic_uint_fast32_t error_count;
-} NetworkStats_t;
+    int data[QUEUE_CAPACITY];
+    int head;
+    int tail;
+    int count;
+    pthread_mutex_t lock;
+    pthread_cond_t not_empty;
+    pthread_cond_t not_full;
+} blocking_queue_t;
 
-void record_packet(NetworkStats_t *stats) {
-    atomic_fetch_add_explicit(&stats-&gt;packet_count, 1, memory_order_relaxed);
+void bq_init(blocking_queue_t *q) {
+    q-&gt;head = 0; q-&gt;tail = 0; q-&gt;count = 0;
+    pthread_mutex_init(&amp;q-&gt;lock, NULL);
+    pthread_cond_init(&amp;q-&gt;not_empty, NULL);
+    pthread_cond_init(&amp;q-&gt;not_full, NULL);
+}
+
+void bq_push(blocking_queue_t *q, int value) {
+    pthread_mutex_lock(&amp;q-&gt;lock);
+    while (q-&gt;count == QUEUE_CAPACITY) {
+        pthread_cond_wait(&amp;q-&gt;not_full, &amp;q-&gt;lock);
+    }
+    q-&gt;data[q-&gt;head] = value;
+    q-&gt;head = (q-&gt;head + 1) % QUEUE_CAPACITY;
+    q-&gt;count++;
+    pthread_cond_signal(&amp;q-&gt;not_empty);
+    pthread_mutex_unlock(&amp;q-&gt;lock);
+}
+
+int bq_pop(blocking_queue_t *q) {
+    pthread_mutex_lock(&amp;q-&gt;lock);
+    while (q-&gt;count == 0) {
+        pthread_cond_wait(&amp;q-&gt;not_empty, &amp;q-&gt;lock);
+    }
+    int val = q-&gt;data[q-&gt;tail];
+    q-&gt;tail = (q-&gt;tail + 1) % QUEUE_CAPACITY;
+    q-&gt;count--;
+    pthread_cond_signal(&amp;q-&gt;not_full);
+    pthread_mutex_unlock(&amp;q-&gt;lock);
+    return val;
+}
+
+static blocking_queue_t g_q;
+
+void *producer(void *arg) {
+    for (int i = 1; i &lt;= 10; i++) {
+        bq_push(&amp;g_q, i * 10);
+        printf("[PRODUCER] Pushed: %d
+", i * 10);
+        usleep(50000);
+    }
+    return NULL;
+}
+
+void *consumer(void *arg) {
+    for (int i = 1; i &lt;= 10; i++) {
+        int v = bq_pop(&amp;g_q);
+        printf("  [CONSUMER] Popped: %d
+", v);
+        usleep(100000);
+    }
+    return NULL;
+}
+
+int main(void) {
+    bq_init(&amp;g_q);
+    pthread_t p, c;
+    pthread_create(&amp;p, NULL, producer, NULL);
+    pthread_create(&amp;c, NULL, consumer, NULL);
+    pthread_join(p, NULL);
+    pthread_join(c, NULL);
+    printf("Bounded blocking queue test finished successfully!
+");
+    return 0;
 }</code></pre>
+
+        <h2 id="sec-30-quiz">27.7 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Why must <code>pthread_cond_wait()</code> always be enclosed within a <code>while</code> loop instead of an <code>if</code> statement?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) To handle spurious wakeups where the thread unblocks without a signal or before the condition is satisfied. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) <code>if</code> statements are illegal in POSIX C.</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) It prevents stack overflows.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Spurious wakeups occur due to signal delivery or kernel scheduling; re-evaluating the boolean condition inside a <code>while</code> loop guarantees safety before proceeding.
+            </div>
           </div>
-        </div>
 
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the primary performance benefit of a futex-based mutex over a traditional kernel semaphore in Linux?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) In the uncontended case, acquiring the lock is a fast user-space atomic instruction with zero system call overhead. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) It eliminates the need for RAM.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) It automatically restarts crashed threads.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Futexes avoid entering the kernel unless there is genuine contention between multiple threads, speeding up uncontended execution by orders of magnitude.
+            </div>
+          </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod29-posix-threads-and-concurrency.html" class="btn-secondary">← Module 29: POSIX Threads & Concurrency</a>
-          <a href="mod31-posix-signals-and-timers.html" class="btn-primary">Module 31: POSIX Signals & Timers →</a>
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: How does Priority Inheritance resolve the priority inversion phenomenon?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) It lowers the priority of all threads to 0.</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) It temporarily boosts the priority of the lock holder to match that of the highest-priority blocked thread. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) It kills medium-priority threads.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Temporarily raising the holder's priority prevents intermediate medium-priority threads from preempting it, allowing it to release the lock rapidly.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What happens if a thread attempts to lock a normal <code>PTHREAD_MUTEX_NORMAL</code> mutex that it already holds?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) It returns <code>EINVAL</code>.</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) Self-deadlock: the thread blocks forever waiting for itself to release the lock. (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) The lock counter increments to 2.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Normal mutexes do not detect re-locking by the same thread; self-deadlock occurs unless configured as <code>PTHREAD_MUTEX_RECURSIVE</code> or <code>ERRORCHECK</code>.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What is the primary advantage of a Read-Write Lock (<code>pthread_rwlock_t</code>) over a standard Mutex?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) It permits multiple concurrent reader threads while still guaranteeing exclusive access to writers. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) It requires no memory allocations.</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) It runs inside interrupts.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> RW-locks maximize read scalability for data structures that are frequently read but infrequently modified.
+            </div>
+          </div>
         </div>
       </article>
     </main>

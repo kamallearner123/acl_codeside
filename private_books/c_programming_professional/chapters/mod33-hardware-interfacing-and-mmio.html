@@ -378,50 +378,243 @@
     <main class="main-content">
       <article class="prose">
         <div class="chapter-hero">
-          <span class="chapter-module-tag">Part 7 • Embedded C & Firmware</span>
-          <h1 class="chapter-h1">Module 33: Memory-Mapped I/O & Registers</h1>
-          <p class="chapter-lead">Register-level embedded programming: pointer casting to volatile struct registers, atomic bit-banding, CMSIS peripheral definitions, and zero-HAL driver architecture.</p>
+          <span class="chapter-module-tag">Part 7 • Embedded C &amp; Firmware</span>
+          <h1 class="chapter-h1">Module 33: Memory-Mapped I/O (MMIO) &amp; Register Control</h1>
+          <p class="chapter-lead">Master bare-metal peripheral manipulation on ARM Cortex-M processors. Deep dive into Advanced Microcontroller Bus Architecture (AHB/APB), memory barriers (DMB, DSB, ISB), atomic register modification via Bit Set/Reset Registers (BSRR), CMSIS register struct mappings, and optimizer traps with volatile.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 65m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: ARMv7-M Architecture / CMSIS-Core / C11</div>
+            <div class="meta-item">⚡ Target: ARM Cortex-M4 / STM32F4 Bare-Metal</div>
           </div>
         </div>
 
+        <h2 id="sec-33-1">33.1 ARM Cortex-M Bus Architecture & MMIO</h2>
+        <p>
+          Unlike x86 processors that feature dedicated I/O ports (<code>in</code>/<code>out</code> assembly instructions), ARM microcontrollers utilize <strong>Memory-Mapped I/O (MMIO)</strong>. All on-chip peripherals (GPIO, Timers, UART, I2C, DMA) share the unified 4-gigabyte 32-bit linear address space alongside Flash ROM and SRAM.
+        </p>
 
-        <h2 id="sec-33-1">33.1 CMSIS Register Struct Mapping</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>stm32_gpio_baremetal.h</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include &lt;stdint.h&gt;
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">ARM Cortex-M Internal Bus Matrix &amp; Address Map</div>
+          <pre style="margin:0;color:#94A3B8;">
+0xFFFFFFFF ┌────────────────────────────────────────────────────────┐
+           │ System Control Space (NVIC, SysTick, MPU: 0xE000E000)  │ &lt;-- Internal Core Bus
+0xE0000000 ├────────────────────────────────────────────────────────┤
+           │ External Peripherals / Devices (0xA0000000)            │
+0x60000000 ├────────────────────────────────────────────────────────┤
+           │ Peripherals Bus (APB1: 0x40000000, APB2: 0x40010000,   │
+           │                  AHB1: 0x40020000 - GPIO, RCC, DMA)    │ &lt;-- AHB/APB Bridges
+0x40000000 ├────────────────────────────────────────────────────────┤
+           │ SRAM (0x20000000 - 0x2001FFFF: 128 KB SRAM1/SRAM2)     │ &lt;-- System Bus (S-Bus)
+0x20000000 ├────────────────────────────────────────────────────────┤
+           │ Flash ROM (0x08000000 - 0x0807FFFF: 512 KB Flash)      │ &lt;-- I-Code &amp; D-Code Bus
+0x00000000 └────────────────────────────────────────────────────────┘
+          </pre>
+        </div>
 
+        <h2 id="sec-33-2">33.2 The Critical Role of the volatile Qualifier</h2>
+        <p>
+          In standard C, the optimizing compiler assumes that a memory location only changes if modified by explicit program statements. For hardware peripheral registers (such as an ADC data register or UART status register), the value can change asynchronously due to external physical events or silicon hardware logic!
+        </p>
+
+        <div class="warning-box" style="border-left:4px solid #EF4444;background:rgba(239,68,68,0.08);padding:1rem;margin:1rem 0;border-radius:4px;">
+          <strong style="color:#EF4444;">The Deadlock Optimization Bug:</strong> If you omit <code>volatile</code> on a hardware register read:
+          <pre><code class="language-c">/* FATAL ERROR: Omission of volatile */
+uint32_t *status_reg = (uint32_t *)0x40011000;
+while ((*status_reg &amp; 0x01) == 0) { /* Wait for hardware flag */ }</code></pre>
+          Under <code>-O2</code> optimization, the compiler hoists the read outside the loop:
+          <pre><code class="language-assembly">ldr r2, [r3]       ; Read register once into register R2
+.L2:
+tst r2, #1         ; Test register R2
+beq .L2            ; Infinite loop! CPU never reads hardware memory again!</code></pre>
+        </div>
+
+        <p>
+          Marking pointers as <code>volatile uint32_t *</code> forces the compiler to emit a physical load/store bus transaction on <strong>every single access</strong>, respecting sequence points.
+        </p>
+
+        <h2 id="sec-33-3">33.3 Atomic GPIO Toggling via BSRR Registers</h2>
+        <p>
+          A common beginner mistake when toggling a GPIO pin is using read-modify-write on the output data register:
+        </p>
+        <pre><code class="language-c">/* Non-Atomic Read-Modify-Write (Race Hazard!) */
+GPIOA-&gt;ODR |= (1 &lt;&lt; 5); /* Read ODR, Modify in ALU, Write back to ODR */</code></pre>
+        <p>
+          If a high-priority interrupt preempts execution between the Read and the Write instructions and modifies another pin on <code>GPIOA</code>, the mainline code will overwrite and destroy the interrupt’s pin state upon resuming!
+        </p>
+        <p>
+          <strong>The Silicon Solution: Bit Set/Reset Register (BSRR)</strong>. Writing a <code>1</code> to the lower 16 bits atomically sets the pin; writing a <code>1</code> to the upper 16 bits atomically resets the pin. Writes of <code>0</code> have no effect. <strong>Zero read-modify-write! Zero interrupt disabling needed!</strong>
+        </p>
+        <pre><code class="language-c">/* Atomic 1-cycle Pin Manipulation */
+GPIOA-&gt;BSRR = (1U &lt;&lt; 5);       /* Atomically SET Pin 5 high */
+GPIOA-&gt;BSRR = (1U &lt;&lt; (5 + 16)); /* Atomically RESET Pin 5 low */</code></pre>
+
+        <h2 id="sec-33-4">33.4 Memory Barriers: DMB, DSB, and ISB</h2>
+        <p>
+          Modern out-of-order execution pipelines and write buffers can reorder memory transactions. Cortex-M provides dedicated architectural barriers:
+        </p>
+        <ul>
+          <li><strong>DMB (Data Memory Barrier):</strong> Ensures that all explicit memory accesses before the barrier complete before any memory accesses after the barrier. Critical for lock-free ring buffers and DMA transfers.</li>
+          <li><strong>DSB (Data Synchronization Barrier):</strong> Halts instruction execution until all outstanding memory bus operations have physically finished. Mandatory after configuring clock registers or disabling interrupts before entering sleep (<code>WFI</code>).</li>
+          <li><strong>ISB (Instruction Synchronization Barrier):</strong> Flushes the CPU instruction pipeline, forcing instructions to be refetched from cache/flash. Mandatory after reconfiguring the Memory Protection Unit (MPU) or modifying vector table base addresses (VTOR).</li>
+        </ul>
+
+        <h2 id="sec-33-5">33.5 Industrial Case Study: The Medical Infusion Pump Motor Stalling Bug</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The Disappearing Motor Pulse Under Compiler Optimization</h4>
+          <p>
+            An infusion pump stepper motor driver missed 10% of motor steps when the firmware was compiled with <code>-O2</code> release flags, though it operated flawlessly under <code>-O0</code> debug builds.
+          </p>
+          <p>
+            <strong>Investigation:</strong> The pulse generation routine generated a 2-microsecond high pulse by writing directly to GPIO:
+          </p>
+          <pre><code class="language-c">/* Defective Pulse Generation */
+GPIO_TypeDef *gpio = (GPIO_TypeDef *)0x40020000;
+gpio-&gt;ODR |= (1 &lt;&lt; 2); // Motor step HIGH
+delay_us(2);
+gpio-&gt;ODR &amp;= ~(1 &lt;&lt; 2); // Motor step LOW</code></pre>
+          <p>
+            Because the vendor header file mistakenly omitted <code>volatile</code> on the <code>ODR</code> member in a custom HAL typedef, the compiler optimizer merged the two stores and eliminated the high pulse completely as dead code!
+          </p>
+          <p>
+            <strong>Resolution:</strong> The typedef was corrected to enforce <code>__IO uint32_t ODR;</code> (where <code>__IO</code> expands to <code>volatile</code> in CMSIS), and pin toggling was refactored to use the atomic BSRR register with a compiler memory barrier.
+          </p>
+        </div>
+
+        <h2 id="sec-33-6">33.6 Hands-On Lab: Writing a Register-Accurate Bare-Metal GPIO Driver</h2>
+        <p>
+          In this laboratory, you will write a complete, MISRA-compliant bare-metal C driver for the STM32F4 GPIO port from scratch, defining CMSIS register structs, configuring clock gating, and toggling an LED using BSRR.
+        </p>
+
+        <h3>Complete Bare-Metal Driver (<code>gpio_driver.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdint.h&gt;
+
+/* Base Addresses from STM32F4 Reference Manual */
+#define RCC_BASE        (0x40023800UL)
+#define GPIOA_BASE      (0x40020000UL)
+
+/* RCC Register Map */
 typedef struct {
-    volatile uint32_t MODER;    /* Mode register,                 Address offset: 0x00 */
-    volatile uint32_t OTYPER;   /* Output type register,          Address offset: 0x04 */
-    volatile uint32_t OSPEEDR;  /* Output speed register,         Address offset: 0x08 */
-    volatile uint32_t PUPDR;    /* Pull-up/pull-down register,    Address offset: 0x0C */
-    volatile uint32_t IDR;      /* Input data register,           Address offset: 0x10 */
-    volatile uint32_t ODR;      /* Output data register,          Address offset: 0x14 */
-    volatile uint32_t BSRR;     /* Bit set/reset register,        Address offset: 0x18 */
+    volatile uint32_t CR;
+    volatile uint32_t PLLCFGR;
+    volatile uint32_t CFGR;
+    volatile uint32_t CIR;
+    volatile uint32_t AHB1RSTR;
+    volatile uint32_t AHB2RSTR;
+    volatile uint32_t AHB3RSTR;
+    uint32_t          RESERVED0;
+    volatile uint32_t APB1RSTR;
+    volatile uint32_t APB2RSTR;
+    uint32_t          RESERVED1[2];
+    volatile uint32_t AHB1ENR; /* GPIOA clock enable bit 0 */
+} RCC_TypeDef;
+
+/* GPIO Register Map */
+typedef struct {
+    volatile uint32_t MODER;   /* Mode register */
+    volatile uint32_t OTYPER;  /* Output type register */
+    volatile uint32_t OSPEEDR; /* Output speed register */
+    volatile uint32_t PUPDR;   /* Pull-up/pull-down register */
+    volatile uint32_t IDR;     /* Input data register */
+    volatile uint32_t ODR;     /* Output data register */
+    volatile uint32_t BSRR;    /* Bit set/reset register (Atomic) */
+    volatile uint32_t LCKR;    /* Configuration lock register */
+    volatile uint32_t AFR[2];  /* Alternate function registers */
 } GPIO_TypeDef;
 
-#define GPIOA_BASE   (0x40020000UL)
-#define GPIOA        ((GPIO_TypeDef *)GPIOA_BASE)
+#define RCC   ((RCC_TypeDef *)RCC_BASE)
+#define GPIOA ((GPIO_TypeDef *)GPIOA_BASE)
 
-static inline void gpioa_set_pin(uint8_t pin) {
-    GPIOA-&gt;BSRR = (1U &lt;&lt; pin); /* Atomic hardware bit set! */
+void led_init(void) {
+    /* 1. Enable Clock to GPIOA (Bit 0 of AHB1ENR) */
+    RCC-&gt;AHB1ENR |= (1U &lt;&lt; 0);
+
+    /* Memory barrier ensuring clock is active before touching GPIO registers */
+    __asm__ volatile("dsb" ::: "memory");
+
+    /* 2. Configure Pin PA5 as General Purpose Output (Mode 01) */
+    GPIOA-&gt;MODER &amp;= ~(3U &lt;&lt; (5 * 2)); // Clear mode bits 10 and 11
+    GPIOA-&gt;MODER |=  (1U &lt;&lt; (5 * 2)); // Set mode to 01 (Output)
+
+    /* 3. Configure Push-Pull Output (OTYPER bit 5 = 0) */
+    GPIOA-&gt;OTYPER &amp;= ~(1U &lt;&lt; 5);
+
+    /* 4. Configure High Speed (OSPEEDR bits = 10) */
+    GPIOA-&gt;OSPEEDR |= (2U &lt;&lt; (5 * 2));
+}
+
+void led_set(void) {
+    /* Atomically set PA5 high */
+    GPIOA-&gt;BSRR = (1U &lt;&lt; 5);
+}
+
+void led_clear(void) {
+    /* Atomically reset PA5 low (Bit 5 + 16 = 21) */
+    GPIOA-&gt;BSRR = (1U &lt;&lt; 21);
 }</code></pre>
+
+        <h2 id="sec-33-quiz">33.7 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Why is writing to the Bit Set/Reset Register (BSRR) preferred over modifying the Output Data Register (ODR)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) BSRR uses less power.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) BSRR performs atomic single-cycle bit modification without read-modify-write race hazards with concurrent interrupts. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) ODR cannot drive LEDs.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> BSRR allows setting or clearing specific pins atomically via a single 32-bit write, avoiding the hazard where an interrupt preempts a read-modify-write on ODR.
+            </div>
           </div>
-        </div>
 
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What happens if you omit the <code>volatile</code> qualifier when defining pointers to hardware registers?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) The code generates a compiler syntax error.</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) The optimizer may cache the register value in a CPU register or eliminate polling loops, resulting in infinite loops or skipped writes. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) The microcontroller executes at double speed.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>volatile</code> informs the compiler that the value may change outside program control, preventing the optimizer from eliding memory reads or caching values.
+            </div>
+          </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod32-network-sockets-programming.html" class="btn-secondary">← Module 32: Sockets & Binary Protocols</a>
-          <a href="mod34-linker-scripts-and-memory-maps.html" class="btn-primary">Module 34: Linker Scripts & Memory Maps →</a>
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: Which ARM architectural barrier instruction flushes the instruction pipeline and forces refetching?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) <code>DMB</code> (Data Memory Barrier)</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) <code>ISB</code> (Instruction Synchronization Barrier) (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) <code>NOP</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>ISB</code> flushes the processor pipeline, ensuring that subsequent instructions are fetched afresh following MPU, cache, or memory mapping reconfigurations.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What bus bridge on the STM32 connects high-speed CPU peripherals (such as DMA and GPIO) to the system crossbar?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) APB1</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) AHB (Advanced High-performance Bus) (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) I2C</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> AHB connects high-bandwidth peripherals (GPIO, DMA, Flash memory, Ethernet) directly to the multi-layer bus matrix at full CPU clock speeds.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What is the primary risk of using C bitfields (e.g. <code>struct { uint32_t pin0:1; }</code>) for memory-mapped hardware registers?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) The ISO C standard does not specify bitfield allocation ordering (MSB to LSB vs LSB to MSB), and the compiler emits non-atomic read-modify-write instructions. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) Bitfields are unsupported by ARM Cortex-M.</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) Bitfields force the code into Thumb-1 mode.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Bitfield layout in memory is implementation-defined by ISO C; moreover, updating a bitfield requires multi-cycle read-modify-write instructions that introduce race conditions on hardware registers.
+            </div>
+          </div>
         </div>
       </article>
     </main>

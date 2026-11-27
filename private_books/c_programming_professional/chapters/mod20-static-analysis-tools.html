@@ -379,32 +379,277 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 4 • Linux & Engineering Tools</span>
-          <h1 class="chapter-h1">Module 20: Static Analysis (Cppcheck & Clang-Tidy)</h1>
-          <p class="chapter-lead">Enforce code standards, catch null dereferences, buffer overruns, and verify MISRA C compliance during compilation before hardware flashing.</p>
+          <h1 class="chapter-h1">Module 20: Static Analysis &amp; Automated Code Quality</h1>
+          <p class="chapter-lead">Deep dive into static analysis theory, Abstract Syntax Trees (AST), Control Flow Graphs (CFG), symbolic execution, GCC/Clang compiler warning enforcement, Cppcheck rule customization, and Clang-Tidy LLVM integration for safety-critical C software.</p>
           <div class="chapter-meta-bar">
-            <div class="meta-item">⏱️ Duration: 45m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">⏱️ Duration: 50m</div>
+            <div class="meta-item">🎯 Standard: MISRA C:2012 / CERT C / ISO 26262 ASIL-D</div>
+            <div class="meta-item">⚡ Target: Linux x86_64 / Cross-Platform Toolchains</div>
           </div>
         </div>
 
+        <h2 id="sec-20-1">20.1 Theoretical Foundations of Static Analysis</h2>
+        <p>
+          Unlike dynamic analysis, which evaluates a single concrete execution path under specific input stimuli, <strong>Static Analysis</strong> evaluates the complete mathematical state space of a program without running it. It parses C source code into formal structural representations:
+        </p>
 
-        <h2 id="sec-20-1">20.1 Automated Static Analysis with Cppcheck</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">Bash</span><span>Running Cppcheck with MISRA Rules</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-bash">cppcheck --enable=all --inconclusive --std=c11 --error-exitcode=1 src/</code></pre>
-          </div>
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Static Analysis Pipeline Architecture</div>
+          <pre style="margin:0;color:#94A3B8;">
+C Source Code (.c) ──▶ [ Lexer &amp; Parser ] ──▶ Abstract Syntax Tree (AST)
+                                                     │
+                                            Semantic Analysis
+                                                     ▼
+                                          Control Flow Graph (CFG)
+                                                     │
+                       ┌─────────────────────────────┴─────────────────────────────┐
+                       ▼                                                           ▼
+         [ Data Flow &amp; Taint Analysis ]                              [ Symbolic Execution Engine ]
+         (Tracks uninitialized variables,                            (Evaluates feasibility of
+          null pointer propagation, dead code)                        all branch paths symbolically)
+                       │                                                           │
+                       └─────────────────────────────┬─────────────────────────────┘
+                                                     ▼
+                                     [ Defect &amp; MISRA Violation Reports ]
+          </pre>
         </div>
 
+        <h3>Static Analysis Disciplines</h3>
+        <ul>
+          <li><strong>Syntactic Pattern Matching:</strong> Fast AST traversal checking style, naming conventions, or prohibited constructs (e.g. <code>goto</code>, <code>malloc</code> in embedded loops).</li>
+          <li><strong>Dataflow Analysis:</strong> Tracks the propagation of values across variables and registers (detecting variables used before initialization).</li>
+          <li><strong>Taint Analysis:</strong> Marks external user or network inputs as "tainted" and verifies they do not reach security-sensitive sinks (such as <code>memcpy</code> lengths or array indices) without bounds checking.</li>
+          <li><strong>Path-Sensitive Symbolic Execution:</strong> Represents program variables as mathematical symbols and explores execution paths, proving whether an assertion can ever be violated under any theoretical combination of inputs.</li>
+        </ul>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod19-valgrind-and-sanitizers.html" class="btn-secondary">← Module 19: Valgrind & Sanitizers</a>
-          <a href="mod21-linux-profiling-and-perf.html" class="btn-primary">Module 21: Linux Profiling & perf →</a>
+        <h2 id="sec-20-2">20.2 Compiler Warnings as the First Line of Defense</h2>
+        <p>
+          Before deploying dedicated third-party static analyzers, high-reliability engineering requires configuring the compiler itself as a zero-tolerance static analysis engine.
+        </p>
+
+        <h3>Production Safety-Critical GCC/Clang Compiler Flags</h3>
+        <pre><code class="language-makefile"># ==============================================================================
+# Production Safety-Critical Warning Configuration
+# ==============================================================================
+WARN_FLAGS := -Wall -Wextra -Wpedantic               -Werror               -Wconversion               -Wsign-conversion               -Wshadow               -Wdouble-promotion               -Wstrict-prototypes               -Wundef               -Wformat=2               -Wformat-security               -Wnull-dereference               -Wwrite-strings               -Wcast-align               -Wlogical-op               -Wduplicated-cond               -Wduplicated-branches</code></pre>
+
+        <table style="width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.9rem;">
+          <thead>
+            <tr style="background:#1E293B;color:#F8FAFC;border-bottom:2px solid #334155;">
+              <th style="padding:10px;text-align:left;">Flag</th>
+              <th style="padding:10px;text-align:left;">Defect Category Caught</th>
+              <th style="padding:10px;text-align:left;">Why It Matters in Embedded C</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><code>-Wconversion</code></td>
+              <td style="padding:10px;">Implicit numeric narrowing / signedness conversion</td>
+              <td style="padding:10px;">Prevents silent truncation of 32-bit registers into 16-bit or 8-bit variables.</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><code>-Wshadow</code></td>
+              <td style="padding:10px;">Local variable shadowing outer variable</td>
+              <td style="padding:10px;">Prevents local function parameters from accidentally hiding global configuration structs.</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><code>-Wdouble-promotion</code></td>
+              <td style="padding:10px;">Implicit promotion of <code>float</code> to <code>double</code></td>
+              <td style="padding:10px;">Prevents software emulation of 64-bit doubles on Cortex-M4F single-precision hardware FPUs.</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><code>-Wnull-dereference</code></td>
+              <td style="padding:10px;">Compile-time provable NULL pointer dereference</td>
+              <td style="padding:10px;">Catches code paths where a pointer is checked for NULL but dereferenced regardless.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="sec-20-3">20.3 Cppcheck: Deep Static Analysis & MISRA C Integration</h2>
+        <p>
+          <strong>Cppcheck</strong> is a dedicated static analysis tool designed specifically for C and C++. Unlike compilers, which stop analyzing when code is syntactically legal C, Cppcheck looks specifically for undefined behavior, resource leaks, and logic flaws.
+        </p>
+
+        <h3>Automating Cppcheck in Build Pipelines</h3>
+        <pre><code class="language-bash">cppcheck --enable=all          --inconclusive          --error-exitcode=1          --suppress=missingIncludeSystem          --inline-suppr          -I include/          src/</code></pre>
+
+        <h3>Enforcing MISRA C:2012 with Cppcheck</h3>
+        <p>
+          Cppcheck includes an automated MISRA addon (<code>misra.py</code>). By feeding the MISRA rule table text file, Cppcheck verifies compliance against safety-critical automotive standards:
+        </p>
+        <pre><code class="language-bash">cppcheck --addon=misra.py --rule-texts=misra_rules.txt src/</code></pre>
+
+        <h2 id="sec-20-4">20.4 Clang-Tidy: LLVM AST Matchers & Automated Modernization</h2>
+        <p>
+          <strong>Clang-Tidy</strong> is an LLVM-based linter and static analysis platform. It provides a modular check framework capable of not only reporting errors, but also applying automated source-level patches (<code>-fix</code>).
+        </p>
+
+        <h3>Production <code>.clang-tidy</code> Configuration</h3>
+        <pre><code class="language-yaml"># .clang-tidy - Safety-Critical Embedded C Configuration
+---
+Checks: >
+  -*,
+  clang-analyzer-*,
+  cert-*,
+  bugprone-*,
+  readability-*,
+  performance-*,
+  -readability-magic-numbers
+
+WarningsAsErrors: 'clang-analyzer-*,cert-*,bugprone-*'
+
+CheckOptions:
+  - key: cert-dcl16-c.NewSuffixes
+    value: 'L,LL,U,UL,ULL'
+...</code></pre>
+
+        <h2 id="sec-20-5">20.5 Industrial Case Study: Ariane 5 Flight 501 Numeric Conversion Failure</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The $370 Million Float-to-Int Truncation Disaster</h4>
+          <p>
+            On June 4, 1996, the maiden flight of the European Ariane 5 launcher ended in catastrophic destruction 37 seconds after liftoff. The rocket veered sharply off trajectory, causing structural breakup under aerodynamic aerodynamic loads, triggering the onboard automated flight termination system.
+          </p>
+          <p>
+            <strong>Inquiry Board Findings:</strong>
+            The failure occurred in the Inertial Reference System (SRI). A software module calculated the horizontal bias (a variable representing the vehicle's horizontal velocity).
+          </p>
+          <p>
+            The value was represented as a <strong>64-bit IEEE-754 floating-point number</strong>. In an unshielded code section, the software attempted to convert this 64-bit float into a <strong>16-bit signed integer</strong>.
+          </p>
+          <pre><code class="language-c">/* Conceptual representation of the Ariane 5 truncation defect */
+double horizontal_bias = calculate_horizontal_velocity(); /* > 32767.0 on Ariane 5! */
+int16_t truncated_bias = (int16_t)horizontal_bias;         /* Hardware Operand Error! */</code></pre>
+          <p>
+            On the earlier, slower Ariane 4 rocket, the horizontal velocity physically never exceeded 32,767. However, Ariane 5's higher thrust caused the velocity to exceed the range of a 16-bit signed integer. The conversion triggered an unhandled hardware arithmetic overflow exception, causing the primary SRI computer to shut down, followed immediately by the identical backup unit.
+          </p>
+          <p>
+            <strong>How Modern Static Analysis Prevents This:</strong>
+            Compiling with <code>-Wconversion</code> or Clang-Tidy’s <code>bugprone-narrowing-conversions</code> flags this line at compile-time as an unsafe loss of precision, halting the build before binary deployment.
+          </p>
+        </div>
+
+        <h2 id="sec-20-6">20.6 Hands-On Lab: Setting up an Automated Static Analysis Pipeline</h2>
+        <p>
+          In this lab, you will analyze a C telemetry module containing subtle static analysis violations (implicit truncation, uninitialized variables, and shadow variables), and configure Cppcheck and Clang-Tidy to flag every defect automatically.
+        </p>
+
+        <h3>Defective Code (<code>lab_static.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+
+static uint32_t g_system_id = 42;
+
+/* Defect 1: Implicit conversion / truncation from uint32_t to uint16_t */
+static uint16_t scale_telemetry(uint32_t raw_value) {
+    uint16_t scaled = raw_value; /* Truncation without explicit cast */
+    return scaled;
+}
+
+/* Defect 2: Variable shadowing */
+static void process_id(uint32_t g_system_id) {
+    printf("Processing ID: %u
+", g_system_id);
+}
+
+/* Defect 3: Uninitialized variable along error path */
+static int read_sensor_voltage(int error_flag, int *out_voltage) {
+    int v;
+    if (error_flag == 0) {
+        v = 3300; // 3.3V
+    }
+    /* If error_flag != 0, v is uninitialized! */
+    *out_voltage = v;
+    return 0;
+}
+
+int main(void) {
+    uint32_t raw = 0x12345678;
+    uint16_t s = scale_telemetry(raw);
+    process_id(99);
+
+    int volt;
+    read_sensor_voltage(1, &amp;volt);
+    printf("Scaled: 0x%04X, Volt: %d
+", s, volt);
+    return 0;
+}</code></pre>
+
+        <h3>Verification Script</h3>
+        <pre><code class="language-bash"># 1. Test Compiler Static Analysis
+gcc -Wall -Wextra -Wconversion -Wshadow -Wuninitialized -c lab_static.c
+# Compiler immediately reports:
+# - warning: conversion from 'uint32_t' to 'uint16_t' may change value [-Wconversion]
+# - warning: declaration of 'g_system_id' shadows a global declaration [-Wshadow]
+# - warning: 'v' may be used uninitialized [-Wmaybe-uninitialized]
+
+# 2. Test Cppcheck
+cppcheck --enable=all --error-exitcode=1 lab_static.c
+# Cppcheck reports:
+# [lab_static.c:24]: (error) Uninitialized variable: v</code></pre>
+
+        <h2 id="sec-20-quiz">20.7 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What compiler flag flags implicit type conversions that may alter the numeric value or signedness of an expression?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) <code>-O3</code></label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) <code>-Wconversion</code> (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) <code>-fshort-enums</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>-Wconversion</code> warns whenever an expression undergoes implicit conversion between integers that could alter its value (such as assigning a 32-bit int to a 16-bit short).
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the primary difference between an Abstract Syntax Tree (AST) and a Control Flow Graph (CFG)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) An AST represents grammatical nesting of tokens, while a CFG models the directed order of execution paths and branch conditions. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) An AST is only used by linkers, whereas CFGs are used by assemblers.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) They are identical data structures with different names.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> The AST represents program syntax hierarchy (expressions, declarations, statements), whereas the CFG represents execution graph blocks connected by directed edges representing branch decisions.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: Why is <code>-Wdouble-promotion</code> vital when compiling C code for single-precision ARM Cortex-M4F processors?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) Doubles cannot fit inside 32-bit SRAM.</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) Cortex-M4F only possesses a single-precision 32-bit hardware FPU; implicit promotion to double forces slow, multi-cycle software emulation library calls. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) It causes the CPU clock frequency to divide by two.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Without <code>-Wdouble-promotion</code>, writing <code>float x = y * 0.5;</code> implicitly promotes <code>y</code> to <code>double</code> because <code>0.5</code> is a 64-bit double literal, destroying DSP algorithm performance.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What role does Taint Analysis play in secure C development?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) It monitors CPU fan speeds under high thermal loads.</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) It tracks untrusted external inputs from network/UART interfaces and verifies they are validated before reaching sensitive operations like array indices or memory allocations. (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) It cleans object files before archiving.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Taint analysis identifies vulnerability pathways where untrusted external data could influence execution flow or buffer bounds without sanitization.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What command instructs Clang-Tidy to automatically apply its suggested code fixes?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) <code>--patch-all</code></label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) <code>-fix</code> (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) <code>--repair</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> The <code>-fix</code> flag instructs Clang-Tidy to directly rewrite the source code with compiler-verified refactorings and corrections.
+            </div>
+          </div>
         </div>
       </article>
     </main>

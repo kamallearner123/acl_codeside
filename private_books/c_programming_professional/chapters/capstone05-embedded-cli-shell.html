@@ -380,23 +380,190 @@
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 10 • Capstone Projects</span>
           <h1 class="chapter-h1">Capstone 5: Embedded CLI Shell with Tab Completion</h1>
-          <p class="chapter-lead">Develop a lightweight, zero-heap command line interface (CLI) for serial debugging with ANSI color escape codes, history buffer, and auto-completion.</p>
+          <p class="chapter-lead">Design an industrial, non-blocking serial Command Line Interface (CLI) for embedded firmware. Master VT100 ANSI terminal escape sequence parsing, command table dispatchers, tab auto-completion, argument tokenization, and command history buffers.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 80m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: VT100 / ANSI X3.64 / MISRA C Aligned</div>
+            <div class="meta-item">⚡ Target: Embedded Serial Diagnostic Consoles</div>
           </div>
         </div>
 
+        <h2 id="sec-cap5-1">1. The Role of Serial Diagnostic Shells in Production</h2>
+        <p>
+          A production device deployed in the field cannot rely on JTAG debuggers for maintenance. An interactive, non-blocking Command Line Interface (CLI) over serial or USB CDC allows field engineers to inspect runtime telemetry, read error logs, trigger self-tests, and calibrate sensors without halting the real-time control loops.
+        </p>
 
-        <h2 id="sec-cap5-1">Project 5: Zero-Heap Command Parser</h2>
-        <p>Tokenize command line strings in-place without dynamic memory allocation.</p>
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Embedded CLI Architecture</div>
+          <pre style="margin:0;color:#94A3B8;">
+UART RX Stream ──▶ [ Non-Blocking Character Ingestion ]
+                         │
+                         ├── Backspace (0x08 / 0x7F) ──▶ Erasure &amp; Cursor Left
+                         ├── Tab Key (0x09)          ──▶ Auto-Complete Matcher
+                         ├── Arrow Keys (ESC [ A/B)  ──▶ Command History Recall
+                         └── Enter ( or 
+)        ──▶ Tokenizer &amp; Command Table Dispatcher
+                                                               │
+                                                               ▼
+                                                  [ Execution Function: cmd_peek() ]
+          </pre>
+        </div>
 
+        <h2 id="sec-cap5-2">2. Production Embedded CLI Implementation in C</h2>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdbool.h&gt;
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="capstone04-preemptive-rtos-kernel.html" class="btn-secondary">← Capstone 4: Preemptive RTOS Kernel</a>
-          <a href="capstone06-misra-sensor-fusion.html" class="btn-primary">Capstone 6: MISRA Sensor Fusion →</a>
+#define CLI_MAX_INPUT_LEN   64U
+#define CLI_MAX_ARGS        8U
+
+typedef int (*cli_cmd_fn)(int argc, char **argv);
+
+typedef struct {
+    const char *name;
+    const char *help;
+    cli_cmd_fn  handler;
+} cli_command_t;
+
+/* Forward declarations */
+static int cmd_help(int argc, char **argv);
+static int cmd_version(int argc, char **argv);
+static int cmd_read_adc(int argc, char **argv);
+
+static const cli_command_t g_commands[] = {
+    {"help",    "Display available commands", cmd_help},
+    {"version", "Print firmware build information", cmd_version},
+    {"adc",     "Read analog channel: adc &lt;ch&gt;", cmd_read_adc},
+};
+#define NUM_COMMANDS (sizeof(g_commands) / sizeof(g_commands[0]))
+
+static char     g_input_buf[CLI_MAX_INPUT_LEN];
+static uint32_t g_buf_idx = 0;
+
+static void cli_put_char(char c) {
+    /* Send character over UART (Echo back to terminal) */
+    putchar(c);
+    fflush(stdout);
+}
+
+static void cli_put_string(const char *str) {
+    while (*str) cli_put_char(*str++);
+}
+
+static int cmd_help(int argc, char **argv) {
+    (void)argc; (void)argv;
+    cli_put_string("
+Available Commands:
+");
+    for (size_t i = 0; i &lt; NUM_COMMANDS; i++) {
+        char line[128];
+        snprintf(line, sizeof(line), "  %-10s - %s
+", g_commands[i].name, g_commands[i].help);
+        cli_put_string(line);
+    }
+    return 0;
+}
+
+static int cmd_version(int argc, char **argv) {
+    (void)argc; (void)argv;
+    cli_put_string("
+Firmware Version: 2.4.1 (Git: a8f9c1b) Built: " __DATE__ "
+");
+    return 0;
+}
+
+static int cmd_read_adc(int argc, char **argv) {
+    if (argc &lt; 2) {
+        cli_put_string("
+Usage: adc &lt;channel_0_to_7&gt;
+");
+        return -1;
+    }
+    cli_put_string("
+[ADC] Channel reading: 3.298 V
+");
+    return 0;
+}
+
+/* Dispatch command */
+static void cli_execute_line(char *line) {
+    char *argv[CLI_MAX_ARGS];
+    int argc = 0;
+
+    char *token = strtok(line, " 	");
+    while (token &amp;&amp; argc &lt; CLI_MAX_ARGS) {
+        argv[argc++] = token;
+        token = strtok(NULL, " 	");
+    }
+
+    if (argc == 0) return;
+
+    for (size_t i = 0; i &lt; NUM_COMMANDS; i++) {
+        if (strcmp(argv[0], g_commands[i].name) == 0) {
+            g_commands[i].handler(argc, argv);
+            return;
+        }
+    }
+    cli_put_string("
+Unknown command. Type 'help'.
+");
+}
+
+/* Tab auto-completion */
+static void cli_handle_tab(void) {
+    if (g_buf_idx == 0) return;
+    for (size_t i = 0; i &lt; NUM_COMMANDS; i++) {
+        if (strncmp(g_commands[i].name, g_input_buf, g_buf_idx) == 0) {
+            /* Found match! Auto-complete remaining characters */
+            const char *suffix = g_commands[i].name + g_buf_idx;
+            while (*suffix) {
+                g_input_buf[g_buf_idx++] = *suffix;
+                cli_put_char(*suffix++);
+            }
+            break;
+        }
+    }
+}
+
+/* Character Ingestion State Machine */
+void cli_feed_char(char c) {
+    if (c == '' || c == '
+') {
+        cli_put_string("
+");
+        g_input_buf[g_buf_idx] = ' ';
+        cli_execute_line(g_input_buf);
+        g_buf_idx = 0;
+        cli_put_string("prompt&gt; ");
+    } else if (c == '	') {
+        cli_handle_tab();
+    } else if (c == 0x08 || c == 0x7F) { // Backspace
+        if (g_buf_idx &gt; 0) {
+            g_buf_idx--;
+            cli_put_string(" "); // Erase character visually
+        }
+    } else if (c &gt;= 32 &amp;&amp; c &lt;= 126) {
+        if (g_buf_idx &lt; (CLI_MAX_INPUT_LEN - 1)) {
+            g_input_buf[g_buf_idx++] = c;
+            cli_put_char(c);
+        }
+    }
+}</code></pre>
+
+        <h2 id="sec-cap5-quiz">3. Capstone Knowledge Verification Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What ASCII character sequence does an ANSI/VT100 terminal emit when the Backspace key is pressed?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="cq5_1" id="cq5_1a"> <label for="cq5_1a">A) 0x00</label></li>
+              <li><input type="radio" name="cq5_1" id="cq5_1b"> <label for="cq5_1b">B) 0x08 (BS) or 0x7F (DEL) (Correct)</label></li>
+              <li><input type="radio" name="cq5_1" id="cq5_1c"> <label for="cq5_1c">C) 0x1B</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Terminal emulators transmit either BS (0x08) or DEL (0x7F) for backspace; sending <code> </code> back to the terminal visually erases the character.
+            </div>
+          </div>
         </div>
       </article>
     </main>

@@ -379,44 +379,274 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 6 • Linux System Programming</span>
-          <h1 class="chapter-h1">Module 27: Scalable I/O Multiplexing with epoll</h1>
-          <p class="chapter-lead">Build high-throughput network daemons handling 100,000+ concurrent connections using edge-triggered epoll (EPOLLET), non-blocking sockets, and event loops.</p>
+          <h1 class="chapter-h1">Module 27: Scalable I/O Multiplexing (epoll)</h1>
+          <p class="chapter-lead">Master high-concurrency event-driven network I/O in C. Deep dive into the limits of select and poll (the C10K problem), Linux epoll kernel architecture (Red-Black tree and ready-list wait queues), Edge-Triggered (EPOLLET) vs Level-Triggered (EPOLLLT) mechanics, and non-blocking socket drains.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 60m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: Linux epoll(7) / Non-Blocking POSIX Sockets</div>
+            <div class="meta-item">⚡ Target: High-Concurrency Linux Network Daemons</div>
           </div>
         </div>
 
+        <h2 id="sec-27-1">27.1 The C10K Problem & The Death of select/poll</h2>
+        <p>
+          In early Unix network programming, handling multiple concurrent network connections relied on <code>select(2)</code> or <code>poll(2)</code>.
+        </p>
 
-        <h2 id="sec-27-1">27.1 epoll Architecture: Why epoll scales O(1) over select O(N)</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>epoll_event_loop.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include &lt;sys/epoll.h&gt;
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Algorithmic Scaling: select/poll vs epoll</div>
+          <pre style="margin:0;color:#94A3B8;">
+1. select() / poll() - O(N) Linear Scanning:
+   User Space ──(Passes 10,000 FDs array)──▶ Kernel
+                                               │ Iterates across all 10,000 FDs linearly
+                                               ▼
+   User Space ◀──(Returns 10,000 FDs array)── Kernel
+   (User must iterate 10,000 FDs in user space to find the 2 active sockets!)
+
+2. epoll - O(1) Ready-List Traversal:
+   User Space ──(epoll_wait)──▶ Kernel
+                                  │ Reads only the active 'rdllist' (populated by ISRs)
+                                  ▼
+   User Space ◀──(Returns ONLY the 2 active FDs!)── Kernel
+          </pre>
+        </div>
+
+        <table style="width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:0.9rem;">
+          <thead>
+            <tr style="background:#1E293B;color:#F8FAFC;border-bottom:2px solid #334155;">
+              <th style="padding:10px;text-align:left;">Dimension</th>
+              <th style="padding:10px;text-align:left;">select(2)</th>
+              <th style="padding:10px;text-align:left;">poll(2)</th>
+              <th style="padding:10px;text-align:left;">epoll(7)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Computational Complexity</strong></td>
+              <td style="padding:10px;"><code>O(N)</code></td>
+              <td style="padding:10px;"><code>O(N)</code></td>
+              <td style="padding:10px;"><strong style="color:#10B981;"><code>O(1)</code></strong> (proportional only to active events)</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>Max File Descriptors</strong></td>
+              <td style="padding:10px;">Hardcoded 1024 (<code>FD_SETSIZE</code>)</td>
+              <td style="padding:10px;">Limited by process FD limit</td>
+              <td style="padding:10px;"><strong style="color:#10B981;">Unlimited</strong> (Millions of sockets)</td>
+            </tr>
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:10px;"><strong>User-Kernel Copies</strong></td>
+              <td style="padding:10px;">Copies full bitmask every syscall</td>
+              <td style="padding:10px;">Copies full array every syscall</td>
+              <td style="padding:10px;"><strong style="color:#10B981;">Zero</strong> (State maintained in kernel RB-Tree)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 id="sec-27-2">27.2 Linux epoll Kernel Architecture</h2>
+        <p>
+          When you invoke <code>epoll_create1(EPOLL_CLOEXEC)</code>, the Linux kernel allocates an internal <code>struct eventpoll</code> holding two central data structures:
+        </p>
+        <ol>
+          <li><strong>Interest List (Red-Black Tree - <code>rbr</code>):</strong> Stores all monitored file descriptors keyed by FD integer. Allows <code>O(log N)</code> insertion, modification, and deletion via <code>epoll_ctl()</code>.</li>
+          <li><strong>Ready List (Doubly-Linked List - <code>rdllist</code>):</strong> Contains only those file descriptors that currently possess active I/O events. When incoming Ethernet packets arrive, the network driver's hardware ISR fires, and the kernel network stack places the socket onto the ready list. <code>epoll_wait()</code> simply extracts entries from this list in <code>O(1)</code> time.</li>
+        </ol>
+
+        <h2 id="sec-27-3">27.3 Edge-Triggered (EPOLLET) vs Level-Triggered (EPOLLLT)</h2>
+        <p>
+          Understanding the difference between Level-Triggered (the default) and Edge-Triggered mode is mandatory for writing bug-free epoll servers:
+        </p>
+        <ul>
+          <li><strong>Level-Triggered (EPOLLLT):</strong> <code>epoll_wait()</code> continuously returns the file descriptor as long as unread data remains in the kernel socket buffer. If you read only 10 bytes out of 100 bytes, the next call to <code>epoll_wait()</code> immediately wakes up again.</li>
+          <li><strong>Edge-Triggered (EPOLLET):</strong> <code>epoll_wait()</code> returns the file descriptor <em>only when a state transition occurs</em> (e.g. from empty buffer to having data). If you do not drain the socket completely, epoll will <strong>never notify you again</strong> for the remaining data, causing permanent connection lockup!</li>
+        </ul>
+
+        <div class="warning-box" style="border-left:4px solid #EF4444;background:rgba(239,68,68,0.08);padding:1rem;margin:1rem 0;border-radius:4px;">
+          <strong style="color:#EF4444;">Golden Rule of Edge-Triggered epoll:</strong> When using <code>EPOLLET</code>, sockets <strong>must be non-blocking (<code>O_NONBLOCK</code>)</strong>, and reads must be wrapped in a <code>while</code> loop that drains data continuously until <code>read()</code> returns <code>-1</code> with <code>errno == EAGAIN</code> or <code>errno == EWOULDBLOCK</code>!
+        </div>
+
+        <h2 id="sec-27-4">27.4 Industrial Case Study: The Edge-Triggered Telemetry Stall</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The Smart Factory Gateway Deadlock</h4>
+          <p>
+            An industrial IoT edge gateway connected to 2,000 manufacturing sensors started dropping sensor packets during high-load manufacturing shifts. Connections remained open, but no new telemetry was ingested.
+          </p>
+          <p>
+            <strong>Root Cause:</strong> The developer configured epoll with <code>EPOLLET</code> (Edge-Triggered) for maximum performance, but read data using a single <code>read()</code> call with a 1,024-byte buffer:
+          </p>
+          <pre><code class="language-c">/* Defective Edge-Triggered Handler */
+if (events[i].events &amp; EPOLLIN) {
+    ssize_t bytes = read(events[i].data.fd, buffer, sizeof(buffer));
+    process_telemetry(buffer, bytes);
+    /* BUG: If the sensor transmitted 1,500 bytes, 476 bytes remained in kernel buffer!
+       Because epoll is Edge-Triggered, it never re-notified for the remaining 476 bytes!
+       The socket stalled forever awaiting another edge transition! */
+}</code></pre>
+          <p>
+            <strong>The Fix:</strong> The read handler was rewritten to execute inside an <code>EAGAIN</code> drain loop, ensuring all buffered bytes were consumed before returning to <code>epoll_wait()</code>.
+          </p>
+        </div>
+
+        <h2 id="sec-27-5">27.5 Hands-On Lab: Scalable Non-Blocking epoll TCP Echo Server</h2>
+        <p>
+          In this lab, you will construct a production-ready, non-blocking TCP server in C using <code>epoll_create1()</code>, <code>epoll_ctl()</code>, and <code>epoll_wait()</code> capable of serving thousands of simultaneous clients.
+        </p>
+
+        <h3>Complete Compilable Server (<code>epoll_server.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
 #include &lt;unistd.h&gt;
+#include &lt;fcntl.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;sys/epoll.h&gt;
+#include &lt;netinet/in.h&gt;
+#include &lt;arpa/inet.h&gt;
 
 #define MAX_EVENTS 64
+#define BUFFER_SIZE 512
+#define PORT 8080
 
-int create_epoll_reactor(int server_fd) {
-    int epfd = epoll_create1(0);
-    struct epoll_event ev;
-    ev.events = EPOLLIN | EPOLLET; /* Edge-triggered */
+static int make_socket_non_blocking(int fd) {
+    int flags = fcntl(fd, F_GETFL, 0);
+    if (flags == -1) return -1;
+    return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+}
+
+int main(void) {
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int opt = 1;
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &amp;opt, sizeof(opt));
+
+    struct sockaddr_in address = {0};
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    bind(server_fd, (struct sockaddr *)&amp;address, sizeof(address));
+    listen(server_fd, SOMAXCONN);
+    make_socket_non_blocking(server_fd);
+
+    int epoll_fd = epoll_create1(EPOLL_CLOEXEC);
+    struct epoll_event ev, events[MAX_EVENTS];
+
+    ev.events = EPOLLIN;
     ev.data.fd = server_fd;
-    epoll_ctl(epfd, EPOLL_CTL_ADD, server_fd, &ev);
-    return epfd;
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_fd, &amp;ev);
+
+    printf("[SERVER] Listening on port %d with epoll...
+", PORT);
+
+    while (1) {
+        int nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+        for (int i = 0; i &lt; nfds; i++) {
+            if (events[i].data.fd == server_fd) {
+                /* New incoming connection */
+                struct sockaddr_in client_addr;
+                socklen_t client_len = sizeof(client_addr);
+                int client_fd = accept(server_fd, (struct sockaddr *)&amp;client_addr, &amp;client_len);
+                make_socket_non_blocking(client_fd);
+
+                ev.events = EPOLLIN | EPOLLET; /* Edge-Triggered */
+                ev.data.fd = client_fd;
+                epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &amp;ev);
+                printf("[ACCEPT] Client connected: FD %d
+", client_fd);
+            } else {
+                /* Data available from client (Drain until EAGAIN) */
+                int fd = events[i].data.fd;
+                char buf[BUFFER_SIZE];
+                while (1) {
+                    ssize_t count = read(fd, buf, sizeof(buf));
+                    if (count &gt; 0) {
+                        write(fd, buf, (size_t)count); // Echo back
+                    } else if (count == 0) {
+                        /* Client disconnected */
+                        printf("[CLOSE] Client disconnected: FD %d
+", fd);
+                        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
+                        close(fd);
+                        break;
+                    } else {
+                        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                            /* Fully drained! */
+                            break;
+                        }
+                        perror("read error");
+                        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
+                        close(fd);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    close(server_fd);
+    return 0;
 }</code></pre>
+
+        <h2 id="sec-27-quiz">27.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Why does <code>epoll_wait()</code> achieve O(1) performance while <code>poll()</code> degrades at O(N)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) epoll executes on GPU compute shaders.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) epoll inspects a dedicated ready list maintained by device driver interrupt callbacks, returning only active descriptors without scanning inactive descriptors. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) poll copies memory using DMA.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>poll()</code> must iterate through the entire array of file descriptors to check for readiness; <code>epoll</code> returns only descriptors that have already transitioned onto the kernel ready list.
+            </div>
           </div>
-        </div>
 
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What error code from <code>read()</code> signifies that a non-blocking socket has been completely drained under Edge-Triggered (EPOLLET) mode?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) <code>EINTR</code></label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) <code>EAGAIN</code> or <code>EWOULDBLOCK</code> (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) <code>ECONNRESET</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> In non-blocking sockets, <code>EAGAIN</code> / <code>EWOULDBLOCK</code> indicates that no more data is currently available in the kernel buffer and subsequent reads would block.
+            </div>
+          </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod26-file-descriptors-and-posix-io.html" class="btn-secondary">← Module 26: File Descriptors & POSIX I/O</a>
-          <a href="mod28-process-lifecycle-and-ipc.html" class="btn-primary">Module 28: Process Lifecycle & IPC →</a>
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: What internal kernel data structure does epoll use to store the registered interest list of file descriptors?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) Hash table</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) Red-Black Tree (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) FIFO circular queue</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> The interest list is stored in a Red-Black Tree, enabling efficient <code>O(log N)</code> additions, removals, and modifications of monitored file descriptors.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What flag ensures that epoll automatically disables a file descriptor after delivering a single notification event?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) <code>EPOLLONESHOT</code> (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) <code>EPOLLWAKEUP</code></label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) <code>EPOLLEXCLUSIVE</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>EPOLLONESHOT</code> tells epoll to disable event reporting for that descriptor until re-armed with <code>epoll_ctl(..., EPOLL_CTL_MOD, ...)</code>, preventing multithreaded race conditions on the same socket.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: When should <code>epoll_create1(EPOLL_CLOEXEC)</code> be preferred over legacy <code>epoll_create()</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) Always; it atomically sets the close-on-exec flag on the epoll file descriptor, preventing descriptor leakage across child process spawns. (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) Only when running on ARM architectures.</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) Only when using UDP sockets.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>epoll_create1(EPOLL_CLOEXEC)</code> avoids the race condition between creation and setting <code>FD_CLOEXEC</code> via <code>fcntl</code> in multithreaded programs.
+            </div>
+          </div>
         </div>
       </article>
     </main>

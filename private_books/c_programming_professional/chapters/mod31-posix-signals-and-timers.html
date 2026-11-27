@@ -379,43 +379,236 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 6 • Linux System Programming</span>
-          <h1 class="chapter-h1">Module 31: POSIX Signals & Real-Time Timers</h1>
-          <p class="chapter-lead">Signal safety, sigaction, asynchronous signal-safe functions, timerfd_create, signalfd, and integrating signals cleanly into epoll event loops.</p>
+          <h1 class="chapter-h1">Module 31: POSIX Signals &amp; Real-Time Timers</h1>
+          <p class="chapter-lead">Deep dive into asynchronous signal delivery, the strict POSIX async-signal-safety contract, converting signals to events via signalfd(2), clean shutdown architectures, and POSIX high-resolution real-time timers (timer_create, CLOCK_MONOTONIC).</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 50m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: POSIX.1-2008 / Linux signalfd(2)</div>
+            <div class="meta-item">⚡ Target: Production Daemons &amp; Real-Time Controllers</div>
           </div>
         </div>
 
+        <h2 id="sec-31-1">31.1 Signal Mechanics & The Async-Signal-Safety Trap</h2>
+        <p>
+          A <strong>Signal</strong> is an asynchronous software interrupt delivered by the Linux kernel to a process. When a signal arrives, the kernel interrupts whatever instruction the CPU is executing, pushes a synthetic signal frame onto the stack, and jumps to the signal handler function.
+        </p>
 
-        <h2 id="sec-31-1">31.1 Integrating Signals into epoll via signalfd</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>signalfd_epoll_integration.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include &lt;sys/signalfd.h&gt;
-#include &lt;signal.h&gt;
+        <div class="warning-box" style="border-left:4px solid #EF4444;background:rgba(239,68,68,0.08);padding:1rem;margin:1rem 0;border-radius:4px;">
+          <strong style="color:#EF4444;">The Fatal Async-Signal-Safety Rule:</strong> Inside a traditional signal handler, you are <strong>STRICTLY FORBIDDEN</strong> from calling non-reentrant functions! Functions like <code>printf()</code>, <code>malloc()</code>, <code>free()</code>, and <code>pthread_mutex_lock()</code> acquire internal locks. If a signal interrupts a thread while that thread is already holding the internal <code>malloc</code> lock, calling <code>malloc()</code> inside the signal handler triggers an <strong>immediate, unrecoverable deadlock!</strong>
+        </div>
+
+        <p>
+          Only functions explicitly listed as <em>Async-Signal-Safe</em> in <code>man 7 signal-safety</code> (such as <code>write()</code>, <code>_exit()</code>, <code>sigaction()</code>) may be invoked inside signal handlers.
+        </p>
+
+        <h2 id="sec-31-2">31.2 Modern Architecture: signalfd(2) Synchronous Consumption</h2>
+        <p>
+          To escape the hazards of asynchronous signal handlers, modern Linux provides <strong>signalfd(2)</strong>. It converts asynchronous signals into a standard <strong>readable file descriptor</strong>!
+        </p>
+
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">signalfd Architecture: Unifying Signals into epoll</div>
+          <pre style="margin:0;color:#94A3B8;">
+Kernel Signals (SIGINT, SIGTERM)
+          │
+          ▼ Blocked by sigprocmask() (Cannot interrupt threads!)
+  [ signalfd File Descriptor ] ──(Readable Event)──▶ [ Unified epoll_wait Loop ]
+                                                              │
+                                                  Handles shutdown cleanly
+                                                  using standard printf/free!
+          </pre>
+        </div>
+
+        <h3>Setting Up signalfd with epoll</h3>
+        <pre><code class="language-c">sigset_t mask;
+sigemptyset(&amp;mask);
+sigaddset(&amp;mask, SIGINT);
+sigaddset(&amp;mask, SIGTERM);
+
+/* 1. Block signals so they do not invoke default interrupt handlers */
+sigprocmask(SIG_BLOCK, &amp;mask, NULL);
+
+/* 2. Create signal file descriptor */
+int sfd = signalfd(-1, &amp;mask, SFD_NONBLOCK | SFD_CLOEXEC);
+
+/* 3. Register sfd directly with your epoll event loop! */
+struct epoll_event ev;
+ev.events = EPOLLIN;
+ev.data.fd = sfd;
+epoll_ctl(epoll_fd, EPOLL_CTL_ADD, sfd, &amp;ev);</code></pre>
+
+        <h2 id="sec-31-3">31.3 POSIX Real-Time Periodic Timers</h2>
+        <p>
+          Rather than relying on inaccurate <code>sleep()</code> loops, safety-critical real-time applications configure high-precision kernel timers using <code>timer_create()</code> bound to <code>CLOCK_MONOTONIC</code>:
+        </p>
+        <pre><code class="language-c">timer_t timerid;
+struct sigevent sev = {0};
+sev.sigev_notify = SIGEV_SIGNAL;
+sev.sigev_signo = SIGRTMIN; /* Real-time signal */
+
+timer_create(CLOCK_MONOTONIC, &amp;sev, &amp;timerid);
+
+/* Configure 100 Hz periodic timer (every 10 ms) */
+struct itimerspec its;
+its.it_interval.tv_sec = 0;
+its.it_interval.tv_nsec = 10000000; // 10 ms period
+its.it_value = its.it_interval;     // Initial expiration
+
+timer_settime(timerid, 0, &amp;its, NULL);</code></pre>
+
+        <h2 id="sec-31-4">31.4 Industrial Case Study: Flight Simulator Lockup via syslog() in Signal</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The Commercial Flight Simulator Visual Engine Hang</h4>
+          <p>
+            A high-fidelity FAA Level D flight simulator visual projection system randomly locked up during training exercises. The simulation froze completely, requiring a hard reboot.
+          </p>
+          <p>
+            <strong>Investigation:</strong> Core dumps showed the rendering thread was deadlocked inside <code>malloc()</code>:
+          </p>
+          <pre><code class="language-text">#0  __lll_lock_wait () at futex.c
+#1  __GI___libc_malloc () at malloc.c:2928
+#2  syslog () at syslog.c:184
+#3  &lt;signal handler called&gt; (SIGALRM)
+#4  __GI___libc_malloc () at malloc.c:2910
+#5  render_terrain_mesh () at terrain.c:452</code></pre>
+          <p>
+            <strong>Root Cause:</strong> The terrain rendering thread was allocating a dynamic vertex buffer when the <code>SIGALRM</code> timer signal fired. The signal handler called <code>syslog()</code> to record periodic telemetry.
+          </p>
+          <p>
+            Internally, <code>syslog()</code> calls <code>malloc()</code>. Because the thread already held the internal glibc heap arena lock at the moment of interruption, the second <code>malloc()</code> call attempted to acquire the same lock, resulting in an immediate self-deadlock!
+          </p>
+          <p>
+            <strong>Resolution:</strong> The async signal handler was completely removed and replaced with <code>timerfd_create()</code> integrated into the main epoll event loop.
+          </p>
+        </div>
+
+        <h2 id="sec-31-5">31.5 Hands-On Lab: Graceful Daemon Shutdown with signalfd</h2>
+        <p>
+          In this lab, you will write a complete Linux server that handles <code>SIGINT</code> (Ctrl+C) and <code>SIGTERM</code> cleanly using <code>signalfd()</code> and an epoll event loop.
+        </p>
+
+        <h3>Graceful Shutdown Server (<code>signalfd_daemon.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
 #include &lt;unistd.h&gt;
+#include &lt;signal.h&gt;
+#include &lt;sys/signalfd.h&gt;
+#include &lt;sys/epoll.h&gt;
 
-int setup_signal_fd(void) {
+int main(void) {
     sigset_t mask;
-    sigemptyset(&mask);
-    sigaddset(&mask, SIGINT);
-    sigaddset(&mask, SIGTERM);
-    sigprocmask(SIG_BLOCK, &mask, NULL);
-    return signalfd(-1, &mask, SFD_NONBLOCK);
+    sigemptyset(&amp;mask);
+    sigaddset(&amp;mask, SIGINT);
+    sigaddset(&amp;mask, SIGTERM);
+
+    /* Block signals so they are delivered synchronously through signalfd */
+    if (sigprocmask(SIG_BLOCK, &amp;mask, NULL) &lt; 0) {
+        perror("sigprocmask");
+        return 1;
+    }
+
+    int sfd = signalfd(-1, &amp;mask, SFD_NONBLOCK | SFD_CLOEXEC);
+    int epfd = epoll_create1(EPOLL_CLOEXEC);
+
+    struct epoll_event ev;
+    ev.events = EPOLLIN;
+    ev.data.fd = sfd;
+    epoll_ctl(epfd, EPOLL_CTL_ADD, sfd, &amp;ev);
+
+    printf("[DAEMON] Running. Press Ctrl+C (SIGINT) to trigger graceful shutdown...
+");
+
+    int running = 1;
+    while (running) {
+        struct epoll_event events[4];
+        int nfds = epoll_wait(epfd, events, 4, -1);
+        for (int i = 0; i &lt; nfds; i++) {
+            if (events[i].data.fd == sfd) {
+                struct signalfd_siginfo fdsi;
+                ssize_t s = read(sfd, &amp;fdsi, sizeof(fdsi));
+                if (s == sizeof(fdsi)) {
+                    printf("
+[SIGNAL] Caught signal %u (sender PID=%d)!
+",
+                           fdsi.ssi_signo, fdsi.ssi_pid);
+                    printf("[CLEANUP] Flushing file buffers and freeing resources safely...
+");
+                    running = 0; // Terminate loop cleanly!
+                }
+            }
+        }
+    }
+
+    close(sfd);
+    close(epfd);
+    printf("[DAEMON] Shutdown sequence completed cleanly. Exiting with code 0.
+");
+    return 0;
 }</code></pre>
+
+        <h2 id="sec-31-quiz">31.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Why is calling <code>printf()</code> inside an asynchronous signal handler dangerous?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) <code>printf()</code> is slow.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) <code>printf()</code> acquires internal mutex locks on <code>stdout</code>; if interrupted while holding that lock, calling it again results in a permanent deadlock. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) The terminal does not support signals.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>printf</code> is not async-signal-safe because it relies on non-reentrant stdio buffer locks.
+            </div>
           </div>
-        </div>
 
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What Linux system call converts incoming signals into readable events on a file descriptor?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) <code>eventfd()</code></label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) <code>signalfd()</code> (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) <code>timerfd()</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>signalfd()</code> provides a descriptor interface for consuming signals synchronously via <code>read()</code> and <code>epoll</code>.
+            </div>
+          </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod30-thread-synchronization-and-locks.html" class="btn-secondary">← Module 30: Thread Synchronization & Locks</a>
-          <a href="mod32-network-sockets-programming.html" class="btn-primary">Module 32: Sockets & Binary Protocols →</a>
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: What clock source should be used for real-time periodic timers to prevent time jumps when NTP syncs the system clock?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) <code>CLOCK_REALTIME</code></label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) <code>CLOCK_MONOTONIC</code> (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) <code>CLOCK_PROCESS_CPUTIME_ID</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>CLOCK_MONOTONIC</code> advances strictly monotonically at constant speed and is immune to discontinuous system wall-clock adjustments.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: Before reading signals from <code>signalfd</code>, what must be done with <code>sigprocmask()</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) Unblock all signals.</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) Block the signals so the default OS handlers do not intercept them before signalfd. (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) Set signals to SIG_DFL.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Blocking the signals prevents the kernel from executing default actions (e.g. terminating the process on SIGINT) so the signal is queued for <code>signalfd</code>.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: Which of the following data types is guaranteed by the C standard to be read and written atomically in a signal handler?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) <code>volatile sig_atomic_t</code> (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) <code>double</code></label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) <code>char *</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>sig_atomic_t</code> is guaranteed by ISO C to be modified as an atomic entity even in the presence of asynchronous signals.
+            </div>
+          </div>
         </div>
       </article>
     </main>

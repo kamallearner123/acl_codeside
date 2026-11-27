@@ -379,42 +379,219 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 8 • Secure C Programming</span>
-          <h1 class="chapter-h1">Module 39: CERT C & Defensive Coding</h1>
-          <p class="chapter-lead">Eliminate critical security vulnerabilities using SEI CERT C: safe integer overflow detection, defensive boundary checks, safe string routines, and fault mitigation.</p>
+          <h1 class="chapter-h1">Module 39: CERT C &amp; Defensive Coding Practices</h1>
+          <p class="chapter-lead">Master the SEI CERT C Secure Coding Standard. Deep dive into integer wrap-around vulnerabilities (INT30-C/INT32-C), string boundary truncation hazards (STR31-C), pointer sanitization post-free (MEM30-C), branchless overflow detection, and defensive contract programming in C.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 55m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: SEI CERT C Coding Standard / Common Weakness Enumeration (CWE)</div>
+            <div class="meta-item">⚡ Target: High-Security Networked &amp; Embedded C Software</div>
           </div>
         </div>
 
+        <h2 id="sec-39-1">39.1 MISRA C vs. CERT C: Functional Safety vs. Security</h2>
+        <p>
+          Engineers frequently ask: <em>"If our codebase is MISRA-compliant, is it secure?"</em>
+        </p>
+        <p>
+          Not necessarily! <strong>MISRA C</strong> was designed primarily for <strong>Functional Safety</strong> (ensuring software does not fail randomly in closed automotive/avionics environments). <strong>CERT C</strong> was designed by Carnegie Mellon’s Software Engineering Institute explicitly for <strong>Cybersecurity</strong> (preventing active malicious adversaries from exploiting software vulnerabilities).
+        </p>
 
-        <h2 id="sec-39-1">39.1 Safe Integer Addition with Overflow Detection</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>safe_math.h (CERT INT32-C)</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include &lt;stdint.h&gt;
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Safety vs. Security Standards Spectrum</div>
+          <pre style="margin:0;color:#94A3B8;">
+MISRA C:2012 / 2023 ──▶ Focus: Reliability, determinism, banning risky C syntax.
+                        Audience: Closed embedded ECUs, braking, steering, avionics.
+
+CERT C Standard     ──▶ Focus: Defeating malicious exploits, buffer overflows, tainted data.
+                        Audience: Connected devices, IoT, networking stacks, Linux services.
+          </pre>
+        </div>
+
+        <h2 id="sec-39-2">39.2 Top CERT C Vulnerabilities & Mitigations</h2>
+
+        <h3>1. INT30-C & INT32-C: Integer Overflow & Wrap-Around</h3>
+        <p>
+          In C, unsigned integer overflow wraps around modulo <code>2^N</code>. Signed integer overflow is <strong>Undefined Behavior</strong>!
+        </p>
+        <div class="warning-box" style="border-left:4px solid #EF4444;background:rgba(239,68,68,0.08);padding:1rem;margin:1rem 0;border-radius:4px;">
+          <strong style="color:#EF4444;">Exploitable Integer Wrap-Around:</strong>
+          <pre><code class="language-c">/* VULNERABLE: If num_items = 0x40000001 on 32-bit:
+   num_items * sizeof(int) wraps to 4 bytes!
+   malloc allocates 4 bytes, but loop writes 1 GB of data, corrupting heap! */
+void *allocate_array(size_t num_items) {
+    return malloc(num_items * sizeof(int));
+}</code></pre>
+        </div>
+
+        <h3>Secure Multiplication Bounds Check (CERT INT30-C Compliant)</h3>
+        <pre><code class="language-c">#include &lt;stdint.h&gt;
+#include &lt;stddef.h&gt;
+
+void *secure_allocate_array(size_t num_items, size_t elem_size) {
+    if (elem_size == 0 || num_items == 0) return NULL;
+
+    /* Check for overflow before multiplying */
+    if (num_items &gt; (SIZE_MAX / elem_size)) {
+        return NULL; /* Overflow prevented! */
+    }
+
+    return malloc(num_items * elem_size);
+}</code></pre>
+
+        <h3>2. STR31-C: String Copying & Truncation</h3>
+        <p>
+          Legacy C string functions (<code>strcpy</code>, <code>strcat</code>, <code>sprintf</code>) do not perform bounds checking and cause catastrophic stack buffer overflows.
+        </p>
+        <p>
+          Even <code>strncpy</code> is hazardous: if the source string exceeds the destination buffer length, <code>strncpy</code> <strong>does not null-terminate the destination!</strong>
+        </p>
+        <pre><code class="language-c">/* SECURE STRING COPY PATTERN */
+void secure_copy(char *dest, size_t dest_size, const char *src) {
+    if (!dest || dest_size == 0 || !src) return;
+    snprintf(dest, dest_size, "%s", src);
+    dest[dest_size - 1] = ' '; /* Guaranteed null-termination */
+}</code></pre>
+
+        <h3>3. MEM30-C: Dangling Pointers & Use-After-Free</h3>
+        <p>
+          When memory is freed, the pointer variable still holds the physical address of the deallocated memory. Accessing it is undefined behavior.
+        </p>
+        <pre><code class="language-c">/* DEFENSIVE POINTER SCRUBBING MACRO */
+#define SAFE_FREE(ptr) do {     free(ptr);                  (ptr) = NULL;           } while(0)</code></pre>
+
+        <h2 id="sec-39-3">39.3 Compiler Built-in Safe Arithmetic</h2>
+        <p>
+          Modern GCC and Clang provide hardware-accelerated integer overflow builtins that check CPU carry and overflow flags directly in a single assembly instruction:
+        </p>
+        <pre><code class="language-c">uint32_t a = 0xFFFFFFFF;
+uint32_t b = 10;
+uint32_t result;
+
+/* Branchless, Hardware-Assisted Overflow Detection */
+if (__builtin_add_overflow(a, b, &amp;result)) {
+    /* Overflow occurred! Handle defensively */
+} else {
+    /* Valid result */
+}</code></pre>
+
+        <h2 id="sec-39-4">39.4 Industrial Case Study: Automotive Remote Keyless Entry Exploit</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The Rolling Code 16-Bit Wrap-Around Vehicle Theft Bug</h4>
+          <p>
+            Security researchers discovered that a popular line of vehicles could be unlocked by replaying intercepted RF key fob transmissions.
+          </p>
+          <p>
+            <strong>Vulnerability Analysis:</strong> The vehicle verified rolling codes using a 16-bit sequence counter. To prevent denial-of-service when buttons were pressed away from the car, the car accepted sequence numbers within a future window of 256 counts:
+          </p>
+          <pre><code class="language-c">/* Vulnerable Sequence Check */
+if ((received_seq - stored_seq) &lt; 256) {
+    unlock_doors();
+}</code></pre>
+          <p>
+            Due to implicit integer promotion to 32-bit signed integers, when <code>received_seq = 0x0005</code> and <code>stored_seq = 0xFFF0</code> (normal counter wrap-around), the expression evaluated as <code>5 - 65520 = -65515</code>. Because <code>-65515 &lt; 256</code> is true, the car unlocked!
+          </p>
+          <p>
+            Worse: an adversary transmitting <code>received_seq = 0</code> always produced a negative number, unlocking the vehicle instantly at any time!
+          </p>
+          <p>
+            <strong>The Fix:</strong> Explicit unsigned arithmetic masking adhering to CERT INT30-C.
+          </p>
+        </div>
+
+        <h2 id="sec-39-5">39.5 Hands-On Lab: Writing a Secure Integer Arithmetic Library</h2>
+        <p>
+          In this lab, you will write a complete, MISRA and CERT compliant safe arithmetic library in C providing overflow-checked addition, subtraction, and multiplication.
+        </p>
+
+        <h3>Safe Math Library (<code>safe_math.h</code> & <code>safe_math.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdint.h&gt;
 #include &lt;stdbool.h&gt;
 
-/* CERT C INT32-C Compliant Safe Addition */
-bool safe_add_uint32(uint32_t a, uint32_t b, uint32_t *result) {
-    if (UINT32_MAX - a &lt; b) {
-        return false; /* Overflow detected! */
-    }
-    *result = a + b;
-    return true;
+bool safe_add_u32(uint32_t a, uint32_t b, uint32_t *out) {
+    if (!out) return false;
+    #if defined(__GNUC__) || defined(__clang__)
+        return !__builtin_add_overflow(a, b, out);
+    #else
+        if (UINT32_MAX - a &lt; b) return false;
+        *out = a + b;
+        return true;
+    #endif
+}
+
+bool safe_mul_u32(uint32_t a, uint32_t b, uint32_t *out) {
+    if (!out) return false;
+    #if defined(__GNUC__) || defined(__clang__)
+        return !__builtin_mul_overflow(a, b, out);
+    #else
+        if (a &gt; 0 &amp;&amp; b &gt; (UINT32_MAX / a)) return false;
+        *out = a * b;
+        return true;
+    #endif
 }</code></pre>
+
+        <h2 id="sec-39-quiz">39.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: According to ISO C standards, what is the consequence of signed integer overflow?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) Guaranteed wrap-around modulo 2^32.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) Undefined Behavior (UB), allowing the compiler to optimize away safety checks. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) An automatic hardware exception.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Signed integer overflow is undefined behavior in ISO C; compilers assume overflow can never occur and may delete downstream bounds checks.
+            </div>
           </div>
-        </div>
 
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What CERT C rule mandates setting pointer variables to NULL immediately following <code>free()</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) MEM30-C (Do not access freed memory) (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) FIO37-C</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) STR31-C</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Setting pointers to NULL after freeing prevents dangling pointer dereferences and double-free vulnerabilities.
+            </div>
+          </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod38-misra-c-compliance.html" class="btn-secondary">← Module 38: MISRA C:2012 Compliance</a>
-          <a href="mod40-layered-hal-and-driver-design.html" class="btn-primary">Module 40: Layered HAL & Driver Design →</a>
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: What dangerous behavior occurs with standard <code>strncpy(dest, src, n)</code> if <code>strlen(src) &gt;= n</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) It truncates with a null byte.</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) It does NOT null-terminate the destination buffer at all. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) It returns NULL.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>strncpy</code> fails to append a null terminator if the source length equals or exceeds <code>n</code>, leaving <code>dest</code> as an unterminated character array.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What GCC builtin performs hardware-checked integer addition and returns true on overflow?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) <code>__builtin_add_overflow()</code> (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) <code>__builtin_safe_add()</code></label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) <code>__builtin_carry()</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>__builtin_add_overflow(a, b, &amp;res)</code> executes single-cycle arithmetic and tests the hardware overflow flag directly.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: How can multiplication overflow be checked prior to executing <code>a * b</code> without builtins?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) <code>if (a &gt; (MAX / b))</code> (assuming b &gt; 0) (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) <code>if (a * b &lt; a)</code></label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) <code>if (a + b &gt; MAX)</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Precondition checking using division (<code>a &gt; MAX / b</code>) detects overflow <em>before</em> the arithmetic operation executes.
+            </div>
+          </div>
         </div>
       </article>
     </main>

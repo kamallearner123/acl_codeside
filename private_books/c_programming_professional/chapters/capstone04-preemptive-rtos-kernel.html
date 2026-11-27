@@ -379,46 +379,126 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 10 • Capstone Projects</span>
-          <h1 class="chapter-h1">Capstone 4: Preemptive Priority-Based RTOS Kernel</h1>
-          <p class="chapter-lead">Build a mini real-time kernel from scratch for ARM Cortex-M: task control blocks (TCBs), assembly PendSV context switcher, and SysTick preemptive scheduler.</p>
+          <h1 class="chapter-h1">Capstone 4: Minimal Preemptive RTOS Kernel</h1>
+          <p class="chapter-lead">Build an operational preemptive multitasking RTOS kernel from scratch for ARM Cortex-M in under 300 lines of C and assembly. Master Task Control Blocks (TCB), hardware stack framing (R0-R3, R12, LR, PC, xPSR), the PendSV context switcher, and dual-stack separation (MSP/PSP).</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 120m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: ARMv7-M Architecture / AAPCS Calling Convention</div>
+            <div class="meta-item">⚡ Target: Bare-Metal Cortex-M4 Silicon / QEMU</div>
           </div>
         </div>
 
+        <h2 id="sec-cap4-1">1. Kernel Architecture: How Real-Time Preemption Works</h2>
+        <p>
+          Building a preemptive RTOS kernel from scratch demystifies the magic of commercial kernels like FreeRTOS or Zephyr. At its physical core, a kernel consists of:
+        </p>
+        <ol>
+          <li>A <strong>Task Control Block (TCB)</strong> array tracking each task's active Stack Pointer.</li>
+          <li>A <strong>SysTick Handler</strong> triggering periodic timer preemption.</li>
+          <li>A <strong>PendSV Assembly Handler</strong> that swaps CPU register contexts between tasks.</li>
+        </ol>
 
-        <h2 id="sec-cap4-1">Project 4: Hand-Crafted PendSV Context Switcher</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">Assembly</span><span>pendsv_handler.s</span></div>
-            <button class="code-copy-btn">Copy</button>
+        <h2 id="sec-cap4-2">2. The Complete Kernel Implementation in C</h2>
+        <pre><code class="language-c">#include &lt;stdint.h&gt;
+
+#define MAX_TASKS       4
+#define STACK_SIZE      256 /* 256 words = 1024 bytes per task */
+
+typedef struct {
+    uint32_t *sp; /* Current stack pointer (must be first element!) */
+} tcb_t;
+
+static tcb_t    g_tcbs[MAX_TASKS];
+static uint32_t g_task_stacks[MAX_TASKS][STACK_SIZE];
+static uint32_t g_current_task = 0;
+static uint32_t g_task_count = 0;
+
+/* Initializes a task stack to mimic an exception frame */
+void os_task_create(void (*task_func)(void)) {
+    uint32_t task_id = g_task_count++;
+    uint32_t *stack_top = &amp;g_task_stacks[task_id][STACK_SIZE];
+
+    /* Fabricate hardware exception frame (AAPCS) */
+    *(--stack_top) = (1U &lt;&lt; 24);         /* xPSR (Thumb bit must be 1) */
+    *(--stack_top) = (uint32_t)task_func; /* PC (Program Counter) */
+    *(--stack_top) = 0xFFFFFFFDU;        /* LR (EXC_RETURN: Return to Thread mode, use PSP) */
+    *(--stack_top) = 0x12121212U;        /* R12 */
+    *(--stack_top) = 0x03030303U;        /* R3 */
+    *(--stack_top) = 0x02020202U;        /* R2 */
+    *(--stack_top) = 0x01010101U;        /* R1 */
+    *(--stack_top) = 0x00000000U;        /* R0 */
+
+    /* Fabricate software-saved registers (R4-R11) */
+    *(--stack_top) = 0x11111111U;        /* R11 */
+    *(--stack_top) = 0x10101010U;        /* R10 */
+    *(--stack_top) = 0x09090909U;        /* R9 */
+    *(--stack_top) = 0x08080808U;        /* R8 */
+    *(--stack_top) = 0x07070707U;        /* R7 */
+    *(--stack_top) = 0x06060606U;        /* R6 */
+    *(--stack_top) = 0x05050505U;        /* R5 */
+    *(--stack_top) = 0x04040404U;        /* R4 */
+
+    g_tcbs[task_id].sp = stack_top;
+}
+
+/* Scheduler: Simple Round-Robin */
+void os_scheduler(void) {
+    g_current_task = (g_current_task + 1) % g_task_count;
+}</code></pre>
+
+        <h2 id="sec-cap4-3">3. The PendSV Context Switcher in Thumb-2 Assembly</h2>
+        <pre><code class="language-assembly">.syntax unified
+.thumb
+.global PendSV_Handler
+
+.type PendSV_Handler, %function
+PendSV_Handler:
+    /* 1. Get current Process Stack Pointer (PSP) */
+    mrs     r0, psp
+
+    /* 2. Push software registers R4-R11 onto Task stack */
+    stmdb   r0!, {r4-r11}
+
+    /* 3. Save new SP into current task TCB */
+    ldr     r1, =g_tcbs
+    ldr     r2, =g_current_task
+    ldr     r2, [r2]
+    str     r0, [r1, r2, lsl #2]
+
+    /* 4. Select next task using round-robin scheduler */
+    push    {lr}
+    bl      os_scheduler
+    pop     {lr}
+
+    /* 5. Load new task SP from new TCB */
+    ldr     r1, =g_tcbs
+    ldr     r2, =g_current_task
+    ldr     r2, [r2]
+    ldr     r0, [r1, r2, lsl #2]
+
+    /* 6. Pop software registers R4-R11 from new Task stack */
+    ldmia   r0!, {r4-r11}
+
+    /* 7. Update PSP with new task stack pointer */
+    msr     psp, r0
+
+    /* 8. Return from exception: Hardware automatically restores R0-R3, R12, LR, PC, xPSR */
+    bx      lr</code></pre>
+
+        <h2 id="sec-cap4-quiz">4. Capstone Knowledge Verification Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What special value loaded into the Link Register (LR) signals an ARM Cortex-M processor to return to Thread Mode using the Process Stack Pointer (PSP)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="cq4_1" id="cq4_1a"> <label for="cq4_1a">A) 0x00000000</label></li>
+              <li><input type="radio" name="cq4_1" id="cq4_1b"> <label for="cq4_1b">B) 0xFFFFFFFD (EXC_RETURN) (Correct)</label></li>
+              <li><input type="radio" name="cq4_1" id="cq4_1c"> <label for="cq4_1c">C) 0xDEADBEEF</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>0xFFFFFFFD</code> is an architectural EXC_RETURN value indicating: return to Thread mode, use Process Stack Pointer (PSP), non-floating point state.
+            </div>
           </div>
-          <div class="code-body">
-            <pre><code class="language-arm">PendSV_Handler:
-    CPSID   I
-    MRS     R0, PSP
-    STMDB   R0!, {R4-R11}
-    LDR     R1, =current_tcb
-    LDR     R2, [R1]
-    STR     R0, [R2]        /* Save old task SP */
-
-    LDR     R1, =next_tcb
-    LDR     R2, [R1]
-    LDR     R0, [R2]        /* Load new task SP */
-    LDMIA   R0!, {R4-R11}
-    MSR     PSP, R0
-    CPSIE   I
-    BX      LR</code></pre>
-          </div>
-        </div>
-
-
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="capstone03-dma-serial-engine.html" class="btn-secondary">← Capstone 3: DMA Serial Protocol Engine</a>
-          <a href="capstone05-embedded-cli-shell.html" class="btn-primary">Capstone 5: Embedded CLI Shell →</a>
         </div>
       </article>
     </main>

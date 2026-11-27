@@ -378,48 +378,240 @@
     <main class="main-content">
       <article class="prose">
         <div class="chapter-hero">
-          <span class="chapter-module-tag">Part 5 • Testing & QA Engineering</span>
+          <span class="chapter-module-tag">Part 5 • Testing &amp; QA Engineering</span>
           <h1 class="chapter-h1">Module 25: CI/CD Pipelines for Embedded C</h1>
-          <p class="chapter-lead">Automate embedded builds, unit testing, static analysis, firmware binary artifact signing, and automated flashing using GitHub Actions and GitLab CI.</p>
+          <p class="chapter-lead">Design automated, reproducible continuous integration and delivery (CI/CD) pipelines for embedded systems. Master Dockerized toolchain encapsulation, headless QEMU hardware emulation, flash memory budget delta tracking, and production GitHub Actions workflows.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 50m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: GitHub Actions / Docker / QEMU System Emulation</div>
+            <div class="meta-item">⚡ Target: Linux CI Runners / ARM Cortex-M Firmware</div>
           </div>
         </div>
 
+        <h2 id="sec-25-1">25.1 Continuous Integration for Hardware Systems</h2>
+        <p>
+          In modern embedded engineering, "it works on my machine" is an unacceptable failure mode. A developer workstation might have a slightly different compiler patch version, host library, or path configuration.
+        </p>
+        <p>
+          A production <strong>Embedded CI/CD Pipeline</strong> ensures that every single commit and pull request passes through an automated, isolated build environment enforcing:
+        </p>
 
-        <h2 id="sec-25-1">25.1 Automated GitHub Actions Firmware Build Pipeline</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">YAML</span><span>.github/workflows/firmware_ci.yml</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-yaml">name: Embedded C CI
-on: [push, pull_request]
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Production Embedded CI Pipeline Gates</div>
+          <pre style="margin:0;color:#94A3B8;">
+Git Push ──▶ [ Gate 1: Code Lint &amp; Format ] (clang-format &amp; flawfinder)
+                  │ PASS
+                  ▼
+             [ Gate 2: Static Analysis ] (cppcheck --addon=misra &amp; clang-tidy)
+                  │ PASS
+                  ▼
+             [ Gate 3: Host Unit Testing &amp; Coverage ] (Unity / CMock / gcov &gt;= 90%)
+                  │ PASS
+                  ▼
+             [ Gate 4: Cross-Compilation ] (arm-none-eabi-gcc -O2 -Werror)
+                  │ PASS
+                  ▼
+             [ Gate 5: QEMU Emulation ] (Headless bare-metal execution on Cortex-M)
+                  │ PASS
+                  ▼
+             [ Gate 6: Memory Budget Audit ] (Flash/SRAM delta vs master branch)
+                  │ PASS
+                  ▼
+             [ Release Artifact Archival ] (.bin, .hex, .elf, and SBOM uploaded)
+          </pre>
+        </div>
+
+        <h2 id="sec-25-2">25.2 Reproducible Build Environments with Docker</h2>
+        <p>
+          To ensure 100% reproducible bit-for-bit builds, compiler toolchains should never be installed directly onto host virtual machines. Instead, package the cross-compiler, CMake, Python, and QEMU into an immutable <strong>Docker Container</strong>.
+        </p>
+
+        <h3>Production Embedded Build <code>Dockerfile</code></h3>
+        <pre><code class="language-dockerfile">FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends     build-essential     cmake     ninja-build     gcc-arm-none-eabi     libnewlib-arm-none-eabi     cppcheck     clang-tidy     lcov     qemu-system-arm     python3     python3-pip     git     &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+CMD ["make", "all"]</code></pre>
+
+        <h2 id="sec-25-3">25.3 Emulating Target Firmware Headless in CI via QEMU</h2>
+        <p>
+          Running unit tests on a host machine verifies algorithms, but does not verify whether the generated ARM Cortex-M machine code boots cleanly, initializes vector tables, or executes Thumb-2 instructions without generating an unexpected HardFault.
+        </p>
+        <p>
+          <strong>QEMU System Emulation</strong> (<code>qemu-system-arm</code>) allows executing real bare-metal ARM ELF binaries inside headless GitHub Actions runners:
+        </p>
+        <pre><code class="language-bash">qemu-system-arm -M lm3s6965evb                 -cpu cortex-m3                 -nographic                 -semihosting-config enable=on,target=native                 -kernel build/firmware.elf</code></pre>
+        <p>
+          Using <strong>ARM Semihosting</strong>, the firmware can write debug messages directly to the host CI console and issue a semihosting exit syscall (<code>0x18</code>) to terminate QEMU with exit code 0 on success, or code 1 on failure.
+        </p>
+
+        <h2 id="sec-25-4">25.4 Automated Memory Footprint Budget Tracking</h2>
+        <p>
+          Microcontrollers have fixed, unexpandable physical memory limits (e.g. 128 KB Flash, 32 KB SRAM). A pull request that introduces a large buffer or includes an unoptimized printf library could push the flash over budget or leave insufficient headroom for the stack.
+        </p>
+        <p>
+          A production CI pipeline parses <code>arm-none-eabi-size</code> and fails the build if flash utilization exceeds a critical threshold (e.g. &gt; 90%):
+        </p>
+        <pre><code class="language-bash"># Memory Budget Enforcement Script (size_check.sh)
+FLASH_MAX=131072 # 128 KB
+SRAM_MAX=32768   # 32 KB
+
+SIZES=$(arm-none-eabi-size -B build/firmware.elf | tail -n 1)
+TEXT=$(echo $SIZES | awk '{print $1}')
+DATA=$(echo $SIZES | awk '{print $2}')
+BSS=$(echo $SIZES | awk '{print $3}')
+
+FLASH_USED=$((TEXT + DATA))
+SRAM_USED=$((DATA + BSS))
+
+echo "Flash: $FLASH_USED / $FLASH_MAX bytes"
+echo "SRAM:  $SRAM_USED / $SRAM_MAX bytes"
+
+if [ $FLASH_USED -gt $FLASH_MAX ]; then
+    echo "ERROR: Flash budget exceeded!"
+    exit 1
+fi</code></pre>
+
+        <h2 id="sec-25-5">25.5 Industrial Case Study: Smart Grid Energy Meter Firmware Regression</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The 4-Byte Struct Padding Crash Across 50,000 Field Meters</h4>
+          <p>
+            An industrial energy meter manufacturer deployed an over-the-air (OTA) firmware upgrade to 50,000 residential smart meters. Within 48 hours, 12,000 meters stopped reporting power consumption and required manual physical replacement.
+          </p>
+          <p>
+            <strong>Post-Mortem Root Cause:</strong>
+            A developer updated a telemetry logging struct to add an extra status flag. The developer compiled the firmware on a local Windows machine using a legacy Keil ARMCC compiler.
+          </p>
+          <p>
+            However, the production release engineer compiled using GCC on a Linux workstation. Due to differing default struct padding rules between the two toolchains, the struct size grew from 32 bytes to 36 bytes. The non-volatile flash storage sector layout was overrun by 4 bytes, overwriting the bootloader signature key in flash!
+          </p>
+          <p>
+            <strong>Preventative Architecture:</strong>
+            The engineering team implemented a mandatory GitHub Actions CI/CD pipeline using a frozen Dockerized toolchain. The pipeline enforces <code>-Werror=padded</code>, automated QEMU flash-layout verification tests, and binary size regression diffs on every pull request.
+          </p>
+        </div>
+
+        <h2 id="sec-25-6">25.6 Hands-On Lab: Production GitHub Actions Pipeline Configuration</h2>
+        <p>
+          In this lab, you will construct a complete, production-grade GitHub Actions YAML workflow that automatically checks out source code, runs static analysis, executes host unit tests, cross-compiles for ARM Cortex-M, and verifies flash memory budgets.
+        </p>
+
+        <h3>Workflow File (<code>.github/workflows/embedded_ci.yml</code>)</h3>
+        <pre><code class="language-yaml">name: Embedded Safety-Critical CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build_and_test:
+  static_analysis_and_tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install ARM GCC & Cppcheck
-        run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi cppcheck
-      - name: Static Analysis
-        run: cppcheck --enable=warning,style --error-exitcode=1 src/
-      - name: Run Host Unit Tests
-        run: make -C tests test
-      - name: Build Firmware Binary
-        run: make all</code></pre>
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Toolchain &amp; Static Analyzers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi cppcheck clang-tidy lcov
+
+      - name: Gate 1 - Cppcheck Static Analysis
+        run: |
+          cppcheck --enable=all --error-exitcode=1 --inline-suppr -I include/ src/
+
+      - name: Gate 2 - Host Unit Testing &amp; Coverage
+        run: |
+          make -C tests/
+          ./tests/run_unit_tests
+          lcov --capture --directory tests/ --output-file coverage.info
+          lcov --list coverage.info
+
+      - name: Gate 3 - Cross-Compile ARM Cortex-M Firmware
+        run: |
+          make CROSS_COMPILE=arm-none-eabi- BUILD_TYPE=Release
+
+      - name: Gate 4 - Enforce Flash Memory Budget (&lt; 90%)
+        run: |
+          chmod +x scripts/check_size.sh
+          ./scripts/check_size.sh build/firmware.elf 131072
+
+      - name: Archive Production Firmware Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: production-firmware-binaries
+          path: |
+            build/*.bin
+            build/*.hex
+            build/*.map</code></pre>
+
+        <h2 id="sec-25-quiz">25.7 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Why should cross-compiler toolchains be encapsulated inside Docker containers in automated CI/CD pipelines?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) Docker makes C code run faster on microcontrollers.</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) It eliminates environmental host variances, guaranteeing bit-for-bit identical binary reproducibility across all team members and cloud runners. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) Docker automatically fixes compiler warnings.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Encapsulating the compiler, sysroot, and toolchain versions within an immutable container image guarantees completely reproducible builds regardless of host OS updates.
+            </div>
           </div>
-        </div>
 
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What ARM technology allows a bare-metal ELF binary running in headless QEMU to print messages directly to the host console and return exit codes?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) ARM Semihosting (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) JTAG boundary scan</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) Ethernet DMA</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Semihosting provides a software breakpoint mechanism where target code traps to the host debugger or QEMU emulator to perform I/O and exit operations.
+            </div>
+          </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod24-code-coverage-gcov-lcov.html" class="btn-secondary">← Module 24: Code Coverage (gcov & lcov)</a>
-          <a href="mod26-file-descriptors-and-posix-io.html" class="btn-primary">Module 26: File Descriptors & POSIX I/O →</a>
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: Why is tracking flash memory budget deltas in CI pull requests essential for embedded projects?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) Microcontroller flash memory is physically fixed; catching unexpected binary bloat early prevents exceeding ROM limits before release. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) Compilers run out of memory when flash exceeds 64 KB.</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) It reduces internet bandwidth when pushing git commits.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Tracking size metrics prevents inadvertent inclusion of bloated libraries or debug code from exhausting hardware limits.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: In a GitHub Actions workflow, what configuration ensures that a step failure immediately halts the pipeline?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) Non-zero shell exit code (default behavior) (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) <code>continue-on-error: true</code></label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) <code>timeout-minutes: 0</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> GitHub Actions checks process exit status; any command returning a non-zero exit code fails the step and terminates the job immediately.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What tool outputs the exact size of the <code>.text</code>, <code>.data</code>, and <code>.bss</code> sections of an ELF binary?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) <code>arm-none-eabi-size</code> (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) <code>grep</code></label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) <code>tar</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>size</code> (or <code>arm-none-eabi-size</code>) parses ELF headers and reports byte consumption across text (flash instructions), data (initialized variables), and bss (zero-initialized variables).
+            </div>
+          </div>
         </div>
       </article>
     </main>

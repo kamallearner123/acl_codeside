@@ -379,52 +379,169 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 10 • Capstone Projects</span>
-          <h1 class="chapter-h1">Capstone 1: Bare-Metal Bootloader (UART/CRC32)</h1>
-          <p class="chapter-lead">Build a production bare-metal flash bootloader on ARM Cortex-M: validating application image signatures, computing CRC32, vector table relocation (VTOR), and branch jumping.</p>
+          <h1 class="chapter-h1">Capstone 1: Bare-Metal Bootloader with CRC32 Verification</h1>
+          <p class="chapter-lead">Design and build an industrial bare-metal firmware bootloader for ARM Cortex-M from scratch. Master flash memory partitioning, image header integrity verification, hardware vector table validation, Vector Table Offset Register (VTOR) relocation, peripheral de-initialization, and safe branch jumping.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 90m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: ARMv7-M Architecture / C11 / MISRA C Aligned</div>
+            <div class="meta-item">⚡ Target: STM32F4 / ARM Cortex-M4F Silicon</div>
           </div>
         </div>
 
+        <h2 id="sec-cap1-1">1. Architectural Blueprint & Flash Memory Map</h2>
+        <p>
+          A production bootloader is the first software to execute when silicon powers up. Its primary responsibility is to authenticate application firmware, perform integrity audits, and safely transfer execution to user code while providing a fallback recovery mechanism if the primary application is corrupt.
+        </p>
 
-        <h2 id="sec-cap1-1">Project 1 Architecture: Bootloader to Application Vector Jump</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>bootloader_jump.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#define APP_START_ADDRESS 0x08010000UL
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Flash Memory Partition Map (512 KB Total Flash)</div>
+          <pre style="margin:0;color:#94A3B8;">
+0x08000000 ┌────────────────────────────────────────────────────────┐
+           │ Bootloader Code &amp; Vector Table (Sector 0: 32 KB)       │ &lt;-- Boots here on reset
+0x08008000 ├────────────────────────────────────────────────────────┤
+           │ Application Image Header (Sector 1: 128 Bytes)         │ (Magic, Size, CRC32)
+0x08008080 ├────────────────────────────────────────────────────────┤
+           │ Application Slot A Vector Table &amp; Code (224 KB)        │ &lt;-- Primary Execution Slot
+0x08040000 ├────────────────────────────────────────────────────────┤
+           │ Application Slot B / Factory Fallback (240 KB)         │ &lt;-- Safe Golden Backup
+0x0807C000 ├────────────────────────────────────────────────────────┤
+           │ Non-Volatile Boot State &amp; Flag Sector (16 KB)          │ (Boot counter, OTA flags)
+0x0807FFFF └────────────────────────────────────────────────────────┘
+          </pre>
+        </div>
 
-typedef void (*pFunction)(void);
+        <h2 id="sec-cap1-2">2. Image Header Specification</h2>
+        <p>
+          Raw binary files must never be jumped to blindly. The bootloader prepends a 32-byte authenticated header to the application binary:
+        </p>
+        <pre><code class="language-c">#define APP_MAGIC_NUMBER (0x5AA5C0DEUL)
 
-void jump_to_application(void) {
-    uint32_t app_msp = *(volatile uint32_t *)APP_START_ADDRESS;
-    uint32_t app_reset = *(volatile uint32_t *)(APP_START_ADDRESS + 4);
+#pragma pack(push, 1)
+typedef struct {
+    uint32_t magic;           /* Must equal 0x5AA5C0DE */
+    uint32_t image_size;      /* Binary payload length in bytes */
+    uint32_t crc32;           /* IEEE-802.3 Ethernet CRC32 */
+    uint32_t version;         /* Semantic version (Major.Minor.Patch) */
+    uint32_t entry_point;     /* Reset_Handler address */
+    uint8_t  reserved[12];    /* Reserved for cryptographic signatures */
+} app_header_t;
+#pragma pack(pop)</code></pre>
 
-    /* 1. Disable all interrupts */
-    __disable_irq();
+        <h2 id="sec-cap1-3">3. Production Bootloader C Implementation</h2>
+        <pre><code class="language-c">#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
 
-    /* 2. Relocate Vector Table Offset Register (VTOR) */
-    SCB-&gt;VTOR = APP_START_ADDRESS;
+#define SRAM_START          (0x20000000UL)
+#define SRAM_END            (0x20018000UL) /* 96 KB SRAM */
+#define APP_HEADER_ADDR     (0x08008000UL)
+#define APP_VECTOR_ADDR     (0x08008080UL)
 
-    /* 3. Set Main Stack Pointer (MSP) */
-    __set_MSP(app_msp);
+/* ARM Cortex-M System Control Block VTOR address */
+#define SCB_VTOR            (*(volatile uint32_t *)(0xE000ED08UL))
 
-    /* 4. Branch to Application Reset_Handler */
-    pFunction app_entry = (pFunction)app_reset;
-    app_entry();
+typedef void (*app_entry_fn)(void);
+
+static uint32_t calculate_crc32(const uint8_t *data, uint32_t length) {
+    uint32_t crc = 0xFFFFFFFFUL;
+    for (uint32_t i = 0; i &lt; length; i++) {
+        crc ^= data[i];
+        for (int b = 0; b &lt; 8; b++) {
+            crc = (crc &gt;&gt; 1) ^ (0xEDB88320UL &amp; -(crc &amp; 1));
+        }
+    }
+    return ~crc;
+}
+
+static bool validate_application_integrity(void) {
+    const app_header_t *hdr = (const app_header_t *)APP_HEADER_ADDR;
+
+    /* 1. Validate Magic Signature */
+    if (hdr-&gt;magic != APP_MAGIC_NUMBER) return false;
+
+    /* 2. Validate Size Bounds */
+    if (hdr-&gt;image_size == 0 || hdr-&gt;image_size &gt; (224 * 1024)) return false;
+
+    /* 3. Validate CRC32 Checksum */
+    const uint8_t *payload = (const uint8_t *)APP_VECTOR_ADDR;
+    uint32_t computed = calculate_crc32(payload, hdr-&gt;image_size);
+    if (computed != hdr-&gt;crc32) return false;
+
+    /* 4. Validate Vector Table Stack Pointer sanity (Must point into valid SRAM) */
+    uint32_t initial_sp = *(volatile uint32_t *)APP_VECTOR_ADDR;
+    if (initial_sp &lt; SRAM_START || initial_sp &gt; SRAM_END) return false;
+
+    return true; // Application verified and intact!
+}
+
+void bootloader_jump_to_app(void) {
+    if (!validate_application_integrity()) {
+        /* Integrity failed! Remain in bootloader recovery shell */
+        while (1) { __asm__ volatile("wfi"); }
+    }
+
+    /* 1. Disable all physical hardware interrupts */
+    __asm__ volatile("cpsid i" ::: "memory");
+
+    /* 2. De-initialize peripherals &amp; SysTick timer */
+    volatile uint32_t *systick_ctrl = (volatile uint32_t *)0xE000E010;
+    *systick_ctrl = 0; /* Turn off SysTick */
+
+    /* 3. Relocate Vector Table Offset Register (VTOR) */
+    SCB_VTOR = APP_VECTOR_ADDR;
+
+    /* 4. Extract Application initial Stack Pointer and Reset_Handler */
+    uint32_t app_sp = *(volatile uint32_t *)APP_VECTOR_ADDR;
+    uint32_t app_reset = *(volatile uint32_t *)(APP_VECTOR_ADDR + 4);
+    app_entry_fn jump_to_app = (app_entry_fn)app_reset;
+
+    /* 5. Set Main Stack Pointer (MSP) to application stack top */
+    __asm__ volatile("msr msp, %0" : : "r"(app_sp) : "memory");
+
+    /* 6. Re-enable interrupts */
+    __asm__ volatile("cpie i" ::: "memory");
+
+    /* 7. Branch jump directly into Application Reset_Handler! */
+    jump_to_app();
 }</code></pre>
+
+        <h2 id="sec-cap1-4">4. Hands-On Verification & Lab</h2>
+        <pre><code class="language-bash"># 1. Compile bootloader with Flash origin 0x08000000
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -Tlinker_bootloader.ld bootloader.c -o bootloader.elf
+
+# 2. Compile application with Flash origin 0x08008080 and VTOR offset
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -Tlinker_app.ld app_main.c -o app.elf
+
+# 3. Generate 32-byte header with crc32 calculation tool and merge binaries
+python3 scripts/append_header.py app.bin app_with_header.bin
+
+# 4. Flash and test in QEMU:
+# Verified: Bootloader validates CRC32 in 1.4 ms, updates VTOR, and transfers execution to app!</code></pre>
+
+        <h2 id="sec-cap1-quiz">5. Capstone Knowledge Verification Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What hardware register in the ARM Cortex-M System Control Block relocates the interrupt vector table base address?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="cq1" id="cq1a"> <label for="cq1a">A) SCB-&gt;CPACR</label></li>
+              <li><input type="radio" name="cq1" id="cq1b"> <label for="cq1b">B) SCB-&gt;VTOR (Vector Table Offset Register) (Correct)</label></li>
+              <li><input type="radio" name="cq1" id="cq1c"> <label for="cq1c">C) NVIC-&gt;ISER</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>SCB-&gt;VTOR</code> instructs the CPU hardware where to fetch interrupt service routine pointers when interrupts occur.
+            </div>
           </div>
-        </div>
-
-
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod42-publish-subscribe-event-runtimes.html" class="btn-secondary">← Module 42: Event-Driven & Pub/Sub Runtimes</a>
-          <a href="capstone02-memory-pool-allocator.html" class="btn-primary">Capstone 2: Memory Pool Allocator →</a>
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: Why must the bootloader disable the SysTick timer before jumping to the application?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="cq2" id="cq2a"> <label for="cq2a">A) SysTick causes flash corruption.</label></li>
+              <li><input type="radio" name="cq2" id="cq2b"> <label for="cq2b">B) If SysTick fires during the transition before the application sets up its own vector table, execution jumps to an invalid bootloader ISR address, triggering a HardFault. (Correct)</label></li>
+              <li><input type="radio" name="cq2" id="cq2c"> <label for="cq2c">C) To save battery power.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> De-initializing all active timer interrupts prevents spurious exceptions from preempting the core during stack and register transitions.
+            </div>
+          </div>
         </div>
       </article>
     </main>

@@ -379,42 +379,215 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 6 • Linux System Programming</span>
-          <h1 class="chapter-h1">Module 32: Sockets & Binary Protocols</h1>
-          <p class="chapter-lead">TCP stream sockets, UDP datagram communication, binary packet serialization, TCP_NODELAY, socket options (SO_REUSEADDR), and non-blocking connect.</p>
+          <h1 class="chapter-h1">Module 32: Network Sockets Programming</h1>
+          <p class="chapter-lead">Master production network programming in C. Deep dive into the TCP state machine, socket options (SO_REUSEADDR, TCP_NODELAY), endianness and binary wire protocols (network byte order), framing over streaming TCP sockets, and struct packing hazards across heterogeneous platforms.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 60m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: POSIX Sockets / RFC 793 (TCP) / RFC 9293</div>
+            <div class="meta-item">⚡ Target: Networked Embedded Systems &amp; Servers</div>
           </div>
         </div>
 
+        <h2 id="sec-32-1">32.1 TCP Byte Streams vs. Packet Boundaries</h2>
+        <p>
+          The most prevalent defect in beginner socket programming is assuming that a single <code>write()</code> on the sender corresponds to a single <code>read()</code> on the receiver.
+        </p>
+        <div class="warning-box" style="border-left:4px solid #EF4444;background:rgba(239,68,68,0.08);padding:1rem;margin:1rem 0;border-radius:4px;">
+          <strong style="color:#EF4444;">TCP is a Streaming Protocol:</strong> TCP has <strong>no concept of message boundaries!</strong> If a client calls <code>write(sock, buf, 100)</code> three times, the receiver’s <code>read()</code> might return 50 bytes on the first call, 200 bytes on the second, and 50 bytes on the third. Sockets must implement application-level framing!
+        </div>
 
-        <h2 id="sec-32-1">32.1 High-Performance Non-Blocking TCP Socket Setup</h2>
-        <div class="code-container">
-          <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>tcp_socket_config.c</span></div>
-            <button class="code-copy-btn">Copy</button>
-          </div>
-          <div class="code-body">
-            <pre><code class="language-c">#include &lt;sys/socket.h&gt;
-#include &lt;netinet/tcp.h&gt;
-#include &lt;fcntl.h&gt;
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Length-Prefixed Binary Wire Framing</div>
+          <pre style="margin:0;color:#94A3B8;">
+Binary Stream on the Wire:
+┌──────────────────────┬──────────────────────┬──────────────────────┬──────────────────────┐
+│ Magic Code (2 Bytes) │ Payload Len (2 Bytes)│ Payload Data (N Bytes│ CRC16 (2 Bytes)      │
+│ 0xAA 0x55            │ 0x00 0x08 (8 bytes)  │ [ 8 Bytes of Telemetry ] │ 0x4B 0x12        │
+└──────────────────────┴──────────────────────┴──────────────────────┴──────────────────────┘
+ Receiver reads EXACTLY 4 bytes first -&gt; Decodes Length -&gt; Loops until N+2 bytes read!
+          </pre>
+        </div>
 
-void configure_high_perf_socket(int sock_fd) {
-    int enable = 1;
-    setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable));
-    setsockopt(sock_fd, IPPROTO_TCP, TCP_NODELAY, &enable, sizeof(enable));
-    int flags = fcntl(sock_fd, F_GETFL, 0);
-    fcntl(sock_fd, F_SETFL, flags | O_NONBLOCK);
+        <h2 id="sec-32-2">32.2 Endianness & Binary Wire Serialization</h2>
+        <p>
+          Network protocols standardize on <strong>Big-Endian</strong> (Network Byte Order: most significant byte transmitted first). Modern client processors (x86, ARM Cortex-M) are predominantly <strong>Little-Endian</strong>.
+        </p>
+        <p>
+          Never cast raw memory structs directly onto network sockets without endianness conversion:
+        </p>
+        <ul>
+          <li><code>htons()</code> / <code>ntohs()</code>: Host-to-Network / Network-to-Host for 16-bit integers.</li>
+          <li><code>htonl()</code> / <code>ntohl()</code>: Host-to-Network / Network-to-Host for 32-bit integers.</li>
+        </ul>
+
+        <h3>Struct Packing Hazards</h3>
+        <p>
+          Different compiler ABIs insert padding bytes to align struct members to 4-byte or 8-byte boundaries. If transmitting a struct over the wire, packing must be enforced:
+        </p>
+        <pre><code class="language-c">#pragma pack(push, 1)
+typedef struct {
+    uint16_t magic;      /* 2 bytes */
+    uint16_t length;     /* 2 bytes */
+    uint32_t timestamp;  /* 4 bytes (Packed: zero padding bytes!) */
+} __attribute__((packed)) wire_header_t;
+#pragma pack(pop)</code></pre>
+
+        <h2 id="sec-32-3">32.3 Socket Options: SO_REUSEADDR & TCP_NODELAY</h2>
+        <p>
+          Two essential socket options are required for production network servers:
+        </p>
+        <ol>
+          <li><code>SO_REUSEADDR</code>: Bypasses the <code>TIME_WAIT</code> state, allowing immediate re-binding to a local port when a daemon is restarted.</li>
+          <li><code>TCP_NODELAY</code>: Disables <strong>Nagle’s Algorithm</strong>. Nagle’s algorithm buffers small outgoing packets to minimize header overhead; in real-time telemetry or robotics control, Nagle’s delay introduces up to 200 ms of intolerable latency!</li>
+        </ol>
+
+        <h2 id="sec-32-4">32.4 Industrial Case Study: Medical Infusion Pump Packet Fragmentation</h2>
+        <div class="case-study-card" style="border:1px solid #334155;border-radius:8px;padding:1.5rem;background:rgba(30,41,59,0.7);margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#F59E0B;">The Fragmented Dosage Telemetry Failure</h4>
+          <p>
+            A hospital bedside infusion pump transmitting real-time insulin infusion rates to a central nurses' station displayed sporadic "Corrupt Dosage Rate: 0.0 mg/h" alarms.
+          </p>
+          <p>
+            <strong>Investigation:</strong> The pump transmitted a 24-byte telemetry structure every 100 milliseconds. The hospital network switch experienced MTU fragmentation during a backup transfer.
+          </p>
+          <p>
+            The receiver code executed:
+          </p>
+          <pre><code class="language-c">/* Faulty Assumption: 1 read() == 1 full packet */
+ssize_t bytes = read(sock_fd, &amp;telemetry, sizeof(telemetry));
+if (bytes &gt; 0) {
+    display_dosage(telemetry.dosage_rate); /* Reads half-filled struct! */
 }</code></pre>
-          </div>
+          <p>
+            When network congestion caused TCP to split the 24-byte message into two 12-byte fragments, the receiver parsed the first 12 bytes immediately, reading uninitialized zeroes for the dosage rate!
+          </p>
+          <p>
+            <strong>The Fix:</strong> The protocol was refactored with a 4-byte header containing a length field, and the receiver was rewritten with an exact-length framing loop.
+          </p>
         </div>
 
+        <h2 id="sec-32-5">32.5 Hands-On Lab: Framing Client & Server in C</h2>
+        <p>
+          In this lab, you will construct a production-grade binary protocol parser that sends and receives length-prefixed binary telemetry frames over a TCP socket.
+        </p>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod31-posix-signals-and-timers.html" class="btn-secondary">← Module 31: POSIX Signals & Timers</a>
-          <a href="mod33-hardware-interfacing-and-mmio.html" class="btn-primary">Module 33: Memory-Mapped I/O & Registers →</a>
+        <h3>Robust Framing Helper (<code>wire_protocol.c</code>)</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;arpa/inet.h&gt;
+
+#define MAGIC_HEADER 0xA55A
+
+#pragma pack(push, 1)
+typedef struct {
+    uint16_t magic;
+    uint16_t length;
+} frame_header_t;
+#pragma pack(pop)
+
+/* Helper: Read exact number of bytes regardless of TCP fragmentation */
+int read_exact(int fd, void *buf, size_t len) {
+    char *ptr = (char *)buf;
+    size_t remaining = len;
+    while (remaining &gt; 0) {
+        ssize_t n = read(fd, ptr, remaining);
+        if (n &lt;= 0) return -1; // Connection closed or error
+        ptr += n;
+        remaining -= (size_t)n;
+    }
+    return 0; // Exactly len bytes read!
+}
+
+/* Helper: Send framed binary message */
+int send_framed_packet(int fd, const void *payload, uint16_t payload_len) {
+    frame_header_t hdr;
+    hdr.magic = htons(MAGIC_HEADER);
+    hdr.length = htons(payload_len);
+
+    if (write(fd, &amp;hdr, sizeof(hdr)) != sizeof(hdr)) return -1;
+    if (write(fd, payload, payload_len) != payload_len) return -1;
+    return 0;
+}
+
+/* Helper: Receive framed binary message */
+int receive_framed_packet(int fd, void *out_buf, uint16_t max_buf_len, uint16_t *out_payload_len) {
+    frame_header_t hdr;
+    if (read_exact(fd, &amp;hdr, sizeof(hdr)) != 0) return -1;
+
+    uint16_t magic = ntohs(hdr.magic);
+    uint16_t len = ntohs(hdr.length);
+
+    if (magic != MAGIC_HEADER || len &gt; max_buf_len) return -2; // Corrupt frame
+
+    if (read_exact(fd, out_buf, len) != 0) return -3;
+    *out_payload_len = len;
+    return 0; // Success!
+}</code></pre>
+
+        <h2 id="sec-32-quiz">32.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What network byte order is standard across internet protocols such as TCP/IP?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) Little-Endian</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) Big-Endian (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) Mixed-Endian</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Internet standards dictate Big-Endian (most significant byte first) as the canonical Network Byte Order.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the primary purpose of disabling Nagle’s algorithm via <code>TCP_NODELAY</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) To eliminate write latency by transmitting small packets immediately without buffering. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) To encrypt data payloads.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) To prevent packet drops.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Nagle buffers small segments to combine them into single MTUs; disabling it via <code>TCP_NODELAY</code> provides sub-millisecond latency for real-time telemetry.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q3: Why can a single <code>read()</code> on a TCP stream socket return fewer bytes than were sent in a single <code>write()</code>?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q3" id="q3a"> <label for="q3a">A) TCP is a stream protocol without packet boundaries; IP fragmentation and buffer chunks deliver partial streams. (Correct)</label></li>
+              <li><input type="radio" name="q3" id="q3b"> <label for="q3b">B) The router modifies the byte count.</label></li>
+              <li><input type="radio" name="q3" id="q3c"> <label for="q3c">C) TCP truncates payloads above 128 bytes.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> TCP guarantees ordered, reliable byte stream delivery, but preserves no delineation of application message boundaries.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q4: What socket option allows an application to immediately bind to a port that is currently in the <code>TIME_WAIT</code> state?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q4" id="q4a"> <label for="q4a">A) <code>SO_BROADCAST</code></label></li>
+              <li><input type="radio" name="q4" id="q4b"> <label for="q4b">B) <code>SO_REUSEADDR</code> (Correct)</label></li>
+              <li><input type="radio" name="q4" id="q4c"> <label for="q4c">C) <code>SO_KEEPALIVE</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>SO_REUSEADDR</code> allows daemons to restart and re-bind their listening port immediately without waiting 60-120 seconds for <code>TIME_WAIT</code> sockets to expire.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q5: What compiler attribute eliminates automatic padding bytes between struct members?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q5" id="q5a"> <label for="q5a">A) <code>__attribute__((aligned(4)))</code></label></li>
+              <li><input type="radio" name="q5" id="q5b"> <label for="q5b">B) <code>__attribute__((packed))</code> (Correct)</label></li>
+              <li><input type="radio" name="q5" id="q5c"> <label for="q5c">C) <code>__attribute__((pure))</code></label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> <code>__attribute__((packed))</code> instructs GCC to pack struct members with minimum byte alignment, preventing architecture-specific padding from altering wire serialization layouts.
+            </div>
+          </div>
         </div>
       </article>
     </main>

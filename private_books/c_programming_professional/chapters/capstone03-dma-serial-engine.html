@@ -379,24 +379,104 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 10 • Capstone Projects</span>
-          <h1 class="chapter-h1">Capstone 3: DMA Serial Protocol Engine</h1>
-          <p class="chapter-lead">Design an autonomous, zero-copy serial engine using STM32 Circular DMA, Idle Line Interrupt detection, and double-buffered ring buffers.</p>
+          <h1 class="chapter-h1">Capstone 3: DMA-Driven Circular Serial Engine</h1>
+          <p class="chapter-lead">Design an ultra-low-overhead UART serial engine on ARM Cortex-M capable of sustaining 921,600 baud at less than 2% CPU utilization. Master circular DMA reception, hardware UART Idle Line Detection (IDLEIE), lock-free Single-Producer Single-Consumer (SPSC) ring buffers, and cache coherency barriers.</p>
           <div class="chapter-meta-bar">
             <div class="meta-item">⏱️ Duration: 90m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">🎯 Standard: ARM Cortex-M DMA Architecture / Lock-Free SPSC</div>
+            <div class="meta-item">⚡ Target: STM32F4 UART + DMA Stream Engines</div>
           </div>
         </div>
 
+        <h2 id="sec-cap3-1">1. The High-Speed UART Problem</h2>
+        <p>
+          At 921,600 baud, an incoming serial stream transmits approximately <strong>92,160 characters per second</strong> (one byte every 10.8 microseconds).
+        </p>
+        <p>
+          If handled using traditional byte-by-byte interrupts (<code>USART_IT_RXNE</code>), the CPU executes:
+          <code>92,160 ISRs/sec &times; 120 cycles (stack push, ISR logic, stack pop) &approx; 11,000,000 CPU cycles/sec</code>.
+          On an 84 MHz Cortex-M4, serial reception alone consumes <strong>over 15% of total CPU computing capacity!</strong>
+        </p>
 
-        <h2 id="sec-cap3-1">Project 3: Zero-Copy UART DMA Reception with IDLE Line ISR</h2>
-        <p>Eliminate per-byte CPU interrupts by capturing variable-length telemetry frames using DMA circular buffer mode coupled with USART IDLE flag interrupts.</p>
+        <div class="diagram-box" style="background:#0F172A;border:1px solid #334155;border-radius:8px;padding:1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.5;color:#E2E8F0;margin:1.5rem 0;">
+          <div style="color:#38BDF8;font-weight:bold;margin-bottom:0.5rem;">Circular DMA + Idle Line Reception Architecture</div>
+          <pre style="margin:0;color:#94A3B8;">
+UART RX Pin ──▶ [ Hardware Shift Register ] ──▶ [ USART Data Reg (DR) ]
+                                                       │
+                                  Direct Memory Access (DMA Request) - 0% CPU!
+                                                       ▼
+Physical SRAM Circular Buffer: [ Byte 0 | Byte 1 | Byte 2 | ... | Byte 255 ]
+                                     ▲
+                                     └── DMA auto-increments write pointer continuously!
 
+When incoming burst stops:
+UART Hardware detects IDLE Line (1 full frame of high bus) ──▶ Fires USART_IT_IDLE!
+Single ISR fires once per PACKET (rather than once per byte)! CPU load &lt; 1%!
+          </pre>
+        </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="capstone02-memory-pool-allocator.html" class="btn-secondary">← Capstone 2: Memory Pool Allocator</a>
-          <a href="capstone04-preemptive-rtos-kernel.html" class="btn-primary">Capstone 4: Preemptive RTOS Kernel →</a>
+        <h2 id="sec-cap3-2">2. Production Circular DMA Engine Implementation</h2>
+        <pre><code class="language-c">#include &lt;stdint.h&gt;
+#include &lt;string.h&gt;
+
+#define DMA_RX_BUFFER_SIZE  256U
+
+static uint8_t  g_dma_rx_buf[DMA_RX_BUFFER_SIZE];
+static uint32_t g_last_read_idx = 0;
+
+void uart_dma_init(void) {
+    /* 1. Configure DMA Stream in CIRCULAR mode targeting g_dma_rx_buf */
+    /* DMA_CNDTRx (Counter register) = DMA_RX_BUFFER_SIZE */
+
+    /* 2. Enable UART Receiver DMA (DMAR bit in USART_CR3) */
+    /* 3. Enable UART Idle Line Interrupt (IDLEIE bit in USART_CR1) */
+}
+
+/* Invoked ONLY once per packet burst when the serial line goes idle! */
+void USART1_IRQHandler(void) {
+    /* Check for IDLE Line flag */
+    if (USART1-&gt;SR &amp; (1 &lt;&lt; 4)) {
+        /* Clear IDLE flag by reading SR followed by reading DR */
+        (void)USART1-&gt;SR;
+        (void)USART1-&gt;DR;
+
+        /* Calculate how many bytes DMA has written by reading the remaining counter */
+        /* DMA NDTR counts DOWN from DMA_RX_BUFFER_SIZE to 0 */
+        uint32_t dma_remaining = DMA2_Stream2-&gt;NDTR;
+        uint32_t current_dma_idx = DMA_RX_BUFFER_SIZE - dma_remaining;
+
+        if (current_dma_idx != g_last_read_idx) {
+            if (current_dma_idx &gt; g_last_read_idx) {
+                /* Linear contiguous block */
+                uint32_t length = current_dma_idx - g_last_read_idx;
+                process_serial_packet(&amp;g_dma_rx_buf[g_last_read_idx], length);
+            } else {
+                /* Buffer wrapped around! Process in two slices */
+                uint32_t slice1 = DMA_RX_BUFFER_SIZE - g_last_read_idx;
+                process_serial_packet(&amp;g_dma_rx_buf[g_last_read_idx], slice1);
+                if (current_dma_idx &gt; 0) {
+                    process_serial_packet(&amp;g_dma_rx_buf[0], current_dma_idx);
+                }
+            }
+            g_last_read_idx = current_dma_idx;
+        }
+    }
+}</code></pre>
+
+        <h2 id="sec-cap3-quiz">3. Capstone Knowledge Verification Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+          <div class="quiz-question" style="margin-bottom:0.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What triggers the UART IDLE line interrupt on an ARM microcontroller?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="cq3_1" id="cq3_1a"> <label for="cq3_1a">A) The RX buffer fills to 100%.</label></li>
+              <li><input type="radio" name="cq3_1" id="cq3_1b"> <label for="cq3_1b">B) The RX serial line remains in an idle mark state (high) for at least one full character frame time after receiving data. (Correct)</label></li>
+              <li><input type="radio" name="cq3_1" id="cq3_1c"> <label for="cq3_1c">C) The DMA counter hits zero.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> The IDLE flag detects the physical end of an incoming burst without requiring special delimiter characters.
+            </div>
+          </div>
         </div>
       </article>
     </main>
