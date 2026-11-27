@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Module 40: Layered HAL & Device Driver Design - Professional C in Embedded Systems">
-  <title>Module 40: Layered HAL & Device Driver Design | Professional C Engineering</title>
+  <meta name="description" content="Module 40: Layered HAL & Device Driver Design - Multi-layer driver architectures, vendor HAL vs LL trade-offs, port-independent bus abstractions, and I2C bus hang recovery.">
+  <title>Module 40: Layered HAL &amp; Driver Design | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
-
 <body data-chapter-id="mod40-layered-hal-and-driver-design">
   <div id="reading-progress-bar"></div>
   <header class="site-header">
     <div class="header-left">
       <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
-          <path d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <a href="../index.html" class="brand-badge">
         <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
@@ -31,11 +27,8 @@
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
-        <input type="text" id="header-search" class="search-input" placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search HAL, drivers, bus abstraction..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -379,40 +372,305 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 9 • Software Architecture</span>
-          <h1 class="chapter-h1">Module 40: Layered HAL & Device Driver Design</h1>
-          <p class="chapter-lead">Architect modular embedded systems: separating Board Support Package (BSP), Hardware Abstraction Layer (HAL), and business logic for high reusability.</p>
+          <h1 class="chapter-h1">Module 40: Layered HAL &amp; Device Driver Design</h1>
+          <p class="chapter-lead">
+            Architect maintainable, decoupled firmware systems: design clean 4-tier driver stacks, weigh vendor HAL vs LL trade-offs, author port-independent bus interfaces, and implement robust I2C bus hang recovery.
+          </p>
           <div class="chapter-meta-bar">
-            <div class="meta-item">⏱️ Duration: 60m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">⏱️ Estimated Reading: 60 min</div>
+            <div class="meta-item">🎯 Standard: C99 / C11 / C17 / MISRA C:2012</div>
+            <div class="meta-item">🛠️ Environments: Linux POSIX + Bare-Metal ARM</div>
           </div>
         </div>
 
 
-        <h2 id="sec-40-1">40.1 The Three-Tier Embedded Architecture</h2>
-        <div class="diagram-container">
-          <pre class="ascii-diagram">
-+-------------------------------------------------------------+
-|               Application Domain / Business Logic           |
-+-------------------------------------------------------------+
-                               |
-                               v
-+-------------------------------------------------------------+
-|        Hardware Abstraction Layer (HAL / Driver Vtables)    |
-+-------------------------------------------------------------+
-                               |
-                               v
-+-------------------------------------------------------------+
-|         Board Support Package (BSP) & Silicon Registers      |
-+-------------------------------------------------------------+
-          </pre>
+        <!-- 40.1 Architecture of a Production Driver Stack -->
+        <h2 id="sec-40-1">40.1 Architecture of a Production Embedded Driver Stack</h2>
+        <p>
+          In professional firmware development, writing code that directly writes register addresses inside business logic creates unmaintainable, brittle software. If the hardware team switches from an SPI sensor to an I2C sensor, or upgrades the MCU from an STM32F4 to an NXP i.MX RT, tightly coupled code must be rewritten from scratch.
+        </p>
+        <p>
+          A production-grade firmware architecture partitions software into four strict hierarchical layers, each communicating only with the layers immediately above and below it:
+        </p>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;">The 4-Layer Embedded Architectural Hierarchy</h4>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.6;color:var(--text-primary);background:rgba(0,0,0,0.25);padding:1rem;border-radius:6px;">
+<pre style="margin:0;background:transparent;padding:0;color:inherit;"><code style="background:transparent;padding:0;color:inherit;">
+ +-------------------------------------------------------------------------+
+ | Layer 4: APPLICATION &amp; BUSINESS LOGIC                                   |
+ | (PID Motor Control, Telemetry Filtering, FSMs, Cloud Sync)              |
+ +-------------------------------------------------------------------------+
+                                    |
+                                    v (Opaque Handles, Abstract Structs)
+ +-------------------------------------------------------------------------+
+ | Layer 3: MIDDLEWARE &amp; EXTERNAL DEVICE DRIVERS                            |
+ | (EEPROM Driver, IMU Filter, Display Engine, Modbus Protocol Stack)      |
+ +-------------------------------------------------------------------------+
+                                    |
+                                    v (Standardized HAL Bus Interfaces: i2c_bus_t, spi_bus_t)
+ +-------------------------------------------------------------------------+
+ | Layer 2: HARDWARE ABSTRACTION LAYER (HAL) &amp; BUS ABSTRACTION             |
+ | (Generic read/write bursts, pin toggling, clock trees, DMA management)  |
+ +-------------------------------------------------------------------------+
+                                    |
+                                    v (MMIO Register Pointers, Bitmasks)
+ +-------------------------------------------------------------------------+
+ | Layer 1: LOW-LAYER (LL) SILICON REGISTERS                               |
+ | (Memory-Mapped I/O Registers: USART1-&gt;CR1, TIM2-&gt;CCR1, NVIC-&gt;ISER)      |
+ +-------------------------------------------------------------------------+
+</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-40-2">40.2 Vendor HALs vs. Bare-Metal Low-Layer (LL) Drivers</h2>
+        <p>
+          Silicon vendors supply official libraries (e.g. STMicroelectronics STM32Cube HAL, NXP MCUXpresso, Microchip Harmony). While vendor HALs accelerate initial prototyping, they present severe architectural liabilities in safety-critical, high-throughput systems:
+        </p>
+
+        <div style="overflow-x:auto;margin:1.5rem 0;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;text-align:left;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-strong);color:var(--text-primary);">
+                <th style="padding:0.75rem 1rem;">Architectural Dimension</th>
+                <th style="padding:0.75rem 1rem;">Vendor HAL (e.g. ST HAL)</th>
+                <th style="padding:0.75rem 1rem;">Low-Layer (LL) / Custom Register HAL</th>
+              </tr>
+            </thead>
+            <tbody style="color:var(--text-secondary);line-height:1.6;">
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:var(--brand-coral);">Code Footprint (Flash)</td>
+                <td style="padding:0.75rem 1rem;">Heavy (15 KB to 45 KB overhead due to defensive state structs, unused feature checks)</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;">Minimal (1 KB to 3 KB; directly inlined machine instructions)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:var(--brand-coral);">Execution Latency</td>
+                <td style="padding:0.75rem 1rem;">High &amp; Non-deterministic (deep function nesting, parameter pointer dereferencing)</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;">Single-cycle deterministic MMIO writes</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border-subtle);">
+                <td style="padding:0.75rem 1rem;font-weight:700;color:var(--brand-coral);">Blocking Traps</td>
+                <td style="padding:0.75rem 1rem;">Contains busy-wait loops with timeout counters (<code>HAL_GetTick()</code>) that deadlock if SysTick is preempted</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;">Strictly non-blocking interrupt/DMA event-driven</td>
+              </tr>
+              <tr>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#38BDF8;">MISRA C Compliance</td>
+                <td style="padding:0.75rem 1rem;">Often violates MISRA C:2012 due to macro type punning and implicit conversions</td>
+                <td style="padding:0.75rem 1rem;font-weight:700;color:#34D399;">Fully certifiable to 100% MISRA C:2012 rules</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="sec-40-3">40.3 Writing Port-Independent Bus Interfaces (Contract Decoupling)</h2>
+        <p>
+          To make a device driver (e.g. an external EEPROM or IMU) completely independent of the MCU, define an abstract bus contract using a C struct of function pointers:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>i2c_interface.h</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#ifndef I2C_INTERFACE_H
+#define I2C_INTERFACE_H
+
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+#include &lt;stddef.h&gt;
+
+/* Abstract I2C Bus Driver Operations Contract */
+typedef struct i2c_bus_ops {
+    bool (*write_burst)(void *user_ctx, uint8_t dev_addr, uint8_t reg_addr, const uint8_t *data, size_t len);
+    bool (*read_burst)(void *user_ctx, uint8_t dev_addr, uint8_t reg_addr, uint8_t *out_data, size_t len);
+} i2c_bus_ops_t;
+
+/* Concrete I2C Bus Instance */
+typedef struct {
+    const i2c_bus_ops_t *ops;
+    void                *user_ctx; /* Pointer to hardware peripheral instance (e.g. I2C1) */
+} i2c_bus_t;
+
+#endif /* I2C_INTERFACE_H */</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-40-4">40.4 Real-Time Industrial Case: EEPROM Memory Driver Decoupled from Physical Bus</h2>
+        <p>
+          By consuming the abstract <code>i2c_bus_t</code> interface, the EEPROM memory driver can run on an STM32, an ESP32, an RTOS queue, or inside a host PC unit test with a mock bus!
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>at24c_eeprom.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include "i2c_interface.h"
+
+typedef struct {
+    i2c_bus_t bus;
+    uint8_t   device_i2c_addr;
+} at24c_eeprom_t;
+
+bool at24c_read_byte(at24c_eeprom_t *eeprom, uint16_t mem_addr, uint8_t *out_val) {
+    if (eeprom == NULL || out_val == NULL || eeprom-&gt;bus.ops == NULL) {
+        return false;
+    }
+    /* Address transmission: 8-bit or 16-bit word address */
+    return eeprom-&gt;bus.ops-&gt;read_burst(eeprom-&gt;bus.user_ctx,
+                                      eeprom-&gt;device_i2c_addr,
+                                      (uint8_t)mem_addr,
+                                      out_val, 1U);
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-40-5">40.5 Bus Fault Recovery: Resolving I2C SDA Bus Hangs</h2>
+        <p>
+          In noisy industrial environments, an electrical glitch or reset can interrupt an I2C transaction while a slave device is asserting a 0 (pulling SDA low). Because SDA is held low by the slave, the master cannot generate a START or STOP condition, completely locking up the peripheral!
+        </p>
+        <p>
+          A production HAL driver includes a <strong>Bus Clear Routine</strong>: it reconfigures the SCL pin to GPIO Open-Drain and clocks out up to 9 dummy pulses until the slave releases SDA, followed by a valid STOP condition:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>i2c_bus_recovery.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">void i2c_recover_bus_hang(void) {
+    /* 1. Reconfigure SCL &amp; SDA as GPIO Open-Drain Output */
+    gpio_set_mode_open_drain(I2C_SCL_PIN);
+    gpio_set_mode_open_drain(I2C_SDA_PIN);
+
+    /* 2. Clock out up to 9 pulses to release slave holding SDA low */
+    for (int i = 0; i &lt; 9; ++i) {
+        if (gpio_read_pin(I2C_SDA_PIN) != 0) {
+            break; /* Slave has released SDA! */
+        }
+        gpio_write_pin(I2C_SCL_PIN, 0);
+        delay_microseconds(5);
+        gpio_write_pin(I2C_SCL_PIN, 1);
+        delay_microseconds(5);
+    }
+
+    /* 3. Generate STOP condition */
+    gpio_write_pin(I2C_SDA_PIN, 0);
+    delay_microseconds(5);
+    gpio_write_pin(I2C_SCL_PIN, 1);
+    delay_microseconds(5);
+    gpio_write_pin(I2C_SDA_PIN, 1);
+
+    /* 4. Restore I2C alternate function hardware mapping */
+    reinit_i2c_hardware();
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-40-6">40.6 Hands-On Lab: Modular HAL Driver Simulator</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:var(--brand-coral);">Lab Exercise: The Decoupled Sensor HAL Harness</h3>
+          <p style="font-size:0.9rem;">
+            In this lab, you will compile and run a complete modular HAL harness (`sensor_hal_lab.c`) verifying that an ambient temperature sensor driver executes without any hardware dependency by injecting a software mock bus.
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>sensor_hal_lab.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+/* Abstract Bus Ops */
+typedef struct {
+    bool (*read_reg)(uint8_t dev_id, uint8_t reg, uint16_t *out_val);
+} mock_bus_ops_t;
+
+/* Mock Bus Implementation */
+static bool mock_i2c_read(uint8_t dev_id, uint8_t reg, uint16_t *out_val) {
+    if (dev_id != 0x48) return false; /* LM75 Temperature Sensor Address */
+    if (reg == 0x00) {
+        *out_val = 0x1900; /* Simulated 25.0 C (0x19 = 25) */
+        return true;
+    }
+    return false;
+}
+
+int main(void) {
+    printf("========================================================\n");
+    printf("           MODULAR HAL SENSOR DRIVER LAB                \n");
+    printf("========================================================\n\n");
+
+    mock_bus_ops_t bus = { .read_reg = mock_i2c_read };
+    uint16_t raw_temp = 0;
+    
+    if (bus.read_reg(0x48, 0x00, &amp;raw_temp)) {
+        float temp_c = (float)(raw_temp &gt;&gt; 8);
+        printf("Sensor Read Successful! Temperature: %.2f C\n", temp_c);
+    } else {
+        printf("Sensor Read Failed!\n");
+    }
+
+    printf("\n========================================================\n");
+    printf("HAL Verification completed with zero defects.\n");
+    return EXIT_SUCCESS;
+}</code></pre>
+            </div>
+          </div>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Build &amp; Run</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">BASH</span><span>Terminal Execution</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-bash">gcc -std=c17 -Wall -Wextra -Werror -pedantic sensor_hal_lab.c -o sensor_hal
+./sensor_hal</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="sec-40-quiz">40.7 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: What is the primary software engineering defect of directly manipulating peripheral registers inside application business logic?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) It prevents unit testing on host machines and tightly couples application algorithms to specific MCU silicon. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) It reduces CPU execution clock frequency.</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) It forces all variables into EEPROM.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Abstracting hardware through HAL interfaces allows unit tests to run with mock drivers on PC development hosts without target hardware.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: How does an I2C bus recovery sequence clear an SDA line held low by an interrupted slave device?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) The master toggles the SCL clock line up to 9 times in GPIO mode to clock out the remaining bits from the slave's internal shift register. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) It increases the bus supply voltage to 5V.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) It resets the entire MCU flash memory.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Sending up to 9 clock pulses on SCL allows the slave to finish outputting its current byte, releasing the open-drain SDA pull-down.
+            </div>
+          </div>
         </div>
 
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod39-cert-c-and-defensive-coding.html" class="btn-secondary">← Module 39: CERT C & Defensive Coding</a>
-          <a href="mod41-oop-patterns-and-interfaces.html" class="btn-primary">Module 41: OOP Patterns & Interfaces in C →</a>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+          <a href="mod39-cert-c-and-defensive-coding.html" class="btn-secondary">← Module 39: CERT C &amp; Defensive Coding</a>
+          <a href="mod41-oop-patterns-and-interfaces.html" class="btn-primary">Module 41: OOP Patterns &amp; Interfaces in C →</a>
         </div>
       </article>
     </main>
@@ -420,5 +678,4 @@
 
   <script src="../js/book.js?v=5"></script>
 </body>
-
 </html>

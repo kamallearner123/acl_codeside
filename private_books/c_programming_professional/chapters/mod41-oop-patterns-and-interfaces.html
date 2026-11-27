@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Module 41: OOP Patterns & Interfaces in C - Professional C in Embedded Systems">
-  <title>Module 41: OOP Patterns & Interfaces in C | Professional C Engineering</title>
+  <meta name="description" content="Module 41: OOP Patterns & Interfaces in C - Encapsulation via opaque pointers, single inheritance via struct composition, virtual method tables (vtables), and swappable device drivers.">
+  <title>Module 41: OOP Patterns &amp; Interfaces in C | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
-
 <body data-chapter-id="mod41-oop-patterns-and-interfaces">
   <div id="reading-progress-bar"></div>
   <header class="site-header">
     <div class="header-left">
       <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
-          <path d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <a href="../index.html" class="brand-badge">
         <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
@@ -31,11 +27,8 @@
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
-        <input type="text" id="header-search" class="search-input" placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search OOP, vtables, inheritance in C..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -379,46 +372,316 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 9 • Software Architecture</span>
-          <h1 class="chapter-h1">Module 41: OOP Patterns & Interfaces in C</h1>
-          <p class="chapter-lead">Implement encapsulation with opaque pointers, single inheritance via struct composition, and runtime polymorphism using virtual method tables in pure C.</p>
+          <h1 class="chapter-h1">Module 41: OOP Patterns &amp; Interfaces in C</h1>
+          <p class="chapter-lead">
+            Implement modern object-oriented paradigms in clean ANSI C: opaque handles for strict encapsulation, ISO C single inheritance guarantees, virtual method tables (vtables) in Flash memory, and swappable network interfaces.
+          </p>
           <div class="chapter-meta-bar">
-            <div class="meta-item">⏱️ Duration: 55m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">⏱️ Estimated Reading: 65 min</div>
+            <div class="meta-item">🎯 Standard: C99 / C11 / C17 / MISRA C:2012</div>
+            <div class="meta-item">🛠️ Environments: Linux POSIX + Bare-Metal ARM</div>
           </div>
         </div>
 
 
-        <h2 id="sec-41-1">41.1 Object-Oriented Polymorphism in Pure C</h2>
+        <h2 id="sec-41-1">41.1 Encapsulation in Pure C: Incomplete Types &amp; Opaque Handles</h2>
+        <p>
+          Object-Oriented Programming (OOP) is not a language feature—it is an architectural design paradigm. Languages like C++ and Java enforce OOP principles at the compiler and grammar level, but seasoned systems engineers routinely implement robust <strong>Encapsulation, Inheritance, and Polymorphism</strong> in pure ANSI/ISO C.
+        </p>
+        <p>
+          The bedrock of OOP in C is <strong>Encapsulation</strong> via the <em>Opaque Pointer (PIMPL) Pattern</em>. By declaring a <code>struct</code> name in the header without defining its internal fields, callers are physically prevented from accessing or modifying internal state:
+        </p>
+
         <div class="code-container">
           <div class="code-header">
-            <div class="code-title"><span class="code-lang-badge">C</span><span>shape_interface.c</span></div>
+            <div class="code-title"><span class="code-lang-badge">C</span><span>opaque_encapsulation.h</span></div>
             <button class="code-copy-btn">Copy</button>
           </div>
           <div class="code-body">
-            <pre><code class="language-c">#include &lt;stdint.h&gt;
+            <pre><code class="language-c">#ifndef OPAQUE_ENCAPSULATION_H
+#define OPAQUE_ENCAPSULATION_H
 
-typedef struct ShapeVtable ShapeVtable_t;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
 
+/* Incomplete struct declaration (Opaque Handle) */
+typedef struct ring_buffer ring_buffer_t;
+
+/* Constructor and Destructor */
+ring_buffer_t *ring_buffer_create(size_t capacity);
+void           ring_buffer_destroy(ring_buffer_t *rb);
+
+/* Public Member Methods (Encapsulated operations) */
+bool   ring_buffer_push(ring_buffer_t *rb, uint8_t byte);
+bool   ring_buffer_pop(ring_buffer_t *rb, uint8_t *out_byte);
+size_t ring_buffer_get_count(const ring_buffer_t *rb);
+
+#endif /* OPAQUE_ENCAPSULATION_H */</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-41-2">41.2 Inheritance in C: Struct Composition &amp; ISO Memory Guarantees</h2>
+        <p>
+          In C, single inheritance is modeled by <strong>Struct Composition</strong>, where the base class structure is embedded as the <strong>very first member</strong> of the derived class structure.
+        </p>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;">The ISO C Memory Guarantee (§6.7.2.1)</h4>
+          <p style="font-size:0.875rem;line-height:1.6;color:var(--text-secondary);">
+            The ISO C standard explicitly guarantees that <em>a pointer to a structure object, suitably converted, points to its initial member</em>. There are zero padding bytes before the first member:
+          </p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;line-height:1.6;color:var(--text-primary);background:rgba(0,0,0,0.25);padding:1rem;border-radius:6px;">
+<pre style="margin:0;background:transparent;padding:0;color:inherit;"><code style="background:transparent;padding:0;color:inherit;">
+ struct base_sensor {
+     uint32_t sensor_id;       // Offset 0x00
+     uint32_t sample_rate_hz;  // Offset 0x04
+ };
+
+ struct derived_imu {
+     struct base_sensor base;  // Offset 0x00 (EXACTLY MATCHES &amp;derived_imu!)
+     int16_t accel_x;          // Offset 0x08
+     int16_t accel_y;          // Offset 0x0A
+     int16_t accel_z;          // Offset 0x0C
+ };
+
+ // UPCASTING IS STRICTLY VALID IN ISO C:
+ struct derived_imu imu;
+ struct base_sensor *base_ptr = (struct base_sensor *)&amp;imu; // Address identical!
+</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-41-3">41.3 Polymorphism via Virtual Method Tables (Vtables) in C</h2>
+        <p>
+          Runtime polymorphism allows calling a method on an abstract base pointer without knowing the concrete underlying derived type. In pure C, we achieve this by defining a <strong>Vtable struct of function pointers</strong> stored in read-only Flash (<code>.rodata</code>):
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>vtable_actuator.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+/* Forward declaration */
+typedef struct actuator actuator_t;
+
+/* 1. Abstract Interface Vtable */
 typedef struct {
-    const ShapeVtable_t *vptr;
-} Shape_t;
+    void (*set_speed)(actuator_t *self, int32_t speed);
+    void (*emergency_stop)(actuator_t *self);
+    int32_t (*get_position)(const actuator_t *self);
+} actuator_vtable_t;
 
-struct ShapeVtable {
-    uint32_t (*get_area)(const Shape_t *self);
+/* 2. Abstract Base Class */
+struct actuator {
+    const actuator_vtable_t *vptr; /* Virtual pointer to .rodata table */
+    uint32_t id;
 };
 
-static inline uint32_t shape_area(const Shape_t *s) {
-    return s-&gt;vptr-&gt;get_area(s);
+/* Virtual Method Dispatch Helper */
+static inline void actuator_set_speed(actuator_t *self, int32_t speed) {
+    if (self &amp;&amp; self-&gt;vptr &amp;&amp; self-&gt;vptr-&gt;set_speed) {
+        self-&gt;vptr-&gt;set_speed(self, speed);
+    }
+}
+
+/* 3. Concrete Derived Class: Stepper Motor */
+typedef struct {
+    actuator_t base;       /* Base class embedded at offset 0 */
+    int32_t    step_angle;
+    int32_t    current_steps;
+} stepper_motor_t;
+
+static void stepper_set_speed(actuator_t *self, int32_t speed) {
+    stepper_motor_t *stepper = (stepper_motor_t *)self;
+    printf("[Stepper %u] Speed set to %d RPM (Step angle: %d deg)\n",
+           stepper-&gt;base.id, speed, stepper-&gt;step_angle);
+}
+
+static void stepper_emergency_stop(actuator_t *self) {
+    printf("[Stepper %u] EMERGENCY STOP: Coil Power Cut!\n", self-&gt;id);
+}
+
+static int32_t stepper_get_position(const actuator_t *self) {
+    const stepper_motor_t *stepper = (const stepper_motor_t *)self;
+    return stepper-&gt;current_steps;
+}
+
+/* Vtable allocated in Flash (.rodata) */
+static const actuator_vtable_t STEPPER_VTABLE = {
+    .set_speed = stepper_set_speed,
+    .emergency_stop = stepper_emergency_stop,
+    .get_position = stepper_get_position
+};
+
+/* Stepper Constructor */
+void stepper_init(stepper_motor_t *motor, uint32_t id, int32_t step_angle) {
+    motor-&gt;base.vptr = &amp;STEPPER_VTABLE;
+    motor-&gt;base.id = id;
+    motor-&gt;step_angle = step_angle;
+    motor-&gt;current_steps = 0;
 }</code></pre>
           </div>
         </div>
 
+        <h2 id="sec-41-4">41.4 Real-Time Industrial Case: Swappable Network Interface Architecture</h2>
+        <p>
+          Consider an IoT gateway that transmits sensor data over Ethernet, Wi-Fi, or 4G LTE depending on physical link availability. By consuming an abstract <code>net_if_t</code> vtable interface, the telemetry client requires zero modifications when the link switches:
+        </p>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod40-layered-hal-and-driver-design.html" class="btn-secondary">← Module 40: Layered HAL & Driver Design</a>
-          <a href="mod42-publish-subscribe-event-runtimes.html" class="btn-primary">Module 42: Event-Driven & Pub/Sub Runtimes →</a>
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>network_interface_vtable.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">typedef struct net_if net_if_t;
+
+typedef struct {
+    bool (*connect)(net_if_t *self, const char *endpoint);
+    bool (*send_packet)(net_if_t *self, const uint8_t *data, size_t len);
+    bool (*disconnect)(net_if_t *self);
+} net_if_vtable_t;
+
+struct net_if {
+    const net_if_vtable_t *vptr;
+    bool is_up;
+};
+
+/* Telemetry loop operates purely on abstract interface */
+void broadcast_telemetry(net_if_t *net, const uint8_t *data, size_t len) {
+    if (net-&gt;is_up) {
+        net-&gt;vptr-&gt;send_packet(net, data, len);
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-41-5">41.5 Hands-On Lab: Polymorphic Actuator Engine Simulator</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:var(--brand-coral);">Lab Exercise: The Pure C Polymorphism Testbed</h3>
+          <p style="font-size:0.9rem;">
+            In this lab, you will author <code>vtable_actuator_lab.c</code> to instantiate an array of polymorphic actuators (Stepper Motors and DC Motors) and dispatch control commands through virtual tables.
+          </p>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Complete Source Code: vtable_actuator_lab.c</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>vtable_actuator_lab.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+typedef struct device device_t;
+typedef struct {
+    void (*self_test)(device_t *self);
+} device_vtable_t;
+
+struct device {
+    const device_vtable_t *vptr;
+    const char *name;
+};
+
+/* Concrete Device 1: CAN Transceiver */
+typedef struct {
+    device_t base;
+    uint32_t baud;
+} can_device_t;
+
+static void can_self_test(device_t *self) {
+    can_device_t *can = (can_device_t *)self;
+    printf("[CAN] Testing %s at %u baud: Loopback OK\n", can-&gt;base.name, can-&gt;baud);
+}
+static const device_vtable_t CAN_VTABLE = { .self_test = can_self_test };
+
+/* Concrete Device 2: SPI Flash */
+typedef struct {
+    device_t base;
+    uint32_t capacity_kb;
+} flash_device_t;
+
+static void flash_self_test(device_t *self) {
+    flash_device_t *flash = (flash_device_t *)self;
+    printf("[FLASH] Testing %s (%u KB): JEDEC ID Verified\n", flash-&gt;base.name, flash-&gt;capacity_kb);
+}
+static const device_vtable_t FLASH_VTABLE = { .self_test = flash_self_test };
+
+int main(void) {
+    printf("========================================================\n");
+    printf("        PURE C POLYMORPHIC VTABLE ENGINE LAB            \n");
+    printf("========================================================\n\n");
+
+    can_device_t can = { .base = { .vptr = &amp;CAN_VTABLE, .name = "CAN_BUS_PRIMARY" }, .baud = 500000 };
+    flash_device_t flash = { .base = { .vptr = &amp;FLASH_VTABLE, .name = "NOR_FLASH_W25Q" }, .capacity_kb = 8192 };
+
+    /* Heterogeneous array of base class pointers */
+    device_t *fleet[] = { (device_t *)&amp;can, (device_t *)&amp;flash };
+
+    for (size_t i = 0; i &lt; 2; ++i) {
+        fleet[i]-&gt;vptr-&gt;self_test(fleet[i]);
+    }
+
+    printf("\n========================================================\n");
+    printf("Polymorphic testbed executed successfully.\n");
+    return EXIT_SUCCESS;
+}</code></pre>
+            </div>
+          </div>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Build &amp; Run</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">BASH</span><span>Terminal Execution</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-bash">gcc -std=c17 -Wall -Wextra -Werror -pedantic vtable_actuator_lab.c -o vtable_lab
+./vtable_lab</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="sec-41-quiz">41.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: Why does ISO C guarantee that casting a derived struct pointer to its base struct pointer is safe when the base struct is the first member?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) By ISO C specification (§6.7.2.1), a pointer to a struct points to its initial member with zero padding offset. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) Because compilers dynamically insert vtable wrappers.</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) Because structs cannot exceed 32 bytes.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Under ISO C, there is never leading padding before the first member of a structure, guaranteeing identical memory addresses.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the primary performance penalty of invoking methods through a pure C virtual method table (vtable)?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) An indirect memory dereference and an indirect branch instruction (BLX R3), which cannot be easily inlined by the compiler. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) It requires malloc to allocate stack frames.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) It corrupts the CPU status register.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Indirect branch calls prevent function inlining and may cause a branch target buffer misprediction.
+            </div>
+          </div>
+        </div>
+
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+          <a href="mod40-layered-hal-and-driver-design.html" class="btn-secondary">← Module 40: Layered HAL &amp; Driver Design</a>
+          <a href="mod42-publish-subscribe-event-runtimes.html" class="btn-primary">Module 42: Event-Driven &amp; Pub/Sub Runtimes →</a>
         </div>
       </article>
     </main>
@@ -426,5 +689,4 @@ static inline uint32_t shape_area(const Shape_t *s) {
 
   <script src="../js/book.js?v=5"></script>
 </body>
-
 </html>

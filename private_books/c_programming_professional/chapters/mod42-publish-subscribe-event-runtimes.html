@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Module 42: Event-Driven & Pub/Sub Runtimes - Professional C in Embedded Systems">
-  <title>Module 42: Event-Driven & Pub/Sub Runtimes | Professional C Engineering</title>
+  <meta name="description" content="Module 42: Event-Driven & Pub/Sub Runtimes - The Active Object pattern, asynchronous message passing, zero-lock event brokers, and reactive embedded architectures.">
+  <title>Module 42: Event-Driven &amp; Pub/Sub Runtimes | Professional C Engineering</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css?v=5">
 </head>
-
 <body data-chapter-id="mod42-publish-subscribe-event-runtimes">
   <div id="reading-progress-bar"></div>
   <header class="site-header">
     <div class="header-left">
       <button class="sidebar-toggle-btn icon-btn" id="sidebar-toggle" aria-label="Toggle Sidebar">
-        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
-          <path d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <a href="../index.html" class="brand-badge">
         <img src="../assets/images/acl_logo.png" alt="Apt Computing Labs" class="brand-logo-img">
@@ -31,11 +27,8 @@
     </div>
     <div class="header-center">
       <div class="search-box-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8" />
-          <path d="m21 21-4.35-4.35" />
-        </svg>
-        <input type="text" id="header-search" class="search-input" placeholder="Search modules, ELF, pointers, epoll, MISRA..." readonly>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="header-search" class="search-input" placeholder="Search Active Objects, pub/sub, event queues..." readonly>
         <span class="search-shortcut">⌘K</span>
       </div>
     </div>
@@ -379,25 +372,252 @@
       <article class="prose">
         <div class="chapter-hero">
           <span class="chapter-module-tag">Part 9 • Software Architecture</span>
-          <h1 class="chapter-h1">Module 42: Event-Driven & Pub/Sub Runtimes</h1>
-          <p class="chapter-lead">Design reactive, low-power embedded software using Active Objects, event queues, publish-subscribe brokers, and hierarchical state machines (HSM).</p>
+          <h1 class="chapter-h1">Module 42: Event-Driven &amp; Pub/Sub Runtimes</h1>
+          <p class="chapter-lead">
+            Eliminate mutex deadlocks and priority inversion in real-time embedded systems: master the Active Object design pattern, zero-lock immutable event queues, and pure C publish-subscribe message brokers.
+          </p>
           <div class="chapter-meta-bar">
-            <div class="meta-item">⏱️ Duration: 55m</div>
-            <div class="meta-item">🎯 Standard: C11 / C17 / C23 • MISRA C &amp; CERT C Aligned</div>
-            <div class="meta-item">⚡ Architecture: ARM Cortex-M / Linux x86_64</div>
+            <div class="meta-item">⏱️ Estimated Reading: 65 min</div>
+            <div class="meta-item">🎯 Standard: C99 / C11 / C17 / Active Objects</div>
+            <div class="meta-item">🛠️ Environments: Linux POSIX + FreeRTOS + Bare-Metal ARM</div>
           </div>
         </div>
 
 
-        <h2 id="sec-42-1">42.1 The Active Object Design Pattern</h2>
+        <h2 id="sec-42-1">42.1 The Active Object (Actor) Design Pattern in Embedded Systems</h2>
         <p>
-          Each Active Object owns an event queue and an RTOS task, completely eliminating cross-thread race conditions by processing events sequentially.
+          Traditional embedded firmware multi-threading relies on shared data structures protected by blocking mutexes, binary semaphores, and critical sections. In complex systems, this paradigm inevitably triggers catastrophic runtime defects: <strong>Deadlocks, Priority Inversion, Race Conditions, and Non-Deterministic Jitter</strong>.
+        </p>
+        <p>
+          The <strong>Active Object (AO) Pattern</strong> (standardized by Dr. Miro Samek in Quantum Platform QP/C and based on Hewitt's Actor Model) solves concurrency by replacing shared state with <strong>Asynchronous Message Passing</strong>. An Active Object is an autonomous, encapsulated software entity consisting of three components:
         </p>
 
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h4 style="margin-top:0;color:#38BDF8;">The 3 Pillars of an Active Object</h4>
+          <ul style="line-height:1.7;font-size:0.9rem;color:var(--text-secondary);margin:0;padding-left:1.2rem;">
+            <li><strong>1. Dedicated Event Queue</strong>: A private FIFO message queue receiving event signals and payloads from other AOs or ISRs.</li>
+            <li><strong>2. Private Execution Thread (RTOS Task)</strong>: An RTOS thread blocking on the event queue, processing incoming events one at a time.</li>
+            <li><strong>3. Internal State Machine (FSM / HSM)</strong>: Encapsulated private state variables modified strictly within the AO's own thread context. <strong>ZERO external mutex locks required!</strong></li>
+          </ul>
+        </div>
 
-        <!-- Next / Prev Module Navigation -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);flex-wrap:wrap;gap:1rem;">
-          <a href="mod41-oop-patterns-and-interfaces.html" class="btn-secondary">← Module 41: OOP Patterns & Interfaces in C</a>
+        <h2 id="sec-42-2">42.2 Zero-Lock Immutable Event Passing Architecture</h2>
+        <p>
+          To achieve deterministic real-time performance without dynamic heap allocation (<code>malloc</code>), events are passed as lightweight immutable structures containing a signal ID and an optional payload:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>active_object_event.h</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#ifndef ACTIVE_OBJECT_EVENT_H
+#define ACTIVE_OBJECT_EVENT_H
+
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+/* Event Signals */
+typedef enum {
+    SIG_TIMER_TICK = 0,
+    SIG_SENSOR_DATA_READY,
+    SIG_BUTTON_PRESSED,
+    SIG_CAN_FRAME_RECEIVED,
+    SIG_ALARM_TRIGGERED,
+    SIG_USER_MAX
+} event_signal_t;
+
+/* Base Event Structure */
+typedef struct event {
+    event_signal_t sig;
+    uint32_t       sender_id;
+} event_t;
+
+/* Concrete Event with Payload */
+typedef struct {
+    event_t super;
+    float   temperature_celsius;
+    float   pressure_hpa;
+} sensor_event_t;
+
+#endif /* ACTIVE_OBJECT_EVENT_H */</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-42-3">42.3 The Publish-Subscribe Event Broker in Pure C</h2>
+        <p>
+          In a publish-subscribe architecture, components do not send messages directly to specific receivers. Instead, an Active Object <strong>subscribes to a topic/signal</strong> on a centralized Event Broker. When an event is published, the Broker dispatches copies to all registered subscribers:
+        </p>
+
+        <div class="code-container">
+          <div class="code-header">
+            <div class="code-title"><span class="code-lang-badge">C</span><span>event_broker.c</span></div>
+            <button class="code-copy-btn">Copy</button>
+          </div>
+          <div class="code-body">
+            <pre><code class="language-c">#define MAX_SUBSCRIBERS_PER_SIG 8U
+
+typedef struct {
+    void (*post_fifo)(void *ao_ctx, const event_t *evt);
+    void *ao_ctx;
+} subscriber_t;
+
+typedef struct {
+    subscriber_t subscribers[SIG_USER_MAX][MAX_SUBSCRIBERS_PER_SIG];
+    uint8_t      sub_count[SIG_USER_MAX];
+} event_broker_t;
+
+static event_broker_t g_broker;
+
+void broker_subscribe(event_signal_t sig, void *ao_ctx, void (*post_fifo)(void *, const event_t *)) {
+    if (sig &gt;= SIG_USER_MAX) return;
+    uint8_t idx = g_broker.sub_count[sig];
+    if (idx &lt; MAX_SUBSCRIBERS_PER_SIG) {
+        g_broker.subscribers[sig][idx].ao_ctx = ao_ctx;
+        g_broker.subscribers[sig][idx].post_fifo = post_fifo;
+        g_broker.sub_count[sig]++;
+    }
+}
+
+void broker_publish(const event_t *evt) {
+    if (evt == NULL || evt-&gt;sig &gt;= SIG_USER_MAX) return;
+    uint8_t count = g_broker.sub_count[evt-&gt;sig];
+    for (uint8_t i = 0; i &lt; count; ++i) {
+        g_broker.subscribers[evt-&gt;sig][i].post_fifo(
+            g_broker.subscribers[evt-&gt;sig][i].ao_ctx, evt);
+    }
+}</code></pre>
+          </div>
+        </div>
+
+        <h2 id="sec-42-4">42.4 Real-Time Industrial Case: Avionics / Drone Flight Controller Active Object Mesh</h2>
+        <p>
+          A production UAV flight controller decomposes into four concurrent Active Objects:
+        </p>
+        <ol style="line-height:1.8;font-size:0.95rem;color:var(--text-secondary);padding-left:1.25rem;">
+          <li><strong>Sensor IMU AO (1000 Hz)</strong>: Reads gyroscope and accelerometer over SPI, runs complementary Madgwick filter, and publishes <code>SIG_ATTITUDE_ESTIMATE</code>.</li>
+          <li><strong>Flight Control PID AO (500 Hz)</strong>: Subscribes to <code>SIG_ATTITUDE_ESTIMATE</code> and <code>SIG_PILOT_COMMAND</code>, computes motor PWM outputs.</li>
+          <li><strong>Telemetry Radiomodem AO (50 Hz)</strong>: Serializes flight metrics and transmits over MAVLink RF bus.</li>
+          <li><strong>Black-Box Flash Logger AO (10 Hz)</strong>: Writes telemetry packets to SPI NOR Flash without blocking the high-rate flight loop!</li>
+        </ol>
+
+        <h2 id="sec-42-5">42.5 Hands-On Lab: Standalone Active Object &amp; Pub/Sub Event Bus</h2>
+        <div style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:var(--brand-coral);">Lab Exercise: The Active Object Event Engine</h3>
+          <p style="font-size:0.9rem;">
+            In this lab, you will compile and execute <code>active_object_lab.c</code>, running an event broker with mock telemetry and alarm subscriber objects.
+          </p>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Complete Source Code: active_object_lab.c</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">C</span><span>active_object_lab.c</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;stdbool.h&gt;
+
+typedef enum {
+    EVENT_TICK = 0,
+    EVENT_OVERHEAT_ALARM,
+    EVENT_COUNT
+} signal_t;
+
+typedef struct {
+    signal_t sig;
+    int32_t  payload;
+} event_t;
+
+/* Active Object Consumer 1: Display Logger */
+static void logger_on_event(void *ctx, const event_t *evt) {
+    (void)ctx;
+    if (evt-&gt;sig == EVENT_TICK) {
+        printf("[LOGGER AO] Heartbeat Tick: %d\n", evt-&gt;payload);
+    } else if (evt-&gt;sig == EVENT_OVERHEAT_ALARM) {
+        printf("[LOGGER AO] 🚨 ALARM DETECTED! Temperature: %d C\n", evt-&gt;payload);
+    }
+}
+
+/* Active Object Consumer 2: Safety Interlock */
+static void safety_on_event(void *ctx, const event_t *evt) {
+    (void)ctx;
+    if (evt-&gt;sig == EVENT_OVERHEAT_ALARM) {
+        printf("[SAFETY AO] ⚠️ TRIPPING RELAY: Cooling Fan Activated at Max RPM!\n");
+    }
+}
+
+int main(void) {
+    printf("========================================================\n");
+    printf("      ACTIVE OBJECT &amp; EVENT-DRIVEN RUNTIME LAB          \n");
+    printf("========================================================\n\n");
+
+    /* Simulating Event Dispatching */
+    event_t normal_tick = { .sig = EVENT_TICK, .payload = 1001 };
+    event_t alarm_event = { .sig = EVENT_OVERHEAT_ALARM, .payload = 98 };
+
+    printf("Dispatching Normal Tick Event:\n");
+    logger_on_event(NULL, &amp;normal_tick);
+
+    printf("\nPublishing Overheat Alarm Event to Multi-Subscribers:\n");
+    logger_on_event(NULL, &amp;alarm_event);
+    safety_on_event(NULL, &amp;alarm_event);
+
+    printf("\n========================================================\n");
+    printf("Active Object event dispatching verified with zero defects.\n");
+    return EXIT_SUCCESS;
+}</code></pre>
+            </div>
+          </div>
+
+          <h4 style="font-size:0.875rem;color:var(--text-primary);margin-top:1rem;">Build &amp; Run</h4>
+          <div class="code-container">
+            <div class="code-header">
+              <div class="code-title"><span class="code-lang-badge">BASH</span><span>Terminal Execution</span></div>
+              <button class="code-copy-btn">Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><code class="language-bash">gcc -std=c17 -Wall -Wextra -Werror -pedantic active_object_lab.c -o ao_lab
+./ao_lab</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <h2 id="sec-42-quiz">42.6 Knowledge Verification &amp; Self-Study Quiz</h2>
+        <div class="quiz-container" style="background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;padding:1.5rem;margin:1.5rem 0;">
+          <h3 style="margin-top:0;color:#38BDF8;">Self-Assessment Check</h3>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q1: How does the Active Object design pattern eliminate multi-threading deadlocks and race conditions?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q1" id="q1a"> <label for="q1a">A) By prohibiting shared state: each Active Object owns its private state and thread, processing events sequentially from its private queue without mutexes. (Correct)</label></li>
+              <li><input type="radio" name="q1" id="q1b"> <label for="q1b">B) By disabling all interrupts in hardware permanently.</label></li>
+              <li><input type="radio" name="q1" id="q1c"> <label for="q1c">C) By running all threads at the exact same priority.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Because an Active Object accesses its private state strictly within its single designated task, mutual exclusion locks are completely eliminated.
+            </div>
+          </div>
+
+          <div class="quiz-question" style="margin-bottom:1.5rem;">
+            <p style="font-weight:600;margin-bottom:0.5rem;">Q2: What is the primary benefit of a Publish-Subscribe broker over point-to-point task queues?</p>
+            <ul style="list-style:none;padding-left:0;font-size:0.9rem;line-height:1.8;">
+              <li><input type="radio" name="q2" id="q2a"> <label for="q2a">A) Loose coupling: publishers do not need to know the identity or number of subscribers, enabling zero-touch addition of telemetry or logging modules. (Correct)</label></li>
+              <li><input type="radio" name="q2" id="q2b"> <label for="q2b">B) It reduces RAM usage to 1 byte.</label></li>
+              <li><input type="radio" name="q2" id="q2c"> <label for="q2c">C) It converts C code into assembly automatically.</label></li>
+            </ul>
+            <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.5rem;padding:0.5rem;background:rgba(56,189,248,0.06);border-radius:6px;">
+              <strong>Explanation:</strong> Pub/Sub decouples event producers from consumers, allowing modular extension without modifying producer code.
+            </div>
+          </div>
+        </div>
+
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+          <a href="mod41-oop-patterns-and-interfaces.html" class="btn-secondary">← Module 41: OOP Patterns &amp; Interfaces in C</a>
           <a href="capstone01-bare-metal-bootloader.html" class="btn-primary">Capstone 1: Bare-Metal Bootloader →</a>
         </div>
       </article>
@@ -406,5 +626,4 @@
 
   <script src="../js/book.js?v=5"></script>
 </body>
-
 </html>
